@@ -75,3 +75,4 @@ Thumbs.db
 /test-output/
 /surefire-reports/
 /jacoco.exec
+/bin/
