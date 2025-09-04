@@ -1,0 +1,66 @@
+##########################################################
+#  Spring Boot 專案 .gitignore
+#  適用 Maven / Gradle
+##########################################################
+
+### 編譯與打包產物 ###
+# Java class files
+*.class
+
+# Log files
+*.log
+logs/
+
+# Build Folders (Maven, Gradle)
+target/
+build/
+out/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+dependency-reduced-pom.xml
+
+### IDE ###
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+### Maven ###
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+### Gradle ###
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+gradlew
+gradlew.bat
+
+### 系統與暫存檔 ###
+# Mac
+.DS_Store
+# Windows
+Thumbs.db
+# Temp files
+*.tmp
+*.swp
+*.swo
+
+### 環境變數與憑證檔案 (非常重要，避免上傳密碼) ###
+.env
+.env.*
+*.key
+*.pem
