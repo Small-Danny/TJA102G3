@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會員中心</title>
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="/frontend-template/assets/images/heading-icon.png">
+    <link rel="stylesheet" href="/frontend-template/assets/font/flaticon_mycollection.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.carouselousel.min.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="/frontend-template/assets/css/jquery.fancybox.min.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/fontawesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/nice-select.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/responsive.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
+    <style>
+        /* 會員中心特有樣式 */
+        .member-container {
+            background-color: #f5f5f5;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 30px 0;
+        }
+
+        .nav-tabs {
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs .nav-link {
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            margin-right: 5px;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #dc3545;
+            border-bottom: 2px solid #dc3545;
+        }
+
+        .avatar-upload {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            display: block;
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .favorite-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .favorite-btn i {
+            margin-right: 5px;
+        }
+
+        .favorite-btn.active {
+            color: #dc3545;
+        }
+
+        /* 密碼強度 */
+        .password-strength {
+            height: 5px;
+            margin-top: 5px;
+            border-radius: 3px;
+            background-color: #eee;
+            overflow: hidden;
+            display: none;
+        }
+
+        .password-strength.show {
+            display: block;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        .strength-weak {
+            width: 33%;
+            background-color: #dc3545;
+        }
+
+        .strength-medium {
+            width: 66%;
+            background-color: #ffc107;
+        }
+
+        .strength-strong {
+            width: 100%;
+            background-color: #28a745;
+        }
+
+        .password-hint {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* --- 密碼眼睛相關樣式 --- */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #555;
+        }
+
+        input[type="password"]::-ms-reveal {
+            display: none;
+        }
+
+        .nickname-hint {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .nickname-hint.show {
+            display: block;
+        }
+
+        .points-history-toggle {
+            background: none;
+            border: none;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .points-history {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .points-history.expanded {
+            display: block;
+        }
+
+        .points-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="preloader">
+        <div class="loader-wrap-heading">
+            <div class="load-text"> <span>加</span> <span>載</span> <span>中</span> </div>
+        </div>
+    </div>
+
+    <div id="header"></div>
+
+    <section class="banner-style-one">
+        <div class="parallax" style="background-image: url(https://via.placeholder.com/1920x640);"></div>
+        <div class="container">
+            <div class="row">
+                <div class="banner-details">
+                    <h2>會員中心</h2>
+                    <p>歡迎回來！管理您的個人資料與服務</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="gap">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="member-container">
+                        <ul class="nav nav-tabs" id="memberTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="profile-tab" data-bs-toggle="tab"
+                                    data-bs-target="#profile" type="button" role="tab">會員資料</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders"
+                                    type="button" role="tab">訂單管理</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="articles-tab" data-bs-toggle="tab"
+                                    data-bs-target="#articles" type="button" role="tab">我的文章</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="favorites-tab" data-bs-toggle="tab"
+                                    data-bs-target="#favorites" type="button" role="tab">我的收藏</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="points-tab" data-bs-toggle="tab" data-bs-target="#points"
+                                    type="button" role="tab">我的點數</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="password-tab" data-bs-toggle="tab"
+                                    data-bs-target="#password" type="button" role="tab">更改密碼</button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="memberTabContent">
+                            <div class="tab-pane fade show active" id="profile" role="tabpanel">
+                                <form id="profileForm" method="post" enctype="multipart/form-data" action="user">
+                                    <div class="avatar-upload">
+                                        <label for="avatar">
+                                            <img src="/frontend-template/assets/images/default-avatar.png" id="avatarPreview"
+                                                class="avatar-img">
+                                        </label>
+                                        <input type="file" id="avatar" name="profilePicture" accept="image/*"
+                                            style="display:none;">
+                                        <a href="/frontend-template/#" class="upload-icon">更換頭像</a>
+
+                                        <div class="form-group mt-3" id="nicknameDisplayArea">
+                                            <h5 id="displayNickname" class="mb-2"></h5>
+                                            <a href="/frontend-template/#" id="editNicknameBtn" class="upload-icon"
+                                                style="font-size: 14px;">編輯暱稱</a>
+                                        </div>
+
+                                        <div class="form-group mt-2" id="nicknameEditArea" style="display: none;">
+                                            <input type="text" class="form-control" id="nickname" name="nickname"
+                                                placeholder="請輸入暱稱"
+                                                style="text-align: center; max-width: 250px; margin: 0 auto;">
+                                            <div class="nickname-hint">請輸入3-10個字的暱稱，將顯示在您的個人頁面</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>帳號（Email）</label>
+                                                <input type="email" id="email" name="email" class="form-control"
+                                                    readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>姓名</label>
+                                                <input type="text" id="fullname" name="name" class="form-control"
+                                                    placeholder="請輸入您的姓名">
+                                                <div class="error-message" id="fullnameError"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>手機號碼</label>
+                                                <input type="text" id="phone" name="phone" class="form-control"
+                                                    placeholder="請輸入您的手機號碼">
+                                                <div class="error-message" id="phoneError"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>性別</label>
+                                                <select class="form-control" id="gender" name="gender">
+                                                    <option value="0">不透露</option>
+                                                    <option value="1">男</option>
+                                                    <option value="2">女</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>身高（公分）</label>
+                                                <input type="number" class="form-control" id="height" name="heightCm"
+                                                    min="50" max="250" placeholder="例如：175">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>體重（公斤）</label>
+                                                <input type="number" class="form-control" id="weight" name="weightKg"
+                                                    min="10" max="300" placeholder="例如：65">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>BMI</label>
+                                                <input type="number" class="form-control" id="bmi" readonly
+                                                    placeholder="自動計算">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="theme-btn">儲存修改</button>
+                                </form>
+                            </div>
+
+                            <div class="tab-pane fade" id="orders" role="tabpanel">
+                                <h4>訂單管理</h4>
+                                <div class="form-group">
+                                    <input type="text" id="orderSearch" class="form-control" placeholder="搜尋訂單編號或商品名稱">
+                                </div>
+                                <div class="order-list">
+                                    <div class="order-item" data-order="ORD20240501001 課程購買">
+                                        <h5>訂單編號：ORD20240501001</h5>
+                                        <p>日期：2024-05-01 | 金額：NT$ 2,500 | 狀態：已完成</p>
+                                        <p>商品：健身課程（初級）</p>
+                                    </div>
+                                    <div class="order-item" data-order="ORD20240415002 營養品">
+                                        <h5>訂單編號：ORD20240415002</h5>
+                                        <p>日期：2024-04-15 | 金額：NT$ 1,200 | 狀態：已完成</p>
+                                        <p>商品：高蛋白粉 1kg</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="articles" role="tabpanel">
+                                <h4>我的文章</h4>
+                                <div class="article-list">
+                                    <div class="article-item">
+                                        <h5><a href="/frontend-template/#">健身新手入門指南</a></h5>
+                                        <p>發布時間：2024-03-20 | 閱讀量：128</p>
+                                        <div class="article-actions">
+                                            <button class="favorite-btn" data-article="guide">
+                                                <i class="fa-regular fa-heart"></i>
+                                                <span>收藏</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="article-item">
+                                        <h5><a href="/frontend-template/#">居家鍛煉必備動作</a></h5>
+                                        <p>發布時間：2024-02-15 | 閱讀量：95</p>
+                                        <div class="article-actions">
+                                            <button class="favorite-btn" data-article="home-workout">
+                                                <i class="fa-regular fa-heart"></i>
+                                                <span>收藏</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="favorites" role="tabpanel">
+                                <h4>我的收藏</h4>
+                                <div class="article-list">
+                                    <div class="article-item">
+                                        <h5><a href="/frontend-template/#">營養飲食指南</a></h5>
+                                        <p>發布時間：2024-04-05 | 來源：健身雜誌</p>
+                                        <div class="article-actions">
+                                            <button class="favorite-btn" data-article="nutrition">
+                                                <i class="fa-regular fa-heart"></i>
+                                                <span>收藏</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="points" role="tabpanel">
+                                <h4>我的點數</h4>
+                                <p>當前點數：1250 點</p>
+                                <button class="points-history-toggle">
+                                    點數歷史記錄
+                                    <i class="fa-solid fa-chevron-down" id="pointsToggleIcon"></i>
+                                </button>
+
+                                <div class="points-history" id="pointsHistory">
+                                    <div class="points-item">
+                                        <p>購買課程獲得：+500 點（2024-05-01）</p>
+                                    </div>
+                                    <div class="points-item">
+                                        <p>每日簽到獲得：+50 點（2024-04-28）</p>
+                                    </div>
+                                    <div class="points-item">
+                                        <p>購買營養品獲得：+200 點（2024-04-15）</p>
+                                    </div>
+                                    <div class="points-item">
+                                        <p>會員註冊獎勵：+500 點（2024-04-10）</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="password" role="tabpanel">
+                                <form id="changePasswordForm">
+                                    <div class="form-group">
+                                        <label>原密碼</label>
+                                        <div class="password-wrapper">
+                                            <input type="password" class="form-control" id="currentPassword"
+                                                placeholder="請輸入原密碼" required>
+                                            <i class="fa-solid fa-eye toggle-password"
+                                                data-target="currentPassword"></i>
+                                        </div>
+                                        <div class="error-message" id="currentPasswordError"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>新密碼</label>
+                                        <div class="password-wrapper">
+                                            <input type="password" class="form-control" id="newPassword"
+                                                placeholder="請輸入新密碼" required>
+                                            <i class="fa-solid fa-eye toggle-password" data-target="newPassword"></i>
+                                        </div>
+                                        <div class="password-strength">
+                                            <div class="strength-bar" id="strengthBar"></div>
+                                        </div>
+                                        <div class="password-hint">
+                                            密碼須至少8個字元，包含大小寫字母、數字及特殊符號
+                                        </div>
+                                        <div class="error-message" id="newPasswordError"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>確認新密碼</label>
+                                        <div class="password-wrapper">
+                                            <input type="password" class="form-control" id="confirmNewPassword"
+                                                placeholder="請確認新密碼" required>
+                                            <i class="fa-solid fa-eye toggle-password"
+                                                data-target="confirmNewPassword"></i>
+                                        </div>
+                                        <div class="error-message" id="confirmPasswordError"></div>
+                                    </div>
+                                    <button type="submit" class="theme-btn">確認更改</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-style-one" style="background-image: url(https://via.placeholder.com/1920x732);">
+        <div class="footer-p-1">
+            <div class="container">
+                <div class="row">
+                    <div class="footer-first">
+                        <div class="footer-logo">
+                            <a href="/frontend-template/index.html">
+                                <img src="/frontend-template/assets/images/logo.png" alt="Logo">
+                            </a>
+                        </div>
+                        <p>提供專業的健身指導和高品質的健身器材，幫助您實現健康生活目標。</p>
+                        <div class="footer-social">
+                            <a href="/frontend-template/#"><i class="flaticon-facebook"></i></a>
+                            <a href="/frontend-template/#"><i class="flaticon-twitter"></i></a>
+                            <a href="/frontend-template/#"><i class="flaticon-instagram"></i></a>
+                            <a href="/frontend-template/#"><i class="flaticon-linkedin"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-col">
+                        <h4>快速鏈接</h4>
+                        <ul>
+                            <li><a href="/frontend-template/index.html">首頁</a></li>
+                            <li><a href="/frontend-template/about.html">關於我們</a></li>
+                            <li><a href="/frontend-template/classes.html">課程介紹</a></li>
+                            <li><a href="/frontend-template/trainers.html">教練團隊</a></li>
+                            <li><a href="/frontend-template/contact.html">聯繫我們</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>課程</h4>
+                        <ul>
+                            <li><a href="/frontend-template/#">健身課程</a></li>
+                            <li><a href="/frontend-template/#">瑜伽課程</a></li>
+                            <li><a href="/frontend-template/#">有氧運動</a></li>
+                            <li><a href="/frontend-template/#">無氧運動</a></li>
+                            <li><a href="/frontend-template/#">私人教練</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>聯繫我們</h4>
+                        <ul>
+                            <li><i class="fa-solid fa-map-marker-alt"></i> 台北市中正區忠孝東路一段123號</li>
+                            <li><i class="fa-solid fa-phone"></i> (02) 1234-5678</li>
+                            <li><i class="fa-solid fa-envelope"></i> info@fitnesscenter.com</li>
+                            <li><i class="fa-solid fa-clock"></i> 週一至週日 06:00 - 22:00</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-p-3 rights">
+            <div class="container">
+                <div class="row">
+                    <div class="footer-col">
+                        <p>健身中心<i class="fa-solid fa-heart"></i> © 2024 <a href="/frontend-template/https://winsfolio.net/">
+                                winsfolio.net</a> 保留所有權利
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend-template/assets/js/jquery.min.js"></script>
+    <script src="/frontend-template/assets/js/bootstrap.min.js"></script>
+    <script src="/frontend-template/assets/js/jquery.fancybox.min.js"></script>
+    <script src="/frontend-template/assets/js/owl.carousel.min.js"></script>
+    <script src="/frontend-template/assets/js/jquery.nice-select.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // =================================================================
+            // 變量宣告區：提前聲明所有需要用到的變量
+            // =================================================================
+            let user;
+            const avatarInput = document.getElementById('avatar');
+            const avatarPreview = document.getElementById('avatarPreview');
+            const nicknameDisplayArea = document.getElementById('nicknameDisplayArea');
+            const nicknameEditArea = document.getElementById('nicknameEditArea');
+            const displayNickname = document.getElementById('displayNickname');
+            const nicknameInput = document.getElementById('nickname');
+            const heightInput = document.getElementById('height');
+            const weightInput = document.getElementById('weight');
+            const bmiInput = document.getElementById('bmi');
+            const nicknameHint = document.querySelector('.nickname-hint');
+            const pointsToggle = document.querySelector('.points-history-toggle');
+            const pointsHistory = document.getElementById('pointsHistory');
+            const pointsToggleIcon = document.getElementById('pointsToggleIcon');
+            const orderSearch = document.getElementById('orderSearch');
+            const orderItems = document.querySelectorAll('.order-item');
+            const favoriteBtns = document.querySelectorAll('.favorite-btn');
+            const newPasswordInput = document.getElementById('newPassword');
+            const strengthBar = document.getElementById('strengthBar');
+            const passwordStrength = document.querySelector('.password-strength');
+            const changePasswordForm = document.getElementById('changePasswordForm');
+            const profileForm = document.getElementById('profileForm');
+            const fullnameInput = document.getElementById('fullname');
+            const phoneInput = document.getElementById('phone');
+            const editNicknameBtn = document.getElementById('editNicknameBtn');
+            const togglePasswordBtns = document.querySelectorAll('.toggle-password');
+
+            // =================================================================
+            // 核心邏輯：檢查登錄狀態，若未登錄則直接跳轉
+            // =================================================================
+            const loggedInUserString = sessionStorage.getItem('loggedInUser');
+            if (!loggedInUserString) {
+                alert('您尚未登入，將跳轉至登入頁面');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 隱藏加載動畫
+            document.querySelector('.preloader').style.display = 'none';
+
+            // 加載頁頭
+            fetch('header.txt')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header').innerHTML = data;
+                    updateHeaderAuthState(); // 加載完頭部後更新登錄狀態
+                })
+                .catch(error => console.error('加載頁頭失敗:', error));
+
+            // =================================================================
+            // 頭像上傳功能 - 整合到現有代碼中
+            // =================================================================
+
+            // 初始化頁面時加載用戶頭像
+            function initAvatar() {
+                const user = JSON.parse(loggedInUserString);
+                if (user && user.profilePicture) {
+                    // 使用後端 ResourceHandlerRegistry 設定的統一前綴
+                    // 確保路徑與後端的 /images/** 映射一致
+                    avatarPreview.src = `/images/${user.profilePicture}`;
+                } else {
+                    // 設置默認頭像
+                    avatarPreview.src = 'assets/images/default-avatar.png';
+                }
+
+                // 綁定頭像上傳事件
+                avatarInput.addEventListener('change', handleAvatarUpload);
+            }
+
+            // 處理頭像上傳
+            function handleAvatarUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                // 前端預覽
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    avatarPreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+
+                // 構建表單數據
+                const formData = new FormData();
+                formData.append('profilePicture', file);
+
+                // 獲取用戶ID
+                const user = JSON.parse(loggedInUserString);
+                const originalAvatar = user.profilePicture; // 保存原始頭像用於錯誤恢覆
+
+                // 顯示上傳中狀態
+                showLoadingState(true);
+
+                // 發送上傳請求
+                fetch(`/api/users/${user.userId}/profile-picture`, {
+                    method: 'PUT',
+                    body: formData
+                })
+                    .then(response => {
+                        // 改成跟註冊一樣的錯誤處理模式
+                        if (response.ok) {
+                            return response.text(); // 成功時，後端回傳的是新檔名的純文字
+                        } else {
+                            return response.json().then(errorData => { throw errorData; }); // 失敗時，拋出 JSON 錯誤
+                        }
+                    })
+                    .then(newFileName => {
+                        // 更新本地存儲的用戶信息
+                        user.profilePicture = newFileName;
+                        sessionStorage.setItem('loggedInUser', JSON.stringify(user));
+                        showSuccessMessage('頭像更新成功');
+                    })
+                    .catch(error => {
+                        console.error('頭像上傳失敗:', error);
+                        // 【修改】加入判斷，顯示更精準的錯誤
+                        if (error.field && error.message) {
+                            showErrorMessage(error.message); // 直接 alert 錯誤訊息
+                        } else if (error.message) {
+                            showErrorMessage(error.message);
+                        } else {
+                            showErrorMessage('頭像上傳失敗，請稍後重試');
+                        }
+
+                        // 錯誤時恢覆原始頭像
+                        avatarPreview.src = originalAvatar
+                            ? `uploaded-files/images/${originalAvatar}`
+                            : 'assets/images/default-avatar.png';
+                    })
+                    .finally(() => {
+                        // 隱藏上傳中狀態
+                        showLoadingState(false);
+                    });
+            }
+
+            // 工具函數：顯示成功消息
+            function showSuccessMessage(message) {
+                alert(message);
+            }
+
+            // 工具函數：顯示錯誤消息
+            function showErrorMessage(message) {
+                alert(`錯誤：${message}`);
+            }
+
+            // 工具函數：顯示/隱藏加載狀態
+            function showLoadingState(show) {
+                const loadingIndicator = document.getElementById('avatarLoading');
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = show ? 'block' : 'none';
+                }
+            }
+
+            // =================================================================
+            // 其他原有功能函數
+            // =================================================================
+
+            /**
+             * 顯示錯誤信息
+             * @param {string} elementId - 錯誤元素ID
+             * @param {string} message - 錯誤信息
+             */
+            function showError(elementId, message) {
+                const errorElement = document.getElementById(elementId);
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    errorElement.classList.add('show');
+                }
+            }
+
+            /**
+             * 清除指定區域的錯誤信息
+             * @param {string} containerSelector - 容器選擇器
+             */
+            function clearErrors(containerSelector) {
+                document.querySelectorAll(`${containerSelector} .error-message`).forEach(el => {
+                    el.textContent = '';
+                    el.classList.remove('show');
+                });
+            }
+
+            /**
+             * 填充用戶數據到表單
+             */
+            function populateUserData() {
+                try {
+                    user = JSON.parse(loggedInUserString);
+                    document.getElementById('email').value = user.email || '';
+                    fullnameInput.value = user.name || '';
+                    phoneInput.value = user.phone || '';
+                    document.getElementById('gender').value = user.gender !== undefined ? user.gender : 0;
+                    heightInput.value = user.heightCm || '';
+                    weightInput.value = user.weightKg || '';
+
+                    // 處理昵稱顯示
+                    const nickname = user.nickName || '';
+                    nicknameInput.value = nickname;
+                    displayNickname.textContent = nickname || '請設置您的暱稱';
+
+                    if (nickname) {
+                        nicknameDisplayArea.style.display = 'block';
+                        nicknameEditArea.style.display = 'none';
+                    } else {
+                        nicknameDisplayArea.style.display = 'none';
+                        nicknameEditArea.style.display = 'block';
+                    }
+
+                    // 初始化頭像
+                    initAvatar();
+
+                    // 計算BMI
+                    calculateBMI();
+                } catch (error) {
+                    console.error('解析或填充用戶資料時出錯:', error);
+                    alert('顯示用戶資料時發生錯誤，請嘗試重新登入。');
+                    sessionStorage.removeItem('loggedInUser');
+                    window.location.href = 'login.html';
+                }
+            }
+
+            /**
+             * 更新頭部導航的登錄狀態
+             */
+            function updateHeaderAuthState() {
+                const authLinksContainer = document.getElementById('auth-links');
+                if (!authLinksContainer) return;
+
+                const loggedInUser = sessionStorage.getItem('loggedInUser');
+
+                if (loggedInUser) {
+                    // 已登錄狀態
+                    const loggedInHTML = `
+                    <a href="/frontend-template/profile.html" class="login">會員中心</a>
+                    <span style="color: white; margin: 0 8px;">/</span>
+                    <a href="/frontend-template/#" id="logoutBtn" class="login">登出</a>
+                `;
+                    authLinksContainer.innerHTML = loggedInHTML;
+
+                    // 綁定登出事件
+                    document.getElementById('logoutBtn').addEventListener('click', function (e) {
+                        e.preventDefault();
+                        sessionStorage.removeItem('loggedInUser');
+                        alert('您已成功登出！');
+                        window.location.href = 'index.html';
+                    });
+                } else {
+                    // 未登錄狀態
+                    const loggedOutHTML = `
+                    <a href="/frontend-template/login.html" class="login">登入</a>
+                    <span style="color: white; margin: 0 8px;">/</span>
+                    <a href="/frontend-template/register.html" class="login">註冊</a>
+                `;
+                    authLinksContainer.innerHTML = loggedOutHTML;
+                }
+            }
+
+            /**
+             * 計算BMI值
+             */
+            function calculateBMI() {
+                const height = parseFloat(heightInput.value) / 100; // 轉換為米
+                const weight = parseFloat(weightInput.value);
+                bmiInput.value = (height > 0 && weight > 0) ? (weight / (height * height)).toFixed(1) : '';
+            }
+
+            /**
+             * 更新收藏按鈕狀態
+             * @param {HTMLElement} btn - 收藏按鈕元素
+             * @param {boolean} isFavorite - 是否收藏
+             */
+            function updateFavoriteBtn(btn, isFavorite) {
+                const icon = btn.querySelector('i');
+                const text = btn.querySelector('span');
+                if (isFavorite) {
+                    btn.classList.add('active');
+                    icon.classList.add('fa-solid');
+                    icon.classList.remove('fa-regular');
+                    if (text) text.textContent = '已收藏';
+                } else {
+                    btn.classList.remove('active');
+                    icon.classList.remove('fa-solid');
+                    icon.classList.add('fa-regular');
+                    if (text) text.textContent = '收藏';
+                }
+            }
+
+            /**
+             * 驗證個人資料表單
+             * @returns {boolean} - 是否驗證通過
+             */
+            function validateProfileForm() {
+                let isValid = true;
+                clearErrors('#profileForm');
+
+                // 驗證姓名
+                const fullname = fullnameInput.value.trim();
+                const nameRegex = /^[a-zA-Z\u4e00-\u9fa5]+$/;
+                if (fullname === '') {
+                    showError('fullnameError', '請輸入您的姓名');
+                    isValid = false;
+                } else if (fullname.length < 2 || fullname.length > 20) {
+                    showError('fullnameError', '姓名長度必須介於 2 到 20 個字元之間');
+                    isValid = false;
+                } else if (!nameRegex.test(fullname)) {
+                    showError('fullnameError', '姓名只能包含中英文');
+                    isValid = false;
+                }
+
+                // 驗證手機號
+                const phoneValue = phoneInput.value.trim();
+                const phoneRegex = /^09\d{8}$/;
+                if (phoneValue && !phoneRegex.test(phoneValue)) {
+                    showError('phoneError', '請輸入有效的手機號碼（09開頭，共10位數）');
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            /**
+             * 檢測密碼強度
+             * @param {string} password - 密碼字符串
+             */
+            function checkPasswordStrength(password) {
+                let strength = 0;
+                passwordStrength.classList.add('show');
+
+                // 密碼長度檢查
+                if (password.length >= 8) strength++;
+                // 包含小寫字母
+                if (/[a-z]/.test(password)) strength++;
+                // 包含大寫字母
+                if (/[A-Z]/.test(password)) strength++;
+                // 包含數字
+                if (/[0-9]/.test(password)) strength++;
+                // 包含特殊字符
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+                // 更新強度條樣式
+                strengthBar.className = 'strength-bar';
+                if (strength === 1 || strength === 2) {
+                    strengthBar.classList.add('strength-weak');
+                } else if (strength === 3 || strength === 4) {
+                    strengthBar.classList.add('strength-medium');
+                } else if (strength >= 5) {
+                    strengthBar.classList.add('strength-strong');
+                }
+
+                // 密碼為空時隱藏強度條
+                if (!password) {
+                    passwordStrength.classList.remove('show');
+                }
+            }
+
+            /**
+             * 驗證密碼修改表單
+             * @returns {boolean} - 是否驗證通過
+             */
+            function validatePasswordForm() {
+                let isValid = true;
+                clearErrors('#changePasswordForm');
+
+                const currentPwd = document.getElementById('currentPassword').value;
+                const newPwd = newPasswordInput.value;
+                const confirmPwd = document.getElementById('confirmNewPassword').value;
+
+                // 驗證原密碼
+                if (!currentPwd) {
+                    showError('currentPasswordError', '請輸入原密碼');
+                    isValid = false;
+                }
+
+                // 驗證新密碼格式
+                const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
+                if (!newPwd) {
+                    showError('newPasswordError', '請輸入新密碼');
+                    isValid = false;
+                } else if (!pwdRegex.test(newPwd)) {
+                    showError('newPasswordError', '密碼不符合要求，須包含大小寫、數字及特殊符號，且不少於8位');
+                    isValid = false;
+                }
+
+                // 驗證確認密碼
+                if (!confirmPwd) {
+                    showError('confirmPasswordError', '請確認新密碼');
+                    isValid = false;
+                } else if (newPwd !== confirmPwd) {
+                    showError('confirmPasswordError', '兩次輸入的密碼不一致');
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            // =================================================================
+            // 事件綁定區：綁定所有交互事件
+            // =================================================================
+
+            // 填充用戶數據（會調用initAvatar初始化頭像）
+            populateUserData();
+
+            // 昵稱編輯切換
+            editNicknameBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                nicknameDisplayArea.style.display = 'none';
+                nicknameEditArea.style.display = 'block';
+                nicknameInput.focus();
+                nicknameHint.classList.add('show');
+            });
+
+            // 昵稱輸入即時保存（失去焦點時）
+            nicknameInput.addEventListener('blur', function () {
+                const nickname = this.value.trim();
+                if (nickname) {
+                    if (nickname.length >= 3 && nickname.length <= 10) {
+                        user.nickName = nickname;
+                        sessionStorage.setItem('loggedInUser', JSON.stringify(user));
+                        displayNickname.textContent = nickname;
+                        nicknameDisplayArea.style.display = 'block';
+                        nicknameEditArea.style.display = 'none';
+                        nicknameHint.classList.remove('show');
+                    } else {
+                        alert('暱稱須為3-10個字');
+                    }
+                }
+            });
+
+            // BMI計算（身高/體重變化時）
+            heightInput.addEventListener('input', calculateBMI);
+            weightInput.addEventListener('input', calculateBMI);
+
+            // 點數歷史展開/收起
+            pointsToggle.addEventListener('click', function () {
+                pointsHistory.classList.toggle('expanded');
+                pointsToggleIcon.classList.toggle('fa-chevron-up');
+                pointsToggleIcon.classList.toggle('fa-chevron-down');
+            });
+
+            // 訂單搜索
+            orderSearch.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
+                orderItems.forEach(item => {
+                    const text = item.dataset.order.toLowerCase();
+                    item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+                });
+            });
+
+            // 收藏按鈕切換
+            favoriteBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const isActive = this.classList.contains('active');
+                    updateFavoriteBtn(this, !isActive);
+                });
+            });
+
+            // 密碼強度檢測
+            newPasswordInput.addEventListener('input', function () {
+                checkPasswordStrength(this.value);
+            });
+
+            // 密碼可見性切換
+            togglePasswordBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const targetId = this.dataset.target;
+                    const input = document.getElementById(targetId);
+                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                    input.setAttribute('type', type);
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            });
+
+            // 個人資料表單提交
+            profileForm.addEventListener('submit', function (e) {
+                e.preventDefault(); // 【重要】確保這一行是有效的，阻止頁面跳轉
+
+                // 呼叫我們的前端驗證函式
+                if (!validateProfileForm()) return;
+
+                // 從 sessionStorage 取得使用者 ID
+                const user = JSON.parse(sessionStorage.getItem('loggedInUser'));
+                const userId = user.userId;
+
+                // 準備要送到後端的 DTO 資料
+                const updateData = {
+                    name: fullnameInput.value.trim(),
+                    nickName: nicknameInput.value.trim(),
+                    phone: phoneInput.value.trim(),
+                    gender: parseInt(document.getElementById('gender').value), // 轉成整數
+                    heightCm: parseFloat(heightInput.value), // 【修正】用 parseFloat 轉成數字
+                    weightKg: parseFloat(weightInput.value)  // 【修正】用 parseFloat 轉成數字
+                };
+
+                fetch(`/api/users/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw err; });
+                        }
+                        return response.json();
+                    })
+                    .then(updatedUser => {
+                        // 更新成功後，把後端回傳的、最新的 user 物件存回 sessionStorage
+                        sessionStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
+                        alert('個人資料更新成功！');
+                    })
+                    .catch(error => {
+                        console.error('更新資料時出錯:', error);
+                        alert('更新失敗：' + (error.message || '請稍後再試'));
+                    });
+            });
+
+            // 密碼修改表單提交
+            changePasswordForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (!validatePasswordForm()) return;
+
+                // 1. 獲取用戶ID和表單數據
+                const user = JSON.parse(sessionStorage.getItem('loggedInUser'));
+                const userId = user.userId;
+                const changePasswordData = {
+                    currentPassword: document.getElementById('currentPassword').value,
+                    newPassword: newPasswordInput.value,
+                    confirmPassword: document.getElementById('confirmNewPassword').value
+                };
+
+                // 2. 發送請求到後端
+                fetch(`/api/users/${userId}/password`, {  // 假設後端接口路徑為該地址
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(changePasswordData)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            // 後端返回錯誤（如密碼不正確、強度不夠等）
+                            return response.json().then(err => { throw err; });
+                        }
+                        return response.text();  // 成功時返回"密碼修改成功"
+                    })
+                    .then(message => {
+                        // 3. 處理成功邏輯
+                        alert(message);
+                        sessionStorage.removeItem('loggedInUser');
+                        window.location.href = 'login.html';
+                    })
+                    .catch(error => {
+                        // 4. 處理錯誤邏輯（顯示後端返回的具體錯誤）
+                        console.error('修改密碼失敗:', error);
+                        if (error.field && error.message) {
+                            showError(error.field + 'Error', error.message);  // 顯示對應字段的錯誤
+                        } else {
+                            alert('修改密碼失敗：' + (error.message || '請稍後重試'));
+                        }
+                    });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

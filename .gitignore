@@ -1,72 +1,49 @@
 ##########################################################
-
-Spring Boot 專案 .gitignore
-適用 Maven / Gradle
+# Spring Boot 專案 .gitignore
+# 適用 Maven / Gradle
 ##########################################################
-
-編譯與打包產物
-Java class files
-*.class
-
-Log files
-*.log
-logs/
-
-Build Folders (Maven, Gradle)
+# 編譯與打包產物
 target/
 build/
 out/
-
-Package Files
+*.class
+*.log
+logs/
 *.jar
 *.war
 *.ear
 dependency-reduced-pom.xml
 
-IDE
-IntelliJ IDEA
+# IDE 設定檔
 .idea/
 *.iml
 *.ipr
 *.iws
-
-Eclipse
 .project
 .classpath
 .settings/
-
-VS Code
 .vscode/
+.metadata/
+.sonarlint/
 
-Maven
-這是 Maven Wrapper 的設定資料夾，通常會保留 wrapper.jar
-.mvn/
-!/.mvn/wrapper/maven-wrapper.jar
-
-下面這兩個檔案是 Maven Wrapper 的執行檔，建議 commit 上傳
-讓團隊成員不需要自己安裝 Maven 也能執行專案
-mvnw
-mvnw.cmd
-Gradle
-.gradle/
-!gradle/wrapper/gradle-wrapper.jar
-gradlew
-gradlew.bat
-
-系統與暫存檔
-Mac
+# 系統與暫存檔
 .DS_Store
-
-Windows
 Thumbs.db
-
-Temp files
 *.tmp
 *.swp
 *.swo
 
-環境變數與憑證檔案 (非常重要，避免上傳密碼)
+# 環境變數與敏感資訊
 .env
 .env.*
 *.key
 *.pem
+application.properties
+
+# 使用者上傳的檔案
+uploaded-files/
+
+# Maven Wrapper (只忽略資料夾，保留 wrapper jar)
+# 這樣可以確保團隊成員都能使用相同的 Maven 版本
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
