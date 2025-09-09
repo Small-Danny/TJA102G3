@@ -1,0 +1,228 @@
+  /* ---- header ---- */
+  .white-icon { 
+    color:#fff; 
+  }
+  .white-icon svg { 
+    width:26px; 
+    height:26px; 
+    display:block; 
+  }
+  .white-icon svg path { 
+    fill:currentColor; 
+  }
+
+  .header-style-one .extras {
+    display:flex; 
+    align-items:center; 
+    gap:16px;
+  }
+
+  /* 購物車按鈕 */
+  #open-cart { 
+    display:inline-flex; 
+    align-items:center; 
+    justify-content:center; 
+  }
+
+  .shopping-bag { 
+    position:relative; 
+    margin-right: 0; 
+  }
+
+  .cart-count {
+    position:absolute; 
+    top:-8px; 
+    right:-8px; 
+    background:#ff4a52; 
+    color:#fff;
+    border-radius:50%; 
+    width:20px; 
+    height:20px; 
+    font-size:12px;
+    display:flex; 
+    align-items:center; 
+    justify-content:center;
+  }
+
+  .cart-count:empty { 
+    display:none; 
+  }
+
+  /* ---- 燈箱 ---- */
+  #cart-lightbox {
+    position:fixed; 
+    inset:0; 
+    background:rgba(0,0,0,.8); 
+    z-index:9999; 
+    display:none;
+  }
+
+  .white_content {
+    background:#fff; 
+    width:360px; 
+    max-width:92vw; 
+    max-height:80vh; 
+    overflow:auto;
+    position:absolute; 
+    top:50%; 
+    left:50%; 
+    transform:translate(-50%,-50%);
+    border-radius:10px; 
+    padding:20px; 
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+
+  .cart-popup {
+     margin-top:14px; 
+  }
+
+  .lightbox-close{
+    position:absolute; 
+    top:10px; 
+    right:10px; 
+    color:#333; 
+    font-size:22px; 
+    cursor:pointer;
+    text-decoration:none;
+  }
+  
+  .header-style-one .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    column-gap: 28px;
+  }
+
+  
+  .header-style-one .extras {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #fff;
+  }
+
+  
+  .header-style-one .extras .login {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+    color: currentColor;
+    text-decoration: none;
+  }
+
+  
+  .header-style-one .extras .login:hover {
+    color: var(--theme-color, #ff4a52);
+  }
+
+
+  /* 有些佈景會替 .remove-item 加背景圖（你看到的 404 remove.svg）；這裡清掉避免錯誤 */
+  .cart-popup .remove-item { 
+    background-image:none !important; 
+  }
+
+
+  #cart-lightbox .cart-titlen { 
+    color:#111; 
+  }
+  #cart-lightbox .cart-total { 
+    background:#f3f4f6; 
+  }
+
+  /* 主按鈕：紅 */
+  #cart-lightbox .btn.btn-primary {
+    background:#e11d2e; 
+    border:1px solid #e11d2e;
+  }
+  #cart-lightbox .btn.btn-primary:hover {
+    background:#c8102e; 
+    border-color:#c8102e;
+  }
+
+  /* 次按鈕：紅邊框白底 */
+  #cart-lightbox .btn.btn-outline-secondary {
+    background:#fff; 
+    color:#e11d2e; 
+    border:1px solid #e11d2e;
+  }
+  #cart-lightbox .btn.btn-outline-secondary:hover {
+    background:#fff0f2; 
+    border-color:#c8102e; 
+    color:#c8102e;
+  }
+
+  /* 右上關閉叉叉（放大） */
+  #cart-lightbox .cart-close {
+    font-size:28px;  /* 原 22 -> 28 */
+    color:#e11d2e;
+  }
+
+  #cart-lightbox .remove-item {
+    position:absolute; 
+    right:0; top:50%; 
+    transform:translateY(-50%);
+    display:inline-flex; 
+    align-items:center; 
+    justify-content:center;
+    width:32px; 
+    height:32px; 
+    border-radius:6px;
+    font-size:26px; 
+    font-weight:900; 
+    line-height:1;
+    color:#e11d2e; 
+    background:transparent; 
+    border:0; 
+    cursor:pointer;
+  }
+  #cart-lightbox .remove-item:hover {
+    background:#fff0f2; 
+    color:#b80f25;
+  }
+
+  /* 紅點樣式（保留） */
+  .cart-count {
+    position:absolute; 
+    top:-8px; 
+    right:-8px;
+    background:#ff4a52; 
+    color:#fff; 
+    border-radius:50%;
+    width:20px; 
+    height:20px; 
+    font-size:12px;
+    display:flex; 
+    align-items:center; 
+    justify-content:center;
+  }
+  .cart-count:empty { 
+    display:none; 
+  }
+
+  #cart-lightbox .cart-popup .p-img {
+    flex:0 0 56px; 
+    width:56px; 
+    height:56px;
+    border-radius:8px; 
+    overflow:hidden; 
+    background:#f6f6f6;
+  }
+
+  #cart-lightbox .cart-popup .p-img img {
+    width:100%; 
+    height:100%; 
+    object-fit:cover; 
+    display:block;
+  }
+
+  #cart-lightbox .cart-popup .p-data h4 {
+    margin:0 0 4px; 
+    font-size:18px; 
+    font-weight:700;
+  }
+  #cart-lightbox .cart-popup .p-data p {
+    margin:0; 
+    color:#666;
+  }
+  
