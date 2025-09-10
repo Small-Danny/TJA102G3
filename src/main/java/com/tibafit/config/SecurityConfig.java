@@ -24,10 +24,13 @@ public class SecurityConfig {
      */
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        // 【修正】確保所有前端靜態資源都被忽略
-        return (web) -> web.ignoring().requestMatchers("/frontend-template/**", "/images/**");
+        // 【修正】同時忽略後台和前台的靜態資源資料夾
+        return (web) -> web.ignoring().requestMatchers(
+            "/adminlte/**",          // 忽略後台樣板的資源
+            "/frontend-template/**", // 忽略前台樣板的資源 (CSS, JS等)
+            "/images/**"             // 忽略共用的圖片資源
+        );
     }
-
     /**
      * 這個 Bean 專門用來設定需要「動態權限」的 API 路徑。
      */
@@ -35,14 +38,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize
+            		.requestMatchers(
                 // 【修正】將 /api/captcha 也明確地加入公開 API 清單
-                .requestMatchers(
-                    "/api/captcha", // 圖片驗證碼 API
-                    "/api/users/register", // 註冊 API
-                    "/api/users/send-code", // 發送郵件驗證碼 API
-                    "/api/users/login", // 登入 API
-                    "/api/users/request-password-reset", // 請求重設密碼 API
-                    "/api/users/reset-password-with-token" // 執行重設密碼 API
+                    // --- 前台靜態頁面 (請根據你的檔名修改) ---
+                    "/", "/index.html", "/login.html", "/register.html", 
+                    "/forgot-password.html", "/reset-set-password.html",
+
+                    // --- 後台儀表板 ---
+                    "/admin/dashboard",
+
+                    // --- 公開的 API ---
+                    "/api/captcha",
+                    "/api/users/register",
+                    "/api/users/send-code",
+                    "/api/users/login",
+                    "/api/users/request-password-reset",
+                    "/api/users/reset-password-with-token"
                 ).permitAll()
                 // 除了上面清單中的 API，任何其他的 API 都需要登入後才能訪問
                 .anyRequest().authenticated()
