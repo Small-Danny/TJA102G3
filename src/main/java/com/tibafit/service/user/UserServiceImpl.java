@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -449,6 +450,24 @@ public class UserServiceImpl implements UserService {
 		if (!password.matches(passwordRegex)) {
 			throw new ValidationException("newPassword", "密码必须包含大小写字母、数字和特殊符号");
 		}
+	}
+
+	@Override
+	public List<User> findAll() {
+		// TODO Auto-generated method stub
+		 return userRepository.findAll();
+	}
+
+	@Override
+	public User findById(Integer userId)  {
+
+		 return userRepository.findById(userId).orElse(null);
+	}
+
+	@Override
+	public List<User> serchUser(String keyword) {
+	
+		return userRepository.searchUsers(keyword);
 	}
 
 }
