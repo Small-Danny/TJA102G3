@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
+
+<head>
+    <title>後台首頁 | Dashboard</title>
+</head>
+
+<body>
+<div th:fragment="content">
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">後台首頁</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">歡迎回來！</h5>
+                    <p class="card-text">這裡是你的後台儀表板。未來可以在這裡看到網站的重要數據。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>
