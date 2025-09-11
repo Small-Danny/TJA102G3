@@ -1,5 +1,7 @@
 package com.tibafit.service.user;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tibafit.dto.user.ChangePasswordRequest;
@@ -28,5 +30,11 @@ public interface UserService {
 	public abstract void sendPasswordResetToken(String email, String captchaInput, HttpServletRequest request);
 
 	public abstract String resetPasswordWithToken(PerformResetRequest request);
+
+	public abstract List<User> findAll();
+	
+	public abstract User findById(Integer userId);
+	
+	public abstract List<User> serchUser(String keyword);
 
 }
