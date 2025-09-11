@@ -482,7 +482,18 @@
         .then(html => { document.getElementById('header').innerHTML = html; });
 
       document.querySelectorAll('.toggle-password').forEach(icon => { /* ... */ });
-
+      // 【新增】將密碼眼睛的邏輯貼在這裡
+      document.querySelectorAll('.toggle-password').forEach(icon => {
+          icon.addEventListener('click', function () {
+              const targetId = this.getAttribute('data-target');
+              const input = document.getElementById(targetId);
+              const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+              input.setAttribute('type', type);
+              this.classList.toggle('fa-eye');
+              this.classList.toggle('fa-eye-slash');
+          });
+      });
+      
       // 【新增】圖片驗證碼刷新邏輯
       const captchaImage = document.getElementById('captchaImage');
       captchaImage.addEventListener('click', function () {
