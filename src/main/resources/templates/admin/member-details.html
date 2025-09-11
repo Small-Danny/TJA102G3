@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
+
+<head>
+    <title th:text="'會員資料 | ' + ${user.name}">會員詳細資料</title>
+</head>
+
+<body>
+<div th:fragment="content">
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0" th:text="${user.name}">會員姓名</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Home</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/admin/members}">會員列表</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">詳細資料</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">基本資料</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th style="width: 150px">會員 ID</th>
+                                <td th:text="${user.userId}"></td>
+                            </tr>
+                            <tr>
+                                <th>姓名</th>
+                                <td th:text="${user.name}"></td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td th:text="${user.email}"></td>
+                            </tr>
+                            <tr>
+                                <th>帳戶點數</th>
+                                <td th:text="${user.pointsBalance}"></td>
+                            </tr>
+                             <tr>
+                                <th>註冊日期</th>
+                                <td th:text="${#dates.format(user.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+    </div>
+    </div>
+</body>
+</html>
