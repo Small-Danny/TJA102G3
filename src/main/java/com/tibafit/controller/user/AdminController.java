@@ -51,7 +51,7 @@ public class AdminController {
 		}
 		// 使用 isBlank() 來判斷，可以順便過濾掉使用者只輸入好幾個空格的情況
 		if (keyword != null && !keyword.isBlank()) {
-			userList = userService.serchUser(keyword);
+			userList = userService.searchUser(keyword);
 		} else {
 			userList = userService.findAll();
 		}
@@ -88,7 +88,7 @@ public class AdminController {
         // 2. 根據有無 keyword，決定要撈取的會員資料
         List<User> userList;
         if (keyword != null && !keyword.trim().isEmpty()) {
-            userList = userService.serchUser(keyword.trim());
+            userList = userService.searchUser(keyword.trim());
         } else {
             userList = userService.findAll();
         }
