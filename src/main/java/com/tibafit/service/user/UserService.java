@@ -35,6 +35,6 @@ public interface UserService {
 	
 	public abstract User findById(Integer userId);
 	
-	public abstract List<User> serchUser(String keyword);
+	public abstract List<User> searchUser(String keyword);
 
 }
