@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
 
 <head>
-<title>會員管理</title>
+	<title>會員管理</title>
 </head>
 
 <body>
@@ -27,51 +26,59 @@
 			<div class="container-fluid">
 				<div class="card">
 					<div class="card-header">
-						<h3 class="card-title">會員列表</h3>
+						<h3 class="card-title">所有會員列表</h3>
 					</div>
 					<div class="card-body">
 						<div class="mb-3">
 							<form th:action="@{/admin/members}" method="get">
 								<div class="input-group">
-									<input type="text" name="keyword" th:value="${keyword}"
-										class="form-control" placeholder="輸入ID、姓名或Email">
+									<input type="text" name="keyword" th:value="${keyword}" class="form-control"
+										placeholder="輸入ID、姓名或Email">
 									<button type="submit" class="btn btn-primary">搜尋</button>
-									<a th:href="@{/admin/members}"
-										class="btn btn-outline-secondary" title="重新整理"> <i
-										class="bi bi-arrow-clockwise"></i>
-									</a> <a th:href="@{/admin/members/export/csv}"
-										class="btn btn-success" title="匯出 CSV"> <i
-										class="bi bi-file-earmark-spreadsheet-fill"></i>
-									</a>
+									<a th:href="@{/admin/members}" class="btn btn-outline-secondary" title="重新整理"><i
+											class="bi bi-arrow-clockwise"></i></a>
+									<a th:href="@{/admin/members/export/csv(keyword=${keyword})}"
+										class="btn btn-success" title="匯出 CSV"><i
+											class="bi bi-file-earmark-spreadsheet-fill"></i></a>
 								</div>
 							</form>
 						</div>
-
 						<table class="table table-bordered table-striped">
 							<thead>
 								<tr>
-									<th style="width: 10px">ID</th>
+									<th>ID</th>
+									<th>大頭照</th>
 									<th>Email</th>
 									<th>姓名</th>
-									<th>註冊日期</th>
-									<th style="width: 120px">操作</th>
+									<th>身高</th>
+									<th>體重</th>
+									<th>BMI</th>
+									<th>帳戶點數</th>
+									<th>操作</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr th:each="user : ${users}">
-									<td th:text="${user.userId}">1</td>
-									<td th:text="${user.email}">user@example.com</td>
-									<td th:text="${user.name}">範例姓名</td>
-									<td
-										th:text="${user.createTime != null ? #dates.format(user.createTime, 'yyyy-MM-dd HH:mm') : ''}">
-										2025-01-01 12:00</td>
-									<td><a th:href="@{/admin/members/{id}(id=${user.userId})}"
-										class="btn btn-info btn-sm">查看</a> <a href="#"
-										class="btn btn-danger btn-sm">停權</a></td>
+									<td th:text="${user.userId}"></td>
+									<td>
+										<img th:src="${user.profilePicture != null ? user.profilePicture : '/images/default-avatar.png'}"
+											alt="大頭照" class="img-circle"
+											style="width: 40px; height: 40px; object-fit: cover;">
+									</td>
+									<td th:text="${user.email}"></td>
+									<td th:text="${user.name}"></td>
+									<td th:text="${user.heightCm}"></td>
+									<td th:text="${user.weightKg}"></td>
+									<td th:text="${user.bmi}"></td>
+									<td th:text="${user.pointsBalance}"></td>
+									<td>
+										<a th:href="@{/admin/members/{id}(id=${user.userId})}"
+											class="btn btn-info btn-sm">查看</a>
+										<a href="#" class="btn btn-danger btn-sm">停權</a>
+									</td>
 								</tr>
 							</tbody>
 						</table>
-
 					</div>
 				</div>
 			</div>
