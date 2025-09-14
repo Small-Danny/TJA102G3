@@ -7,7 +7,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.springframework.security.core.Authentication; 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +17,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.tibafit.dto.user.ChangePasswordRequest;
+import com.tibafit.exception.ValidationException;
 import com.tibafit.model.user.User;
+import com.tibafit.service.user.AdminService;
 import com.tibafit.service.user.UserService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,10 +32,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AdminController {
 	// 注入 UserService，這樣我們才能查詢使用者
 	private final UserService userService;
-
+	private final AdminService adminService;
+	
 	@Autowired
-	public AdminController(UserService userService) {
+	public AdminController(UserService userService,AdminService adminService) {
 		this.userService = userService;
+		this.adminService = adminService;
 	}
 
 	@GetMapping("/dashboard") // 後台首頁
@@ -145,5 +153,35 @@ public class AdminController {
 				writer.println(line);
 			}
 		}
+	}
+	
+	@GetMapping("/profile")
+	public String showProfilePage() {
+		return "admin/profile";
+	}
+	
+	//修改密碼表單提交
+	@PostMapping("/profile/change-password")
+	public String changeAdminPassword (ChangePasswordRequest changePasswordRequest, // 直接用 DTO 接收
+            RedirectAttributes redirectAttributes) {
+		try {
+			  // 1. 從 Spring Security 中獲取當前登入的管理員帳號
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentAdminAccount = authentication.getName();
+            
+            adminService.changeAdminPassword(currentAdminAccount, changePasswordRequest);
+            redirectAttributes.addFlashAttribute("successMessage", "密碼已成功修改！");
+   
+		}catch(ValidationException e) {
+	        //驗證錯誤
+			 redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+		}catch(Exception e) {   
+			//處理其他錯誤
+			redirectAttributes.addFlashAttribute("errorMessage", "發生未知錯誤，請稍後再試。");
+            e.printStackTrace(); // 在後台印出詳細錯誤
+		}
+	        
+	        // 操作完成後，重新導向回個人設定頁面
+	        return "redirect:/admin/profile";
 	}
 }

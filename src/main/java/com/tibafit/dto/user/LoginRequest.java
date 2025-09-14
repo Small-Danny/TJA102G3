@@ -9,6 +9,7 @@ import lombok.Data;
 public class LoginRequest {
 	private String email;
 	private String password;
-	private String captcha;
+	private String recaptchaToken;
+	 private boolean rememberMe;
 	//Dto專門用來接收資料，特意省略Getter跟setter,練習用@Data加入depency依賴與Lombok插件
 }

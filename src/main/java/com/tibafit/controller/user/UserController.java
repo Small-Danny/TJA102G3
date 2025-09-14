@@ -24,6 +24,7 @@ import com.tibafit.model.user.User;
 import com.tibafit.service.user.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/users")
@@ -42,7 +43,7 @@ public class UserController {
 	@PostMapping("/register")
 	public ResponseEntity<User> register(@RequestBody RegisterRequest req, HttpServletRequest httpServletRequest) { // 【增加參數】
 		// 這裡的註解是HTTP請求主體Body,裡面尋找JSON資料，然後自動轉換成一個 RegisterRequest 物件
-	    User registeredUser = userService.register(req, httpServletRequest);
+		User registeredUser = userService.register(req, httpServletRequest);
 		// 把得到的 User 物件回傳201 Created狀態碼並放入body,200代表成功
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
@@ -60,10 +61,11 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<User> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) { // 【增加參數】
-	    // 將 request 一起傳遞給 service
-	    User loggedInUser = userService.login(loginRequest, request);
-	    return ResponseEntity.ok(loggedInUser);
+	public ResponseEntity<User> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request,
+			HttpServletResponse response) { // 【增加參數】
+		// 將 request 一起傳遞給 service
+		   User loggedInUser = userService.login(loginRequest, request, response);
+	        return ResponseEntity.ok(loggedInUser);
 	}
 
 	// API 1: 專門用來更新「文字」資料
@@ -79,31 +81,32 @@ public class UserController {
 	@PutMapping("/{userId}/profile-picture")
 	public ResponseEntity<Map<String, String>> updateProfilePicture(@PathVariable Integer userId,
 			@RequestParam("profilePicture") MultipartFile profilePicture) {
-		
+
 		String newPicturePath = userService.updateProfilePicture(userId, profilePicture);
 		// 回傳新圖片的路徑給前端
 		return ResponseEntity.ok(Map.of("newPicturePath", newPicturePath));
 	}
-	//用來確認修改密碼接口
+
+	// 用來確認修改密碼接口
 	@PutMapping("/{userId}/password")
 	public String changePassword(@PathVariable Integer userId, @RequestBody ChangePasswordRequest request) {
-	    return userService.changePassword(userId, request);
+		return userService.changePassword(userId, request);
 	}
-	
 
-	   // 【第一步：請求重設】這個 API 給 forgot-password.html 使用
-    @PostMapping("/request-password-reset")
-    public ResponseEntity<?> requestPasswordReset(@RequestBody PasswordResetRequest req, HttpServletRequest httpServletRequest) {
-        userService.sendPasswordResetToken(req.getEmail(), req.getCaptcha(), httpServletRequest);
-        return ResponseEntity.ok().body("密碼重設連結已發送至您的電子郵件，請於15分鐘內使用。");
-    }
+	// 【第一步：請求重設】這個 API 給 forgot-password.html 使用
+	@PostMapping("/request-password-reset")
+	public ResponseEntity<?> requestPasswordReset(@RequestBody PasswordResetRequest req,
+			HttpServletRequest httpServletRequest) {
+		userService.sendPasswordResetToken(req.getEmail(), req.getCaptcha(), httpServletRequest);
+		return ResponseEntity.ok().body("密碼重設連結已發送至您的電子郵件，請於15分鐘內使用。");
+	}
 
-    // 【第二步：執行重設】這個 API 給 reset-set-password.html 使用
-    @PostMapping("/reset-password-with-token")
-    public ResponseEntity<String> performPasswordReset(@RequestBody PerformResetRequest req) {
-        // 呼叫正確的 Service 方法
-        String message = userService.resetPasswordWithToken(req); 
-        // 回傳成功訊息
-        return ResponseEntity.ok(message);
-    }
+	// 【第二步：執行重設】這個 API 給 reset-set-password.html 使用
+	@PostMapping("/reset-password-with-token")
+	public ResponseEntity<String> performPasswordReset(@RequestBody PerformResetRequest req) {
+		// 呼叫正確的 Service 方法
+		String message = userService.resetPasswordWithToken(req);
+		// 回傳成功訊息
+		return ResponseEntity.ok(message);
+	}
 }
