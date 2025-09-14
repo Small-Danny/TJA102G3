@@ -39,6 +39,12 @@ public class AdminController {
 		return "admin/dashboard";
 	}
 
+	@GetMapping("/login")
+	public String showLoginPage() {
+		// 去templates/admin/資料夾裡，處理登入登出邏輯
+		return "admin/login";
+	}
+
 	/**
 	 * 
 	 * @param 這是用來查詢所有會員的方法
@@ -76,19 +82,19 @@ public class AdminController {
 		model.addAttribute("user", user);
 		return "admin/member-details";
 	}
+
 	/**
 	 * 
 	 * @param @PathVariable，要去 URL 路徑中Id,新增停權啟用功能
-	 * @return 
+	 * @return
 	 */
 	@PostMapping("/members/{id}/toggle-status")
 	public String toggleMemberStatus(@PathVariable("id") Integer userId) {
 		userService.toggleAccountStatus(userId);
 		return "redirect:/admin/members";
+
 	}
-	
-	
-	
+
 	/**
 	 * 
 	 * @param resp,專門用來獲得CSV檔
@@ -101,7 +107,7 @@ public class AdminController {
 		response.setContentType("text/csv; charset=UTF-8");
 		String formattedDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 		String fileName = "members-" + formattedDate + ".csv";
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 		response.setCharacterEncoding("UTF-8");
 		// 2. 根據有無 keyword，決定要撈取的會員資料
 		List<User> userList;
@@ -121,30 +127,23 @@ public class AdminController {
 			writer.println("會員ID,姓名,Email,電話,性別,身高(cm),體重(kg),BMI,帳戶點數,帳號狀態,註冊日期");
 
 			for (User user : userList) {
-				   String gender = switch (user.getGender()) {
-                   case 1 -> "男";
-                   case 2 -> "女";
-                   default -> "不透露";
-               };
-               String status = (user.getAccountStatus() == 1) ? "啟用" : "停權";
-               String phone = user.getPhone() != null ? user.getPhone() : "";
+				String gender = switch (user.getGender()) {
+				case 1 -> "男";
+				case 2 -> "女";
+				default -> "不透露";
+				};
+				String status = (user.getAccountStatus() == 1) ? "啟用" : "停權";
+				String phone = user.getPhone() != null ? user.getPhone() : "";
 				String createTimeString = user.getCreateTime() != null ? dateFormat.format(user.getCreateTime()) : "";
-				  String line = String.join(",",
-	                        user.getUserId().toString(),
-	                        user.getName(),
-	                        user.getEmail(),
-	                        phone,
-	                        gender,
-	                        user.getHeightCm() != null ? user.getHeightCm().toString() : "",
-	                        user.getWeightKg() != null ? user.getWeightKg().toString() : "",
-	                        user.getBmi() != null ? user.getBmi().toString() : "",
-	                        user.getPointsBalance() != null ? user.getPointsBalance().toString() : "0",
-	                        status,
-	                        createTimeString
-	                );
-				
-				  writer.println(line);
-			}						
+				String line = String.join(",", user.getUserId().toString(), user.getName(), user.getEmail(), phone,
+						gender, user.getHeightCm() != null ? user.getHeightCm().toString() : "",
+						user.getWeightKg() != null ? user.getWeightKg().toString() : "",
+						user.getBmi() != null ? user.getBmi().toString() : "",
+						user.getPointsBalance() != null ? user.getPointsBalance().toString() : "0", status,
+						createTimeString);
+
+				writer.println(line);
+			}
 		}
 	}
 }
