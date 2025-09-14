@@ -3,35 +3,30 @@ package com.tibafit.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import com.tibafit.service.user.AdminDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+	@Autowired
+	private CustomLogoutSuccessHandler customLogoutSuccessHandler;
 	
-	  @Autowired
-	    private CustomLogoutSuccessHandler customLogoutSuccessHandler;
-	
+	 @Autowired
+	    private AdminDetailsService adminDetailsService;
+	 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean
-	public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-		UserDetails admin = User.builder().username("admin").password(passwordEncoder.encode("password123"))
-				.roles("ADMIN").build();
-		return new InMemoryUserDetailsManager(admin);
-	}
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -51,8 +46,7 @@ public class SecurityConfig {
 						.loginPage("/admin/login").loginProcessingUrl("/admin/login")
 						.defaultSuccessUrl("/admin/dashboard", true).failureUrl("/admin/login?error=true").permitAll() // 確保登入頁本身是公開的
 		).logout(logout -> logout.logoutUrl("/admin/logout") // 觸發登出的URL保持不變
-				 .logoutSuccessHandler(customLogoutSuccessHandler)
-		)
+				.logoutSuccessHandler(customLogoutSuccessHandler))
 //				.csrf(csrf -> csrf.disable()
 		;
 
