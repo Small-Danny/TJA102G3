@@ -47,6 +47,11 @@
     margin: 0 auto;
     padding: 10px 0;
 }
+
+/* 增加記住我選項與登錄按鈕之間的距離 */
+.remember-me-container {
+    margin-bottom: 1rem; /* 增加底部間距 */
+}
 </style>
 </head>
 <body class="login-page bg-body-secondary">
@@ -96,15 +101,17 @@
 						     data-sitekey="6Lf1ZMkrAAAAAM9cTH1MFDhcmSsHq7jd6IZOxyAw">
 						</div>
 					</div>
-					<!-- 記住我 -->
 					
-					<div class="row">
+					<!-- 記住我 - 添加了額外的樣式類來增加間距 -->
+					<div class="row remember-me-container">
 						<div class="col-8">
 							<div class="icheck-primary">
 								<input type="checkbox" id="remember" name="remember-me">
 								<label for="remember">記住我</label>
 							</div>
 						</div>
+					</div>
+					
 					<!-- 登入按鈕 -->
 					<div class="row">
 						<div class="col-12">
