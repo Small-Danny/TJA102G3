@@ -12,6 +12,7 @@ import com.tibafit.dto.user.UpdateProfileRequest;
 import com.tibafit.model.user.User;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface UserService {
 
@@ -19,7 +20,7 @@ public interface UserService {
 
 	public abstract void sendVerificationCode(String email);
 
-	public abstract User login(LoginRequest loginRequest, HttpServletRequest request);
+	public abstract User login(LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response);
 
 	public abstract User updateProfile(Integer userId, UpdateProfileRequest updateRequest);
 

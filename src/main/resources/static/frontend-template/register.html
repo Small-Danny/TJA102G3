@@ -22,6 +22,9 @@
   <!-- 響應式 -->
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/responsive.css">
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
+  <!-- gooogle驗證用 -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
   <style>
     /* 這是一個「視覺修正」，用來抵銷錯覺 */
     .email-code-container.form-group {
@@ -79,20 +82,19 @@
     }
 
     /* 驗證碼容器樣式 - 修正對齊問題 */
-    .email-code-container,
-    .captcha-container {
-        display: flex;
-        gap: 10px;
-    }
-    .email-code-container {
-        align-items: baseline; /* 按鈕使用 baseline 對齊 */
-    }
-    .captcha-container {
-        align-items: center;   /* 圖片使用 center 對齊 */
+    .email-code-container{
+      display: flex;
+      gap: 10px;
     }
 
-    .email-code-container input,
-    .captcha-container input {
+    .email-code-container {
+      align-items: baseline;
+      /* 按鈕使用 baseline 對齊 */
+    }
+
+
+
+    .email-code-container input {
       flex: 1;
       margin-bottom: 0;
       height: 46px;
@@ -110,50 +112,7 @@
       box-sizing: border-box;
     }
 
-    /* 圖片驗證碼樣式 */
-    .captcha-img {
-      width: 120px;
-      height: 46px;
-      padding: 0;
-      background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
-      border: 1px solid #ddd;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: #333;
-      user-select: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      box-sizing: border-box;
-    }
 
-    .captcha-img::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image:
-        url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
-      opacity: 0.5;
-    }
-
-    .captcha-img::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.1) 50%, transparent 100%);
-      transform: rotate(-30deg);
-      animation: moveLine 3s infinite;
-    }
 
     @keyframes moveLine {
       0% {
@@ -163,10 +122,6 @@
       100% {
         transform: rotate(-30deg) translateX(200%);
       }
-    }
-
-    .captcha-img:hover {
-      background: linear-gradient(145deg, #e8e8e8, #d5d5d5);
     }
 
     /* 按鈕樣式 */
@@ -237,13 +192,12 @@
 
     /* 行動裝置調整 */
     @media (max-width : 576px) {
-      .email-code-container,
-      .captcha-container {
+
+      .email-code-container {
         flex-direction: row;
       }
 
-      #sendCodeBtn,
-      .captcha-img {
+      #sendCodeBtn {
         min-width: 100px;
         height: 46px;
       }
@@ -278,6 +232,13 @@
       margin-top: -15px;
       margin-bottom: 5px;
     }
+    /* 將reCAPTCHA容器居中顯示 */
+.g-recaptcha {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto; /* 保證水平居中 */
+  padding: 10px 0; /* 可選：添加上下間距 */
+}
   </style>
 </head>
 
@@ -360,24 +321,21 @@
                 <div class="error-message" id="confirmPasswordError">兩次密碼輸入不一致</div>
               </div>
 
-              <!-- 圖片驗證碼 - 可點擊刷新 -->
+              <!-- google圖片驗證碼 - 原本的kaptcha可點擊刷新 -->
               <div class="form-group">
-                <div class="captcha-container">
-                  <input type="text" name="captcha" id="captcha" placeholder="圖片驗證碼" required>
-                  <img src="/api/captcha" id="captchaImage" alt="驗證碼圖片">
+                <div class="g-recaptcha" data-sitekey="6Lf1ZMkrAAAAAM9cTH1MFDhcmSsHq7jd6IZOxyAw">
                 </div>
-                <div class="error-message" id="captchaError">請輸入正確的驗證碼</div>
+                <div class="error-message" id="recaptchaTokenError"></div>
               </div>
 
-              <!-- 同意條款 -->
-              <div class="remember form-group">
+            <div class="remember">
                 <div class="first">
                   <input type="checkbox" name="terms" id="terms" required>
-                  <label for="terms">我已閱讀並同意<a href="/frontend-template/#" data-bs-toggle="modal"
-                    data-bs-target="#termsModal">服務條款</a>和<a href="#" data-bs-toggle="modal"
-                    data-bs-target="#privacyModal">隱私政策</a></label>
+                  <label for="terms">我已閱讀並同意<a href="#" data-bs-toggle="modal"
+                      data-bs-target="#termsModal">服務條款</a>和<a href="#" data-bs-toggle="modal"
+                      data-bs-target="#privacyModal">隱私政策</a></label>
                 </div>
-                <div class="error-message form-group" id="termsError">請同意服務條款</div>
+                <div class="error-message" id="termsError">請同意服務條款</div>
               </div>
 
               <button type="submit" class="theme-btn w-100" id="submitBtn">確認送出</button>
@@ -675,9 +633,9 @@
       // 加載頁首
       fetch('/frontend-template/header.txt?v=' + Date.now(), { cache: 'no-store' })
         .then(r => r.text())
-        .then(html => { 
+        .then(html => {
           if (document.getElementById('header')) {
-            document.getElementById('header').innerHTML = html; 
+            document.getElementById('header').innerHTML = html;
           }
         })
         .catch(error => console.error('加載頁首失敗:', error));
@@ -694,11 +652,6 @@
         });
       });
 
-      // 刷新圖片驗證碼
-      const captchaImage = document.getElementById('captchaImage');
-      captchaImage.addEventListener('click', function () {
-        this.src = '/api/captcha?t=' + new Date().getTime();
-      });
 
       // 檢查郵箱格式，啟用/禁用發送驗證碼按鈕
       function checkEmailValidity() {
@@ -728,7 +681,7 @@
         // 2. 發送驗證碼請求（攜帶 CSRF Token）
         const response = await fetch('/api/users/send-code', {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             [csrfHeaderName]: csrfToken // 核心：添加 CSRF Token 到請求頭
           },
@@ -749,7 +702,7 @@
         verificationSent = true;
         let countdown = 60;
         sendCodeBtn.textContent = `重新發送(${countdown}s)`;
-        
+
         const timer = setInterval(() => {
           countdown--;
           sendCodeBtn.textContent = `重新發送(${countdown}s)`;
@@ -832,17 +785,29 @@
         isValid = false;
       }
 
-      const captcha = document.getElementById('captcha').value.trim();
-      if (!captcha) {
-        showError('captchaError', '請輸入圖片驗證碼');
+
+      // 【新增】檢查 reCAPTCHA 是否已勾選
+      const recaptchaResponse = grecaptcha.getResponse();
+      if (!recaptchaResponse) {
+        showError('recaptchaTokenError', '請完成「我不是機器人」驗證');
         isValid = false;
       }
 
       if (!isValid) return;
+      // 準備要發送到後端的完整資料
+      const registerData = {
+        name: fullname,
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value.trim(),
+        code: document.getElementById('emailCode').value.trim(),
+        recaptchaToken: recaptchaResponse // 將 reCAPTCHA 的回應 token 加進來
+      };
 
       // 2. 禁用註冊按鈕，防止重複提交
       submitBtn.disabled = true;
       submitBtn.textContent = '註冊中...';
+      // 在 registerData 中，新增一個 recaptchaToken 欄位
+
 
       try {
         // 3. 獲取 CSRF Token（與發送驗證碼邏輯一致）
@@ -851,52 +816,33 @@
           throw new Error('無法獲取驗證信息，請稍後再試');
         }
         const csrfData = await csrfResponse.json();
-        const csrfToken = csrfData.token;
-        const csrfHeaderName = csrfData.headerName;
 
-        // 4. 準備註冊數據
-        const userData = {
-          name: fullname,
-          email: email,
-          password: password,
-          code: emailCode,
-          captcha: captcha
-        };
-
-        // 5. 發送註冊請求（攜帶 CSRF Token）
         const response = await fetch('/api/users/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            [csrfHeaderName]: csrfToken // 核心：添加 CSRF Token 到請求頭
+            [csrfData.headerName]: csrfData.token
           },
-          body: JSON.stringify(userData)
+          body: JSON.stringify(registerData) // 【修正】確保發送的是包含 token 的新資料
         });
 
-        // 6. 處理註冊響應
         if (!response.ok) {
           const errorData = await response.json();
-          throw errorData; // 拋出後端返回的錯誤（如驗證碼錯誤、郵箱已註冊）
+          throw errorData;
         }
 
-        // 7. 註冊成功：跳轉到成功頁
-        const result = await response.json();
-        console.log('註冊成功:', result);
         window.location.href = '/frontend-template/register-success.html';
 
       } catch (error) {
-        // 8. 錯誤處理
         console.error('註冊失敗:', error);
         if (error.field && error.message) {
-          showError(error.field + 'Error', error.message); // 顯示對應字段錯誤
+          showError(error.field + 'Error', error.message);
         } else {
           alert('註冊失敗，請稍後再試。');
         }
-        // 刷新圖片驗證碼
-        document.getElementById('captchaImage').click();
+        grecaptcha.reset(); // 【新增】重設 reCAPTCHA
 
       } finally {
-        // 9. 無論成功/失敗，恢復按鈕狀態
         submitBtn.disabled = false;
         submitBtn.textContent = '確認送出';
       }

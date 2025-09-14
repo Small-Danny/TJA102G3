@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
+
+<head>
+    <title>個人設定 | 修改密碼</title>
+</head>
+
+<body>
+    <div th:fragment="content">
+
+        <div class="app-content-header">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h3 class="mb-0">個人設定</h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-end">
+                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">修改密碼</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card card-primary card-outline">
+                            <div class="card-header">
+                                <h3 class="card-title">修改密碼</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="changePasswordForm" th:action="@{/admin/profile/change-password}" method="post">
+                                    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+                                    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+                                    <div class="mb-3">
+                                        <label for="currentPassword" class="form-label">目前密碼</label>
+                                        <div class="password-wrapper">
+                                            <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                                            <i class="bi bi-eye-slash-fill toggle-password" data-target="currentPassword"></i>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newPassword" class="form-label">新密碼</label>
+                                        <div class="password-wrapper">
+                                            <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                                            <i class="bi bi-eye-slash-fill toggle-password" data-target="newPassword"></i>
+                                        </div>
+                                        <div class="password-strength mt-2">
+                                            <div class="strength-bar" id="strengthBar"></div>
+                                        </div>
+                                        <div class="form-text">密碼須至少8個字元，包含大小寫字母、數字及特殊符號。</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="confirmPassword" class="form-label">確認新密碼</label>
+                                        <div class="password-wrapper">
+                                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                            <i class="bi bi-eye-slash-fill toggle-password" data-target="confirmPassword"></i>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">確認修改</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .password-wrapper { position: relative; }
+            .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; }
+            .password-strength { height: 5px; background-color: #e9ecef; border-radius: .25rem; display: none; }
+            .password-strength.show { display: block; }
+            .strength-bar { height: 100%; width: 0; border-radius: .25rem; transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out; }
+            .strength-weak { width: 33%; background-color: #dc3545; }
+            .strength-medium { width: 66%; background-color: #ffc107; }
+            .strength-strong { width: 100%; background-color: #198754; }
+        </style>
+
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+                const changePasswordForm = document.getElementById('changePasswordForm');
+                const newPasswordInput = document.getElementById('newPassword');
+                const passwordStrength = document.querySelector('.password-strength');
+                const strengthBar = document.getElementById('strengthBar');
+                const togglePasswordBtns = document.querySelectorAll('.toggle-password');
+
+                function validatePasswordForm() {
+                    let isValid = true;
+                    const newPwd = newPasswordInput.value;
+                    const confirmPwd = document.getElementById('confirmPassword').value;
+                    const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+                    if (!pwdRegex.test(newPwd)) {
+                        alert('新密碼不符合強度要求！\n必須包含大小寫字母、數字和特殊符號，且長度至少8位。');
+                        isValid = false;
+                    } else if (newPwd !== confirmPwd) {
+                        alert('新密碼與確認密碼不一致！');
+                        isValid = false;
+                    }
+                    return isValid;
+                }
+
+                function checkPasswordStrength(password) {
+                    if (!passwordStrength || !strengthBar) return;
+                    let strength = 0;
+                    passwordStrength.classList.add('show');
+                    if (password.length >= 8) strength++;
+                    if (/[a-z]/.test(password)) strength++;
+                    if (/[A-Z]/.test(password)) strength++;
+                    if (/[0-9]/.test(password)) strength++;
+                    if (/[^A-Za-z0-9]/.test(password)) strength++;
+                    strengthBar.className = 'strength-bar';
+                    if (strength <= 2) strengthBar.classList.add('strength-weak');
+                    else if (strength <= 4) strengthBar.classList.add('strength-medium');
+                    else strengthBar.classList.add('strength-strong');
+                    if (!password) passwordStrength.classList.remove('show');
+                }
+
+                if (newPasswordInput) {
+                    newPasswordInput.addEventListener('input', () => checkPasswordStrength(newPasswordInput.value));
+                }
+
+                togglePasswordBtns.forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const targetId = this.dataset.target;
+                        const input = document.getElementById(targetId);
+                        if (input) {
+                            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                            input.setAttribute('type', type);
+                            this.classList.toggle('bi-eye-slash-fill');
+                            this.classList.toggle('bi-eye-fill');
+                        }
+                    });
+                });
+
+               
+                if (changePasswordForm) {
+                    changePasswordForm.addEventListener('submit', function (event) {
+                        if (!validatePasswordForm()) {
+                            event.preventDefault();
+                        }
+                    });
+                }
+            });
+        </script>
+    </div> </body>
+</html>
