@@ -3,6 +3,8 @@ package com.tibafit.controller.user;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -75,42 +78,73 @@ public class AdminController {
 	}
 	/**
 	 * 
+	 * @param @PathVariable，要去 URL 路徑中Id,新增停權啟用功能
+	 * @return 
+	 */
+	@PostMapping("/members/{id}/toggle-status")
+	public String toggleMemberStatus(@PathVariable("id") Integer userId) {
+		userService.toggleAccountStatus(userId);
+		return "redirect:/admin/members";
+	}
+	
+	
+	
+	/**
+	 * 
 	 * @param resp,專門用來獲得CSV檔
 	 * @throws IOException
 	 */
-    @GetMapping("/members/export/csv")
-    public void exportMembersToCsv(@RequestParam(required = false) String keyword, HttpServletResponse response) throws IOException {
-        // 1. 設定 Response Headers
-        response.setContentType("text/csv; charset=UTF-8");
-        response.setHeader("Content-Disposition", "attachment; filename=\"members.csv\"");
-        response.setCharacterEncoding("UTF-8");
+	@GetMapping("/members/export/csv")
+	public void exportMembersToCsv(@RequestParam(required = false) String keyword, HttpServletResponse response)
+			throws IOException {
+		// 1. 設定 Response Headers
+		response.setContentType("text/csv; charset=UTF-8");
+		String formattedDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+		String fileName = "members-" + formattedDate + ".csv";
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+		response.setCharacterEncoding("UTF-8");
+		// 2. 根據有無 keyword，決定要撈取的會員資料
+		List<User> userList;
+		if (keyword != null && !keyword.trim().isEmpty()) {
+			userList = userService.searchUser(keyword.trim());
+		} else {
+			userList = userService.findAll();
+		}
 
-        // 2. 根據有無 keyword，決定要撈取的會員資料
-        List<User> userList;
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            userList = userService.searchUser(keyword.trim());
-        } else {
-            userList = userService.findAll();
-        }
-        
-        // 3. 準備日期格式化工具
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		// 3. 準備日期格式化工具
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        // 4. 寫入 CSV 內容
-        try (PrintWriter writer = response.getWriter()) {
+		// 4. 寫入 CSV 內容
+		try (PrintWriter writer = response.getWriter()) {
 //        	自動切換到正確的 UTF-8 模式來打開檔案
-        	writer.print("\uFEFF");
-            writer.println("ID,Email,姓名,註冊日期");
+			writer.print("\uFEFF");
+			writer.println("會員ID,姓名,Email,電話,性別,身高(cm),體重(kg),BMI,帳戶點數,帳號狀態,註冊日期");
 
-            for (User user : userList) {
-                String createTimeString = user.getCreateTime() != null ? dateFormat.format(user.getCreateTime()) : "";
-                writer.println(
-                    user.getUserId() + "," +
-                    user.getEmail() + "," +
-                    user.getName() + "," +
-                    createTimeString
-                );
-            }
-        }
-    }
+			for (User user : userList) {
+				   String gender = switch (user.getGender()) {
+                   case 1 -> "男";
+                   case 2 -> "女";
+                   default -> "不透露";
+               };
+               String status = (user.getAccountStatus() == 1) ? "啟用" : "停權";
+               String phone = user.getPhone() != null ? user.getPhone() : "";
+				String createTimeString = user.getCreateTime() != null ? dateFormat.format(user.getCreateTime()) : "";
+				  String line = String.join(",",
+	                        user.getUserId().toString(),
+	                        user.getName(),
+	                        user.getEmail(),
+	                        phone,
+	                        gender,
+	                        user.getHeightCm() != null ? user.getHeightCm().toString() : "",
+	                        user.getWeightKg() != null ? user.getWeightKg().toString() : "",
+	                        user.getBmi() != null ? user.getBmi().toString() : "",
+	                        user.getPointsBalance() != null ? user.getPointsBalance().toString() : "0",
+	                        status,
+	                        createTimeString
+	                );
+				
+				  writer.println(line);
+			}						
+		}
+	}
 }

@@ -36,5 +36,7 @@ public interface UserService {
 	public abstract User findById(Integer userId);
 	
 	public abstract List<User> searchUser(String keyword);
+	
+	public abstract void toggleAccountStatus(Integer userId);
 
 }
