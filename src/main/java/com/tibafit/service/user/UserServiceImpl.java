@@ -469,5 +469,23 @@ public class UserServiceImpl implements UserService {
 	
 		return userRepository.searchUsers(keyword);
 	}
+	
+	@Transactional
+	@Override
+	public void toggleAccountStatus(Integer userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new ValidationException("userToUpdatePictrue", "找不到使用者"));
+	    Integer currentStatus = user.getAccountStatus(); 
+	    Integer newStatus;
+	    if (currentStatus == 1) {
+	        newStatus = 0; // 如果現在是 1 (啟用)，就把它變成 0 (停權)
+	    } else {
+	        newStatus = 1; // 否則 (不管是 0 還是其他值)，都把它變回 1 (啟用)
+	    }
+	    user.setAccountStatus(newStatus);
+
+        userRepository.save(user);
+
+	}
 
 }
