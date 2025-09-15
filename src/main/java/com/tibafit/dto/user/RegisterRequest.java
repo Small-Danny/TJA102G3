@@ -12,5 +12,5 @@ public class RegisterRequest {
 	private String password;
 	private String name;
 	private String code;
-	private String captcha; 
+	private String recaptchaToken;
 }
