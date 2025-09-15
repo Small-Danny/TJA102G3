@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class PasswordResetRequest {
     private String email;
-    private String captcha; 
+    private String recaptchaToken;
 }

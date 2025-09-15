@@ -4,23 +4,30 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.tibafit.dto.user.ChangePasswordRequest;
 import com.tibafit.dto.user.LoginRequest;
-import com.tibafit.dto.user.RegisterRequest;
+import com.tibafit.dto.user.PasswordResetRequest;
 import com.tibafit.dto.user.PerformResetRequest;
+import com.tibafit.dto.user.RegisterRequest;
 import com.tibafit.dto.user.UpdateProfileRequest;
 import com.tibafit.exception.ValidationException;
 import com.tibafit.model.user.User;
@@ -29,6 +36,7 @@ import com.tibafit.service.file.FileService;
 import com.tibafit.service.mail.MailService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,32 +46,45 @@ public class UserServiceImpl implements UserService {
 	private final MailService mailService;
 	private final FileService fileService;
 	private final PasswordEncoder passwordEncoder; // 新增密碼比對工具
+	private final ReCaptchaService reCaptchaService;// 新增Google reCAPTCHA
+	private final AuthenticationManager authenticationManager;
+	private final RememberMeServices rememberMeServices;
 	// 建構子注入
 
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository, StringRedisTemplate redisTemplate, MailService mailService,
-			FileService fileService, PasswordEncoder passwordEncoder) {
+			FileService fileService, PasswordEncoder passwordEncoder, ReCaptchaService reCaptchaService,
+			AuthenticationManager authenticationManager, RememberMeServices rememberMeServices) {
 		this.userRepository = userRepository;
 		this.redisTemplate = redisTemplate;
 		this.mailService = mailService;
 		this.fileService = fileService;
 		this.passwordEncoder = passwordEncoder;
-
+		this.reCaptchaService = reCaptchaService;
+		this.authenticationManager = authenticationManager;
+		this.rememberMeServices = rememberMeServices;
 	}
 
 	@Override
 	public User register(RegisterRequest req, HttpServletRequest request) { // 【增加參數】
 
-		// --- 【新增】第一步：圖片驗證碼校驗 ---
-		String captchaInput = req.getCaptcha();
-		String correctCaptcha = (String) request.getSession().getAttribute("captchaCode");
-
-		if (correctCaptcha == null || captchaInput == null || !correctCaptcha.equalsIgnoreCase(captchaInput)) {
-			throw new ValidationException("captcha", "圖片驗證碼錯誤");
+		// 在所有業務邏輯的最前面，先進行 reCAPTCHA 驗證
+		boolean isCaptchaValid = reCaptchaService.validateToken(req.getRecaptchaToken());
+		if (!isCaptchaValid) {
+			// 為了安全，不提示具體錯誤，模糊地回傳驗證碼錯誤
+			throw new ValidationException("captcha", "驗證失敗，請重試");
 		}
 
-		// 驗證成功後，立刻讓 Session 中的驗證碼失效，防止重複使用
-		request.getSession().removeAttribute("captchaCode");
+//		// 舊的kaptcha,不使用
+//		String captchaInput = req.getCaptcha();
+//		String correctCaptcha = (String) request.getSession().getAttribute("captchaCode");
+//
+//		if (correctCaptcha == null || captchaInput == null || !correctCaptcha.equalsIgnoreCase(captchaInput)) {
+//			throw new ValidationException("captcha", "圖片驗證碼錯誤");
+//		}
+//
+//		// 驗證成功後，立刻讓 Session 中的驗證碼失效，防止重複使用
+//		request.getSession().removeAttribute("captchaCode");
 
 		String userCode = req.getCode(); // 原本是在Map裡面取，現在改成我們的
 		// 核心邏輯第一道，是否有獲取驗證碼
@@ -150,51 +171,46 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User login(LoginRequest loginRequest, HttpServletRequest request) {
-		
-	    //【新增】圖片驗證碼校驗
-	    String captchaInput = loginRequest.getCaptcha();
-	    String correctCaptcha = (String) request.getSession().getAttribute("captchaCode");
+	public User login(LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
 
-	    if (correctCaptcha == null || captchaInput == null || !correctCaptcha.equalsIgnoreCase(captchaInput)) {
-	        // 為了安全，登入失敗的錯誤訊息統一模糊處理，不提示是驗證碼錯誤還是帳密錯誤
-	        throw new ValidationException("login", "帳號或密碼錯誤");
-	    }
+		boolean isCaptchaValid = reCaptchaService.validateToken(loginRequest.getRecaptchaToken());
+		if (!isCaptchaValid) {
+			throw new ValidationException("login", "驗證失敗，請重試");
+		}
 
-	    // 驗證成功後，立刻讓 Session 中的驗證碼失效
-	    request.getSession().removeAttribute("captchaCode");
-	    
-		// 1. 根據 loginRequest 裡的 email 去資料庫查詢使用者。
 		String email = loginRequest.getEmail();
 		String password = loginRequest.getPassword();
 
-		// 2. 檢查使用者是否存在，得到一個User
-		Optional<User> userOptional = userRepository.findByEmail(email);
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new ValidationException("login", "帳號或密碼錯誤"));
 
-		// 檢查使用者是否存在，以及密碼是否相符
-		if (userOptional.isEmpty()) {
-			// 如果盒子是空的 (找不到使用者)，就拋出錯誤
+		if (user.getAccountStatus() != 1) {
 			throw new ValidationException("login", "帳號或密碼錯誤");
 		}
 
-		// 如果使用者存在，就把他從盒子裡拿出來
-		User user = userOptional.get();
-		// 接著比對密碼
 		if (!passwordEncoder.matches(password, user.getPassword())) {
 			throw new ValidationException("login", "帳號或密碼錯誤");
 		}
 
-		// 4. 如果一切都正確，回傳找到的 User 物件
-		return user;
+		// --- 登入成功後的核心邏輯 ---
+		// 1. 建立一個「已認證」的 Authentication 物件
+		Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), null,
+				Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
 
+		// 2. 將這個物件設定到 Spring Security 的上下文中，完成 Session 登入
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+		// 3. 如果使用者勾選了「記住我」，手動呼叫 rememberMeServices
+		if (loginRequest.isRememberMe()) {
+			rememberMeServices.loginSuccess(request, response, authentication);
+		}
+
+		return user;
 	}
 
 	@Override
 	@Transactional // 這個方法需要交易管理
 	public User updateProfile(Integer userId, UpdateProfileRequest updateRequest) {
-		// 根據userId從資料庫找使用者
-		// orElseThrow,如果找到了，就把 User 物件拿出來；如果沒找到
-		// 就執行我提Lambda函式，讓它拋出一個新的 ValidationException。
+
 		User userToUpdate = userRepository.findById(userId)
 				.orElseThrow(() -> new ValidationException("uptateProfile", "找不到使用者"));
 
@@ -320,26 +336,32 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * 處理忘記密碼請求，生成並發送一個安全的重設 Token。
-	 * 
-	 * @param email        使用者輸入的電子郵件
-	 * @param captchaInput 使用者輸入的圖片驗證碼
-	 * @param request      HttpServletRequest 物件，用於存取 Session
+	 * 【已更新】處理忘記密碼請求，使用 Google reCAPTCHA 進行驗證。
+	 * @param req 包含 email 和 recaptchaToken 的請求物件
 	 */
 	@Override
 	@Transactional
-	public void sendPasswordResetToken(String email, String captchaInput, HttpServletRequest request) {
+	public void sendPasswordResetToken(PasswordResetRequest req) { // ★ 1. 參數改回 DTO
 
-		// 安全驗證 (圖片驗證碼校驗)
-		String correctCaptcha = (String) request.getSession().getAttribute("captchaCode");
-		if (correctCaptcha == null || captchaInput == null || !correctCaptcha.equalsIgnoreCase(captchaInput)) {
-			throw new ValidationException("captcha", "圖片驗證碼錯誤");
-		}
-		// 驗證成功後，立刻讓 Session 中的驗證碼失效，防止重複提交攻擊
-		request.getSession().removeAttribute("captchaCode");
+	    // ★ 2. 安全驗證改回 reCAPTCHA
+	    boolean isCaptchaValid = reCaptchaService.validateToken(req.getRecaptchaToken());
+	    if (!isCaptchaValid) {
+	        throw new ValidationException("recaptchaToken", "人機驗證失敗，請重試");
+	    }
+
+	    // ★ 3. 從 DTO 中獲取 email
+	    String email = req.getEmail();
 
 		// 檢查 是否找到使用者
-		User user = userRepository.findByEmail(email).orElseThrow(() -> new ValidationException("email", "該電子郵件尚未註冊"));
+		User user = userRepository.findByEmail(email)
+				.orElseThrow(() -> new ValidationException("email", "如果該電子郵件已註冊，密碼重設信將很快寄出。"));
+
+		if (user.getAccountStatus() != 1) {
+			// 如果帳號被停權，我們不應該讓攻擊者知道這個帳號的狀態。
+			// 假裝郵件已經寄出,這樣前端看到的提示訊息會和成功時一樣。
+			System.out.println("一個被停權的帳號嘗試重設密碼: " + email); // 在後台留下紀錄
+			return; // 直接結束，不執行後續發信邏輯
+		}
 		// 用UUID生成token
 		String token = UUID.randomUUID().toString();
 		// 設定token時間
@@ -455,19 +477,37 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<User> findAll() {
 		// TODO Auto-generated method stub
-		 return userRepository.findAll();
+		return userRepository.findAll();
 	}
 
 	@Override
-	public User findById(Integer userId)  {
+	public User findById(Integer userId) {
 
-		 return userRepository.findById(userId).orElse(null);
+		return userRepository.findById(userId).orElse(null);
 	}
 
 	@Override
-	public List<User> serchUser(String keyword) {
-	
+	public List<User> searchUser(String keyword) {
+
 		return userRepository.searchUsers(keyword);
+	}
+
+	@Transactional
+	@Override
+	public void toggleAccountStatus(Integer userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new ValidationException("userToUpdatePictrue", "找不到使用者"));
+		Integer currentStatus = user.getAccountStatus();
+		Integer newStatus;
+		if (currentStatus == 1) {
+			newStatus = 0; // 如果現在是 1 (啟用)，就把它變成 0 (停權)
+		} else {
+			newStatus = 1; // 否則 (不管是 0 還是其他值)，都把它變回 1 (啟用)
+		}
+		user.setAccountStatus(newStatus);
+
+		userRepository.save(user);
+
 	}
 
 }
