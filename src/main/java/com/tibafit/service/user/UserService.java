@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tibafit.dto.user.ChangePasswordRequest;
 import com.tibafit.dto.user.LoginRequest;
+import com.tibafit.dto.user.PasswordResetRequest;
 import com.tibafit.dto.user.PerformResetRequest;
 import com.tibafit.dto.user.RegisterRequest;
 import com.tibafit.dto.user.UpdateProfileRequest;
@@ -28,7 +29,7 @@ public interface UserService {
 
 	public abstract String changePassword(Integer userId, ChangePasswordRequest changepasswordrequest);
 
-	public abstract void sendPasswordResetToken(String email, String captchaInput, HttpServletRequest request);
+	public abstract void sendPasswordResetToken(PasswordResetRequest req);
 
 	public abstract String resetPasswordWithToken(PerformResetRequest request);
 

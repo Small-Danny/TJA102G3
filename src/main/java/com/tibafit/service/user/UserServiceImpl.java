@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tibafit.dto.user.ChangePasswordRequest;
 import com.tibafit.dto.user.LoginRequest;
+import com.tibafit.dto.user.PasswordResetRequest;
 import com.tibafit.dto.user.PerformResetRequest;
 import com.tibafit.dto.user.RegisterRequest;
 import com.tibafit.dto.user.UpdateProfileRequest;
@@ -47,21 +48,21 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder; // 新增密碼比對工具
 	private final ReCaptchaService reCaptchaService;// 新增Google reCAPTCHA
 	private final AuthenticationManager authenticationManager;
-	 private final RememberMeServices rememberMeServices;
+	private final RememberMeServices rememberMeServices;
 	// 建構子注入
 
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository, StringRedisTemplate redisTemplate, MailService mailService,
 			FileService fileService, PasswordEncoder passwordEncoder, ReCaptchaService reCaptchaService,
-			AuthenticationManager authenticationManager,RememberMeServices rememberMeServices) {
+			AuthenticationManager authenticationManager, RememberMeServices rememberMeServices) {
 		this.userRepository = userRepository;
 		this.redisTemplate = redisTemplate;
 		this.mailService = mailService;
 		this.fileService = fileService;
 		this.passwordEncoder = passwordEncoder;
 		this.reCaptchaService = reCaptchaService;
-		 this.authenticationManager = authenticationManager;
-		 this.rememberMeServices = rememberMeServices;
+		this.authenticationManager = authenticationManager;
+		this.rememberMeServices = rememberMeServices;
 	}
 
 	@Override
@@ -169,51 +170,47 @@ public class UserServiceImpl implements UserService {
 
 	}
 
-	 @Override
-	    public User login(LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
-	        
-	        boolean isCaptchaValid = reCaptchaService.validateToken(loginRequest.getRecaptchaToken());
-	        if (!isCaptchaValid) {
-	            throw new ValidationException("login", "驗證失敗，請重試");
-	        }
-	        
-	        String email = loginRequest.getEmail();
-	        String password = loginRequest.getPassword();
+	@Override
+	public User login(LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
 
-	        User user = userRepository.findByEmail(email)
-	                .orElseThrow(() -> new ValidationException("login", "帳號或密碼錯誤"));
-	        
-	        if (user.getAccountStatus() != 1) {
-	            throw new ValidationException("login", "帳號或密碼錯誤");
-	        }
+		boolean isCaptchaValid = reCaptchaService.validateToken(loginRequest.getRecaptchaToken());
+		if (!isCaptchaValid) {
+			throw new ValidationException("login", "驗證失敗，請重試");
+		}
 
-	        if (!passwordEncoder.matches(password, user.getPassword())) {
-	            throw new ValidationException("login", "帳號或密碼錯誤");
-	        }
-	        
-	        // --- 登入成功後的核心邏輯 ---
-	        // 1. 建立一個「已認證」的 Authentication 物件
-	        Authentication authentication = new UsernamePasswordAuthenticationToken(
-	            user.getEmail(), 
-	            null, 
-	            Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
-	        );
-	        
-	        // 2. 將這個物件設定到 Spring Security 的上下文中，完成 Session 登入
-	        SecurityContextHolder.getContext().setAuthentication(authentication);
+		String email = loginRequest.getEmail();
+		String password = loginRequest.getPassword();
 
-	        // 3. 如果使用者勾選了「記住我」，手動呼叫 rememberMeServices
-	        if (loginRequest.isRememberMe()) {
-	            rememberMeServices.loginSuccess(request, response, authentication);
-	        }
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new ValidationException("login", "帳號或密碼錯誤"));
 
-	        return user;
-	    }
-	 
+		if (user.getAccountStatus() != 1) {
+			throw new ValidationException("login", "帳號或密碼錯誤");
+		}
+
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+			throw new ValidationException("login", "帳號或密碼錯誤");
+		}
+
+		// --- 登入成功後的核心邏輯 ---
+		// 1. 建立一個「已認證」的 Authentication 物件
+		Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), null,
+				Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+
+		// 2. 將這個物件設定到 Spring Security 的上下文中，完成 Session 登入
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+		// 3. 如果使用者勾選了「記住我」，手動呼叫 rememberMeServices
+		if (loginRequest.isRememberMe()) {
+			rememberMeServices.loginSuccess(request, response, authentication);
+		}
+
+		return user;
+	}
+
 	@Override
 	@Transactional // 這個方法需要交易管理
 	public User updateProfile(Integer userId, UpdateProfileRequest updateRequest) {
-		
+
 		User userToUpdate = userRepository.findById(userId)
 				.orElseThrow(() -> new ValidationException("uptateProfile", "找不到使用者"));
 
@@ -339,23 +336,21 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * 處理忘記密碼請求，生成並發送一個安全的重設 Token。
-	 * 
-	 * @param email        使用者輸入的電子郵件
-	 * @param captchaInput 使用者輸入的圖片驗證碼
-	 * @param request      HttpServletRequest 物件，用於存取 Session
+	 * 【已更新】處理忘記密碼請求，使用 Google reCAPTCHA 進行驗證。
+	 * @param req 包含 email 和 recaptchaToken 的請求物件
 	 */
 	@Override
 	@Transactional
-	public void sendPasswordResetToken(String email, String captchaInput, HttpServletRequest request) {
+	public void sendPasswordResetToken(PasswordResetRequest req) { // ★ 1. 參數改回 DTO
 
-		// 安全驗證 (圖片驗證碼校驗)
-		String correctCaptcha = (String) request.getSession().getAttribute("captchaCode");
-		if (correctCaptcha == null || captchaInput == null || !correctCaptcha.equalsIgnoreCase(captchaInput)) {
-			throw new ValidationException("captcha", "圖片驗證碼錯誤");
-		}
-		// 驗證成功後，立刻讓 Session 中的驗證碼失效，防止重複提交攻擊
-		request.getSession().removeAttribute("captchaCode");
+	    // ★ 2. 安全驗證改回 reCAPTCHA
+	    boolean isCaptchaValid = reCaptchaService.validateToken(req.getRecaptchaToken());
+	    if (!isCaptchaValid) {
+	        throw new ValidationException("recaptchaToken", "人機驗證失敗，請重試");
+	    }
+
+	    // ★ 3. 從 DTO 中獲取 email
+	    String email = req.getEmail();
 
 		// 檢查 是否找到使用者
 		User user = userRepository.findByEmail(email)

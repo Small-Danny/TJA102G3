@@ -95,11 +95,10 @@ public class UserController {
 
 	// 【第一步：請求重設】這個 API 給 forgot-password.html 使用
 	@PostMapping("/request-password-reset")
-	public ResponseEntity<?> requestPasswordReset(@RequestBody PasswordResetRequest req,
-			HttpServletRequest httpServletRequest) {
-		userService.sendPasswordResetToken(req.getEmail(), req.getCaptcha(), httpServletRequest);
-		return ResponseEntity.ok().body("密碼重設連結已發送至您的電子郵件，請於15分鐘內使用。");
-	}
+	public ResponseEntity<?> requestPasswordReset(@RequestBody PasswordResetRequest req) {
+		   userService.sendPasswordResetToken(req); // ★ 參數簡化
+		   return ResponseEntity.ok().body("密碼重設連結已發送至您的電子郵件，請於15分鐘內使用。");
+		}
 
 	// 【第二步：執行重設】這個 API 給 reset-set-password.html 使用
 	@PostMapping("/reset-password-with-token")
