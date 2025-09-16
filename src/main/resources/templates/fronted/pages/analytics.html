@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TibaFit 數據圖表</title>
+
+<!-- 共用 CSS -->
+<link rel="stylesheet" th:href="@{/frontend-template/assets/css/bootstrap.min.css}">
+<link rel="stylesheet"
+	th:href="@{/assets/font/flaticon_mycollection.css}">
+<link rel="stylesheet" th:href="@{/frontend-template/assets/css/owl.carousel.min.css}">
+<link rel="stylesheet"
+	th:href="@{/assets/css/owl.theme.default.min.css}">
+<link rel="stylesheet" th:href="@{/frontend-template/assets/css/jquery.fancybox.min.css}">
+<link rel="stylesheet" th:href="@{/frontend-template/assets/css/fontawesome.min.css}">
+<link rel="stylesheet" th:href="@{/frontend-template/assets/css/nice-select.css}">
+<link rel="stylesheet" th:href="@{/frontend-template/assets/css/style.css}">
+<link rel="stylesheet" th:href="@{/frontend-template/assets/css/responsive.css}">
+<link rel="stylesheet" th:href="@{/frontend-template/assets/css/header.css}">
+<!-- 專用 CSS -->
+<link rel="stylesheet" th:href="@{/frontend-template/assets/css/analytics.css}">
+<link rel="icon" type="image/x-icon"
+	th:href="@{/frontend-template/assets/images/heading-icon.png}">
+</head>
+
+<body class="">
+
+	<div class="preloader">
+		<div class="loader-wrap-heading">
+			<div class="load-text">
+				<span>加</span> <span>載</span> <span>中</span> <span>...</span>
+			</div>
+		</div>
+	</div>
+	<!-- Header -->
+	<div th:replace="~{fronted/layout/header :: siteHeader}"></div>
+
+	<!-- 橫幅 -->
+	<section class="banner-style-one">
+		<div class="parallax"
+			style="background-image: url(https://via.placeholder.com/1920x640);"></div>
+		<div class="container">
+			<div class="row">
+				<div class="banner-details">
+					<h2>數據圖表</h2>
+				</div>
+			</div>
+		</div>
+		<div class="breadcrums">
+			<div class="container">
+				<div class="row">
+					<ul>
+						<li><a th:href="@{/}"> <i class="fa-solid fa-house"></i>
+								<p>首頁</p>
+						</a></li>
+						<li class="current"><p>Analytics</p></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Analytics 主內容 -->
+	<section class="analytics-page container-xxl py-5">
+		<!-- 標題 -->
+		<div class="d-flex align-items-center justify-content-between mb-4">
+			<h2 class="m-0 fw-bold text-white">數據儀表板</h2>
+		</div>
+
+		<!-- 控制列 -->
+		<div class="control-bar rounded-3 p-3 mb-4">
+			<div class="row g-3 align-items-center">
+				<!-- 期間切換 -->
+				<div class="col-12 col-lg-6">
+					<ul class="nav nav-pills gap-2" id="rangeTabs" role="tablist">
+						<li class="nav-item"><button class="nav-link active"
+								data-range="today" type="button">今日</button></li>
+						<li class="nav-item"><button class="nav-link"
+								data-range="week" type="button">近一週</button></li>
+						<li class="nav-item"><button class="nav-link"
+								data-range="month" type="button">近一月</button></li>
+					</ul>
+				</div>
+
+				<!-- 指標 / 圖表類型 -->
+				<div class="col-12 col-lg-6">
+					<div class="row g-2">
+						<div class="col-6">
+							<label class="form-label text-secondary mb-1">指標</label> <select
+								class="form-select form-select-sm" id="metricSelect">
+								<option value="workout-time" selected>運動時長</option>
+								<option value="calories">消耗熱量</option>
+								<option value="tasks">任務完成數量</option>
+							</select>
+						</div>
+						<div class="col-6">
+							<label class="form-label text-secondary mb-1">圖表類型</label> <select
+								class="form-select form-select-sm" id="chartTypeSelect">
+								<option value="bar" selected>長條圖</option>
+								<option value="line">折線圖</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 主內容 -->
+		<div class="row g-4">
+			<!-- 左：圖表 -->
+			<div class="col-12 col-xl-8">
+				<div class="card chart-card h-100">
+					<div
+						class="card-header bg-transparent d-flex justify-content-between">
+						<h5 class="m-0 fw-semibold" id="chartTitle">今日｜運動時長｜長條圖</h5>
+					</div>
+					<div class="card-body">
+						<div class="chart-wrap">
+							<canvas id="mainChart" height="200"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 右：摘要卡 -->
+			<div class="col-12 col-xl-4">
+				<div class="card summary-card h-100">
+					<div
+						class="card-header bg-transparent d-flex justify-content-between">
+						<h5 class="m-0 fw-semibold">重點摘要</h5>
+					</div>
+					<div class="card-body">
+						<div
+							class="d-flex justify-content-between align-items-center mb-2"
+							id="totalRow">
+							<span class="text-white fs-6">總計</span> <strong id="totalValue"
+								class="text-white fw-bold fs-4">--</strong>
+						</div>
+						<hr class="my-2 opacity-25">
+
+						<!-- 移除 small，避免整塊被縮小 -->
+						<ul id="summaryList" class="list-unstyled mb-0"></ul>
+
+						<hr class="my-4 opacity-25">
+						<div class="d-grid gap-2">
+							<button class="btn btn-danger" id="btnPrimaryAction">
+								<i class="fa fa-bolt"></i> 開始任務 / 建立計畫
+							</button>
+							<button class="btn btn-outline-light" id="btnSecondaryAction">
+								<i class="fa fa-download"></i> 匯出報表
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+
+	<!-- JS -->
+	<script th:src="@{/frontend-template/assets/js/jquery.min.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/bootstrap.min.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/jquery.fancybox.min.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/jquery.nice-select.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/owl.carousel.min.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/custom.js}"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+	<!-- 專用 JS -->
+	<script src="/frontend-template/assets/js/analytics.js" defer></script>
+</body>
+</html>
