@@ -1,6 +1,5 @@
 package com.tibafit.controller.user;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,9 @@ public class UserController {
 
 	// 宣告需要一個UserService
 	private final UserService userService;
-	
+
+	// 建構子注入
+
 	@Autowired
 	public UserController(UserService userService) {
 		this.userService = userService;
@@ -96,14 +97,7 @@ public class UserController {
 	@PostMapping("/request-password-reset")
 	public ResponseEntity<?> requestPasswordReset(@RequestBody PasswordResetRequest req) {
 		   userService.sendPasswordResetToken(req); // ★ 參數簡化
-		   // 1. 建立一個 Map 來存放你的回應訊息
-		   Map<String, String> response = new HashMap<>();
-		   
-		   // 2. 把訊息放進 Map，並給它一個 key (例如 "message")
-		   response.put("message", "密碼重設連結已發送至您的電子郵件，請於15分鐘內使用。");
-
-		   // 3. 將整個 Map 物件作為 body 回傳
-		   return ResponseEntity.ok(response); // .ok(response) 是 .ok().body(response) 的簡寫
+		   return ResponseEntity.ok().body("密碼重設連結已發送至您的電子郵件，請於15分鐘內使用。");
 		}
 
 	// 【第二步：執行重設】這個 API 給 reset-set-password.html 使用
