@@ -1,0 +1,241 @@
+<!-- templates/frontend/layout/header.html -->
+<header class="header-style-one" th:fragment="siteHeader">
+  <div class="container">
+    <div class="row">
+      <div class="desktop-nav" id="stickyHeader">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="d-flex-all justify-content-between">
+
+                <!-- Logo -->
+                <div class="header-logo">
+                  <a th:href="@{/index.html}" href="/index.html">
+                    <figure>
+                      <img th:src="@{/assets/images/logo-2.svg}" src="/assets/images/logo-2.svg" alt="標誌">
+                    </figure>
+                  </a>
+                </div>
+
+                <!-- 導覽列 -->
+                <div class="nav-bar">
+                  <ul>
+                    <li><a th:href="@{/index.html}" href="/index.html">首頁</a></li>
+
+                    <li class="menu-item-has-children">
+                      <a href="javascript:void(0)">關於我們</a>
+                      <ul class="sub-menu">
+                        <li><a th:href="@{/about.html}" href="/about.html">關於我們</a></li>
+                        <li><a th:href="@{/features-and-benefits.html}" href="/features-and-benefits.html">特色與優勢</a></li>
+                      </ul>
+                    </li>
+
+                    <li class="menu-item-has-children">
+                      <a href="javascript:void(0)">商店</a>
+                      <ul class="sub-menu">
+                        <li><a th:href="@{/product.html}" href="/product.html">我們的產品</a></li>
+                        <li><a th:href="@{/product-detail.html}" href="/product-detail.html">產品詳情</a></li>
+                        <li><a th:href="@{/cart.html}" href="/cart.html">購物車</a></li>
+                        <li><a th:href="@{/checkout.html}" href="/checkout.html">結帳</a></li>
+                      </ul>
+                    </li>
+
+                    <li class="menu-item-has-children">
+                      <a href="javascript:void(0)">頁面</a>
+                      <ul class="sub-menu">
+                        <li class="menu-item-has-children">
+                          <a href="javascript:void(0)">服務</a>
+                          <ul class="sub-menu">
+                            <li><a th:href="@{/services.html}" href="/services.html">服務項目</a></li>
+                            <li><a th:href="@{/service-detail.html}" href="/service-detail.html">服務詳情</a></li>
+                          </ul>
+                        </li>
+                        <li class="menu-item-has-children">
+                          <a href="javascript:void(0)">課程</a>
+                          <ul class="sub-menu">
+                            <li><a th:href="@{/our-classes.html}" href="/our-classes.html">我們的課程</a></li>
+                            <li><a th:href="@{/our-classes-2.html}" href="/our-classes-2.html">我們的課程 2</a></li>
+                            <li><a th:href="@{/class-details.html}" href="/class-details.html">課程詳情</a></li>
+                            <li><a th:href="@{/classes-schedule.html}" href="/classes-schedule.html">課程表</a></li>
+                          </ul>
+                        </li>
+                        <li class="menu-item-has-children">
+                          <a href="javascript:void(0)">團隊</a>
+                          <ul class="sub-menu">
+                            <li><a th:href="@{/our-team.html}" href="/our-team.html">我們的團隊</a></li>
+                            <li><a th:href="@{/team-detail.html}" href="/team-detail.html">團隊詳情</a></li>
+                          </ul>
+                        </li>
+
+                        <div id="auth-links">
+                          <a th:href="@{/login.html}" href="/login.html" class="login">登入 / 註冊</a>
+                        </div>
+                      </ul>
+                    </li>
+
+                    <li class="menu-item-has-children">
+                      <a href="javascript:void(0)">最新消息</a>
+                      <ul class="sub-menu">
+                        <li><a th:href="@{/our-blog-1.html}" href="/our-blog-1.html">部落格一</a></li>
+                        <li><a th:href="@{/our-blog-2.html}" href="/our-blog-2.html">部落格二</a></li>
+                        <li><a th:href="@{/blog-detail.html}" href="/blog-detail.html">部落格詳情</a></li>
+                      </ul>
+                    </li>
+
+                    <li><a th:href="@{/contact.html}" href="/contact.html">聯絡我們</a></li>
+                  </ul>
+
+                  <div class="extras">
+                    <a href="javascript:void(0)" id="mobile-menu" class="menu-start" aria-label="開啟選單">
+                      <!-- 你的漢堡圖示 SVG 保留 -->
+                      <svg id="ham-menu" viewBox="0 0 100 100" width="26" height="26" aria-hidden="true">
+                        <path class="line line1" d="M 20,29.000046 H 80.000231 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058"/>
+                        <path class="line line2" d="M 20,50 H 80"/>
+                        <path class="line line3" d="M 20,70.999954 H 80.000231 C 80.000231,70.999954 94.498839,71.182648 94.532987,33.288669 94.543142,22.019327 90.966081,18.329754 85.259173,18.331003 79.552261,18.332249 75.000211,25.000058 75.000211,25.000058 L 25.000021,74.999942"/>
+                      </svg>
+                    </a>
+
+                    <a th:href="@{/login.html}" href="/login.html" class="login">登入 / 註冊</a>
+
+                    <!-- 購物車按鈕（統一觸發器：#open-cart） -->
+                    <a href="javascript:void(0)" id="open-cart" class="shopping-bag white-icon" aria-label="開啟購物車">
+                      <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="m452 120h-60.946c-7.945-67.478-65.477-120-135.054-120s-127.109 52.522-135.054 120h-60.946c-11.046 0-20 8.954-20 20v352c0 11.046 8.954 20 20 20h392c11.046 0 20-8.954 20-20v-352c0-11.046-8.954-20-20-20zm-196-80c47.484 0 87.019 34.655 94.659 80h-189.318c7.64-45.345 47.175-80 94.659-80zm176 432h-352v-312h40v60c0 11.046 8.954 20 20 20s20-8.954 20-20v-60h192v60c0 11.046 8.954 20 20 20s20-8.954 20-20v-60h40z"/>
+                      </svg>
+                      <span class="cart-count" id="cart-count"></span>
+                    </a>
+                  </div>
+                </div>
+                <!-- /.nav-bar -->
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 手機版導覽 -->
+        <div class="mobile-nav" id="mobile-nav">
+          <div class="res-log">
+            <a th:href="@{/index.html}" href="/index.html">
+              <img th:src="@{/assets/images/logo-2.svg}" src="/assets/images/logo-2.svg" alt="響應式標誌">
+            </a>
+          </div>
+          <ul>
+            <li><a th:href="@{/index.html}" href="/index.html">首頁</a></li>
+            <li class="menu-item-has-children">
+              <a href="javascript:void(0)">關於我們</a>
+              <ul class="sub-menu">
+                <li><a th:href="@{/about.html}" href="/about.html">關於我們</a></li>
+                <li><a th:href="@{/features-and-benefits.html}" href="/features-and-benefits.html">特色與優勢</a></li>
+              </ul>
+            </li>
+            <li class="menu-item-has-children">
+              <a href="javascript:void(0)">商店</a>
+              <ul class="sub-menu">
+                <li><a th:href="@{/product.html}" href="/product.html">我們的產品</a></li>
+                <li><a th:href="@{/product-detail.html}" href="/product-detail.html">產品詳情</a></li>
+                <li><a th:href="@{/cart.html}" href="/cart.html">購物車</a></li>
+                <li><a th:href="@{/checkout.html}" href="/checkout.html">結帳</a></li>
+              </ul>
+            </li>
+            <li class="menu-item-has-children">
+              <a href="javascript:void(0)">頁面</a>
+              <ul class="sub-menu">
+                <li class="menu-item-has-children">
+                  <a href="javascript:void(0)">服務</a>
+                  <ul class="sub-menu">
+                    <li><a th:href="@{/services.html}" href="/services.html">服務項目</a></li>
+                    <li><a th:href="@{/service-detail.html}" href="/service-detail.html">服務詳情</a></li>
+                  </ul>
+                </li>
+                <li class="menu-item-has-children">
+                  <a href="javascript:void(0)">課程</a>
+                  <ul class="sub-menu">
+                    <li><a th:href="@{/our-classes.html}" href="/our-classes.html">我們的課程</a></li>
+                    <li><a th:href="@{/our-classes-2.html}" href="/our-classes-2.html">我們的課程 2</a></li>
+                    <li><a th:href="@{/class-details.html}" href="/class-details.html">課程詳情</a></li>
+                    <li><a th:href="@{/classes-schedule.html}" href="/classes-schedule.html">課程表</a></li>
+                  </ul>
+                </li>
+                <li class="menu-item-has-children">
+                  <a href="javascript:void(0)">團隊</a>
+                  <ul class="sub-menu">
+                    <li><a th:href="@{/our-team.html}" href="/our-team.html">我們的團隊</a></li>
+                    <li><a th:href="@{/team-detail.html}" href="/team-detail.html">團隊詳情</a></li>
+                  </ul>
+                </li>
+                <li><a th:href="@{/login.html}" href="/login.html">登入與註冊</a></li>
+              </ul>
+            </li>
+            <li class="menu-item-has-children">
+              <a href="javascript:void(0)">最新消息</a>
+              <ul class="sub-menu">
+                <li><a th:href="@{/our-blog-1.html}" href="/our-blog-1.html">部落格一</a></li>
+                <li><a th:href="@{/our-blog-2.html}" href="/our-blog-2.html">部落格二</a></li>
+                <li><a th:href="@{/blog-detail.html}" href="/blog-detail.html">部落格詳情</a></li>
+              </ul>
+            </li>
+            <li><a th:href="@{/contact.html}" href="/contact.html">聯絡我們</a></li>
+          </ul>
+          <a href="javascript:void(0)" id="res-cross" aria-label="關閉選單"></a>
+        </div>
+
+        <div class="mobile-nav desktop-menu">
+          <h2>更健康的生活方式解決方案</h2>
+          <p class="des">我們成功應對各種複雜任務，提供長期保證並不斷掌握新技術。</p>
+          <figure><img src="https://via.placeholder.com/320x222" alt="桌面選單圖片"></figure>
+          <h3>免費諮詢</h3>
+          <p class="num"><a href="callto:(+380)503184707">(+380) 50 318 47 07</a></p>
+          <p class="adrs">時間：週一至週六：晚上8點至12點</p>
+          <ul class="social-media">
+            <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
+            <li><a href="#"><i class="flaticon-twitter"></i></a></li>
+            <li><a href="#"><i class="flaticon-instagram"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 購物車燈箱 -->
+  <div id="cart-lightbox" class="cart-overlay clearfix">
+    <div class="white_content">
+      <a href="javascript:;" class="lightbox-close" aria-label="關閉">✕</a>
+      <div class="cart-popup">
+        <h3>購物車</h3>
+        <br>
+        <ul>
+          <li class="d-flex align-items-center position-relative">
+            <div class="p-img light-bg">
+              <img th:src="@{/product_img/衣服.png}" src="/product_img/衣服.png" alt="">
+            </div>
+            <div class="p-data">
+              <h4>TibaFit衣服</h4>
+              <p>1 x NT$ 700</p>
+            </div>
+            <a href="javascript:void(0)" class="remove-item" aria-label="✕">×</a>
+          </li>
+          <li class="d-flex align-items-center position-relative">
+            <div class="p-img light-bg">
+              <img th:src="@{/product_img/遙遙杯.png}" src="/product_img/遙遙杯.png" alt="">
+            </div>
+            <div class="p-data">
+              <h4>搖搖杯</h4>
+              <p>1 x NT$ 400</p>
+            </div>
+            <a href="javascript:void(0)" class="remove-item" aria-label="✕">×</a>
+          </li>
+        </ul>
+        <div class="cart-btn">
+          <div class="cart-total d-flex align-items-center justify-content-between">
+            <span>總計：</span><span>NT$1100</span>
+          </div>
+          <div class="cart-btns d-flex align-items-center justify-content-between mt-3">
+            <a class="btn btn-outline-secondary" th:href="@{/cart.html}" href="/cart.html">查看購物車</a>
+            <a class="btn btn-primary" th:href="@{/checkout.html}" href="/checkout.html">結帳</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

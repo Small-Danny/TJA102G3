@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
+<head>
+<title>編輯商品</title>
+</head>
+<body>
+	<div th:fragment="content">
+
+		<!-- 頁首 -->
+		<div class="app-content-header">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-sm-6">
+						<h3 class="mb-0">編輯商品</h3>
+					</div>
+					<div class="col-sm-6">
+						<ol class="breadcrumb float-sm-end">
+							<li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Home</a></li>
+							<li class="breadcrumb-item"><a
+								th:href="@{/product/product.do(action='getAll')}">商品清單</a></li>
+							<li class="breadcrumb-item active" aria-current="page">編輯</li>
+						</ol>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 內容 -->
+		<div class="app-content">
+			<div class="container-fluid">
+
+				<!-- 訊息 -->
+				<div class="alert alert-danger" th:if="${errorMsgs}">
+					<ul class="mb-0">
+						<li th:each="err : ${errorMsgs}" th:text="${err}">錯誤訊息</li>
+					</ul>
+				</div>
+				<div class="alert alert-success" th:if="${successMsg}"
+					th:text="${successMsg}">更新成功</div>
+
+				<!-- 表單 -->
+				<form th:action="@{/product/product.do}" method="post"
+					class="card card-primary">
+					<div class="card-header">
+						<h3 class="card-title">修改商品資料</h3>
+					</div>
+
+					<div class="card-body">
+						<div class="row g-3">
+							<input type="hidden" name="product_id"
+								th:value="${productVO.product_id}">
+
+							<div class="col-md-4">
+								<label class="form-label">商品代碼 <span class="text-danger">*</span></label>
+								<input type="text" name="product_code" class="form-control"
+									th:value="${productVO.product_code}" required maxlength="64">
+							</div>
+
+							<div class="col-md-4">
+								<label class="form-label">商品名稱 <span class="text-danger">*</span></label>
+								<input type="text" name="product_name" class="form-control"
+									th:value="${productVO.product_name}" required maxlength="255">
+							</div>
+
+							<div class="col-md-4">
+								<label class="form-label">商品分類（type）</label> <input
+									type="number" name="product_type" class="form-control"
+									th:value="${productVO.product_type}" min="0" step="1">
+							</div>
+
+							<div class="col-md-12">
+								<label class="form-label">商品描述</label>
+								<textarea name="product_description" class="form-control"
+									rows="3" maxlength="255"
+									th:text="${productVO.product_description}"></textarea>
+							</div>
+
+							<div class="col-md-4">
+								<label class="form-label">價格 <span class="text-danger">*</span></label>
+								<input type="number" name="product_price" class="form-control"
+									th:value="${productVO.product_price}" min="0" step="1" required>
+							</div>
+
+							<div class="col-md-4">
+								<label class="form-label">庫存 <span class="text-danger">*</span></label>
+								<input type="number" name="stock_quantity" class="form-control"
+									th:value="${productVO.stock_quantity}" min="0" step="1"
+									required>
+							</div>
+
+							<div class="col-md-4">
+								<label class="form-label">狀態</label> <select
+									name="product_status" class="form-select">
+									<option value="1"
+										th:selected="${productVO.product_status == 1}">上架</option>
+									<option value="0"
+										th:selected="${productVO.product_status == 0}">下架</option>
+								</select>
+							</div>
+
+							<!-- 圖片欄位 + 即時預覽 -->
+							<div class="col-md-8">
+								<label class="form-label">圖片檔名</label> <input type="text"
+									name="product_picture" id="pictureInput" class="form-control"
+									th:value="${productVO.product_picture}" maxlength="255"
+									placeholder="例如：clothes.png">
+								<div class="form-text">
+									放置位置：
+									<code>static/frontend-template/assets/img/</code>
+								</div>
+							</div>
+
+							<div class="col-md-4 d-flex align-items-end">
+								<img id="previewImage" class="img-fluid img-thumbnail"
+									alt="預覽圖片"
+									th:src="${productVO != null && productVO.product_picture != null} ?
+                      @{/frontend-template/assets/img/{f}(f=${productVO.product_picture})} :
+                      @{/frontend-template/assets/img/default.png}"
+									onerror="this.src='[[@{/frontend-template/assets/img/default.png}]]'">
+							</div>
+						</div>
+					</div>
+
+					<div class="card-footer d-flex gap-2">
+						<input type="hidden" name="action" value="update">
+						<button type="submit" class="btn btn-primary">儲存修改</button>
+						<a th:href="@{/product/product.do(action='getAll')}"
+							class="btn btn-secondary">回列表</a>
+					</div>
+				</form>
+
+			</div>
+		</div>
+
+	</div>
+
+	<!-- 即時圖片預覽 -->
+	<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("pictureInput");
+    const preview = document.getElementById("previewImage");
+    if (!input || !preview) return;
+
+    input.addEventListener("input", function () {
+      const name = input.value.trim();
+      preview.src = name
+        ? `/frontend-template/assets/img/${name}`
+        : `/frontend-template/assets/img/default.png`;
+    });
+  });
+</script>
+</body>
+</html>
