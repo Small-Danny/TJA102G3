@@ -211,7 +211,7 @@
               </div>
               <div class="remember form-group">
                 <div class="first">
-                  <input type="checkbox" name="checkbox" id="checkbox"><label for="checkbox">記住我</label>
+                  <input type="checkbox" name="remember-me" id="checkbox"><label for="checkbox">記住我</label>
                 </div>
                 <div class="second">
                   <a href="/frontend-template/forgot-password.html">忘記密碼？</a>
@@ -469,128 +469,128 @@
   <!-- ================================================================= -->
   <!-- ======================= 唯一修改點：登入腳本 ======================= -->
   <!-- ================================================================= -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // 動態載入 header
-      fetch('/frontend-template/header.txt?v=' + Date.now(), { cache: 'no-store' })
+ <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // =================================================================
+    //  通用功能 (保持不變)
+    // =================================================================
+    fetch('/frontend-template/header.txt?v=' + Date.now(), { cache: 'no-store' })
         .then(r => r.text())
         .then(html => {
-          if (document.getElementById('header')) {
-            document.getElementById('header').innerHTML = html;
-          }
+            if (document.getElementById('header')) {
+                document.getElementById('header').innerHTML = html;
+            }
         });
 
-      // 密碼顯示/隱藏功能
-      document.querySelectorAll('.toggle-password').forEach(icon => {
+    document.querySelectorAll('.toggle-password').forEach(icon => {
         icon.addEventListener('click', function () {
-          const targetId = this.getAttribute('data-target');
-          const input = document.getElementById(targetId);
-          const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-          input.setAttribute('type', type);
-          this.classList.toggle('fa-eye');
-          this.classList.toggle('fa-eye-slash');
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
         });
-      });
     });
 
-    // 顯示錯誤訊息的輔助函數
     function showError(elementId, message) {
-      const errorElement = document.getElementById(elementId);
-      if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.classList.add('show');
-      }
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+        }
     }
 
-    // 表單提交事件監聽器
-    document.getElementById('loginForm').addEventListener('submit', async function (e) {
-      e.preventDefault(); // 防止表單的默認提交行為
+    // =================================================================
+    //  登入邏輯 (最終修正版)
+    // =================================================================
+    const loginForm = document.getElementById('loginForm');
 
-      // 步驟 1: 執行前端驗證
-      let isValid = true;
-      document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show')); // 先清除所有舊的錯誤訊息
+    loginForm.addEventListener('submit', async function(e) {
+        // 1. 阻止表單的傳統 HTML 提交行為
+        e.preventDefault();
+        console.log('表單提交事件觸發');
 
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+        // 清除舊的錯誤訊息
+        document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
 
-      if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
-        showError('emailError', '請輸入有效的電子郵件');
-        isValid = false;
-      }
-      if (!password.trim()) {
-        showError('passwordError', '請輸入密碼');
-        isValid = false;
-      }
-
-      // 如果前端驗證不通過，則停止後續操作
-      if (!isValid) return;
-
-      // 步驟 2: 執行登入流程 (包含獲取 CSRF Token)
-      try {
-        // 2a: 先去後端 API 獲取 CSRF token
-        const csrfResponse = await fetch('/api/csrf-token');
-        if (!csrfResponse.ok) {
-          // 如果連 token 都拿不到，顯示通用錯誤
-          throw new Error('無法連接伺服器，請稍後再試');
-        }
-        const csrfData = await csrfResponse.json();
-        const token = csrfData.token;
-        const headerName = csrfData.headerName;
-
-        // 2b: 準備要發送的登入資料
-        const loginData = {
-          email: email,
-          password: password,
-          recaptchaToken: grecaptcha.getResponse(), // 獲取 reCAPTCHA 的回應
-          rememberMe: document.getElementById('checkbox').checked
-        };
-        // 【新增】檢查 recaptchaToken 是否為空
-        if (!loginData.recaptchaToken) {
-          showError('recaptchaTokenError', '請完成「我不是機器人」驗證');
-          return;
+        // 2. 執行 reCAPTCHA 驗證
+        const recaptchaToken = grecaptcha.getResponse();
+        if (!recaptchaToken) {
+            console.warn('reCAPTCHA 未完成驗證');
+            showError('recaptchaTokenError', '請完成「我不是機器人」驗證');
+            return; // 中斷提交
         }
 
-        // 2c: 發送登入請求，並在 Header 中附上 CSRF token
-        const loginResponse = await fetch('/api/users/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            [headerName]: token // 將 CSRF token 加入 header
-          },
-          body: JSON.stringify(loginData)
-        });
-
-        const responseData = await loginResponse.json();
-
-        // 如果後端回傳錯誤 (如密碼錯誤、驗證碼錯誤)，則拋出該錯誤
-        if (!loginResponse.ok) {
-          throw responseData;
+        // 3. 執行前端欄位驗證
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        let isValid = true;
+        if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
+            showError('emailError', '請輸入有效的電子郵件');
+            isValid = false;
+        }
+        if (!password.trim()) {
+            showError('passwordError', '請輸入密碼');
+            isValid = false;
+        }
+        if (!isValid) {
+            console.warn('前端欄位驗證失敗');
+            grecaptcha.reset();
+            return;
         }
 
-        // 2d: 登入成功
-        alert('登入成功！即將跳轉至會員中心...');
-        sessionStorage.setItem('loggedInUser', JSON.stringify(responseData));
-        window.location.href = '/frontend-template/profile.html';
+        // 4. 執行非同步登入
+        try {
+            console.log('準備獲取 CSRF token');
+            const csrfResponse = await fetch('/api/csrf-token');
+            if (!csrfResponse.ok) throw new Error('無法獲取 CSRF token');
+            const csrfData = await csrfResponse.json();
 
-      } catch (error) {
-        console.error('登入時出錯:', error);
-        
-        // 【關鍵修正】將後端錯誤訊息顯示在對應的欄位
-        if (error.field && error.message) {
-            // 如果是後端回傳的 ValidationException，例如帳密錯誤
-            showError(error.field + 'Error', error.message);
-        } else if (error.message) {
-            // 如果是其他 JavaScript 錯誤
-            alert('登入失敗：' + error.message);
-        } else {
-            alert('登入失敗，請稍後再試。');
+            const loginData = {
+                email: email,
+                password: password,
+                recaptchaToken: recaptchaToken, // 使用我們已驗證過的 token
+                rememberMe: document.getElementById('checkbox').checked
+            };
+            
+            console.log('準備發送的登入資料:', loginData);
+
+            const loginResponse = await fetch('/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfData.headerName]: csrfData.token
+                },
+                body: JSON.stringify(loginData)
+            });
+
+            const responseData = await loginResponse.json();
+
+            if (!loginResponse.ok) {
+                console.error('後端回傳錯誤:', responseData);
+                throw responseData;
+            }
+
+            console.log('登入成功！後端回傳資料:', responseData);
+            alert('登入成功！即將跳轉至會員中心...');
+            sessionStorage.setItem('loggedInUser', JSON.stringify(responseData));
+            window.location.href = '/frontend-template/profile.html';
+
+        } catch (error) {
+            console.error('登入流程發生錯誤:', error);
+            if (error.field && error.message) {
+                showError(error.field + 'Error', error.message);
+            } else if (error.message) {
+                alert('登入失敗：' + error.message);
+            } else {
+                alert('登入失敗，請稍後再試。');
+            }
+            grecaptcha.reset(); // 出錯時重設 reCAPTCHA
         }
-        
-        // 登入失敗後，重設 reCAPTCHA 讓使用者可以重試
-        grecaptcha.reset();
-      }
     });
-  </script>
+});
+</script>
 </body>
 
 </html>
