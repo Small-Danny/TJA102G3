@@ -73,6 +73,9 @@
 					role="alert">您已成功登出</div>
 
 				<form th:action="@{/admin/login}" method="post">
+					<!-- 添加 CSRF 令牌字段（關鍵修正） -->
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+					
 					<!-- 用戶名輸入框 -->
 					<div class="input-group mb-3">
 						<input type="text" class="form-control" placeholder="Username"
