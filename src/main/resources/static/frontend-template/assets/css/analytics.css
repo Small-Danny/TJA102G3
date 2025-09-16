@@ -1,0 +1,224 @@
+/* ===== Analytics Page Scoped ===== */
+.analytics-page .control-bar {
+  background: #151515;
+  border: 1px solid #2a2a2a;
+}
+.analytics-page .nav-pills .nav-link {
+  color: #bbb;
+  background: #1c1c1c;
+  border: 1px solid #2a2a2a;
+}
+.analytics-page .nav-pills .nav-link.active {
+  color: #fff;
+  background: #e50914;
+  border-color: #e50914;
+}
+.analytics-page .card {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  color: #eee;
+}
+
+.analytics-page .chart-placeholder {
+  border: 2px dashed #333;
+  height: 420px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+}
+.analytics-page .placeholder-line {
+  position: absolute; top: 24px; left: 24px; right: 24px; height: 10px;
+  background: #222;
+  border-radius: 8px;
+}
+.analytics-page .placeholder-line.w-75 { 
+  right: 25%; top: 48px; 
+}
+
+.analytics-page .placeholder-grid {
+  position: absolute; inset: 90px 24px 24px 24px;
+  border: 1px solid #2a2a2a; border-radius: 12px;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 48px 48px, 48px 48px;
+}
+
+.analytics-page .summary-list { 
+  display: grid; gap: 10px; 
+}
+.analytics-page .summary-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 12px; border: 1px solid #2a2a2a; border-radius: 10px;
+  background: #0e0e0e;
+}
+.analytics-page .summary-item .label { 
+  color: #aaa; 
+}
+.analytics-page .summary-item .value { 
+  color: #fff; font-weight: 700; 
+}
+
+.analytics-page .switch-section .slot-placeholder {
+  display: flex; align-items: center; gap: 10px;
+  justify-content: center;
+  border: 2px dashed #333; border-radius: 14px;
+  height: 240px; color: #9aa;
+  background: #0f0f0f;
+}
+.analytics-page .badge.bg-danger-subtle {
+  background: rgba(229, 9, 20, .15); color: #ff4a57;
+}
+
+/* 主題頁面 */
+:root {
+   --accent: #e50914; 
+   --chart-h: 520px; 
+  }
+
+.analytics-page .control-bar,
+.analytics-page .chart-card,
+.analytics-page .card.h-100:not(.chart-card) {
+  border-radius: 10px;
+  border: none;
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 0 14px rgba(229, 9, 20, .28);
+  transition: box-shadow .2s ease;
+}
+
+.analytics-page .control-bar:hover,
+.analytics-page .chart-card:hover,
+.analytics-page .card.h-100:not(.chart-card):hover {
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 0 24px rgba(229, 9, 20, .55);
+}
+
+.analytics-page .control-bar { background:#151515; }
+.analytics-page .chart-card,
+.analytics-page .card.h-100 { background:#111; color:#eee; }
+html, body {
+  background: #000;
+}
+
+.container,
+.container-xxl,
+.container-xl,
+.container-lg,
+.container-md,
+.container-sm {
+  background: transparent;
+}
+
+.banner-style-one,
+.banner-style-one .breadcrums {
+  background: #000;
+}
+
+/* 按鈕 */
+#rangeTabs {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+/* 膠囊按鈕 */
+#rangeTabs .nav-link {
+  flex: 1;                        
+  font-size: 20px;
+  font-weight: 700;
+  padding: 5px 0;
+  text-align: center;
+  background: transparent;
+  border: 3px solid #e50914;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+
+  min-width: 150px;
+  max-width: 500px;
+}
+
+/* hover 效果 */
+#rangeTabs .nav-link:hover {
+  background: rgba(229, 9, 20, 0.1);
+}
+
+#rangeTabs .nav-link.active {
+  background: transparent;
+  color: #fff;
+  border: 3px solid #e50914;
+  text-shadow: 0 0 8px rgba(229, 9, 20, 0.8);
+}
+.chart-wrap { 
+  position: relative; 
+}
+#mainChart {
+   background: transparent; 
+  }
+
+
+.analytics-page #summaryList .summary-item{
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 6px 0;
+}
+
+
+.analytics-page #summaryList .summary-item .label{
+  background: transparent;
+  padding: 0;
+  border: 0;
+  color: #ccc;
+  font-size: 20px;
+}
+
+.analytics-page #summaryList .summary-item .value{
+  white-space: nowrap;
+  color: #fff;
+  font-weight: 700;
+}
+
+
+.summary-card .d-grid {
+  background: #111;
+  padding-top: .25rem;
+}
+
+
+.chart-card .chart-wrap {
+  height: var(--chart-h);
+}
+.chart-card .chart-wrap canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.summary-card .card-body{
+  height: var(--chart-h);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.summary-card #summaryList{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 6px;
+  font-size: 1.1rem;
+  padding: 4px 0;
+}
+.summary-card #summaryList li span:last-child {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums; /* 數字對齊更整齊，可留可拿掉 */
+}
+
+
+@media (max-width: 1199.98px){
+  :root { --chart-h: 420px; }
+}
+@media (max-width: 767.98px){
+  :root { --chart-h: 360px; }
+}
