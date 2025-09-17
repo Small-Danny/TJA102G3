@@ -50,17 +50,18 @@ public class UserServiceImpl implements UserService {
 	private final FileService fileService;
 	private final PasswordEncoder passwordEncoder; // 新增密碼比對工具
 	private final ReCaptchaService reCaptchaService;// 新增Google reCAPTCHA
-	private final RememberMeServices rememberMeServices;
 	private final AuthenticationManager userAuthenticationManager;
 	private final SecurityContextRepository securityContextRepository;
 
+	
+	private final RememberMeServices rememberMeServices;
 	// 建構子注入
 
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository, StringRedisTemplate redisTemplate, MailService mailService,
 			FileService fileService, PasswordEncoder passwordEncoder, ReCaptchaService reCaptchaService,
-			 RememberMeServices rememberMeServices,@Qualifier("userAuthenticationManager")
-	AuthenticationManager userAuthenticationManager) {
+			 @Qualifier("userRememberMeServices")RememberMeServices rememberMeServices,
+			 @Qualifier("userAuthenticationManager")AuthenticationManager userAuthenticationManager) {
 		this.userRepository = userRepository;
 		this.redisTemplate = redisTemplate;
 		this.mailService = mailService;
@@ -215,7 +216,9 @@ public class UserServiceImpl implements UserService {
 
 	            // 5. 處理 "記住我" 功能
 	            if (loginRequest.isRememberMe()) {
+	                System.out.println("触发记住我功能，准备生成token");
 	                rememberMeServices.loginSuccess(request, response, authentication);
+
 	            }
 
 	            // 6. 從資料庫中找出完整的 User 物件並回傳給前端

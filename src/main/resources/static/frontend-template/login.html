@@ -154,6 +154,22 @@
       padding: 10px 0;
       /* 可選：添加上下間距 */
     }
+
+    /* 登錄頁面錯誤提示樣式補充 */
+    .error-message {
+      /* 默認隱藏錯誤信息 */
+      display: none;
+      color: #dc3545;
+      /* 紅色錯誤提示 */
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    /* 顯示錯誤信息的類 */
+    .error-message.show {
+      display: block;
+      /* 顯示錯誤 */
+    }
   </style>
 </head>
 
@@ -179,7 +195,8 @@
 
   <!-- 登入註冊 開始 -->
   <section class="banner-style-one">
-    <div class="parallax" style="background-image: url(https://via.placeholder.com/1920x640);"></div>
+    <div class="parallax" style="background-image: url(/frontend-template/assets/images/banner-bg.jpg);"></div>
+
     <div class="container">
       <div class="row">
         <div class="banner-details">
@@ -469,104 +486,113 @@
   <!-- ================================================================= -->
   <!-- ======================= 唯一修改點：登入腳本 ======================= -->
   <!-- ================================================================= -->
- <script>
-document.addEventListener('DOMContentLoaded', function () {
-    fetch('/frontend-template/header.txt?v=' + Date.now(), { cache: 'no-store' })
-        .then(r => r.text())
-        .then(html => { if (document.getElementById('header')) { document.getElementById('header').innerHTML = html; }});
+  <script>
+  
+    document.addEventListener('DOMContentLoaded', function () {
+      // 補充錯誤提示函數（關鍵修覆）
+      function showError(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+          errorElement.textContent = message; // 設置錯誤文本
+          errorElement.classList.add('show'); // 顯示錯誤（添加show類）
+        }
+        }
+        fetch('/frontend-template/header.txt?v=' + Date.now(), { cache: 'no-store' })
+          .then(r => r.text())
+          .then(html => { if (document.getElementById('header')) { document.getElementById('header').innerHTML = html; } });
 
-    document.querySelectorAll('.toggle-password').forEach(icon => {
-        icon.addEventListener('click', function () {
+        document.querySelectorAll('.toggle-password').forEach(icon => {
+          icon.addEventListener('click', function () {
             const targetId = this.getAttribute('data-target');
             const input = document.getElementById(targetId);
             input.setAttribute('type', input.getAttribute('type') === 'password' ? 'text' : 'password');
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
+          });
         });
-    });
 
-    // =================================================================
-    //  登入邏輯 (最終修正版)
-    // =================================================================
-    const loginForm = document.getElementById('loginForm');
+        // =================================================================
+        //  登入邏輯 (最終修正版)
+        // =================================================================
+        const loginForm = document.getElementById('loginForm');
 
-    loginForm.addEventListener('submit', async function(e) {
-        // 1. 阻止表單的傳統 HTML 提交行為
-        e.preventDefault();
-        console.log('表單提交事件觸發');
+        loginForm.addEventListener('submit', async function (e) {
+          // 1. 阻止表單的傳統 HTML 提交行為
+          e.preventDefault();
+          console.log('表單提交事件觸發');
 
-        // 清除舊的錯誤訊息
-        document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+          // 清除舊的錯誤訊息
+          document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
 
-        // 2. 執行 reCAPTCHA 驗證
-        const recaptchaToken = grecaptcha.getResponse();
-        if (!recaptchaToken) {
+          // 2. 執行 reCAPTCHA 驗證
+          const recaptchaToken = grecaptcha.getResponse();
+          if (!recaptchaToken) {
             console.warn('reCAPTCHA 未完成驗證');
             showError('recaptchaTokenError', '請完成「我不是機器人」驗證');
             return; // 中斷提交
-        }
+          }
 
-        // 3. 執行前端欄位驗證
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        let isValid = true;
-        if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
+          // 3. 執行前端欄位驗證
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          let isValid = true;
+          if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
             showError('emailError', '請輸入有效的電子郵件');
             isValid = false;
-        }
-        if (!password.trim()) {
+          }
+          if (!password.trim()) {
             showError('passwordError', '請輸入密碼');
             isValid = false;
-        }
-        if (!isValid) {
+          }
+          if (!isValid) {
             console.warn('前端欄位驗證失敗');
             grecaptcha.reset();
             return;
-        }
+          }
 
-        // 4. 執行非同步登入
-         try {
+          // 4. 執行非同步登入
+          try {
             const csrfResponse = await fetch('/api/csrf-token');
             if (!csrfResponse.ok) throw new Error('無法獲取 CSRF token');
             const csrfData = await csrfResponse.json();
 
             const loginData = {
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value,
-                recaptchaToken: grecaptcha.getResponse(),
-                rememberMe: document.getElementById('checkbox').checked
+              email: document.getElementById('email').value,
+              password: document.getElementById('password').value,
+              recaptchaToken: grecaptcha.getResponse(),
+              "remember-me": document.getElementById('checkbox').checked
             };
-            
+
             const loginResponse = await fetch('/api/users/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    [csrfData.headerName]: csrfData.token
-                },
-                // ★★★ 關鍵修正：加上 credentials: 'include' ★★★
-                // 這會讓瀏覽器在發送請求時，自動帶上 JSESSIONID Cookie
-                credentials: 'include',
-                body: JSON.stringify(loginData)
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                [csrfData.headerName]: csrfData.token
+              },
+              // ★★★ 關鍵修正：加上 credentials: 'include' ★★★
+              // 這會讓瀏覽器在發送請求時，自動帶上 JSESSIONID Cookie
+              credentials: 'include',
+              body: JSON.stringify(loginData)
             });
 
             if (!loginResponse.ok) {
-                const errorData = await loginResponse.json();
-                throw errorData;
+              const errorData = await loginResponse.json();
+              throw errorData;
             }
 
             // 登入成功後，後端會自動設定 Cookie，我們不再需要手動儲存 user 資料
             alert('登入成功！即將跳轉至會員中心...');
             window.location.href = '/frontend-template/profile.html'; // 直接跳轉
 
-        } catch (error) {
+          } catch (error) {
             // ... (錯誤處理邏輯不變) ...
             console.error('登入流程發生錯誤:', error);
             alert(`登入失敗: ${error.message || '請檢查您的帳號密碼'}`);
             grecaptcha.reset();
-        }
-    });
-});
-</script>
+          }
+        });
+      });
+  </script>
 </body>
 
 </html>

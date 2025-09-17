@@ -1,15 +1,15 @@
 package com.tibafit.dto.user;
 
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Jedis;
-
-import com.tibafit.model.user.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
+
 @Data
 public class LoginRequest {
 	private String email;
 	private String password;
 	private String recaptchaToken;
-	 private boolean rememberMe;
-	//Dto專門用來接收資料，特意省略Getter跟setter,練習用@Data加入depency依賴與Lombok插件
+	@JsonProperty("remember-me")
+	private boolean rememberMe;
+	// 一個明確的映射橋樑。JsonProperty
 }
