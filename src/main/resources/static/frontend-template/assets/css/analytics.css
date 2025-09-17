@@ -212,7 +212,7 @@ html, body {
 }
 .summary-card #summaryList li span:last-child {
   font-weight: 600;
-  font-variant-numeric: tabular-nums; /* 數字對齊更整齊，可留可拿掉 */
+  font-variant-numeric: tabular-nums;
 }
 
 
