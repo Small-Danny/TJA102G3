@@ -1,6 +1,7 @@
 package com.tibafit.service.user;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,5 +41,7 @@ public interface UserService {
 	public abstract List<User> searchUser(String keyword);
 	
 	public abstract void toggleAccountStatus(Integer userId);
+	
+	public abstract Optional<User> findUserByEmail(String email);
 
 }
