@@ -7,8 +7,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import org.springframework.security.core.Authentication; 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,7 +52,7 @@ public class AdminController {
 	@GetMapping("/login")
 	public String showLoginPage() {
 		// 去templates/admin/資料夾裡，處理登入登出邏輯
-		return "admin/login";
+		return "/admin/admin-login";
 	}
 
 	/**
@@ -110,49 +112,74 @@ public class AdminController {
 	 */
 	@GetMapping("/members/export/csv")
 	public void exportMembersToCsv(@RequestParam(required = false) String keyword, HttpServletResponse response)
-			throws IOException {
-		// 1. 設定 Response Headers
-		response.setContentType("text/csv; charset=UTF-8");
-		String formattedDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-		String fileName = "members-" + formattedDate + ".csv";
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-		response.setCharacterEncoding("UTF-8");
-		// 2. 根據有無 keyword，決定要撈取的會員資料
-		List<User> userList;
-		if (keyword != null && !keyword.trim().isEmpty()) {
-			userList = userService.searchUser(keyword.trim());
-		} else {
-			userList = userService.findAll();
-		}
+	        throws IOException {
+	    // 1. 設定 Response Headers
+	    response.setContentType("text/csv; charset=UTF-8");
+	    String formattedDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+	    String fileName = "members-" + formattedDate + ".csv";
+	    response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+	    response.setCharacterEncoding("UTF-8");
+	    
+	    // 2. 根據有無 keyword，決定要撈取的會員資料
+	    List<User> userList;
+	    if (keyword != null && !keyword.trim().isEmpty()) {
+	        userList = userService.searchUser(keyword.trim());
+	    } else {
+	        userList = userService.findAll();
+	    }
 
-		// 3. 準備日期格式化工具
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    // 3. 準備日期格式化工具
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-		// 4. 寫入 CSV 內容
-		try (PrintWriter writer = response.getWriter()) {
-//        	自動切換到正確的 UTF-8 模式來打開檔案
-			writer.print("\uFEFF");
-			writer.println("會員ID,姓名,Email,電話,性別,身高(cm),體重(kg),BMI,帳戶點數,帳號狀態,註冊日期");
+	    // 4. 使用 Apache Commons CSV 寫入內容
+	    try (
+	        PrintWriter writer = response.getWriter();
+	        // ★ 關鍵：建立 CSVPrinter，它會自動處理特殊字元
+	        CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)
+	    ) {
+	        // 寫入 UTF-8 BOM，讓 Excel 正確識別中文
+	        writer.print("\uFEFF");
 
-			for (User user : userList) {
-				String gender = switch (user.getGender()) {
-				case 1 -> "男";
-				case 2 -> "女";
-				default -> "不透露";
-				};
-				String status = (user.getAccountStatus() == 1) ? "啟用" : "停權";
-				String phone = user.getPhone() != null ? user.getPhone() : "";
-				String createTimeString = user.getCreateTime() != null ? dateFormat.format(user.getCreateTime()) : "";
-				String line = String.join(",", user.getUserId().toString(), user.getName(), user.getEmail(), phone,
-						gender, user.getHeightCm() != null ? user.getHeightCm().toString() : "",
-						user.getWeightKg() != null ? user.getWeightKg().toString() : "",
-						user.getBmi() != null ? user.getBmi().toString() : "",
-						user.getPointsBalance() != null ? user.getPointsBalance().toString() : "0", status,
-						createTimeString);
+	        // 寫入標頭
+	        csvPrinter.printRecord("會員ID", "姓名", "Email", "電話", "性別", "身高(cm)", "體重(kg)", "BMI", "帳戶點數", "帳號狀態", "註冊日期");
 
-				writer.println(line);
-			}
-		}
+	        // 寫入每一行資料
+	        for (User user : userList) {
+	            // 使用 if-else 確保相容性
+	            String gender;
+	            Integer genderValue = user.getGender();
+	            if (genderValue == null) {
+	                gender = "不透露";
+	            } else {
+	                gender = switch (genderValue) {
+	                    case 1 -> "男";
+	                    case 2 -> "女";
+	                    default -> "不透露";
+	                };
+	            }
+
+	            String status = (user.getAccountStatus() == 1) ? "啟用" : "停權";
+	            String phone = user.getPhone() != null ? user.getPhone() : "";
+	            String createTimeString = user.getCreateTime() != null ? dateFormat.format(user.getCreateTime()) : "";
+
+	            // ★ 關鍵：使用 csvPrinter.printRecord，它會自動為每個欄位加上引號 (如果需要)
+	            csvPrinter.printRecord(
+	                user.getUserId(),
+	                user.getName(),
+	                user.getEmail(),
+	                phone,
+	                gender,
+	                user.getHeightCm(),
+	                user.getWeightKg(),
+	                user.getBmi(),
+	                user.getPointsBalance() != null ? user.getPointsBalance() : "0",
+	                status,
+	                createTimeString
+	            );
+	        }
+	        
+	        csvPrinter.flush(); // 確保所有內容都寫入
+	    }
 	}
 	
 	@GetMapping("/profile")
