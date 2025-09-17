@@ -580,33 +580,39 @@
 	<script>
 		document.addEventListener('DOMContentLoaded', async function () {
 			// =================================================================
-			// 核心邏輯：檢查登錄並獲取 CSRF Token
+			// 全局變數區
 			// =================================================================
-			const loggedInUserString = sessionStorage.getItem('loggedInUser');
-			if (!loggedInUserString) {
-				alert('您尚未登入，將跳轉至登入頁面');
-				window.location.href = 'login.html';
-				return;
-			}
-
 			let csrfToken = null;
 			let csrfHeaderName = null;
+			let user = null; // ★★★ 不再從 sessionStorage 讀取，改為 null
 
+			// =================================================================
+			// 核心邏輯：載入時驗證 Session 並獲取使用者資料
+			// =================================================================
 			try {
-				const csrfResponse = await fetch('/api/csrf-token');
-				if (!csrfResponse.ok) throw new Error('CSRF Token 獲取失敗');
+				// 'credentials: include' 會強制 fetch 請求把 JSESSIONID Cookie 一起送出去
+				const csrfResponse = await fetch('/api/csrf-token', { credentials: 'include' });
+				if (!csrfResponse.ok) throw new Error('無法獲取 CSRF Token');
 				const csrfData = await csrfResponse.json();
 				csrfToken = csrfData.token;
 				csrfHeaderName = csrfData.headerName;
+
+				const profileResponse = await fetch('/api/users/profile', { credentials: 'include' });
+				if (!profileResponse.ok) {
+					throw new Error('使用者未登入');
+				}
+
+				user = await profileResponse.json();
+
 			} catch (error) {
-				console.error('初始化頁面失敗:', error);
-				alert('頁面初始化失敗，請重新登入。');
-				sessionStorage.removeItem('loggedInUser');
-				window.location.href = 'login.html';
+				console.error('初始化頁面失敗:', error.message);
+				// 這就是你截圖中看到的彈窗
+				alert('您尚未登入或會話已過期，將跳轉至登入頁面');
+				window.location.href = '/frontend-template/login.html';
 				return;
 			}
 
-			// ★★★ 關鍵修正：確保獲取 Token 之後才隱藏加載動畫 ★★★
+			// 如果成功，頁面繼續載入...
 			document.querySelector('.preloader').style.display = 'none';
 
 			// 動態載入 header
@@ -616,14 +622,13 @@
 					const headerContainer = document.getElementById('header');
 					if (headerContainer) {
 						headerContainer.innerHTML = html;
-						updateHeaderAuthState(); // 加載完畢後才更新登入狀態
+						updateHeaderAuthState();
 					}
 				});
 
 			// =================================================================
 			// 變量宣告區 (基於您的原始碼)
 			// =================================================================
-			let user = JSON.parse(loggedInUserString);
 			const avatarInput = document.getElementById('avatar');
 			const avatarPreview = document.getElementById('avatarPreview');
 			const nicknameDisplayArea = document.getElementById('nicknameDisplayArea');
@@ -702,9 +707,9 @@
 				const authLinksContainer = document.getElementById('auth-links');
 				if (!authLinksContainer) return;
 				const loggedInHTML = `
-                    <a href="/frontend-template/profile.html" class="login">會員中心</a>
-                    <span style="color: white; margin: 0 8px;">/</span>
-                    <a href="#" id="logoutBtn" class="login">登出</a>`;
+                <a href="/frontend-template/profile.html" class="login">會員中心 (${user.nickName || user.name})</a>
+                <span style="color: white; margin: 0 8px;">/</span>
+                <a href="#" id="logoutBtn" class="login">登出</a>`;
 				authLinksContainer.innerHTML = loggedInHTML;
 
 				const logoutBtn = document.getElementById('logoutBtn');
@@ -712,24 +717,25 @@
 					logoutBtn.addEventListener('click', function (e) {
 						e.preventDefault();
 
+						// ★★★ 核心修正點：使用動態表單來觸發登出 ★★★
 						const form = document.createElement('form');
 						form.method = 'POST';
-						form.action = '/admin/logout'; // 後台登出路徑
+						const logoutUrl = window.location.pathname.startsWith('/admin/') ? '/admin/logout' : '/logout';
+						form.action = logoutUrl;
 
+						// 創建一個隱藏的 input 欄位來存放 CSRF token
 						const csrfInput = document.createElement('input');
 						csrfInput.type = 'hidden';
-						csrfInput.name = '_csrf';
-						csrfInput.value = csrfToken;
+						csrfInput.name = csrfHeaderName; // 使用從 API 獲取的 token 參數名稱
+						csrfInput.value = csrfToken;   // 使用從 API 獲取的 token 值
 						form.appendChild(csrfInput);
 
 						document.body.appendChild(form);
-
-						sessionStorage.removeItem('loggedInUser');
-						alert('您已成功登出！');
-						form.submit();
+						form.submit(); // 提交這個包含 CSRF token 的表單
 					});
 				}
 			}
+
 
 			function calculateBMI() {
 				const height = parseFloat(heightInput.value) / 100;
@@ -884,6 +890,7 @@
 					const response = await fetch(`/api/users/${user.userId}/profile-picture`, {
 						method: 'PUT',
 						headers: { [csrfHeaderName]: csrfToken },
+						credentials: 'include', // ★★★ 新增此行 ★★★
 						body: formData
 					});
 					if (!response.ok) {
@@ -897,7 +904,7 @@
 
 					// 3. 更新前端暫存的 user 物件
 					user.profilePicture = newPicturePath;
-					sessionStorage.setItem('loggedInUser', JSON.stringify(user));
+					// sessionStorage.setItem('loggedInUser', JSON.stringify(user));不操作sessionStorage
 					alert('頭像更新成功');
 					avatarPreview.src = `/${newPicturePath}?t=${new Date().getTime()}`;
 				} catch (error) {
@@ -929,6 +936,7 @@
 							'Content-Type': 'application/json',
 							[csrfHeaderName]: csrfToken
 						},
+						credentials: 'include', // ★★★ 新增此行 ★★★
 						body: JSON.stringify(updateData)
 					});
 					if (!response.ok) {
@@ -937,7 +945,7 @@
 					}
 					const updatedUser = await response.json();
 
-					sessionStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
+					// sessionStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
 					user = updatedUser;
 
 					alert('個人資料更新成功！');
@@ -965,6 +973,7 @@
 							'Content-Type': 'application/json',
 							[csrfHeaderName]: csrfToken
 						},
+						credentials: 'include', // ★★★ 新增此行 ★★★
 						body: JSON.stringify(changePasswordData)
 					});
 					if (!response.ok) {
@@ -993,7 +1002,7 @@
 				} else {
 					nicknameHint.classList.remove('show');
 				}
-			});
+			}); populateUserData();
 		});
 	</script>
 
