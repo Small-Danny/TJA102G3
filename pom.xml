@@ -61,7 +61,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-<<<<<<< Upstream, based on branch 'master' of https://github.com/Small-Danny/TJA102G3.git
 		<dependency>
     		<groupId>org.projectlombok</groupId>
     		<artifactId>lombok</artifactId>
@@ -101,17 +100,3 @@
 	</build>
 
 </project>
-=======
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
-</project>
->>>>>>> 9e8763d Initial commit with new Spring Boot structure
