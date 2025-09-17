@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title th:text="${product.product_name} + '｜商品詳情'">商品詳情</title>
+
+  <!-- CSS -->
+  <link th:href="@{/frontend-template/assets/css/bootstrap.min.css}" rel="stylesheet"/>
+  <link th:href="@{/frontend-template/assets/images/heading-icon.png}" rel="icon" type="image/x-icon"/>
+  <link th:href="@{/frontend-template/assets/font/flaticon_mycollection.html}" rel="stylesheet"/>
+  <link th:href="@{/frontend-template/assets/css/owl.carousel.min.css}" rel="stylesheet"/>
+  <link th:href="@{/frontend-template/assets/css/owl.theme.default.min.css}" rel="stylesheet"/>
+  <link th:href="@{/frontend-template/assets/css/jquery.fancybox.min.css}" rel="stylesheet"/>
+  <link th:href="@{/frontend-template/assets/css/fontawesome.min.css}" rel="stylesheet"/>
+  <link th:href="@{/frontend-template/assets/css/nice-select.css}" rel="stylesheet"/>
+  <link th:href="@{/frontend-template/assets/css/style.css}" rel="stylesheet"/>
+  <link th:href="@{/frontend-template/assets/css/responsive.css}" rel="stylesheet"/>
+  <link th:href="@{/frontend-template/assets/css/header.css}" rel="stylesheet"/>
+  <link th:href="@{/frontend-template/assets/css/productdetail.css}" rel="stylesheet"/>
+  
+</head>
+
+<body>
+  <!-- header -->
+  <div th:replace="~{frontend/layout/header :: siteHeader}"></div>
+
+  <!-- Banner -->
+  <section class="banner-style-one">
+    <div class="parallax" style="background-image: url(https://via.placeholder.com/1920x640);"></div>
+    <div class="container">
+      <div class="row">
+        <div class="banner-details">
+          <h2>商品詳情</h2>
+          <p>我們的價值觀讓我們躍升至行業頂端。</p>
+        </div>
+      </div>
+    </div>
+    <div class="breadcrums">
+      <div class="container">
+        <div class="row">
+          <ul>
+            <li>
+              <a th:href="@{/}">
+                <i class="fa-solid fa-house"></i>
+                <p>首頁</p>
+              </a>
+            </li>
+            <li class="current"><p>商品詳情</p></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 商品詳情 -->
+  <section class="gap no-bottom product-detail light-bg-color">
+    <div class="container">
+      <div class="row align-items-center">
+        
+        <!-- 左側圖片 -->
+        <div class="col-lg-6">
+          <div class="pd-gallery">
+            <div class="pd-main-img">
+              <img th:if="${product.product_picture != null and #strings.startsWith(product.product_picture,'http')}"
+                   th:src="${product.product_picture}"
+                   th:alt="${product.product_name}" />
+
+              <img th:if="${product.product_picture == null or !#strings.startsWith(product.product_picture,'http')}"
+                   th:src="@{/frontend-template/assets/img/{f}(f=${product.product_picture != null ? product.product_picture : 'placeholder.png'})}"
+                   th:alt="${product.product_name}" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 右側資料 -->
+        <div class="col-lg-6">
+          <div class="pd-data">
+            <h2 th:text="${product.product_name}">商品名稱</h2>
+            <ul class="pd-price">
+              <li class="pd-sale-price">NT$ <span th:text="${product.product_price}">0</span></li>
+            </ul>
+            <p th:text="${product.product_description}">商品敘述</p>
+            
+           
+            <!-- 數量 -->
+            <div class="pd-quality">
+              <span>數量</span>
+              <input type="number" id="qty" name="number" value="1" min="1"/>
+            </div>
+
+            <!-- 加入購物車 -->
+            <a class="theme-btn mt-3"
+               href="javascript:void(0)"
+               th:attr="data-id=${product.product_id}">
+              加入購物車 <i class="fa-solid fa-bag-shopping"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JS -->
+  <script th:src="@{/frontend-template/assets/js/jquery.min.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/bootstrap.min.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/jquery.fancybox.min.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/jquery.nice-select.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/owl.carousel.min.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/custom.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/cart.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/productdetail.js}"></script>
+
+</body>
+</html>
