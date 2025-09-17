@@ -596,6 +596,7 @@
 				const csrfData = await csrfResponse.json();
 				csrfToken = csrfData.token;
 				csrfHeaderName = csrfData.headerName;
+				csrfParameterName = csrfData.parameterName; 
 
 				const profileResponse = await fetch('/api/users/profile', { credentials: 'include' });
 				if (!profileResponse.ok) {
@@ -720,13 +721,12 @@
 						// ★★★ 核心修正點：使用動態表單來觸發登出 ★★★
 						const form = document.createElement('form');
 						form.method = 'POST';
-						const logoutUrl = window.location.pathname.startsWith('/admin/') ? '/admin/logout' : '/logout';
-						form.action = logoutUrl;
+						form.action = '/logout'; // 必須對應 SecurityConfig 中的 .logoutUrl()
 
 						// 創建一個隱藏的 input 欄位來存放 CSRF token
 						const csrfInput = document.createElement('input');
 						csrfInput.type = 'hidden';
-						csrfInput.name = csrfHeaderName; // 使用從 API 獲取的 token 參數名稱
+						csrfInput.name = csrfParameterName; // 使用從 API 獲取的 token 參數名稱
 						csrfInput.value = csrfToken;   // 使用從 API 獲取的 token 值
 						form.appendChild(csrfInput);
 
