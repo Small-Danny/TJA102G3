@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+
+<style>
+  /* 任何時候，只要 body 有 page-loaded 就把 preloader 關掉 */
+  body.page-loaded .preloader { display:none !important; opacity:0 !important; visibility:hidden !important; }
+
+  /* 絕對保險：最多 3 秒自動收起（就算 onload 沒觸發） */
+  @keyframes preloaderTimeout { to { display:none; opacity:0; visibility:hidden; } }
+  .preloader { animation: preloaderTimeout 0s linear 3s forwards; }
+</style>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>購物車</title>
@@ -26,6 +36,15 @@
   </style>
 </head>
 <body>
+
+<script>
+  // 有些版塊一定會塞很多圖，載不到就隱藏，不要一直報錯影響使用者
+  window.addEventListener('error', function(e){
+    var t = e.target;
+    if (t && t.tagName === 'IMG') { t.style.display = 'none'; }
+  }, true);
+</script>
+
   <!-- Loader -->
   <div class="preloader">
     <div class="loader-wrap-heading">
@@ -169,7 +188,7 @@
   <!-- Scripts（順序依你原專案） -->
   <script src="assets/js/jquery.min.js"></script>
   <script src="assets/js/jquery.waypoints.min.js"></script>
-  <script src="assets/js/Nzoom.min.js"></script>
+  
   <script src="assets/js/jquery.counterup.min.js"></script>
   <script src="assets/js/bootstrap.min.js"></script>
   <script src="assets/js/jquery.fancybox.min.js"></script>

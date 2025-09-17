@@ -6,25 +6,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+//	quantity：新的數量（>0）
+//	內建 jakarta.validation 驗證，控制器用 @Valid 就能自動檢查。
+
+@NoArgsConstructor // Lombok：產生無參數建構子
+@AllArgsConstructor // Lombok：產生全參數建構子
+@Builder // Lombok：產生 builder()（若要用，欄位名需與此類一致）
 public class UpdateOrderItemQtyDTO {
 
-    @NotNull(message = "訂單明細ID必填")
-    private Integer orderItemId;
+	@NotNull // 必填
+	@Positive(message = "數量需大於 0") // 驗證規則：> 0
+	private Integer quantity; // 新的數量
 
-    @NotNull @Positive(message = "數量需大於 0")
-    private Integer quantity;
-
-	public Integer getOrderItemId() {
-		return orderItemId;
-	}
-
-	public void setOrderItemId(Integer orderItemId) {
-		this.orderItemId = orderItemId;
-	}
-
+	// Getter / Setter（JavaBean 命名，方便 Spring/Jackson 綁定）
 	public Integer getQuantity() {
 		return quantity;
 	}
@@ -32,6 +26,4 @@ public class UpdateOrderItemQtyDTO {
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
-    
-    
 }

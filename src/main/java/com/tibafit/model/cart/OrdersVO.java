@@ -5,51 +5,57 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@Entity
+//	OrdersVO 是訂單主檔的 JPA 實體，記錄下單者、下單時間、收件資訊、使用點數、總價、付款狀態與付款時
+//	間（未付款為 null），以及與多筆 OrderItemVO 的關聯。
+//	建立訂單時寫入主檔與明細；付款流程更新 paymentStatus 與 paymentTime。
+
+@Entity // JPA 實體：對應資料表 orders（訂單主檔）
 @Table(name = "orders")
 public class OrdersVO {
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // 自增主鍵（MySQL AUTO_INCREMENT）
 	@Column(name = "order_id")
 	private Integer orderId;
 
-	@Column(name = "user_id", nullable = false)
+	@Column(name = "user_id", nullable = false) // 下單者 ID
 	private Integer userId;
 
-	@CreationTimestamp
+	@CreationTimestamp // 由 Hibernate 在 INSERT 時自動填入建立時間
 	@Column(name = "order_date", nullable = false)
 	private LocalDateTime orderDate;
 
-	@Column(name = "order_status", nullable = false)
+	@Column(name = "order_status", nullable = false) // 訂單狀態（整數碼；由服務層控制流程）
 	private Integer orderStatus = 0;
 
-	@Column(name = "recipient_name", nullable = false, length = 50)
+	@Column(name = "recipient_name", nullable = false, length = 50) // 收件人姓名
 	private String recipientName = "未指定";
-	
-	@Column(name = "recipient_phone", nullable = false, length = 20)
+
+	@Column(name = "recipient_phone", nullable = false, length = 20) // 收件人電話
 	private String recipientPhone = "0000000000";
-	
-	@Column(name = "recipient_address", nullable = false, length = 255)
+
+	@Column(name = "recipient_address", nullable = false, length = 255) // 收件地址
 	private String recipientAddress = "未指定";
 
-	@Column(name = "used_points_amount")
+	@Column(name = "used_points_amount") // 使用點數（可為 null）
 	private Integer usedPointsAmount;
-	
-	@Column(name = "total_price", nullable = false)
+
+	@Column(name = "total_price", nullable = false) // 訂單總價（由明細加總後寫入）
 	private Integer totalPrice;
 
-	@Column(name = "payment_time", nullable = false)
-	private LocalDateTime paymentTime = LocalDateTime.now();
-	
-	@Column(name = "payment_status", nullable = false)
-	private Integer paymentStatus = 0; // 0未付 1已付 2失敗
-	
-	@Column(name = "order_code", nullable = false, unique = true, length = 50)
+	@Column(name = "payment_time", nullable = true) // ✅ 可為 null（未付款時不寫入時間）
+	private LocalDateTime paymentTime;
+
+	@Column(name = "payment_status", nullable = false) // ✅ 付款狀態（0 未付 / 1 已付 / 2 失敗）
+	private Integer paymentStatus = 0;
+
+	@Column(name = "order_code", nullable = false, unique = true, length = 50) // 訂單代碼/流水號
 	private String orderCode;
 
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true) // orders (1) -> order_item (N)
-	private List<OrderItemVO> orderItems = new ArrayList<>();
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true) // 一對多：orders(1) -> order_item(N)
+	private List<OrderItemVO> orderItems = new ArrayList<>(); // 維持父子生命週期一致（cascade+orphanRemoval）
+
+	// ===== Getter / Setter =====
 
 	public Integer getOrderId() {
 		return orderId;
@@ -154,6 +160,4 @@ public class OrdersVO {
 	public void setOrderItems(List<OrderItemVO> orderItems) {
 		this.orderItems = orderItems;
 	}
-	
-	
 }
