@@ -1,0 +1,42 @@
+.ratings,
+    #v-pills-messages-tab,
+    #v-pills-messages { 
+      display: none; 
+    }
+
+    #v-pills-profile-tab,
+    #v-pills-profile {
+      display: none;
+    }
+
+    .pd-size { 
+      margin: 0 0 16px 0; 
+    }
+
+    .pd-size .pd-label {
+      display:inline-block; font-weight:700; letter-spacing: .05em; margin-bottom:8px;
+    }
+    .size-group { 
+      display:flex; flex-wrap:wrap; gap:10px; 
+    }
+
+    .size-chip{
+      min-width: 52px; height: 40px; padding: 0 14px;
+      border:1px solid #ddd; border-radius:8px;
+      background:#fff; color:#111; font-weight:700; letter-spacing:.05em;
+      display:inline-flex; align-items:center; justify-content:center;
+      transition: all .15s ease-in-out; cursor:pointer; user-select:none;
+    }
+
+    .size-chip:hover { 
+      border-color:#ff1f25; box-shadow: 0 0 0 2px rgba(255,31,37,.15) inset; 
+    }
+
+    .size-chip.is-selected{
+      background:#ff1f25; color:#fff; border-color:#ff1f25;
+      box-shadow: none;
+    }
+
+    .size-chip.is-disabled{
+      color:#999; background:#f2f2f2; border-color:#e5e5e5; cursor:not-allowed; opacity:.6;
+    }
