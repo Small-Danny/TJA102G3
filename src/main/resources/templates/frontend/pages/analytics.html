@@ -5,23 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TibaFit 數據圖表</title>
 
-<!-- 共用 CSS -->
 <link rel="stylesheet" th:href="@{/frontend-template/assets/css/bootstrap.min.css}">
-<link rel="stylesheet"
-	th:href="@{/assets/font/flaticon_mycollection.css}">
+<link rel="stylesheet" th:href="@{/frontend-template/assets/font/flaticon_mycollection.html}">
 <link rel="stylesheet" th:href="@{/frontend-template/assets/css/owl.carousel.min.css}">
-<link rel="stylesheet"
-	th:href="@{/assets/css/owl.theme.default.min.css}">
+<link rel="stylesheet" th:href="@{/frontend-template/assets/css/owl.theme.default.min.css}">
 <link rel="stylesheet" th:href="@{/frontend-template/assets/css/jquery.fancybox.min.css}">
 <link rel="stylesheet" th:href="@{/frontend-template/assets/css/fontawesome.min.css}">
 <link rel="stylesheet" th:href="@{/frontend-template/assets/css/nice-select.css}">
 <link rel="stylesheet" th:href="@{/frontend-template/assets/css/style.css}">
 <link rel="stylesheet" th:href="@{/frontend-template/assets/css/responsive.css}">
 <link rel="stylesheet" th:href="@{/frontend-template/assets/css/header.css}">
-<!-- 專用 CSS -->
 <link rel="stylesheet" th:href="@{/frontend-template/assets/css/analytics.css}">
-<link rel="icon" type="image/x-icon"
-	th:href="@{/frontend-template/assets/images/heading-icon.png}">
+<link rel="icon" type="image/x-icon" th:href="@{/frontend-template/assets/images/heading-icon.png}">
+
 </head>
 
 <body class="">
@@ -34,9 +30,9 @@
 		</div>
 	</div>
 	<!-- Header -->
-	<div th:replace="~{fronted/layout/header :: siteHeader}"></div>
+	<div th:replace="~{frontend/layout/header :: siteHeader}"></div>
 
-	<!-- 橫幅 -->
+	<!-- banner -->
 	<section class="banner-style-one">
 		<div class="parallax"
 			style="background-image: url(https://via.placeholder.com/1920x640);"></div>
@@ -165,8 +161,8 @@
 	<script th:src="@{/frontend-template/assets/js/jquery.nice-select.js}"></script>
 	<script th:src="@{/frontend-template/assets/js/owl.carousel.min.js}"></script>
 	<script th:src="@{/frontend-template/assets/js/custom.js}"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+	<script th:src="@{/frontend-template/assets/js/cart.js}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 	<!-- 專用 JS -->
 	<script src="/frontend-template/assets/js/analytics.js" defer></script>
 </body>
