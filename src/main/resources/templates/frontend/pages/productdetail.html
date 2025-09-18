@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title th:text="${product.product_name} + '｜商品詳情'">商品詳情</title>
+  <title th:text="${product.productName} + '｜商品詳情'">商品詳情</title>
 
   <!-- CSS -->
   <link th:href="@{/frontend-template/assets/css/bootstrap.min.css}" rel="stylesheet"/>
@@ -62,13 +62,13 @@
         <div class="col-lg-6">
           <div class="pd-gallery">
             <div class="pd-main-img">
-              <img th:if="${product.product_picture != null and #strings.startsWith(product.product_picture,'http')}"
-                   th:src="${product.product_picture}"
-                   th:alt="${product.product_name}" />
+              <img th:if="${product.productPicture != null and #strings.startsWith(product.productPicture,'http')}"
+                   th:src="${product.productPicture}"
+                   th:alt="${product.productName}" />
 
-              <img th:if="${product.product_picture == null or !#strings.startsWith(product.product_picture,'http')}"
-                   th:src="@{/frontend-template/assets/img/{f}(f=${product.product_picture != null ? product.product_picture : 'placeholder.png'})}"
-                   th:alt="${product.product_name}" />
+              <img th:if="${product.productPicture == null or !#strings.startsWith(product.productPicture,'http')}"
+                   th:src="@{/frontend-template/assets/img/{f}(f=${product.productPicture != null ? product.productPicture : 'placeholder.png'})}"
+                   th:alt="${product.productName}" />
             </div>
           </div>
         </div>
@@ -76,25 +76,71 @@
         <!-- 右側資料 -->
         <div class="col-lg-6">
           <div class="pd-data">
-            <h2 th:text="${product.product_name}">商品名稱</h2>
+            <h2 th:text="${product.productName}">商品名稱</h2>
             <ul class="pd-price">
-              <li class="pd-sale-price">NT$ <span th:text="${product.product_price}">0</span></li>
+              <li class="pd-sale-price">NT$ <span th:text="${product.productPrice}">0</span></li>
             </ul>
-            <p th:text="${product.product_description}">商品敘述</p>
+            <p th:text="${product.productDescription}">商品敘述</p>
             
-           
-            <!-- 數量 -->
-            <div class="pd-quality">
-              <span>數量</span>
-              <input type="number" id="qty" name="number" value="1" min="1"/>
-            </div>
-
-            <!-- 加入購物車 -->
-            <a class="theme-btn mt-3"
-               href="javascript:void(0)"
-               th:attr="data-id=${product.product_id}">
-              加入購物車 <i class="fa-solid fa-bag-shopping"></i>
-            </a>
+            <!-- 尺寸 -->
+			<div class="pd-size">
+			  <div class="pd-label">選擇尺寸</div>
+			
+			  <!-- 有尺寸可選 -->
+			  <div th:if="${sizes != null and !#lists.isEmpty(sizes)}">
+			    <div class="size-group" id="sizeGroup" th:attr="data-product-id=${product.productId}">
+				  <button type="button"
+				          th:each="s : ${sizes}"
+				          class="size-chip"
+				          th:text="${s}"
+				          th:classappend="${currentSize != null and s.equalsIgnoreCase(currentSize)} ? ' active' : ''"
+				          th:data-size="${s}"
+				          th:data-pid="${sizeMap[s]}"
+				          th:attr="data-has=${#maps.containsKey(sizeMap, s)}, data-map-size=${#maps.size(sizeMap)}">
+				  </button>
+				</div>
+			
+			    <!-- 庫存提示：加上 data-stock-url 指向後端 API -->
+			    <div id="stockHint"
+			         class="mt-2 small text-secondary"
+			         th:attr="data-stock-url=@{/shop/api/stock}"
+			         th:text="${currentSize != null} ? '載入 ' + ${currentSize} + ' 庫存中…' : '請選擇尺寸以查看庫存'">
+			      請選擇尺寸以查看庫存
+			    </div>
+			
+			    <!-- 隱藏欄位（有尺寸時） -->
+			    <input type="hidden" name="size" id="selectedSize" th:value="${currentSize}">
+			    <input type="hidden" name="variantProductId" id="variantProductId"
+			           th:value="${(currentSize != null and sizeToId != null and sizeToId.containsKey(currentSize)) ? sizeToId[currentSize] : ''}">
+			  </div>
+			
+			  <!-- 沒有尺寸（均碼） -->
+			  <div th:if="${sizes == null or #lists.isEmpty(sizes)}">
+			    <div class="text-muted small">此商品為均碼</div>
+			    <div id="stockHint"
+			         class="mt-2 small text-secondary"
+			         th:text="'庫存：' + ${product.stockQuantity} + ' 件'">庫存：0 件</div>
+			
+			    <input type="hidden" name="size" id="selectedSize" value="">
+			    <input type="hidden" name="variantProductId" id="variantProductId" th:value="${product.productId}">
+			  </div>
+			</div>
+			
+			<!-- 數量 -->
+			<div class="pd-quality">
+			  <span>數量</span>
+			  <input type="number" id="qty" name="number" value="1" min="1"/>
+			</div>
+			
+			<!-- 加入購物車：讓 data-id 能被 JS 更新 -->
+			<a class="theme-btn mt-3"
+			   id="btnAddToCart"
+			   href="javascript:void(0)"
+			   th:attr="data-id=${(sizeToId != null and currentSize != null and sizeToId.containsKey(currentSize)) 
+			                     ? sizeToId[currentSize] 
+			                     : product.productId}">
+			  加入購物車 <i class="fa-solid fa-bag-shopping"></i>
+			</a>
           </div>
         </div>
       </div>

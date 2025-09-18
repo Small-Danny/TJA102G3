@@ -5,11 +5,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.tibafit.model.product.*;
+import com.tibafit.model.product.ProductVO;
 import com.tibafit.service.product.ProductService;
 
 @Controller
-@RequestMapping("/product")
+@RequestMapping("/admin/products")
 public class ProductController {
 
     private final ProductService svc;
@@ -18,97 +18,92 @@ public class ProductController {
         this.svc = svc;
     }
 
-    // 直接導到 select_page
-    @GetMapping({"", "/"})
-    public String index() {
-        return "redirect:/product/product.do?action=select_page";
+    // ===== 新 RESTful 版本 =====
+
+    // 列出所有商品（對應：templates/admin/listAllProduct.html）
+    @GetMapping
+    public String list(Model model) {
+        model.addAttribute("list", svc.getAll());
+        return "admin/listAllProduct";
     }
 
-    // ===== GET：查詢/頁面 =====
-    @GetMapping("/product.do")
-    public String routeGet(
-            @RequestParam(value = "action", required = false) String action,
-            @RequestParam(value = "product_id", required = false) Integer id,
-            @RequestParam(value = "q", required = false) String q,
-            Model model) {
-
-        if (action == null || action.isBlank()) {
-            return "redirect:/product/product.do?action=select_page";
-        }
-
-        switch (action) {
-            case "select_page" -> {
-                model.addAttribute("list", svc.getAll());
-                return "admin/select_page";
-            }
-            case "getAll" -> {
-                model.addAttribute("list", svc.getAll());
-                return "admin/listAllProduct";
-            }
-            case "getOne_For_Display" -> {
-                if (id == null) return "redirect:/product/product.do?action=select_page";
-                model.addAttribute("productVO", svc.getOne(id));
-                return "admin/listOneProduct";
-            }
-            case "search" -> {
-                model.addAttribute("list", svc.search(q));
-                return "admin/listAllProduct";
-            }
-            case "add_form" -> {
-                return "admin/add_product";
-            }
-            default -> {
-                return "redirect:/product/product.do?action=select_page";
-            }
-        }
+    // 選擇商品頁（對應：templates/admin/select_page.html）
+    @GetMapping("/select")
+    public String select(Model model) {
+        model.addAttribute("list", svc.getAll());
+        return "admin/select_page";
     }
 
-    // ===== POST：新增/更新/刪除/進入編輯表單/ =====
-    @PostMapping("/product.do")
-    public String routePost(
-            @RequestParam("action") String action,
-            @RequestParam(value = "product_id", required = false) Integer id,
-            ProductVO form,
-            Model model,
-            RedirectAttributes ra) {
-
-        switch (action) {
-            // --- POST -> GET ---
-            case "getAll" -> {
-                return "redirect:/product/product.do?action=getAll";
-            }
-            case "getOne_For_Display" -> {
-                if (id == null) return "redirect:/product/product.do?action=select_page";
-                return "redirect:/product/product.do?action=getOne_For_Display&product_id=" + id;
-            }
-            // -----------------------------------
-
-            case "getOne_For_Update" -> {
-                if (id == null) return "redirect:/product/product.do?action=getAll";
-                model.addAttribute("productVO", svc.getOne(id));
-                return "admin/update_product_input";
-            }
-            case "add_form" -> {
-                return "admin/add_product";
-            }
-            case "insert" -> {
-                svc.add(form);
-                ra.addFlashAttribute("successMsg", "新增成功");
-                return "redirect:/product/product.do?action=getAll";
-            }
-            case "update" -> {
-                svc.update(form);
-                ra.addFlashAttribute("successMsg", "修改成功");
-                return "redirect:/product/product.do?action=getOne_For_Update&product_id=" + form.getProductId();
-            }
-            case "delete" -> {
-                if (id != null) svc.delete(id);
-                ra.addFlashAttribute("successMsg", "已刪除");
-                return "redirect:/product/product.do?action=getAll";
-            }
-            default -> {
-                return "redirect:/product/product.do?action=select_page";
-            }
+    // 單筆查詢（對應：templates/admin/listOneProduct.html）
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Integer id, Model model) {
+        var product = svc.getOne(id);
+        if (product == null) {
+            return "redirect:/admin/products";
         }
+        model.addAttribute("productVO", product);
+        model.addAttribute("product", product);
+        return "admin/listOneProduct";
     }
+
+    // 搜尋（回到列表頁顯示查詢結果）
+    @GetMapping("/search")
+    public String search(@RequestParam(required = false) String q, Model model) {
+        model.addAttribute("list", svc.search(q));
+        model.addAttribute("q", q); // 若你的頁面要回填關鍵字，可用 ${q}
+        return "admin/listAllProduct";
+    }
+
+    // 新增商品表單（對應：templates/admin/add_product.html）
+    @GetMapping("/add")
+    public String addForm(Model model) {
+        model.addAttribute("productVO", new ProductVO());
+        return "admin/add_product";
+    }
+
+    // 新增商品 (處理提交)
+    @PostMapping
+    public String insert(ProductVO form, RedirectAttributes ra) {
+        svc.add(form);
+        ra.addFlashAttribute("successMsg", "新增成功");
+        return "redirect:/admin/products";
+    }
+
+    // 進入更新表單（對應：templates/admin/update_product_input.html）
+    @GetMapping("/{id}/edit")
+    public String editForm(@PathVariable Integer id, Model model) {
+        var product = svc.getOne(id);
+        if (product == null) {
+            return "redirect:/admin/products";
+        }
+        model.addAttribute("productVO", product);
+        model.addAttribute("product", product);
+        return "admin/update_product_input";
+    }
+
+    // 更新商品 (處理提交)
+    @PostMapping("/{id}/edit")
+    public String update(@PathVariable Integer id, ProductVO form, RedirectAttributes ra) {
+        form.setProductId(id);
+        svc.update(form);
+        ra.addFlashAttribute("successMsg", "修改成功");
+        return "redirect:/admin/products/" + id;
+    }
+
+    // 刪除商品
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Integer id, RedirectAttributes ra) {
+        svc.delete(id);
+        ra.addFlashAttribute("successMsg", "已刪除");
+        return "redirect:/admin/products";
+    }
+    
+    @GetMapping("/select/by-id")
+    public String selectById(@RequestParam Integer productId) {
+        if (productId == null) {
+            return "redirect:/admin/products/select"; // 沒選就回選擇頁
+        }
+        return "redirect:/admin/products/" + productId; // 導到詳情
+    }
+
 }
