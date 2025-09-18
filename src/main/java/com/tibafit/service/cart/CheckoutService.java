@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tibafit.model.cart.OrderItemVO;
 import com.tibafit.model.cart.OrdersVO;
-import com.tibafit.model.cart.ProductVO;
+import com.tibafit.model.cart.ProductsVO;
 import com.tibafit.repository.cart.OrdersDAO;
 import com.tibafit.repository.cart.ProductDAO;
 

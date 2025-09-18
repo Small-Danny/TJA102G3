@@ -205,7 +205,7 @@
 
   <!-- 載入共用 Header（如不需要可移除） -->
   <script>
-    fetch('header.txt?v=' + Date.now(), { cache: 'no-store' })
+    fetch('header.html?v=' + Date.now(), { cache: 'no-store' })
       .then(r => r.text())
       .then(html => { document.getElementById('header').innerHTML = html; })
       .catch(()=>{ /* 忽略 header 載入失敗 */ });

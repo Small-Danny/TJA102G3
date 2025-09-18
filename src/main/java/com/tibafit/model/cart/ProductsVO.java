@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity // JPA 實體：對應資料表 product（商品主檔）
 @Table(name = "product")
-public class ProductVO {
+public class ProductsVO {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // 自增主鍵（MySQL AUTO_INCREMENT）

@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,9 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tibafit.dto.cart.CartAddItemDTO;
 import com.tibafit.dto.cart.CartDTO;
 import com.tibafit.dto.cart.CartSetQuantityDTO;
-import com.tibafit.model.cart.ProductVO;
+import com.tibafit.model.cart.ProductsVO;
 import com.tibafit.service.cart.CartService;
-import com.tibafit.service.cart.ProductService;
+import com.tibafit.service.cart.ProductServices;
 
 import jakarta.validation.Valid;
 
@@ -36,12 +37,12 @@ import jakarta.validation.Valid;
 public class CartController {
 
 	private final CartService cartService; // 操作 Redis 購物車（Hash：cart:{userId} -> {productId: qty}）
-	private final ProductService productService; // 查商品資訊（名稱、價格、狀態等）
+	private final ProductServices productServices; // 查商品資訊（名稱、價格、狀態等）
 
 	@Autowired // 建構子注入：Spring 會把 Bean 傳進來
-	public CartController(CartService cartService, ProductService productService) {
+	public CartController(CartService cartService, ProductServices productServices) {
 		this.cartService = cartService;
-		this.productService = productService;
+		this.productServices = productServices;
 	}
 
 	// ✅ 訂單頁右側「購物清單摘要」會用到
@@ -63,11 +64,11 @@ public class CartController {
 		List<Integer> ids = cart.keySet().stream().map(k -> Integer.valueOf(k.toString())).toList();
 
 		// 依你現有的 ProductService 命名來呼叫；若是 JPA 預設可用 findAllById(ids)
-		List<ProductVO> products = productService.findAllByIds(ids);
+		List<ProductsVO> products = productServices.findAllByIds(ids);
 
 		// 轉 map 方便用 productId 取回 ProductVO
-		Map<Integer, ProductVO> pmap = products.stream()
-				.collect(Collectors.toMap(ProductVO::getProductId, Function.identity()));
+		Map<Integer, ProductsVO> pmap = products.stream()
+				.collect(Collectors.toMap(ProductsVO::getProductId, Function.identity()));
 
 		// 3) 組 items 並計算總數量/總金額
 		List<Map<String, Object>> items = new ArrayList<>();
@@ -80,7 +81,7 @@ public class CartController {
 			if (qty == null || qty <= 0)
 				continue; // 0 或負數當作不存在
 
-			ProductVO p = pmap.get(pid);
+			ProductsVO p = pmap.get(pid);
 			if (p == null)
 				continue; // 商品可能下架或不存在，直接略過
 
@@ -136,9 +137,10 @@ public class CartController {
 	// 移除某項商品
 	// 例：DELETE /api/cart/cart-items?userId=1&productId=201
 	@DeleteMapping("/cart-items")
-	public CartDTO remove(@RequestParam Integer userId, @RequestParam Integer productId) {
+	public ResponseEntity<CartDTO> remove(@RequestParam Integer userId, @RequestParam Integer productId) {
 		cartService.removeItem(userId, productId);
-		return CartDTO.fromCartMap(cartService.getCart(userId));
+		CartDTO dto = CartDTO.fromCartMap(cartService.getCart(userId));
+		return ResponseEntity.ok(dto);
 	}
 
 	// 清空整車
