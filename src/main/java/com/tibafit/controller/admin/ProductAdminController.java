@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tibafit.dto.product.ProductCreateDTO;
 import com.tibafit.dto.product.ProductDTO;
 import com.tibafit.dto.product.ProductUpdateDTO;
-import com.tibafit.model.cart.ProductVO;
-import com.tibafit.repository.cart.ProductDAO;
-import com.tibafit.service.cart.ProductService;
+import com.tibafit.model.cart.ProductsVO;
+import com.tibafit.model.product.ProductVO;
+import com.tibafit.service.cart.ProductServices;
 
 import jakarta.validation.Valid;
 
@@ -31,18 +31,18 @@ import jakarta.validation.Valid;
 @RestController // 宣告為 REST 控制器，方法回傳值會序列化成 JSON
 @RequestMapping("/api/admin/products") // 本控制器的共同路徑前綴
 public class ProductAdminController {
-	private final ProductService productService; // 商品領域服務：封裝新增/查/改/刪與進階邏輯
+	private final ProductServices productServices; // 商品領域服務：封裝新增/查/改/刪與進階邏輯
 
 	@Autowired // 建構子注入：Spring 會自動注入對應的 Service Bean
-	public ProductAdminController(ProductService productService) {
-		this.productService = productService;
+	public ProductAdminController(ProductServices productServices) {
+		this.productServices = productServices;
 	}
 
 	/** 新增商品（後台建立） */
 	@PostMapping
 	public ProductDTO create(@RequestBody @Valid ProductCreateDTO req) {
 		// 將前端傳入的建立用 DTO → 組成 Entity（VO）
-		ProductVO vo = new ProductVO();
+		ProductsVO vo = new ProductsVO();
 		vo.setProductType(req.getProductType()); // 類別
 		vo.setProductName(req.getProductName()); // 名稱
 		vo.setProductDescription(req.getProductDescription()); // 描述
@@ -52,14 +52,14 @@ public class ProductAdminController {
 		vo.setProductStatus(req.getProductStatus()); // 狀態：1上架/0下架
 		vo.setProductCode(req.getProductCode()); // 自訂商品代碼（SKU）
 		// 交給服務層處理（含驗證/商業規則/儲存），回傳結果轉成乾淨的 DTO
-		return ProductDTO.from(productService.create(vo));
+		return ProductDTO.from(productServices.create(vo));
 	}
 
 	/** 查單筆商品 */
 	@GetMapping("/{id}")
 	public ProductDTO get(@PathVariable Integer id) {
 		// 服務層取得 Entity → 轉 DTO 回前端
-		return ProductDTO.from(productService.get(id));
+		return ProductDTO.from(productServices.get(id));
 	}
 
 	/**
@@ -75,14 +75,14 @@ public class ProductAdminController {
 			@RequestParam(required = false) String keyword, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size) {
 		// 由服務層回傳 Page<ProductVO>，在此 map 成 Page<ProductDTO>
-		return productService.list(status, keyword, page, size).map(ProductDTO::from);
+		return productServices.list(status, keyword, page, size).map(ProductDTO::from);
 	}
 
 	/** 全量更新（PUT）：用 DTO 覆寫指定商品的主要欄位 */
 	@PutMapping("/{id}")
 	public ProductDTO update(@PathVariable Integer id, @RequestBody @Valid ProductUpdateDTO req) {
 		// 用一個新的 VO 承接更新資料（服務層會把它 merge 到既有資料）
-		ProductVO data = new ProductVO();
+		ProductsVO data = new ProductsVO();
 		data.setProductType(req.getProductType());
 		data.setProductName(req.getProductName());
 		data.setProductDescription(req.getProductDescription());
@@ -91,13 +91,13 @@ public class ProductAdminController {
 		data.setProductPicture(req.getProductPicture());
 		data.setProductStatus(req.getProductStatus());
 		data.setProductCode(req.getProductCode());
-		return ProductDTO.from(productService.update(id, data));
+		return ProductDTO.from(productServices.update(id, data));
 	}
 
 	/** 刪除商品（注意：實務上常做軟刪/下架，而非物理刪除） */
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Integer id) {
-		productService.delete(id);
+		productServices.delete(id);
 	}
 
 	/**
@@ -106,6 +106,6 @@ public class ProductAdminController {
 	 */
 	@PatchMapping("/{id}/stock")
 	public ProductDTO adjustStock(@PathVariable Integer id, @RequestParam int delta) {
-		return ProductDTO.from(productService.adjustStock(id, delta));
+		return ProductDTO.from(productServices.adjustStock(id, delta));
 	}
 }

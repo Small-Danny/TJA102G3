@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 //	可維持 API 錯誤輸出的一致性、可預測性，也避免把內部堆疊與細節洩漏給使用者
 
 @RestControllerAdvice // 全域例外處理：攔截所有 @RestController 的未處理例外並統一回應格式
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandlers {
 
 	// === 業務邏輯主動拋出的錯誤（例如：庫存不足、購物車為空等）→ HTTP 400 ===
 	@ExceptionHandler(IllegalStateException.class) // 指定要攔截的例外類型

@@ -9,19 +9,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tibafit.model.cart.ProductVO;
-import com.tibafit.service.cart.ProductService;
+import com.tibafit.dto.product.ProductDTO;
+import com.tibafit.service.cart.ProductServices;
 
 //	ProductController 提供前台/共用的商品查詢 API，用逗號分隔的 ids 參數批次查詢商品並回傳清單
 
 @RestController // REST 控制器：方法回傳值會被序列化成 JSON
 @RequestMapping("/api/products") // 本控制器的共同前綴
-public class ProductController {
-	private final ProductService productService; // 商品服務（查詢商品資料）
+public class ProductsController {
+	private final ProductServices productServices; // 商品服務（查詢商品資料）
 
 	@Autowired // 建構子注入：由 Spring 負責注入 ProductService Bean
-	public ProductController(ProductService productService) {
-		this.productService = productService;
+	public ProductsController(ProductServices productServices) {
+		this.productServices = productServices;
 	}
 
 	/**
@@ -30,12 +30,9 @@ public class ProductController {
 	 * 層過濾 productStatus=1。
 	 */
 	@GetMapping
-	public List<ProductVO> listProducts(@RequestParam String ids) {
-		// 將 query string 的 "1,2,3" 切成 ["1","2","3"] → 轉成 [1,2,3]
-		// 注意：若遇到空字串或非數字會丟 NumberFormatException；必要時可在這裡做防呆。
+	public List<ProductDTO> listProducts(@RequestParam String ids) {
 		List<Integer> idList = Arrays.stream(ids.split(",")).map(Integer::valueOf).toList();
 
-		// 交給服務層查詢（常見作法：JPA 的 findAllById 或自訂 findOnShelfByIds）
-		return productService.findAllByIds(idList);
+		return productServices.findAllByIds(idList).stream().map(ProductDTO::from).toList();
 	}
 }
