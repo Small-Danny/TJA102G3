@@ -92,10 +92,11 @@
 				  <button type="button"
 				          th:each="s : ${sizes}"
 				          class="size-chip"
-				          th:text="${s}"                      
+				          th:text="${s}"
 				          th:classappend="${currentSize != null and s.equalsIgnoreCase(currentSize)} ? ' active' : ''"
 				          th:data-size="${s}"
-				          th:data-pid="${sizeToId[s]}">      
+				          th:data-pid="${sizeMap[s]}"
+				          th:attr="data-has=${#maps.containsKey(sizeMap, s)}, data-map-size=${#maps.size(sizeMap)}">
 				  </button>
 				</div>
 			
