@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <!-- Meta Options -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Title -->
+  <title>訂單完成</title>
+  <!-- Bootstrap -->
+
+  <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+  <link rel="icon" type="image/x-icon" href="assets/images/heading-icon.png">
+  <link rel="stylesheet" href="assets/font/flaticon_mycollection.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/owl.carousel.min.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/owl.theme.default.min.css">
+  <link rel="stylesheet" href="assets/css/jquery.fancybox.min.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/fontawesome.min.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/nice-select.css">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+  <!-- Responsive -->
+  <link rel="stylesheet" type="text/css" href="assets/css/responsive.css">
+
+  <style>
+    .social-item {
+      display: flex;
+      align-items: center;
+      /* icon + 文字垂直置中 */
+      gap: 8px;
+      /* icon 與文字的間距 */
+    }
+
+    /* 讓 nav 區塊自己成為一條水平列：左(ul) + 右(登入) */
+    .header-style-one .nav-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      /* 選配：ul 和 會員登入 的距離 */
+      width: 100%;
+    }
+
+    /* 主選單 UL 吃滿中間空間，並在中間置中排列每個 LI */
+    .header-style-one .nav-bar>ul {
+      flex: 1 1 auto;
+      /* 佔滿 Logo 與 登入鍵 之間的可用寬度 */
+      display: flex;
+      justify-content: center;
+      /* 讓四個大項目置中 */
+      gap: 28px;
+      /* 項目間距，自行調整 */
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    /* 會員登入維持在最右邊 */
+    .header-style-one .nav-bar .extras {
+      flex: 0 0 auto;
+
+    }
+
+    /* 付款成功區塊：置中 + 放大 */
+    .payment-success {
+      min-height: 60vh;
+      /* 有點高度，畫面居中好看 */
+      display: flex;
+      align-items: center;
+      /* 垂直置中 */
+      justify-content: center;
+      /* 水平置中 */
+      padding: 48px 0;
+    }
+
+    .payment-success .wrap {
+      text-align: center;
+      /* 內容置中 */
+    }
+
+    .payment-success .wrap img {
+      width: min(90vw, 560px);
+      /* 圖片自適應 */
+      height: auto;
+      margin: 0 auto 16px;
+      display: block;
+    }
+
+    .payment-success .title {
+      font-size: clamp(28px, 3.2vw, 40px);
+      font-weight: 800;
+      margin-top: 8px;
+      margin-bottom: 6px;
+      letter-spacing: .02em;
+    }
+
+    .payment-success .desc {
+      font-size: clamp(16px, 2vw, 20px);
+      opacity: .9;
+      margin-bottom: 24px;
+    }
+
+    .payment-success .actions .theme-btn {
+      /* 放大「回首頁」按鈕 */
+      font-size: 18px;
+      /* 文字變大 */
+      padding: 12px 24px;
+      /* 內距變大 */
+      border-radius: 12px;
+      /* 圓角（可選） */
+    }
+
+    /* 成功頁的回首頁按鈕：預設白字、hover 變黑字，且不被偽元素蓋住 */
+    .payment-success .actions .pay-success-btn {
+      color: #fff !important;
+      /* 預設白字 */
+      position: relative;
+      /* 讓 z-index 可用 */
+    }
+
+    .payment-success .actions .pay-success-btn:hover,
+    .payment-success .actions .pay-success-btn:focus {
+      color: #000 !important;
+      /* 滑過去變黑字 */
+      text-decoration: none;
+    }
+
+    /* 主題常用 ::before/::after 做 hover 動畫，避免蓋住文字 */
+    .payment-success .actions .pay-success-btn::before,
+    .payment-success .actions .pay-success-btn::after {
+      pointer-events: none;
+      z-index: -1 !important;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- Loader Start -->
+
+  <div class="preloader">
+    <div class="loader-wrap-heading">
+      <div class="load-text"> <span>L</span> <span>o</span> <span>a</span> <span>d</span> <span>i</span> <span>n</span>
+        <span>g</span>
+      </div>
+    </div>
+  </div>
+  <!-- Loader End -->
+
+  <!-- Header Style One Start -->
+   <div id="header"></div>
+  <!-- Header Style One End -->
+
+  <!-- Banner Style One Start -->
+  <section class="banner-style-one">
+    <div class="parallax" style="background-image: url(https://via.placeholder.com/1920x640);"></div>
+    <div class="container">
+      <div class="row">
+        <div class="banner-details">
+          <h2>訂單失敗</h2>
+          <p>our values and vaulted us to the top of our industry.</p>
+        </div>
+      </div>
+    </div>
+    <div class="breadcrums">
+      <div class="container">
+        <div class="row">
+          <ul>
+            <li>
+              <a href="index-2.html">
+                <i class="fa-solid fa-house"></i>
+                <p>首頁</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Banner Style One End -->
+
+  <main class="payment-success" role="main">
+    <div class="container">
+      <div class="wrap">
+        <div class="title">付款失敗</div>
+        <div class="desc">請重新支付你的訂單！</div>
+        <div class="actions">
+          <a href="cart_order.html" class="theme-btn pay-success-btn">回訂單</a>
+          <!-- 也可放「查看訂單」：<a href="order-detail.html" class="theme-btn">查看訂單</a> -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer Style One Start -->
+  <footer class="footer-style-one" style="background-image: url(https://via.placeholder.com/1920x732);">
+    <div class="footer-p-2">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="footer-col">
+              <h3>資訊</h3>
+              <p>這是一個運動平台，運動請量力而為，<br>評估自身情況</p>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="footer-col">
+              <h3>社群</h3>
+              <ul>
+                <li class="social-item">
+                  <i class="fa-brands fa-facebook-f"></i>
+                  <p>TibaFit</p>
+                </li>
+                <li class="social-item">
+                  <i class="flaticon-instagram"></i>
+                  <p>@TibaFit</p>
+                </li>
+                <li class="social-item">
+                  <i class="fa-brands fa-line"></i>
+                  <p>TibaFit</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="footer-col">
+              <h3>聯絡我們</h3>
+              <ul>
+                <li class="social-item">
+                  <i class="fa-solid fa-phone"></i>
+                  <p>0800-000-000</p>
+                </li>
+                <li class="social-item">
+                  <i class="fa-solid fa-envelope"></i>
+                  <p>TibaFit@gmail.com</p>
+                </li>
+                <li class="social-item">
+                  <i class="fa-solid fa-location-dot"></i>
+                  <p>台北市中山區南京東路三段219號4F之401</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal fade popups conslt-popup" id="exampleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img src="https://via.placeholder.com/420x591" alt="img">
+          <div class="contact-form-one popup">
+            <div class="c-form-2">
+              <h3>Start Consulting</h3>
+              <div class="parallax" style="background-image: url(assets/images/pattren.png);"></div>
+              <form>
+                <div class="row g-0">
+                  <input type="text" class="form-control" id="exampleInputText1" placeholder="Complete Name">
+                </div>
+                <div class="row g-0">
+                  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email Address">
+                </div>
+                <div class="row g-0">
+                  <input type="number" class="form-control" id="exampleInputPassword1" placeholder="Phone No">
+                </div>
+                <div class="row g-0">
+                  <select id="inputState-21" class="form-control">
+                    <option selected>Subject</option>
+                    <option>Subject 1</option>
+                    <option>Subject 2</option>
+                    <option>Subject 3</option>
+                  </select>
+                </div>
+                <div class="row g-0">
+                  <textarea placeholder="Question / Message?"></textarea>
+                </div>
+                <button type="submit" class="theme-btn">Submit Now</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Footer Style One End -->
+
+  <div id="scroll-percentage"><span id="scroll-percentage-value"></span></div>
+
+  <!-- Jquery -->
+
+  <script src="assets/js/jquery.min.js"></script>
+
+  <!-- Waypoint -->
+
+  <script src="assets/js/jquery.waypoints.min.js"></script>
+
+  <!-- NZoom -->
+
+  <script src="assets/js/Nzoom.min.js"></script>
+
+  <!-- Counter -->
+
+  <script src="assets/js/jquery.counterup.min.js"></script>
+
+  <!-- Bootstrap Js -->
+
+  <script src="assets/js/bootstrap.min.js"></script>
+
+  <!-- Fancybox Js -->
+
+  <script src="assets/js/jquery.fancybox.min.js"></script>
+
+  <!-- Nice Select Js -->
+
+  <script src="assets/js/jquery.nice-select.js"></script>
+
+  <!-- Owl Carousal Js -->
+
+  <script src="assets/js/owl.carousel.min.js"></script>
+
+  <!-- Custom Js -->
+
+  <script src="assets/js/custom.js"></script>
+
+  <script src="assets/js/cart.js"></script>
+
+  <script>
+    fetch('header.txt?v=' + Date.now(), { cache: 'no-store' })
+    .then(r => r.text())
+    .then(html => {
+      document.getElementById('header').innerHTML = html;
+    });
+</script>
+</body>
+
+</html>

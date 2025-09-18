@@ -99,7 +99,7 @@ public class ProductController {
             case "update" -> {
                 svc.update(form);
                 ra.addFlashAttribute("successMsg", "修改成功");
-                return "redirect:/product/product.do?action=getOne_For_Update&product_id=" + form.getProduct_id();
+                return "redirect:/product/product.do?action=getOne_For_Update&product_id=" + form.getProductId();
             }
             case "delete" -> {
                 if (id != null) svc.delete(id);
