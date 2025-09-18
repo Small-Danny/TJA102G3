@@ -19,6 +19,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -110,13 +111,13 @@ public class SecurityConfig {
         entryPoints.put(new AntPathRequestMatcher("/admin/**"),
                 new LoginUrlAuthenticationEntryPoint("/admin/login"));
 
-        // 規則 3: 當未認證的請求路徑匹配 "/frontend-template/**" 時，重定向到前台登錄頁
+     // 規則 3: 前台登入頁
         entryPoints.put(new AntPathRequestMatcher("/frontend-template/**"),
-                new LoginUrlAuthenticationEntryPoint("/login.html"));
+                new LoginUrlAuthenticationEntryPoint("/frontend-template/login.html"));
 
-        // 規則 4: 為所有其他未匹配的請求設置默認的重定向規則
-        final LoginUrlAuthenticationEntryPoint defaultEntryPoint = new LoginUrlAuthenticationEntryPoint("/login.html");
-
+        // 規則 4: 默認情況下，也導向 frontend-template/login.html
+        final LoginUrlAuthenticationEntryPoint defaultEntryPoint =
+                new LoginUrlAuthenticationEntryPoint("/frontend-template/login.html");
         // 創建一個委派認證入口點，它會根據請求路徑將處理委派給對應的入口點
         final DelegatingAuthenticationEntryPoint delegatingEntryPoint = new DelegatingAuthenticationEntryPoint(entryPoints);
         // 設置默認的入口點
@@ -244,22 +245,31 @@ public class SecurityConfig {
                 .authenticationProvider(adminAuthenticationProvider())
                 .authenticationProvider(customUserAuthenticationProvider)
 
+                .csrf(AbstractHttpConfigurer::disable)
                 // 配置 HTTP 請求的授權規則
                 .authorizeHttpRequests(authorize -> authorize
                         // 允許匿名訪問後台登錄頁
                         .requestMatchers("/admin/login").permitAll()
                         // 允許匿名訪問靜態資源和公開的 API 接口
-                        .requestMatchers("/", "/index.html", "/login.html", "/register.html",
+
+                        .requestMatchers("/", "/index.html", "/login.html", "/register.html","/cart.html",
+                        		"/cart_order.html","/backend.html","/pay.html","/pay_success.html","/pay_fail.html",
                                 "/css/**", "/js/**", "/images/**", "/adminlte/**", "/frontend-template/**",
                                 "/api/users/register", "/api/users/login", "/api/users/send-code",
-                                "/api/users/request-password-reset", "/api/csrf-token", "/login")
+                                "/api/users/request-password-reset", "/api/csrf-token", "/login","/assets/**",
+                                "/webjars/**", "/font/**", "/fonts/**"
+                               )
                         .permitAll()
-                        // 訪問 "/admin/**" 路徑需要用戶擁有 "ADMIN" 角色
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // 訪問 "/api/**" 路徑需要用戶已認證
+
+                        .requestMatchers("/api/cart/**").permitAll()
+                        .requestMatchers("/api/products/**").permitAll()
+                        .requestMatchers("/api/checkout").permitAll()
                         .requestMatchers("/api/**").authenticated()
-                        // 其他所有未匹配的請求都需要用戶已認證
-                        .anyRequest().authenticated())
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+
+                        .anyRequest().authenticated()
+                    )
 
                 // 配置後台的表單登錄
                 .formLogin(form -> form
@@ -300,9 +310,10 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID", "XSRF-TOKEN", "remember-me"))
 
                 // 配置 CSRF (跨站請求偽造) 防護
-                .csrf(csrf -> csrf
-                        // 使用基於 Cookie 的 CSRF Token 存儲庫，withHttpOnlyFalse() 允許前端 JS 讀取此 cookie
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+//                .csrf(csrf -> csrf
+//                        // 使用基於 Cookie 的 CSRF Token 存儲庫，withHttpOnlyFalse() 允許前端 JS 讀取此 cookie
+//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+
 
                 // 在 UsernamePasswordAuthenticationFilter 之前添加自定義的 reCAPTCHA 驗證過濾器
                 // 這確保了在嘗試用戶名密碼認證之前，先進行 reCAPTCHA 驗證

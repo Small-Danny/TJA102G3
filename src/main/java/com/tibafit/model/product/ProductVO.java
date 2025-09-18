@@ -10,102 +10,104 @@ public class ProductVO implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "product_id")
-	private Integer product_id;
+	private Integer productId;
 	
 	@Column(name = "product_type", nullable = false)
-	private Integer product_type;
+	private Integer productType;
 	
 	@Column(name = "product_name", nullable = false, length = 255)
-	private String product_name;
+	private String productName;
 	
 	@Column(name = "product_description", nullable = false, length = 255)
-	private String product_description;
+	private String productDescription;
 	 
 	@Column(name = "product_price", nullable = false)
-	private Integer product_price;
+	private Integer productPrice;
 	
 	@Column(name = "stock_quantity", nullable = false)
-	private Integer stock_quantity;
+	private Integer stockQuantity;
 	
 	@Column(name = "product_picture", length = 255)
-	private String product_picture;
+	private String productPicture;
 	
 	@Column(name = "product_status", nullable = false)
-	private Integer product_status;
+	private Integer productStatus;
 	
 	@Column(name = "product_code", length = 64, unique=true)
-	private String product_code;
+	private String productCode;
 
-	public Integer getProduct_id() {
-		return product_id;
+	public Integer getProductId() {
+		return productId;
 	}
 
-	public void setProduct_id(Integer product_id) {
-		this.product_id = product_id;
+	public void setProductId(Integer productId) {
+		this.productId = productId;
 	}
 
-	public Integer getProduct_type() {
-		return product_type;
+	public Integer getProductType() {
+		return productType;
 	}
 
-	public void setProduct_type(Integer product_type) {
-		this.product_type = product_type;
+	public void setProductType(Integer productType) {
+		this.productType = productType;
 	}
 
-	public String getProduct_name() {
-		return product_name;
+	public String getProductName() {
+		return productName;
 	}
 
-	public void setProduct_name(String product_name) {
-		this.product_name = product_name;
+	public void setProductName(String productName) {
+		this.productName = productName;
 	}
 
-	public String getProduct_description() {
-		return product_description;
+	public String getProductDescription() {
+		return productDescription;
 	}
 
-	public void setProduct_description(String product_description) {
-		this.product_description = product_description;
+	public void setProductDescription(String productDescription) {
+		this.productDescription = productDescription;
 	}
 
-	public Integer getProduct_price() {
-		return product_price;
+	public Integer getProductPrice() {
+		return productPrice;
 	}
 
-	public void setProduct_price(Integer product_price) {
-		this.product_price = product_price;
+	public void setProductPrice(Integer productPrice) {
+		this.productPrice = productPrice;
 	}
 
-	public Integer getStock_quantity() {
-		return stock_quantity;
+	public Integer getStockQuantity() {
+		return stockQuantity;
 	}
 
-	public void setStock_quantity(Integer stock_quantity) {
-		this.stock_quantity = stock_quantity;
+	public void setStockQuantity(Integer stockQuantity) {
+		this.stockQuantity = stockQuantity;
 	}
 
-	public String getProduct_picture() {
-		return product_picture;
+	public String getProductPicture() {
+		return productPicture;
 	}
 
-	public void setProduct_picture(String product_picture) {
-		this.product_picture = product_picture;
+	public void setProductPicture(String productPicture) {
+		this.productPicture = productPicture;
 	}
 
-	public Integer getProduct_status() {
-		return product_status;
+	public Integer getProductStatus() {
+		return productStatus;
 	}
 
-	public void setProduct_status(Integer product_status) {
-		this.product_status = product_status;
+	public void setProductStatus(Integer productStatus) {
+		this.productStatus = productStatus;
 	}
 
-	public String getProduct_code() {
-		return product_code;
+	public String getProductCode() {
+		return productCode;
 	}
 
-	public void setProduct_code(String product_code) {
-		this.product_code = product_code;
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
 	}
+
+	
 
 }
