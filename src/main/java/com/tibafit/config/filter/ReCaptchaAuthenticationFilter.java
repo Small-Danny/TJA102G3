@@ -32,20 +32,21 @@ public class ReCaptchaAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+    	// 只攔截 POST /admin/login (提交表單)，不攔截 GET
         if ("/admin/login".equals(request.getRequestURI()) && "POST".equalsIgnoreCase(request.getMethod())) {
             
             String recaptchaToken = request.getParameter("g-recaptcha-response");
 
             if (!reCaptchaService.validateToken(recaptchaToken)) {
                 System.out.println("reCAPTCHA 驗證失敗！");
-                
-                
-                failureHandler.onAuthenticationFailure(request, response, 
-                    new RecaptchaValidationException("reCAPTCHA validation failed"));
-                
+                failureHandler.onAuthenticationFailure(
+                    request,
+                    response,
+                    new RecaptchaValidationException("reCAPTCHA validation failed")
+                );
                 return;
             }
-             System.out.println("reCAPTCHA 驗證成功！");
+            System.out.println("reCAPTCHA 驗證成功！");
         }
         
         filterChain.doFilter(request, response);
