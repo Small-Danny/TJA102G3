@@ -1,4 +1,4 @@
-package com.tibafit.service.user;
+ package com.tibafit.service.user;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -79,7 +79,6 @@ public class UserServiceImpl implements UserService {
 	    public Optional<User> findUserByEmail(String email) {
 	        return userRepository.findByEmail(email);
 	    }
-	
 	
 	@Override
 	public User register(RegisterRequest req, HttpServletRequest request) { // 【增加參數】
@@ -193,7 +192,7 @@ public class UserServiceImpl implements UserService {
 		if (!isCaptchaValid) {
 			throw new ValidationException("login", "驗證失敗，請重試");
 		}
-
+		
 		 try {
 	            // 2. ★★★ 核心修正 ★★★
 	            // 將 email 和 password 打包成一個 Spring Security 認識的 token
