@@ -1,4 +1,5 @@
 /*-----------------------------------------------------------------------------------
+<<<<<<< HEAD
   Template: Gym On (Stable custom.js)
   Notes:
     - All plugins/DOM guarded (won't throw if missing)
