@@ -40,3 +40,20 @@
     .size-chip.is-disabled{
       color:#999; background:#f2f2f2; border-color:#e5e5e5; cursor:not-allowed; opacity:.6;
     }
+    .size-chip {
+	  cursor: pointer;
+	  pointer-events: auto;
+	  position: relative;
+	  z-index: 1;
+	}
+
+	.size-chip.active{
+	  background:#ff1f25; color:#fff; border-color:#ff1f25;
+	  box-shadow: none;
+	}
+
+	.size-chip.is-selected{
+	  background:#ff1f25; color:#fff; border-color:#ff1f25;
+	  box-shadow: none;
+	}
+	
