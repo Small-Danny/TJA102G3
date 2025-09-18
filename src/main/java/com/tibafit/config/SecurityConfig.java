@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -110,19 +111,20 @@ public class SecurityConfig {
         entryPoints.put(new AntPathRequestMatcher("/admin/**"),
                 new LoginUrlAuthenticationEntryPoint("/admin/login"));
 
-        // 規則 3: 當未認證的請求路徑匹配 "/frontend-template/**" 時，重定向到前台登錄頁
-        entryPoints.put(new AntPathRequestMatcher("/frontend-template/**"),
-                new LoginUrlAuthenticationEntryPoint("/login.html"));
+     // 【⭐修改點 1】規則 3: 將你自己的前端路徑也指向正確的登入頁
+        entryPoints.put(AntPathRequestMatcher.antMatcher("/frontend-template/**"),
+                new LoginUrlAuthenticationEntryPoint("/frontend-template/login.html"));
 
-        // 規則 4: 為所有其他未匹配的請求設置默認的重定向規則
-        final LoginUrlAuthenticationEntryPoint defaultEntryPoint = new LoginUrlAuthenticationEntryPoint("/login.html");
+        // 【⭐修改點 2】規則 4: 預設規則，捕獲所有其他請求(包含夥伴的路徑)，並指向「正確的」登入頁
+        final LoginUrlAuthenticationEntryPoint defaultEntryPoint = new LoginUrlAuthenticationEntryPoint("/frontend-template/login.html");
 
-        // 創建一個委派認證入口點，它會根據請求路徑將處理委派給對應的入口點
+        // 創建委派認證入口點
         final DelegatingAuthenticationEntryPoint delegatingEntryPoint = new DelegatingAuthenticationEntryPoint(entryPoints);
-        // 設置默認的入口點
+        // 設置正確的默認入口點
         delegatingEntryPoint.setDefaultEntryPoint(defaultEntryPoint);
         return delegatingEntryPoint;
     }
+    
 
     // 定義前台用戶的認證管理器 Bean
     @Bean
@@ -246,20 +248,34 @@ public class SecurityConfig {
 
                 // 配置 HTTP 請求的授權規則
                 .authorizeHttpRequests(authorize -> authorize
-                        // 允許匿名訪問後台登錄頁
-                        .requestMatchers("/admin/login").permitAll()
-                        // 允許匿名訪問靜態資源和公開的 API 接口
-                        .requestMatchers("/", "/index.html", "/login.html", "/register.html",
-                                "/css/**", "/js/**", "/images/**", "/adminlte/**", "/frontend-template/**",
-                                "/api/users/register", "/api/users/login", "/api/users/send-code",
-                                "/api/users/request-password-reset", "/api/csrf-token", "/login")
-                        .permitAll()
-                        // 訪問 "/admin/**" 路徑需要用戶擁有 "ADMIN" 角色
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // 訪問 "/api/**" 路徑需要用戶已認證
-                        .requestMatchers("/api/**").authenticated()
-                        // 其他所有未匹配的請求都需要用戶已認證
-                        .anyRequest().authenticated())
+                	    // ✅ 後台登入頁
+                	    .requestMatchers("/admin/login").permitAll()
+
+                	    // ✅ 前台公開頁與靜態資源
+                	    .requestMatchers("/", "/index.html", "/login.html", "/register.html",
+                	        "/css/**", "/js/**", "/images/**", "/adminlte/**", "/frontend-template/**"
+                	    ).permitAll()
+
+                	    // ⭐ 前台頁面路由（含 /shop/products 頁）
+                	    .requestMatchers("/shop/**").permitAll()
+
+                	    // ⭐ 錯誤與 well-known 必放行，不然會一直被重導
+                	    .requestMatchers("/error", "/error/**", "/.well-known/**").permitAll()
+
+                	    // ✅ 你已開放的匿名 API
+                	    .requestMatchers(HttpMethod.GET, "/api/analytics/**", "/analytics", "/analytics/**","/products","/shop/products","/shop/product/**","/product_img/**").permitAll()
+                	    .requestMatchers("/api/users/register", "/api/users/login", "/api/users/send-code",
+                	                     "/api/users/request-password-reset", "/api/csrf-token", "/login").permitAll()
+
+                	    // ⭐ 如果前台「商品列表」需要匿名讀取，加上這條（依你實際 API 路徑調整）
+                	    .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+
+                	    // 後台保護
+                	    .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                	    // 其他需要登入（或開發期你想先放行就換成 .anyRequest().permitAll()）
+                	    .anyRequest().authenticated()
+                	)
 
                 // 配置後台的表單登錄
                 .formLogin(form -> form

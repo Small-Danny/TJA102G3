@@ -1,108 +1,101 @@
 <!DOCTYPE html>
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
+      th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
 <head>
-<title>商品詳細</title>
+  <title>商品詳細</title>
 </head>
 <body>
-	<div th:fragment="content">
+<div th:fragment="content">
 
-		<div class="app-content-header">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-sm-6">
-						<h3 class="mb-0">商品詳細</h3>
-					</div>
-					<div class="col-sm-6">
-						<ol class="breadcrumb float-sm-end">
-							<li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Home</a></li>
-							<li class="breadcrumb-item"><a
-								th:href="@{/product/product.do(action='getAll')}">商品清單</a></li>
-							<li class="breadcrumb-item active" aria-current="page">詳細</li>
-						</ol>
-					</div>
-				</div>
-			</div>
-		</div>
+  <div class="app-content-header">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6">
+          <h3 class="mb-0">商品詳細</h3>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-end">
+            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Home</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/admin/products}">商品清單</a></li>
+            <li class="breadcrumb-item active" aria-current="page">詳細</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
 
-		<div class="app-content">
-			<div class="container-fluid">
+  <div class="app-content">
+    <div class="container-fluid">
 
-				<div class="card">
-					<div class="card-header">
-						<h3 class="card-title">基本資訊</h3>
-					</div>
-					<div class="card-body">
-						<dl class="row">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">基本資訊</h3>
+        </div>
 
-							<!-- 圖片 -->
-							<dt class="col-sm-3">圖片</dt>
-							<dd class="col-sm-9">
-								<img th:if="${productVO.product_picture != null}"
-									th:src="@{/frontend-template/assets/img/{file}(file=${productVO.product_picture})}"
-									alt="商品圖片" class="img-fluid rounded shadow-sm"
-									style="max-width: 260px; max-height: 260px; object-fit: cover;">
-								<img th:if="${productVO.product_picture == null}"
-									th:src="@{/frontend-template/assets/img/default.png}"
-									alt="商品圖片" class="img-fluid rounded shadow-sm"
-									style="max-width: 260px; max-height: 260px; object-fit: cover;">
-							</dd>
+        <div class="card-body">
+          <dl class="row">
 
-							<dt class="col-sm-3">ID</dt>
-							<dd class="col-sm-9"
-								th:text="${productVO != null ? productVO.product_id : ''}">1</dd>
+            <!-- 圖片 -->
+            <dt class="col-sm-3">圖片</dt>
+            <dd class="col-sm-9">
+              <img th:if="${productVO != null and productVO.productPicture != null}"
+                   th:src="@{/frontend-template/assets/img/{file}(file=${productVO.productPicture})}"
+                   alt="商品圖片" class="img-fluid rounded shadow-sm"
+                   style="max-width:260px;max-height:260px;object-fit:cover;">
+              <img th:if="${productVO == null or productVO.productPicture == null}"
+                   th:src="@{/frontend-template/assets/img/default.png}"
+                   alt="商品圖片" class="img-fluid rounded shadow-sm"
+                   style="max-width:260px;max-height:260px;object-fit:cover;">
+            </dd>
 
-							<dt class="col-sm-3">名稱</dt>
-							<dd class="col-sm-9" th:text="${productVO.product_name}">名稱</dd>
+            <dt class="col-sm-3">ID</dt>
+            <dd class="col-sm-9" th:text="${productVO?.productId}">—</dd>
 
-							<dt class="col-sm-3">代碼</dt>
-							<dd class="col-sm-9" th:text="${productVO.product_code}">P-001</dd>
+            <dt class="col-sm-3">名稱</dt>
+            <dd class="col-sm-9" th:text="${productVO?.productName}">—</dd>
 
-							<dt class="col-sm-3">價格</dt>
-							<dd class="col-sm-9"
-								th:text="${#numbers.formatDecimal(productVO.product_price, 1, 'COMMA', 0, 'POINT')}">0</dd>
+            <dt class="col-sm-3">代碼</dt>
+            <dd class="col-sm-9" th:text="${productVO?.productCode}">—</dd>
 
-							<dt class="col-sm-3">庫存</dt>
-							<dd class="col-sm-9" th:text="${productVO.stock_quantity}">0</dd>
+            <dt class="col-sm-3">價格</dt>
+            <dd class="col-sm-9">
+              NT$
+              <span th:text="${productVO != null ? #numbers.formatDecimal(productVO.productPrice,1,'COMMA',0,'POINT') : '0'}">0</span>
+            </dd>
 
-							<dt class="col-sm-3">狀態</dt>
-							<dd class="col-sm-9">
-								<span class="badge bg-success"
-									th:if="${productVO.product_status == 1}">上架</span> <span
-									class="badge bg-secondary"
-									th:if="${productVO.product_status == 0}">下架</span>
-							</dd>
+            <dt class="col-sm-3">庫存</dt>
+            <dd class="col-sm-9" th:text="${productVO?.stockQuantity}">—</dd>
 
-							<dt class="col-sm-3">描述</dt>
-							<dd class="col-sm-9" th:text="${productVO.product_description}">描述</dd>
-						</dl>
-					</div>
+            <dt class="col-sm-3">狀態</dt>
+            <dd class="col-sm-9">
+              <span class="badge bg-success" th:if="${productVO?.productStatus == 1}">上架</span>
+              <span class="badge bg-secondary" th:if="${productVO?.productStatus != 1}">下架</span>
+            </dd>
 
-					<div class="card-footer d-flex gap-2">
-						<a th:href="@{/product/product.do(action='getAll')}"
-							class="btn btn-secondary">回清單</a>
+            <dt class="col-sm-3">描述</dt>
+            <dd class="col-sm-9" th:text="${productVO?.productDescription}">—</dd>
+          </dl>
+        </div>
 
-						<form th:action="@{/product/product.do}" method="post"
-							class="d-inline">
-							<input type="hidden" name="action" value="getOne_For_Update">
-							<input type="hidden" name="product_id"
-								th:value="${productVO.product_id}">
-							<button type="submit" class="btn btn-warning">編輯</button>
-						</form>
+        <div class="card-footer d-flex gap-2">
+          <a th:href="@{/admin/products}" class="btn btn-secondary">回清單</a>
 
-						<form th:action="@{/product/product.do}" method="post"
-							class="d-inline" onsubmit="return confirm('確定要刪除嗎？');">
-							<input type="hidden" name="action" value="delete"> <input
-								type="hidden" name="product_id"
-								th:value="${productVO.product_id}">
-							<button type="submit" class="btn btn-danger">刪除</button>
-						</form>
-					</div>
-				</div>
+          <a class="btn btn-warning"
+             th:href="@{/admin/products/{id}/edit(id=${productVO.productId})}">
+            編輯
+          </a>
 
-			</div>
-		</div>
+          <form th:action="@{/admin/products/{id}/delete(id=${productVO.productId})}"
+                method="post" class="d-inline"
+                onsubmit="return confirm('確定要刪除嗎？');">
+            <button type="submit" class="btn btn-danger">刪除</button>
+          </form>
+        </div>
+      </div>
 
-	</div>
+    </div>
+  </div>
+
+</div>
 </body>
 </html>

@@ -31,35 +31,41 @@ public class ProductPageController {
         return "frontend/pages/productlist"; //  productlist.html
     }
 
-	@GetMapping("/product/{id}")
+	@GetMapping("product/{id}")
 	public String detail(@PathVariable Integer id, Model model) {
 	    var p = psvc.getOne(id);
 	    if (p == null) return "redirect:/shop/products";
 
 	    model.addAttribute("product", p);
 
+	    // 正規化工具
+	    java.util.function.Function<String,String> norm = s -> s == null ? null : s.trim().toUpperCase();
+
 	    String code = p.getProductCode();
-	    String currentSize = psvc.sizeOf(code); // 可能為 null（均碼或無尺寸）
+	    String currentSize = norm.apply(psvc.sizeOf(code)); // 可能為 null
 	    var variants = psvc.findSizeVariantsByCode(code);
 
-	    Map<String, Integer> sizeToId = new LinkedHashMap<>();
-	    // 先塞所有變體（同尺寸出現多次只保留第一個）
+	    Map<String, Integer> sizeMap = new LinkedHashMap<>();
+
+	    // 先塞所有變體
 	    for (var v : variants) {
-	        String s = psvc.sizeOf(v.getProductCode());
-	        if (s != null) sizeToId.putIfAbsent(s, v.getProductId());
-	    }
-	    // 自己補上（有尺寸就補；避免只有本體沒顯示）
-	    if (currentSize != null) sizeToId.putIfAbsent(currentSize, p.getProductId());
-
-	    // 若完全沒有尺寸資訊 => 視為均碼
-	    if (sizeToId.isEmpty()) {
-	        currentSize = null;
+	        String s = norm.apply(psvc.sizeOf(v.getProductCode()));
+	        if (s != null) sizeMap.putIfAbsent(s, v.getProductId());
 	    }
 
-	    var sizes = new java.util.ArrayList<>(sizeToId.keySet());
+	    // 自己補上（避免只有本體沒顯示）
+	    if (currentSize != null) sizeMap.putIfAbsent(currentSize, p.getProductId());
+
+	    // 若完全沒有尺寸資訊 => 視為均碼（給本體 id）
+	    if (sizeMap.isEmpty()) {
+	        currentSize = "均碼";
+	        sizeMap.put(currentSize, p.getProductId());
+	    }
+
+	    var sizes = new java.util.ArrayList<>(sizeMap.keySet()); // 依插入順序
 
 	    model.addAttribute("currentSize", currentSize);
-	    model.addAttribute("sizeToId", sizeToId);
+	    model.addAttribute("sizeMap", sizeMap);  // ← 改名，避免撞到舊屬性
 	    model.addAttribute("sizes", sizes);
 
 	    return "frontend/pages/productdetail";
