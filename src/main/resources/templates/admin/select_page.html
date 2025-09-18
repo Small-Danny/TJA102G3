@@ -1,101 +1,91 @@
 <!DOCTYPE html>
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
+      th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
 <head>
-<title>選擇商品</title>
+  <title>選擇商品</title>
 </head>
 <body>
-	<div th:fragment="content">
+<div th:fragment="content">
 
-		<!-- 頁首（跟會員管理頁一致） -->
-		<div class="app-content-header">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-sm-6">
-						<h3 class="mb-0">選擇商品</h3>
-					</div>
-					<div class="col-sm-6">
-						<ol class="breadcrumb float-sm-end">
-							<li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Home</a></li>
-							<li class="breadcrumb-item active" aria-current="page">商品列表</li>
-						</ol>
-					</div>
-				</div>
-			</div>
-		</div>
+  <!-- 頁首 -->
+  <div class="app-content-header">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6">
+          <h3 class="mb-0">選擇商品</h3>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-end">
+            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">商品列表</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
 
-		<!-- 內容 -->
-		<div class="app-content">
-			<div class="container-fluid">
+  <!-- 內容 -->
+  <div class="app-content">
+    <div class="container-fluid">
 
-				<div class="card card-primary">
-					<div class="card-header">
-						<h3 class="card-title">
-							商品清單（共 <span th:text="${(list != null) ? #lists.size(list) : 0}">0</span>
-							筆）
-						</h3>
-					</div>
+      <div class="card card-primary">
+        <div class="card-header">
+          <h3 class="card-title">
+            商品清單（共 <span th:text="${(list != null) ? #lists.size(list) : 0}">0</span> 筆）
+          </h3>
+        </div>
 
-					<!-- 延用原本 .do 參數寫法 -->
-					<form th:action="@{/product/product.do}" method="post">
-						<div class="card-body">
-							<div class="mb-3">
-								<label class="form-label">請選擇一個商品</label> <select
-									name="product_id" class="form-select" required>
-									<option value="" disabled selected>— 請選擇 —</option>
-									<option th:each="p : ${list}" th:value="${p.product_id}"
-										th:text="${'[' + p.product_id + '] ' + p.product_name + '（$' 
-                                  + #numbers.formatDecimal(p.product_price, 1, 'COMMA', 0, 'POINT') + '）'}">
-										[1] 產品名稱（$100）</option>
-								</select>
-							</div>
-						</div>
+        <form th:action="@{/admin/products/select/by-id}" method="get" 
+		      class="card-body d-flex align-items-center gap-2 flex-wrap">
+		
+		  <select id="productSelect" name="productId" class="form-select" style="max-width: 320px;" required>
+		    <option value="" disabled selected>— 請選擇要查詢的商品 —</option>
+		    <option th:each="p : ${list}" th:value="${p.productId}"
+		            th:text="${'[' + p.productId + '] ' + p.productName}"></option>
+		  </select>
+		
+		  <button type="submit" class="btn btn-primary">查詢單筆</button>
+		  <a class="btn btn-info" th:href="@{/admin/products}">查全部</a>
+		  <a class="btn btn-success" th:href="@{/admin/products/add}">新增商品</a>
+		</form>
 
-						<div class="card mt-3">
-							<div class="card-header">資料庫商品列表</div>
-							<div class="overflow-auto" style="max-height: 520px;">
-								<ul class="list-group list-group-flush">
-									<li
-										class="list-group-item d-flex justify-content-between align-items-center"
-										th:each="p : ${list}">
-										<div class="me-2">
-											<div class="fw-semibold">
-												<span th:text="${p.product_name}">產品名稱</span> <span
-													class="text-muted small">（<span
-													th:text="${p.product_code}">P-001</span>）
-												</span>
-											</div>
-											<div class="small text-muted">
-												$<span
-													th:text="${#numbers.formatDecimal(p.product_price, 1, 'COMMA', 0, 'POINT')}">0</span>
-												｜ 庫存：<span th:text="${p.stock_quantity}">0</span>
-											</div>
-										</div> <a class="btn btn-sm btn-outline-primary"
-										th:href="@{/product/product.do(action='getOne_For_Display', product_id=${p.product_id})}">
-											查看 </a>
-									</li>
-								</ul>
-							</div>
-						</div>
+        <!-- 商品列表 -->
+        <div class="card mt-3">
+          <div class="card-header">資料庫商品列表</div>
+          <div class="overflow-auto" style="max-height: 520px;">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between align-items-center"
+                  th:each="p : ${list}">
+                <div class="me-2">
+                  <div class="fw-semibold">
+                    <span th:text="${p.productName}">產品名稱</span>
+                    <span class="text-muted small">（<span th:text="${p.productCode}">P-001</span>）</span>
+                  </div>
+                  <div class="small text-muted">
+                    $<span th:text="${#numbers.formatDecimal(p.productPrice, 1, 'COMMA', 0, 'POINT')}">0</span>
+                    ｜ 庫存：<span th:text="${p.stockQuantity}">0</span>
+                  </div>
+                </div>
+                <a class="btn btn-sm btn-outline-primary"
+                   th:href="@{/admin/products/{id}(id=${p.productId})}">
+                  查看
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
 
-						<div class="alert alert-warning mt-3 mb-0"
-							th:if="${list == null or #lists.isEmpty(list)}">目前查不到商品資料。
-						</div>
+        <div class="alert alert-warning mt-3 mb-0"
+             th:if="${list == null or #lists.isEmpty(list)}">
+          目前查不到商品資料。
+        </div>
 
-						<div class="card-footer d-flex gap-2">
-							<button type="submit" class="btn btn-primary" name="action"
-								value="getOne_For_Display">查詢單筆</button>
-							<button type="submit" class="btn btn-info" name="action"
-								value="getAll" formnovalidate>查全部</button>
-							<button type="submit" class="btn btn-success" name="action"
-								value="add_form" formnovalidate>新增商品</button>
-						</div>
-					</form>
-				</div>
+      </div>
 
-			</div>
-		</div>
+    </div>
+  </div>
 
-	</div>
+</div>
+
 </body>
 </html>

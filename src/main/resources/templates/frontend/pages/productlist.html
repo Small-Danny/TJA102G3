@@ -80,7 +80,7 @@
 		    <!-- 迴圈渲染商品 -->
 		    <div class="col-lg-4 col-md-6 mb-4 product-item" 
 		         th:each="p : ${products}"
-		         th:with="pic=${p.product_picture},
+		         th:with="pic=${p.productPicture},
 		                  name=${(pic == null or pic.isEmpty()) 
 		                    ? 'placeholder.png' 
 		                    : (pic.contains('/') ? pic.substring(pic.lastIndexOf('/') + 1) : pic)}">
@@ -90,14 +90,14 @@
 		            <figure>
 		              <!-- http/https 完整網址 -->
 		              <img th:if="${pic != null and #strings.startsWith(pic, 'http')}"
-		                   th:src="${pic}" th:alt="${p.product_name}" loading="lazy" width="336" height="216"/>
+		                   th:src="${pic}" th:alt="${p.productName}" loading="lazy" width="336" height="216"/>
 		
 		              <!-- 靜態目錄圖片 -->
 		              <img th:if="${pic == null or !#strings.startsWith(pic, 'http')}"
 		                   th:src="@{/frontend-template/assets/img/{f}(f=${name})}"
-		                   th:alt="${p.product_name}" loading="lazy" width="336" height="216"/>
+		                   th:alt="${p.productName}" loading="lazy" width="336" height="216"/>
 		            </figure>
-		            <a class="theme-btn add-to-cart" href="javascript:void(0)" th:attr="data-id=${p.product_id}">
+		            <a class="theme-btn add-to-cart" href="javascript:void(0)" th:attr="data-id=${p.productId}">
 		              Add to Cart <i class="fa-solid fa-bag-shopping"></i>
 		            </a>
 		          </div>
@@ -105,18 +105,18 @@
 		          <div class="data">
 		            <div class="ratings"><i class="fa-solid fa-star"></i><span>5.0</span></div>
 		            <h3>
-		              <a th:text="${p.product_name}"
-		                 th:href="@{/shop/product/{id}(id=${p.product_id})}">商品名稱</a>
+		              <a th:text="${p.productName}"
+		                 th:href="@{/shop/product/{id}(id=${p.productId})}">商品名稱</a>
 		            </h3>
 		            <div class="price-range">
-		              <span>NT$ <span th:text="${#numbers.formatInteger(p.product_price, 3, 'COMMA')}">0</span></span>
+		              <span>NT$ <span th:text="${#numbers.formatInteger(p.productPrice, 3, 'COMMA')}">0</span></span>
 		            </div>
 		          </div>
 		        </div>
 		
-		        <a class="theme-btn add-to-cart" href="javascript:void(0)" th:attr="data-id=${p.product_id}">
-		          Add to Cart <i class="fa-solid fa-bag-shopping"></i>
-		        </a>
+		        <a class="theme-btn" th:href="@{/product/product/{id}(id=${p.productId})}">
+				  查看詳情 <i class="fa-solid fa-arrow-right"></i>
+				</a>
 		      </div>
 		    </div>
 		
