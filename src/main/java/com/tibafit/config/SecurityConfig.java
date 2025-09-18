@@ -244,12 +244,14 @@ public class SecurityConfig {
                 // 註冊認證提供者，這裡同時註冊了後台和前台的提供者
                 .authenticationProvider(adminAuthenticationProvider())
                 .authenticationProvider(customUserAuthenticationProvider)
+
                 .csrf(AbstractHttpConfigurer::disable)
                 // 配置 HTTP 請求的授權規則
                 .authorizeHttpRequests(authorize -> authorize
                         // 允許匿名訪問後台登錄頁
                         .requestMatchers("/admin/login").permitAll()
                         // 允許匿名訪問靜態資源和公開的 API 接口
+
                         .requestMatchers("/", "/index.html", "/login.html", "/register.html","/cart.html",
                         		"/cart_order.html","/backend.html","/pay.html","/pay_success.html","/pay_fail.html",
                                 "/css/**", "/js/**", "/images/**", "/adminlte/**", "/frontend-template/**",
@@ -311,6 +313,7 @@ public class SecurityConfig {
 //                .csrf(csrf -> csrf
 //                        // 使用基於 Cookie 的 CSRF Token 存儲庫，withHttpOnlyFalse() 允許前端 JS 讀取此 cookie
 //                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+
 
                 // 在 UsernamePasswordAuthenticationFilter 之前添加自定義的 reCAPTCHA 驗證過濾器
                 // 這確保了在嘗試用戶名密碼認證之前，先進行 reCAPTCHA 驗證
