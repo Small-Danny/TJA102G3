@@ -4,21 +4,24 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,24 +50,37 @@ public class UserServiceImpl implements UserService {
 	private final FileService fileService;
 	private final PasswordEncoder passwordEncoder; // 新增密碼比對工具
 	private final ReCaptchaService reCaptchaService;// 新增Google reCAPTCHA
-	private final AuthenticationManager authenticationManager;
+	private final AuthenticationManager userAuthenticationManager;
+	private final SecurityContextRepository securityContextRepository;
+
+	
 	private final RememberMeServices rememberMeServices;
 	// 建構子注入
 
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository, StringRedisTemplate redisTemplate, MailService mailService,
 			FileService fileService, PasswordEncoder passwordEncoder, ReCaptchaService reCaptchaService,
-			AuthenticationManager authenticationManager, RememberMeServices rememberMeServices) {
+			 @Qualifier("userRememberMeServices")RememberMeServices rememberMeServices,
+			 @Qualifier("userAuthenticationManager")AuthenticationManager userAuthenticationManager) {
 		this.userRepository = userRepository;
 		this.redisTemplate = redisTemplate;
 		this.mailService = mailService;
 		this.fileService = fileService;
 		this.passwordEncoder = passwordEncoder;
 		this.reCaptchaService = reCaptchaService;
-		this.authenticationManager = authenticationManager;
 		this.rememberMeServices = rememberMeServices;
-	}
+		this.userAuthenticationManager = userAuthenticationManager;
+        this.securityContextRepository = new HttpSessionSecurityContextRepository(); 
 
+		
+	}
+	
+	 @Override
+	    public Optional<User> findUserByEmail(String email) {
+	        return userRepository.findByEmail(email);
+	    }
+	
+	
 	@Override
 	public User register(RegisterRequest req, HttpServletRequest request) { // 【增加參數】
 
@@ -178,34 +194,44 @@ public class UserServiceImpl implements UserService {
 			throw new ValidationException("login", "驗證失敗，請重試");
 		}
 
-		String email = loginRequest.getEmail();
-		String password = loginRequest.getPassword();
+		 try {
+	            // 2. ★★★ 核心修正 ★★★
+	            // 將 email 和 password 打包成一個 Spring Security 認識的 token
+	            UsernamePasswordAuthenticationToken authRequest = 
+	                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
 
-		User user = userRepository.findByEmail(email).orElseThrow(() -> new ValidationException("login", "帳號或密碼錯誤"));
+	            // 3. 呼叫 AuthenticationManager 進行認證
+	            // 它會自動去呼叫我們剛才建立的 CustomUserAuthenticationProvider
+	            Authentication authentication = userAuthenticationManager.authenticate(authRequest);
 
-		if (user.getAccountStatus() != 1) {
-			throw new ValidationException("login", "帳號或密碼錯誤");
-		}
+	            // 取得當前的 SecurityContext
+	            var context = SecurityContextHolder.createEmptyContext();
+	            context.setAuthentication(authentication);
+	            
+	            // 將新的 SecurityContext 存到 SecurityContextHolder
+	            SecurityContextHolder.setContext(context);
+	            //這一步會觸發 Spring Security 產生 JSESSIONID Cookie 並回傳給瀏覽器
+	            securityContextRepository.saveContext(context, request, response);
 
-		if (!passwordEncoder.matches(password, user.getPassword())) {
-			throw new ValidationException("login", "帳號或密碼錯誤");
-		}
 
-		// --- 登入成功後的核心邏輯 ---
-		// 1. 建立一個「已認證」的 Authentication 物件
-		Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), null,
-				Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+	            // 5. 處理 "記住我" 功能
+	            if (loginRequest.isRememberMe()) {
+	                System.out.println("触发记住我功能，准备生成token");
+	                rememberMeServices.loginSuccess(request, response, authentication);
 
-		// 2. 將這個物件設定到 Spring Security 的上下文中，完成 Session 登入
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+	            }
 
-		// 3. 如果使用者勾選了「記住我」，手動呼叫 rememberMeServices
-		if (loginRequest.isRememberMe()) {
-			rememberMeServices.loginSuccess(request, response, authentication);
-		}
+	            // 6. 從資料庫中找出完整的 User 物件並回傳給前端
+	            String email = authentication.getName();
+	            return userRepository.findByEmail(email)
+	                    .orElseThrow(() -> new RuntimeException("登入成功但找不到使用者資料"));
 
-		return user;
-	}
+	        } catch (AuthenticationException e) {
+	            // 7. 如果 AuthenticationManager 認證失敗 (例如密碼錯誤)，它會拋出例外
+	            // 我們捕捉這個例外，並轉換成我們自訂的 ValidationException 給前端
+	            throw new ValidationException("login", "帳號或密碼錯誤");
+	        }
+	    }
 
 	@Override
 	@Transactional // 這個方法需要交易管理
