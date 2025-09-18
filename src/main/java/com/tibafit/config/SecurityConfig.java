@@ -1,5 +1,7 @@
+// 聲明該類所在的套件
 package com.tibafit.config;
 
+// 引入所需的 Java 和 Spring Framework 類
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -41,267 +43,272 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * Spring Security 核心配置類。
- * 這裡是整個應用程式安全機制的總控制中心，負責定義認證、授權、登入登出、CSRF、記住我等所有安全相關的策略。
- * 該配置同時處理了前台（用戶端）和後台（管理端）兩種不同的安全需求。
- */
+// @Configuration 標識該類為 Spring 的配置類
 @Configuration
+// @EnableWebSecurity 啟用 Spring Security 的 Web 安全性功能
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // --- Autowired 依賴注入區 ---
+    // 自動注入自定義的登出成功處理器
     @Autowired
-    private CustomLogoutSuccessHandler customLogoutSuccessHandler; // 自定義登出成功處理器
+    private CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
+    // 自動注入 reCAPTCHA 驗證過濾器
     @Autowired
-    private ReCaptchaAuthenticationFilter recaptchaAuthenticationFilter; // Google reCAPTCHA 驗證過濾器
+    private ReCaptchaAuthenticationFilter recaptchaAuthenticationFilter;
 
+    // 自動注入後台管理員用戶詳細資訊服務
     @Autowired
-    private AdminDetailsService adminDetailsService; // 後台管理員用戶服務
+    private AdminDetailsService adminDetailsService;
 
+    // 自動注入密碼編碼器，用於密碼的加密與比對
     @Autowired
-    private PasswordEncoder passwordEncoder; // 全局密碼加密器
+    private PasswordEncoder passwordEncoder;
 
+    // 從 application.properties 中讀取 '記住我' 功能的密鑰
     @Value("${app.security.remember-me-key}")
-    private String rememberMeKey; // "記住我" 功能的密鑰，從 application.properties 讀取
+    private String rememberMeKey;
 
+    // 自動注入委派認證入口點，用於處理未認證的請求
     @Autowired
-    private AuthenticationEntryPoint delegatingAuthenticationEntryPoint; // 認證入口點分發器
+    private AuthenticationEntryPoint delegatingAuthenticationEntryPoint;
 
+    // 自動注入名為 "customUserAuthenticationProvider" 的自定義用戶認證提供者
     @Autowired
     @Qualifier("customUserAuthenticationProvider")
-    private AuthenticationProvider customUserAuthenticationProvider; // 前台用戶認證Provider
+    private AuthenticationProvider customUserAuthenticationProvider;
 
+    // 自動注入名為 "userDetailsService" 的用戶詳細資訊服務
     @Autowired
     @Qualifier("userDetailsService")
-    private UserDetailsService userDetailsService; // 前台用戶服務
+    private UserDetailsService userDetailsService;
 
-    /**
-     * 認證入口點分發器 (AuthenticationEntryPoint Delegator)。
-     * 當一個「未經認證」的用戶嘗試訪問受保護資源時，這個 Bean 會被觸發，決定該如何回應。
-     * 這是實現前後台分離、API與頁面不同處理方式的關鍵。
-     * 使用 LinkedHashMap 來確保規則的匹配順序。
-     * * @return AuthenticationEntryPoint 分發器實例
-     */
+    // 解決循環依賴：未認證請求的重定向規則
+    // @Bean 標識這是一個 Spring Bean，Spring 容器會管理它的生命週期
+    // 'static' 關鍵字用於解決循環依賴問題，確保此 Bean 在 SecurityConfig 實例化之前被創建
     @Bean
     public static AuthenticationEntryPoint delegatingAuthenticationEntryPoint() {
+        // 使用 LinkedHashMap 保持插入順序，確保請求匹配規則的優先級
         final LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> entryPoints = new LinkedHashMap<>();
 
-        // 規則1: 如果請求路徑是 /api/**，代表是前端 SPA 發來的 AJAX 請求。
-        //        此時不應重定向頁面，而是返回 HTTP 401 Unauthorized 狀態碼和 JSON 錯誤訊息。
+        // 規則 1: 當未認證的請求路徑匹配 "/api/**" 時
         entryPoints.put(new AntPathRequestMatcher("/api/**"), (request, response, authException) -> {
+            // 設置 HTTP 狀態碼為 401 Unauthorized
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            // 設置響應內容類型為 JSON
             response.setContentType("application/json;charset=UTF-8");
+            // 創建錯誤訊息 Map
             Map<String, Object> errorDetails = new LinkedHashMap<>();
             errorDetails.put("error", "未登入或憑證無效");
             errorDetails.put("message", "請先登入以存取此資源");
             errorDetails.put("status", HttpStatus.UNAUTHORIZED.value());
+            // 將錯誤訊息 Map 轉換為 JSON 字符串並寫入響應
             response.getWriter().write(new ObjectMapper().writeValueAsString(errorDetails));
         });
 
-        // 規則2: 如果請求路徑是 /admin/**，代表是訪問後台管理頁面。
-        //        此時應重定向到後台的登入頁面。
-        entryPoints.put(new AntPathRequestMatcher("/admin/**"), 
-            new LoginUrlAuthenticationEntryPoint("/admin/login"));
+        // 規則 2: 當未認證的請求路徑匹配 "/admin/**" 時，重定向到後台登錄頁
+        entryPoints.put(new AntPathRequestMatcher("/admin/**"),
+                new LoginUrlAuthenticationEntryPoint("/admin/login"));
 
-        // 規則3: 如果請求路徑是 /frontend-template/**，代表是訪問前台頁面。
-        //        此時應重定向到前台的登入頁面。
-        entryPoints.put(new AntPathRequestMatcher("/frontend-template/**"), 
-            new LoginUrlAuthenticationEntryPoint("/login.html"));
+        // 規則 3: 當未認證的請求路徑匹配 "/frontend-template/**" 時，重定向到前台登錄頁
+        entryPoints.put(new AntPathRequestMatcher("/frontend-template/**"),
+                new LoginUrlAuthenticationEntryPoint("/login.html"));
 
-        // 預設規則: 對於其他所有未匹配到的請求，默認重定向到前台登入頁。
+        // 規則 4: 為所有其他未匹配的請求設置默認的重定向規則
         final LoginUrlAuthenticationEntryPoint defaultEntryPoint = new LoginUrlAuthenticationEntryPoint("/login.html");
 
+        // 創建一個委派認證入口點，它會根據請求路徑將處理委派給對應的入口點
         final DelegatingAuthenticationEntryPoint delegatingEntryPoint = new DelegatingAuthenticationEntryPoint(entryPoints);
+        // 設置默認的入口點
         delegatingEntryPoint.setDefaultEntryPoint(defaultEntryPoint);
         return delegatingEntryPoint;
     }
 
-    /**
-     * 後台管理員認證 Provider (AuthenticationProvider)。
-     * 負責處理後台管理員的登入認證邏輯。
-     * @return DaoAuthenticationProvider 實例
-     */
+    // 定義前台用戶的認證管理器 Bean
+    @Bean
+    public AuthenticationManager userAuthenticationManager(
+            // 指定注入名為 "customUserAuthenticationProvider" 的 Bean
+            @Qualifier("customUserAuthenticationProvider") AuthenticationProvider customUserAuthenticationProvider) {
+        // ProviderManager 是 AuthenticationManager 的一個常見實現，它將認證委託給一個 AuthenticationProvider 列表
+        return new ProviderManager(customUserAuthenticationProvider);
+    }
+
+    // 定義後台管理員的認證提供者 Bean
     @Bean
     public DaoAuthenticationProvider adminAuthenticationProvider() {
+        // DaoAuthenticationProvider 是 Spring Security 提供的一個基於 DAO 的認證提供者
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(adminDetailsService); // 指定使用 AdminDetailsService 來查詢管理員用戶
-        authProvider.setPasswordEncoder(passwordEncoder);       // 指定使用全局的 PasswordEncoder 來比對密碼
+        // 設置用於獲取用戶詳細資訊的 Service
+        authProvider.setUserDetailsService(adminDetailsService);
+        // 設置密碼編碼器
+        authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 
-    /**
-     * 前台用戶 "記住我" (RememberMe) 服務。
-     * 負責生成和解析前台用戶的 remember-me cookie。
-     * @return RememberMeServices 實例
-     */
+    // 定義前台用戶的 "記住我" 服務 Bean
     @Bean("userRememberMeServices")
     public RememberMeServices userRememberMeServices() {
+        // 使用基於 Token 的 "記住我" 服務實現
         TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(rememberMeKey, userDetailsService);
-        rememberMe.setTokenValiditySeconds(86400 * 14); // 設置 token 有效期為 14 天
-        // 關鍵設定！因為我們是通過 API 自定義登入，而不是傳統表單提交，
-        // 必須設置為 true，讓 RememberMeServices 信任我們的外部調用，而不是自己去檢查請求參數。
+        // 設置 token 的有效期為 14 天（單位：秒）
+        rememberMe.setTokenValiditySeconds(86400 * 14);
+        // 設置為 true，表示即使客戶端沒有勾選 "記住我"，只要配置了此服務就會生效
         rememberMe.setAlwaysRemember(true);
         return rememberMe;
     }
 
-    /**
-     * 後台管理員 "記住我" (RememberMe) 服務。
-     * 負責生成和解析後台管理員的 remember-me cookie。
-     * @return RememberMeServices 實例
-     */
+    // 定義後台管理員的 "記住我" 服務 Bean
     @Bean("adminRememberMeServices")
     public RememberMeServices adminRememberMeServices() {
+        // 使用基於 Token 的 "記住我" 服務實現
         TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(rememberMeKey, adminDetailsService);
-        rememberMe.setTokenValiditySeconds(86400 * 14); // 設置 token 有效期為 14 天
+        // 設置 token 的有效期為 14 天（單位：秒）
+        rememberMe.setTokenValiditySeconds(86400 * 14);
         return rememberMe;
     }
 
-    /**
-     * "記住我" 服務分發器 (RememberMeServices Delegator)。
-     * 由於系統有兩套 "記住我" 服務（前台 vs 後台），這個 Bean 負責根據當前請求的 URL，
-     * 將 remember-me 的相關操作（如自動登入、登入成功處理）分發給正確的服務。
-     * @param userRememberMeServices 前台服務
-     * @param adminRememberMeServices 後台服務
-     * @return 統一的 RememberMeServices 接口實現
-     */
+    // 定義一個委派的 "記住我" 服務，根據請求路徑區分前後台
+    // @Primary 標註當有多個同類型的 Bean 時，此 Bean 為優先注入的對象
     @Bean
-    @Primary // 標記為主要的 RememberMeServices Bean
+    @Primary
     public RememberMeServices delegatingRememberMeServices(
             @Qualifier("userRememberMeServices") RememberMeServices userRememberMeServices,
             @Qualifier("adminRememberMeServices") RememberMeServices adminRememberMeServices) {
-        
-          return new RememberMeServices() {
-                // 處理自動登入邏輯
-                @Override
-                public Authentication autoLogin(HttpServletRequest request, HttpServletResponse response) {
-                    String uri = request.getRequestURI();
-                    if (uri.startsWith("/admin/")) {
-                        return adminRememberMeServices.autoLogin(request, response);
-                    }
-                    // 其他所有情況（包括 API 和前台頁面）都由 userRememberMeServices 處理
+
+        // 返回一個 RememberMeServices 的匿名內部類實現
+        return new RememberMeServices() {
+            @Override
+            // 當請求中包含 "記住我" cookie 時，此方法會被調用以嘗試自動登錄
+            public Authentication autoLogin(HttpServletRequest request, HttpServletResponse response) {
+                String uri = request.getRequestURI();
+                // 如果是後台路徑，使用後台的 "記住我" 服務
+                if (uri.startsWith("/admin/")) {
+                    return adminRememberMeServices.autoLogin(request, response);
+                }
+                // 如果是前台 API 路徑或特定前台頁面，使用前台的 "記住我" 服務
+                else if (uri.startsWith("/api/") || uri.startsWith("/frontend-template/")
+                        || uri.equals("/login.html") || uri.equals("/register.html")) {
                     return userRememberMeServices.autoLogin(request, response);
                 }
+                // 默認情況下也使用前台的 "記住我" 服務
+                return userRememberMeServices.autoLogin(request, response);
+            }
 
-                // 處理登入成功後的邏輯
-                @Override
-                public void loginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
-                    if (request.getRequestURI().startsWith("/admin/")) {
-                        adminRememberMeServices.loginSuccess(request, response, auth);
-                    } else {
-                        userRememberMeServices.loginSuccess(request, response, auth);
-                    }
+            @Override
+            // 登錄成功時調用此方法，用於生成和設置 "記住我" cookie
+            public void loginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
+                // 根據請求路徑，調用對應的 "記住我" 服務的 loginSuccess 方法
+                if (request.getRequestURI().startsWith("/admin/")) {
+                    adminRememberMeServices.loginSuccess(request, response, auth);
+                } else {
+                    userRememberMeServices.loginSuccess(request, response, auth);
                 }
+            }
 
-                // 處理登入失敗後的邏輯
-                @Override
-                public void loginFail(HttpServletRequest request, HttpServletResponse response) {
-                    if (request.getRequestURI().startsWith("/admin/")) {
-                        adminRememberMeServices.loginFail(request, response);
-                    } else {
-                        userRememberMeServices.loginFail(request, response);
-                    }
+            @Override
+            // 登錄失敗時調用此方法
+            public void loginFail(HttpServletRequest request, HttpServletResponse response) {
+                // 根據請求路徑，調用對應的 "記住我" 服務的 loginFail 方法
+                if (request.getRequestURI().startsWith("/admin/")) {
+                    adminRememberMeServices.loginFail(request, response);
+                } else {
+                    userRememberMeServices.loginFail(request, response);
                 }
+            }
         };
     }
 
-    /**
-     * 配置 HTTP 防火牆，以允許 URL 中包含分號 (;) 等特殊字符。
-     * Spring Security 預設的防火牆非常嚴格，可能會拒絕包含某些字符的合法請求。
-     * @return HttpFirewall 實例
-     */
+    // 配置一個 HttpFirewall Bean，以允許 URL 中包含分號等特殊字符
     @Bean
     public HttpFirewall allowSemicolonHttpFirewall() {
+        // StrictHttpFirewall 是 Spring Security 默認的防火牆實現
         StrictHttpFirewall firewall = new StrictHttpFirewall();
+        // 設置為 true 以允許 URL 中包含分號 (;)
         firewall.setAllowSemicolon(true);
-        firewall.setAllowUrlEncodedSlash(true); // 也允許 URL 編碼的斜線
+        // 設置為 true 以允許 URL 中包含編碼後的斜槓 (%2F)
+        firewall.setAllowUrlEncodedSlash(true);
         return firewall;
     }
-    
-    /**
-     * 將自定義的 HTTP 防火牆應用到 Web 安全性中。
-     * @return WebSecurityCustomizer 實例
-     */
+
+    // 將自定義的 HttpFirewall 應用到 Web 安全性配置中
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.httpFirewall(allowSemicolonHttpFirewall());
     }
 
-    /**
-     * 核心安全過濾器鏈配置 (The Security Filter Chain)。
-     * 這是整個安全配置的心臟，定義了所有請求如何被過濾和處理。
-     * @param http HttpSecurity 配置對象
-     * @return SecurityFilterChain 實例
-     * @throws Exception
-     */
+    // 核心的安全過濾器鏈配置
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. 註冊我們自定義的前後台認證 Provider
-            .authenticationProvider(adminAuthenticationProvider())
-            .authenticationProvider(customUserAuthenticationProvider)
+                // 註冊認證提供者，這裡同時註冊了後台和前台的提供者
+                .authenticationProvider(adminAuthenticationProvider())
+                .authenticationProvider(customUserAuthenticationProvider)
 
-            // 2. 授權規則 (URL權限控制)，規則順序至關重要！
-            .authorizeHttpRequests(authorize -> authorize
-                // 規則 2.1: 優先放行後台登入頁，防止重定向循環
-                .requestMatchers("/admin/login").permitAll()
-                // 規則 2.2: 放行所有公開資源、靜態文件和無需登入的 API
-                .requestMatchers("/", "/index.html", "/login.html", "/register.html",
-                        "/css/**", "/js/**", "/images/**", "/adminlte/**", "/frontend-template/**",
-                        "/api/users/register", "/api/users/login", "/api/users/send-code",
-                        "/api/users/request-password-reset", "/api/csrf-token","/login"
-                ).permitAll()
-                // 規則 2.3: 所有 /admin/ 路徑下的請求，都必須擁有 "ADMIN" 角色
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                // 規則 2.4: 所有 /api/ 路徑下的請求，都必須經過認證 (登入)
-                .requestMatchers("/api/**").authenticated()
-                // 規則 2.5: 除了以上規則，其他所有請求都必須經過認證 (最嚴格的規則放在最後)
-                .anyRequest().authenticated()
-            )
+                // 配置 HTTP 請求的授權規則
+                .authorizeHttpRequests(authorize -> authorize
+                        // 允許匿名訪問後台登錄頁
+                        .requestMatchers("/admin/login").permitAll()
+                        // 允許匿名訪問靜態資源和公開的 API 接口
+                        .requestMatchers("/", "/index.html", "/login.html", "/register.html",
+                                "/css/**", "/js/**", "/images/**", "/adminlte/**", "/frontend-template/**",
+                                "/api/users/register", "/api/users/login", "/api/users/send-code",
+                                "/api/users/request-password-reset", "/api/csrf-token", "/login")
+                        .permitAll()
+                        // 訪問 "/admin/**" 路徑需要用戶擁有 "ADMIN" 角色
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // 訪問 "/api/**" 路徑需要用戶已認證
+                        .requestMatchers("/api/**").authenticated()
+                        // 其他所有未匹配的請求都需要用戶已認證
+                        .anyRequest().authenticated())
 
-            // 3. 後台表單登錄配置
-            .formLogin(form -> form
-                .loginPage("/admin/login")         // 指定後台登入頁的 URL
-                .loginProcessingUrl("/admin/login") // 指定處理登入請求的 URL
-                .defaultSuccessUrl("/admin/dashboard", true) // 登入成功後強制跳轉到後台主頁
-                .failureUrl("/admin/login?error=true") // 登入失敗後跳轉的 URL
-            )
+                // 配置後台的表單登錄
+                .formLogin(form -> form
+                        // 指定後台登錄頁面的 URL
+                        .loginPage("/admin/login")
+                        // 指定處理登錄請求的 URL
+                        .loginProcessingUrl("/admin/login")
+                        // 登錄成功後默認跳轉的 URL
+                        .defaultSuccessUrl("/admin/dashboard", true)
+                        // 登錄失敗後跳轉的 URL
+                        .failureUrl("/admin/login?error=true"))
 
-            // 4. 異常處理：當認證失敗時，使用我們自定義的入口點分發器
-            .exceptionHandling(ex -> ex
-                .authenticationEntryPoint(delegatingAuthenticationEntryPoint)
-            )
+                // 配置異常處理
+                .exceptionHandling(ex -> ex
+                        // 指定處理認證入口點，即未認證用戶訪問受保護資源時的處理方式
+                        .authenticationEntryPoint(delegatingAuthenticationEntryPoint))
 
-            // 5. "記住我" 功能：使用我們自定義的服務分發器
-            .rememberMe(remember -> remember
-                .key(rememberMeKey)
-                .rememberMeServices(delegatingRememberMeServices(
-                    userRememberMeServices(), 
-                    adminRememberMeServices()
-                ))
-            )
+                // 配置 "記住我" 功能
+                .rememberMe(remember -> remember
+                        // 設置用於生成 token 的密鑰
+                        .key(rememberMeKey)
+                        // 使用自定義的委派 "記住我" 服務
+                        .rememberMeServices(delegatingRememberMeServices(
+                                userRememberMeServices(),
+                                adminRememberMeServices())))
 
-            // 6. 登出配置
-            .logout(logout -> logout
-                // 匹配 /admin/logout 和 /api/users/logout 等請求
-                .logoutRequestMatcher(new AntPathRequestMatcher("/**/logout", "POST")) 
-                .logoutSuccessHandler(customLogoutSuccessHandler) // 使用自定義的登出成功處理器
-                .invalidateHttpSession(true) // 登出後使 HttpSession 無效
-                .clearAuthentication(true)   // 清除認證訊息
-                .deleteCookies("JSESSIONID", "XSRF-TOKEN", "remember-me") // 清除所有相關 Cookie
-            )
+                // 配置登出功能
+                .logout(logout -> logout
+                        // 匹配 POST 方法的 "/**/logout" URL 作為登出請求
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/**/logout", "POST"))
+                        // 使用自定義的登出成功處理器
+                        .logoutSuccessHandler(customLogoutSuccessHandler)
+                        // 登出時使 HttpSession 失效
+                        .invalidateHttpSession(true)
+                        // 清除認證信息
+                        .clearAuthentication(true)
+                        // 登出時刪除指定的 cookie
+                        .deleteCookies("JSESSIONID", "XSRF-TOKEN", "remember-me"))
 
-            // 7. CSRF (跨站請求偽造) 保護配置
-            .csrf(csrf -> csrf
-                // 將 CSRF token 存儲在 Cookie 中，這是現代前後端分離架構（如 React, Vue）的推薦做法
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            )
+                // 配置 CSRF (跨站請求偽造) 防護
+                .csrf(csrf -> csrf
+                        // 使用基於 Cookie 的 CSRF Token 存儲庫，withHttpOnlyFalse() 允許前端 JS 讀取此 cookie
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
 
-            // 8. 自定義過濾器鏈
-            // 在處理用戶名密碼認證之前，先插入我們的 reCAPTCHA 驗證過濾器
-            .addFilterBefore(recaptchaAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                // 在 UsernamePasswordAuthenticationFilter 之前添加自定義的 reCAPTCHA 驗證過濾器
+                // 這確保了在嘗試用戶名密碼認證之前，先進行 reCAPTCHA 驗證
+                .addFilterBefore(recaptchaAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+        // 構建並返回 SecurityFilterChain
         return http.build();
     }
 }
