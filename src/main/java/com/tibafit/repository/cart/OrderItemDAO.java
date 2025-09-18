@@ -17,4 +17,5 @@ public interface OrderItemDAO extends JpaRepository<OrderItemVO, Integer> {
 	// - order 對應 OrderItemVO 裡的屬性名（ManyToOne OrdersVO）
 	// - orderId 對應 OrdersVO 裡的主鍵欄位名
 	List<OrderItemVO> findByOrder_OrderId(Integer orderId);
+
 }

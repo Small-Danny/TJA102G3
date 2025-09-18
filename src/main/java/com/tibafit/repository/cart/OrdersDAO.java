@@ -19,4 +19,5 @@ public interface OrdersDAO extends JpaRepository<OrdersVO, Integer> {
 
 	// 檢查訂單碼是否已存在（用於產生新訂單碼時的唯一性校驗）
 	boolean existsByOrderCode(String orderCode);
+
 }

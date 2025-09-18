@@ -113,7 +113,6 @@ public class OrdersDTO {
 		var orderItems = ov.getOrderItems();
 		otd.setItems(orderItems == null ? java.util.Collections.emptyList()
 				: orderItems.stream().map(OrderItemDTO::from).collect(Collectors.toList()));
-
 		return otd;
 	}
 }

@@ -1,10 +1,10 @@
 package com.tibafit.repository.cart;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -43,5 +43,5 @@ public interface ProductDAO extends JpaRepository<ProductsVO, Integer> {
 	Page<ProductsVO> findByProductStatus(Integer status, Pageable pageable);
 
 	// 批次依 ID 清單查詢（常用於購物車/訂單一次撈多筆）
-	List<ProductsVO> findByProductIdIn(List<Integer> ids);
+	List<ProductsVO> findByProductIdIn(List<Integer> ids);	  
 }
