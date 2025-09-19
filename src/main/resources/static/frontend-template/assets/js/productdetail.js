@@ -3,8 +3,17 @@
   const hidPid    = document.getElementById('variantProductId');
   const hidSize   = document.getElementById('selectedSize');
   const btnCart   = document.getElementById('btnAddToCart');
+  const skuText   = document.getElementById('skuText');
 
-  
+  // 將 API 先取出一次
+  const STOCK_API = stockHint ? (stockHint.dataset.stockUrl || '/shop/api/stock') : '/shop/api/stock';
+
+  // 初始按鈕狀態：沒有 pid 就先停用
+  if (btnCart && (!btnCart.dataset.id || btnCart.dataset.id.trim() === '')) {
+    btnCart.setAttribute('aria-disabled', 'true');
+    btnCart.classList.add('disabled');
+  }
+
   function setHint(text, isError) {
     if (!stockHint) return;
     stockHint.textContent = text;
@@ -12,56 +21,147 @@
     stockHint.classList.toggle('text-secondary', !isError);
   }
 
+  // 控制請求並避免亂序
+  let inflightCtrl = null;
+
   async function loadStock(pid) {
     if (!stockHint) return;
-    const api = stockHint.getAttribute('data-stock-url') || '/shop/api/stock';
-    if (!pid) { setHint('請選擇尺寸以查看庫存', false); return; }
+
+    // 無 pid：代表此尺寸未上架或未選
+    if (!pid) {
+      setHint('此尺寸未上架或尚未選擇尺寸', true);
+      if (btnCart) {
+        btnCart.setAttribute('aria-disabled', 'true');
+        btnCart.classList.add('disabled');
+      }
+      return;
+    }
+
+    // 取消上一個請求
+    if (inflightCtrl) inflightCtrl.abort();
+    inflightCtrl = new AbortController();
 
     setHint('載入庫存中…', false);
+
     try {
-      const r = await fetch(`${api}?productId=${encodeURIComponent(pid)}`);
-      const data = await r.json();
-      if (r.ok && data && data.ok) {
-        setHint(`庫存：${data.stock} 件`, false);
-      } else {
-        throw new Error();
+      const r = await fetch(`${STOCK_API}?productId=${encodeURIComponent(pid)}`, {
+        credentials: 'same-origin',
+        signal: inflightCtrl.signal
+      });
+
+      // content-type 檢查以避免非 JSON 回傳
+      const ctype = r.headers.get('content-type') || '';
+      const isJson = ctype.toLowerCase().includes('application/json');
+
+      if (!isJson) {
+        // 非 JSON 直接當作錯誤處理
+        throw new Error('Non-JSON response');
       }
-    } catch {
+
+      const data = await r.json();
+
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+
+      // 預期結構 { ok: true, stock: number }
+      if (data && data.ok === true && typeof data.stock === 'number') {
+        if (data.stock > 0) {
+          setHint(`庫存：${data.stock} 件`, false);
+          if (btnCart) {
+            btnCart.removeAttribute('aria-disabled');
+            btnCart.classList.remove('disabled');
+          }
+        } else {
+          setHint('目前缺貨', true);
+          if (btnCart) {
+            btnCart.setAttribute('aria-disabled', 'true');
+            btnCart.classList.add('disabled');
+          }
+        }
+      } else {
+        // 後端欄位名稱不一致時的降級處理
+        const stock = Number(data?.stock ?? data?.quantity ?? NaN);
+        if (!Number.isNaN(stock)) {
+          if (stock > 0) {
+            setHint(`庫存：${stock} 件`, false);
+            if (btnCart) {
+              btnCart.removeAttribute('aria-disabled');
+              btnCart.classList.remove('disabled');
+            }
+          } else {
+            setHint('目前缺貨', true);
+            if (btnCart) {
+              btnCart.setAttribute('aria-disabled', 'true');
+              btnCart.classList.add('disabled');
+            }
+          }
+        } else {
+          throw new Error('Invalid payload');
+        }
+      }
+    } catch (err) {
+      if (err.name === 'AbortError') return; // 使用者又選了其他尺寸
       setHint('無法取得庫存，請稍後再試', true);
+      if (btnCart) {
+        btnCart.setAttribute('aria-disabled', 'true');
+        btnCart.classList.add('disabled');
+      }
     }
   }
 
-  // 文件層級代理：不怕外層阻擋或 chip 是 span/div/button
+  // 文件層級代理：支援 button/div/span 都可當 size-chip
   document.addEventListener('click', (e) => {
     const chip = e.target.closest('.size-chip');
     if (!chip) return;
 
-    // 避免被覆蓋層攔截的情況（若有）
     e.preventDefault();
 
-    // 切換 active（只在同一個 size-group 內）
+    // 只在同一個 size-group 內切換
     const group = chip.closest('#sizeGroup');
     if (group) {
-      group.querySelectorAll('.size-chip.active').forEach(el => el.classList.remove('active'));
+      group.querySelectorAll('.size-chip.active').forEach(el => {
+        el.classList.remove('active');
+        el.setAttribute('aria-selected', 'false');
+      });
       chip.classList.add('active');
+      chip.setAttribute('aria-selected', 'true');
     }
 
-    const size = chip.getAttribute('data-size') || '';
-    const pid  = chip.getAttribute('data-pid')  || '';
+    const size = chip.dataset.size || '';
+    let pid    = chip.dataset.pid || '';
+	const sku  = chip.dataset.sku  || '';
+
+    // 正規化 pid（保留空字串；有值時轉成純數字字串）
+    if (pid) {
+      const n = Number(pid);
+      pid = Number.isFinite(n) ? String(n) : String(pid);
+    }
 
     if (hidSize) hidSize.value = size;
     if (hidPid)  hidPid.value  = pid;
-    if (btnCart && pid) btnCart.setAttribute('data-id', pid);
+
+    if (btnCart) {
+      if (pid) {
+        btnCart.setAttribute('data-id', pid);
+      } else {
+        btnCart.removeAttribute('data-id');
+      }
+	  if (skuText && sku) skuText.textContent = sku;
+    }
 
     loadStock(pid);
-	console.log('clicked size:', size, 'pid:', pid);
+    // console.log('clicked size:', size, 'pid:', pid);
   });
 
-  // 首次載入如果有預設 active 尺寸就查庫存
+  // 首次載入如果有預設 active 尺寸就查庫存；否則提示
   const active = document.querySelector('#sizeGroup .size-chip.active');
   if (active) {
-    loadStock(active.getAttribute('data-pid'));
+    const pid = active.dataset.pid || '';
+	const sku = active.dataset.sku || '';
+    active.setAttribute('aria-selected', 'true');
+    loadStock(pid);
   } else {
     setHint('請選擇尺寸以查看庫存', false);
   }
+  
+  
 })();

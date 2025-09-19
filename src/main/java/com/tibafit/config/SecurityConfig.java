@@ -1,5 +1,7 @@
+// 聲明該類所在的套件
 package com.tibafit.config;
 
+// 引入所需的 Java 和 Spring Framework 類
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -18,6 +20,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,31 +45,39 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
+// @EnableWebSecurity 啟用 Spring Security 的 Web 安全性功能
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Autowired
     private CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
+    // 自動注入 reCAPTCHA 驗證過濾器
     @Autowired
     private ReCaptchaAuthenticationFilter recaptchaAuthenticationFilter;
 
+    // 自動注入後台管理員用戶詳細資訊服務
     @Autowired
     private AdminDetailsService adminDetailsService;
 
+    // 自動注入密碼編碼器，用於密碼的加密與比對
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // 從 application.properties 中讀取 '記住我' 功能的密鑰
     @Value("${app.security.remember-me-key}")
     private String rememberMeKey;
 
+    // 自動注入委派認證入口點，用於處理未認證的請求
     @Autowired
     private AuthenticationEntryPoint delegatingAuthenticationEntryPoint;
 
+    // 自動注入名為 "customUserAuthenticationProvider" 的自定義用戶認證提供者
     @Autowired
     @Qualifier("customUserAuthenticationProvider")
     private AuthenticationProvider customUserAuthenticationProvider;
 
+    // 自動注入名為 "userDetailsService" 的用戶詳細資訊服務
     @Autowired
     @Qualifier("userDetailsService")
     private UserDetailsService userDetailsService;
@@ -74,11 +85,14 @@ public class SecurityConfig {
     /* =====================  未認證導向規則（API 回 401；後台/前台導向對應登入頁）  ===================== */
     @Bean
     public static AuthenticationEntryPoint delegatingAuthenticationEntryPoint() {
+        // 使用 LinkedHashMap 保持插入順序，確保請求匹配規則的優先級
         final LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> entryPoints = new LinkedHashMap<>();
 
         // API：未登入回 401 + JSON
         entryPoints.put(new AntPathRequestMatcher("/api/**"), (request, response, authException) -> {
+            // 設置 HTTP 狀態碼為 401 Unauthorized
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            // 設置響應內容類型為 JSON
             response.setContentType("application/json;charset=UTF-8");
             Map<String, Object> error = new LinkedHashMap<>();
             error.put("error", "未登入或憑證無效");
@@ -116,6 +130,7 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider adminAuthenticationProvider() {
+        // DaoAuthenticationProvider 是 Spring Security 提供的一個基於 DAO 的認證提供者
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(adminDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder);
@@ -182,7 +197,9 @@ public class SecurityConfig {
 
     @Bean
     public HttpFirewall allowSemicolonHttpFirewall() {
+        // StrictHttpFirewall 是 Spring Security 默認的防火牆實現
         StrictHttpFirewall firewall = new StrictHttpFirewall();
+        // 設置為 true 以允許 URL 中包含分號 (;)
         firewall.setAllowSemicolon(true);
         firewall.setAllowUrlEncodedSlash(true);
         return firewall;
@@ -213,7 +230,7 @@ public class SecurityConfig {
                         "/assets/**", "/webjars/**", "/font/**", "/fonts/**").permitAll()
 
                 // 商店頁（前台）
-                .requestMatchers("/shop/**").permitAll()
+                .requestMatchers("/shop/**","/api/products/**").permitAll()
 
                 // 錯誤與 well-known
                 .requestMatchers("/error", "/error/**", "/.well-known/**").permitAll()
@@ -276,6 +293,16 @@ public class SecurityConfig {
             // reCAPTCHA 先於帳密驗證
             .addFilterBefore(recaptchaAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+                // 配置 CSRF (跨站請求偽造) 防護
+//                .csrf(csrf -> csrf
+//                        // 使用基於 Cookie 的 CSRF Token 存儲庫，withHttpOnlyFalse() 允許前端 JS 讀取此 cookie
+//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+
+                // 在 UsernamePasswordAuthenticationFilter 之前添加自定義的 reCAPTCHA 驗證過濾器
+                // 這確保了在嘗試用戶名密碼認證之前，先進行 reCAPTCHA 驗證
+                .addFilterBefore(recaptchaAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // 構建並返回 SecurityFilterChain
         return http.build();
     }
 }
