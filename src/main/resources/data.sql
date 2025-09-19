@@ -69,37 +69,37 @@ INSERT INTO `product`
 (`product_type`, `product_name`, `product_description`, `product_price`, `stock_quantity`, `product_picture`, `product_status`, `product_code`)
 VALUES
 -- ========= 裝備：衣服 =========
-(0, 'TibaFit 衣服 S號', '吸濕排汗材質，尺寸：S', 700, 50, 'images/equipment/clothes-s.jpg', 1, 'EQ-C-S'),
-(0, 'TibaFit 衣服 M號', '吸濕排汗材質，尺寸：M', 700, 80, 'images/equipment/clothes-m.jpg', 1, 'EQ-C-M'),
-(0, 'TibaFit 衣服 L號', '吸濕排汗材質，尺寸：L', 700, 70, 'images/equipment/clothes-l.jpg', 1, 'EQ-C-L'),
-(0, 'TibaFit 衣服 XL號', '吸濕排汗材質，尺寸：XL', 1200, 40, 'images/equipment/clothes-xl.jpg', 1, 'EQ-C-XL'),
+(0, 'TibaFit 衣服 S號', '吸濕排汗材質，尺寸：S', 700, 50, 'clothes.png', 1, 'EQ-C-S'),
+(0, 'TibaFit 衣服 M號', '吸濕排汗材質，尺寸：M', 700, 80, 'clothes.png', 1, 'EQ-C-M'),
+(0, 'TibaFit 衣服 L號', '吸濕排汗材質，尺寸：L', 700, 70, 'clothes.png', 1, 'EQ-C-L'),
+(0, 'TibaFit 衣服 XL號', '吸濕排汗材質，尺寸：XL', 1200, 40, 'clothes.png', 1, 'EQ-C-XL'),
 
 -- ========= 裝備：褲子 =========
-(0, 'TibaFit 褲子 S號', '高彈性面料，尺寸：S', 700, 40, 'images/equipment/pants-s.jpg', 1, 'EQ-P-S'),
-(0, 'TibaFit 褲子 M號', '高彈性面料，尺寸：M', 700, 60, 'images/equipment/pants-m.jpg', 1, 'EQ-P-M'),
-(0, 'TibaFit 褲子 L號', '高彈性面料，尺寸：L', 700, 50, 'images/equipment/pants-l.jpg', 1, 'EQ-P-L'),
-(0, 'TibaFit 褲子 XL號', '高彈性面料，尺寸：XL', 900, 30, 'images/equipment/pants-xl.jpg', 1, 'EQ-P-XL'),
+(0, 'TibaFit 褲子 S號', '高彈性面料，尺寸：S', 700, 40, 'pants.png', 1, 'EQ-P-S'),
+(0, 'TibaFit 褲子 M號', '高彈性面料，尺寸：M', 700, 60, 'pants.png', 1, 'EQ-P-M'),
+(0, 'TibaFit 褲子 L號', '高彈性面料，尺寸：L', 700, 50, 'pants.png', 1, 'EQ-P-L'),
+(0, 'TibaFit 褲子 XL號', '高彈性面料，尺寸：XL', 900, 30, 'pants.png', 1, 'EQ-P-XL'),
 
 -- ========= 裝備：運動手套 (不分尺寸) =========
-(0, 'TibaFit 運動手套', '止滑耐磨，均碼', 500, 200, 'images/equipment/gloves.jpg', 1, 'EQ-G-01'),
+(0, 'TibaFit 運動手套', '止滑耐磨，均碼', 500, 200, 'gloves.png', 1, 'EQ-G-01'),
 
 -- ========= 裝備：運動腰帶 (不分尺寸) =========
-(0, 'TibaFit 運動腰帶', '核心支撐，均碼', 1200, 100, 'images/equipment/waist-belt.jpg', 1, 'EQ-WB-01'),
+(0, 'TibaFit 運動腰帶', '核心支撐，均碼', 1200, 100, 'waist-belt.png', 1, 'EQ-WB-01'),
 
 -- ========= 裝備：運動護膝 (不分尺寸) =========
-(0, 'TibaFit 運動護膝', '支撐膝關節，均碼', 800, 100, 'images/equipment/knee-brace.jpg', 1, 'EQ-KB-01'),
+(0, 'TibaFit 運動護膝', '支撐膝關節，均碼', 800, 100, 'knee-brace.png', 1, 'EQ-KB-01'),
 
 -- ========= 配件：搖搖杯 =========
-(0, 'TibaFit 搖搖杯', '容量：500 ml', 200, 120, 'images/accessories/shaker-500.jpg', 1, 'ACC-S-500'),
-(0, 'TibaFit 搖搖杯', '容量：700 ml', 400, 100, 'images/accessories/shaker-700.jpg', 1, 'ACC-S-700'),
+(1, 'TibaFit 搖搖杯', '容量：500 ml', 200, 120, 'shaker.png', 1, 'ACC-S-500'),
+(1, 'TibaFit 搖搖杯', '容量：700 ml', 400, 100, 'shaker.png', 1, 'ACC-S-700'),
 
 -- ========= 補充劑 =========
-(1, 'TibaFit 肌酸', '重量：500g', 650, 150, 'images/supplements/creatine-500.jpg', 1, 'SUP-C-500'),
-(1, 'TibaFit 肌酸', '重量：1kg',  1300, 100, 'images/supplements/creatine-1000.jpg', 1, 'SUP-C-1000'),
-(1, 'TibaFit 乳清蛋白', '重量：500g', 700, 200, 'images/supplements/whey-500.jpg', 1, 'SUP-W-500'),
-(1, 'TibaFit 乳清蛋白', '重量：1kg',  1400, 150, 'images/supplements/whey-1000.jpg', 1, 'SUP-W-1000'),
-(1, 'TibaFit BCAA', '重量：500g', 650, 200, 'images/supplements/bcaa-500.jpg', 1, 'SUP-B-500'),
-(1, 'TibaFit BCAA', '重量：1kg',  1300, 150, 'images/supplements/bcaa-1000.jpg', 1, 'SUP-B-1000');
+(2, 'TibaFit 肌酸', '重量：500g', 650, 150, 'creatine.png', 1, 'SUP-C-500'),
+(2, 'TibaFit 肌酸', '重量：1kg',  1300, 100, 'creatine.png', 1, 'SUP-C-1000'),
+(2, 'TibaFit 乳清蛋白', '重量：500g', 700, 200, 'whey.png', 1, 'SUP-W-500'),
+(2, 'TibaFit 乳清蛋白', '重量：1kg',  1400, 150, 'whey.png', 1, 'SUP-W-1000'),
+(2, 'TibaFit BCAA', '重量：500g', 650, 200, 'bcaa.png', 1, 'SUP-B-500'),
+(2, 'TibaFit BCAA', '重量：1kg',  1300, 150, 'bcaa.png', 1, 'SUP-B-1000');
 
 
 --
