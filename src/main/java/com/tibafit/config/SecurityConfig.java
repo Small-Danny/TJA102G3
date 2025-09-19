@@ -230,7 +230,7 @@ public class SecurityConfig {
                         "/assets/**", "/webjars/**", "/font/**", "/fonts/**").permitAll()
 
                 // 商店頁（前台）
-                .requestMatchers("/shop/**").permitAll()
+                .requestMatchers("/shop/**","/api/products/**").permitAll()
 
                 // 錯誤與 well-known
                 .requestMatchers("/error", "/error/**", "/.well-known/**").permitAll()

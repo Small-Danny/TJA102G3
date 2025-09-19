@@ -80,7 +80,7 @@
             <ul class="pd-price">
               <li class="pd-sale-price">NT$ <span th:text="${product.productPrice}">0</span></li>
             </ul>
-            <p th:text="${product.productDescription}">商品敘述</p>
+   
             
             <!-- 尺寸 -->
 			<div class="pd-size">
@@ -95,8 +95,7 @@
 				          th:text="${s}"
 				          th:classappend="${currentSize != null and s.equalsIgnoreCase(currentSize)} ? ' active' : ''"
 				          th:data-size="${s}"
-				          th:data-pid="${sizeMap[s]}"
-				          th:attr="data-has=${#maps.containsKey(sizeMap, s)}, data-map-size=${#maps.size(sizeMap)}">
+				          th:attr="data-pid=${sizeMap.get(s)}, data-sku=${sizeSkuMap.get(s)}">
 				  </button>
 				</div>
 			
@@ -133,18 +132,42 @@
 			</div>
 			
 			<!-- 加入購物車：讓 data-id 能被 JS 更新 -->
-			<a class="theme-btn mt-3"
+			<a class="btn-cart"
 			   id="btnAddToCart"
 			   href="javascript:void(0)"
-			   th:attr="data-id=${(sizeToId != null and currentSize != null and sizeToId.containsKey(currentSize)) 
-			                     ? sizeToId[currentSize] 
-			                     : product.productId}">
-			  加入購物車 <i class="fa-solid fa-bag-shopping"></i>
+			   th:attr="data-id=${product.productId}">
+			  Add To Cart
 			</a>
+			
+			<!-- SKU -->
+			<div class="pd-sku">
+			  SKU: <span id="skuText" th:text="${currentSku}">EQ-C-S</span>
+			</div>
+			
           </div>
         </div>
       </div>
     </div>
+    
+    <!-- 商品說明 -->
+	<section class="gap product-desc">
+	  <div class="container">
+	    <h4 class="desc-title">DESCRIPTION</h4>
+	    <hr class="desc-line"/>
+	    
+	    <h5 class="desc-sub">About Product</h5>
+	    <p th:text="${product.productDescription}">
+	      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse interdum nulla eu posuere scelerisque.
+	    </p>
+	
+	    <p>
+	      健身房不只是運動的地方，它是您放鬆、社交和鍛鍊的場所。一些成功的健身設施擁有多種功能，
+	      為會員提供促進留存和銷售的體驗。
+	    </p>
+	
+	    
+	  </div>
+	</section>
   </section>
 
   <!-- JS -->
