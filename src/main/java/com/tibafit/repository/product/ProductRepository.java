@@ -96,5 +96,7 @@ public interface ProductRepository extends JpaRepository<ProductVO, Integer> {
 	 Optional<Integer> findSiblingProductIdBySize(@Param("productId") Integer productId,
 	                                              @Param("size") String size);
 	
-    
+	// 依 product_code 的「基底」找同款所有尺寸（例如 EQ-C- 開頭）
+	    @Query("select p from ProductVO p where p.productCode like concat(:base,'%')")
+	    List<ProductVO> findByProductCodeStartingWith(@Param("base") String base);
 }
