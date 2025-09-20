@@ -98,14 +98,14 @@
                     <a th:href="@{/login.html}" href="/login.html" class="login">登入 / 註冊</a>
 
                     <!-- 購物車按鈕（統一觸發器：#open-cart） -->
-<!--                     <a href="javascript:void(0)" id="open-cart" class="shopping-bag white-icon" aria-label="開啟購物車"> -->
-<!--                       <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"> -->
-<!--                         <path d="m452 120h-60.946c-7.945-67.478-65.477-120-135.054-120s-127.109 52.522-135.054 120h-60.946c-11.046 0-20 8.954-20 20v352c0 11.046 8.954 20 20 20h392c11.046 0 20-8.954 20-20v-352c0-11.046-8.954-20-20-20zm-196-80c47.484 0 87.019 34.655 94.659 80h-189.318c7.64-45.345 47.175-80 94.659-80zm176 432h-352v-312h40v60c0 11.046 8.954 20 20 20s20-8.954 20-20v-60h192v60c0 11.046 8.954 20 20 20s20-8.954 20-20v-60h40z"/> -->
-<!--                       </svg> -->
-<!--                       <span class="cart-count" id="cart-count"></span> -->
-<!--                     </a> -->
-<!--                   </div> -->
-<!--                 </div> -->
+                    <a href="javascript:void(0)" id="open-cart" class="shopping-bag white-icon" aria-label="開啟購物車">
+                      <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="m452 120h-60.946c-7.945-67.478-65.477-120-135.054-120s-127.109 52.522-135.054 120h-60.946c-11.046 0-20 8.954-20 20v352c0 11.046 8.954 20 20 20h392c11.046 0 20-8.954 20-20v-352c0-11.046-8.954-20-20-20zm-196-80c47.484 0 87.019 34.655 94.659 80h-189.318c7.64-45.345 47.175-80 94.659-80zm176 432h-352v-312h40v60c0 11.046 8.954 20 20 20s20-8.954 20-20v-60h192v60c0 11.046 8.954 20 20 20s20-8.954 20-20v-60h40z"/>
+                      </svg>
+                      <span class="cart-count" id="cart-count"></span>
+                    </a>
+                  </div>
+                </div>
                 <!-- /.nav-bar -->
 
               </div>
@@ -197,5 +197,45 @@
     </div>
   </div>
 
-  
+  <!-- 購物車燈箱 -->
+  <div id="cart-lightbox" class="cart-overlay clearfix">
+    <div class="white_content">
+      <a href="javascript:;" class="lightbox-close" aria-label="關閉">✕</a>
+      <div class="cart-popup">
+        <h3>購物車</h3>
+        <br>
+        <ul>
+          <li class="d-flex align-items-center position-relative">
+            <div class="p-img light-bg">
+              <img th:src="@{/product_img/衣服.png}" src="/product_img/衣服.png" alt="">
+            </div>
+            <div class="p-data">
+              <h4>TibaFit衣服</h4>
+              <p>1 x NT$ 700</p>
+            </div>
+            <a href="javascript:void(0)" class="remove-item" aria-label="✕">×</a>
+          </li>
+          <li class="d-flex align-items-center position-relative">
+            <div class="p-img light-bg">
+              <img th:src="@{/product_img/遙遙杯.png}" src="/product_img/遙遙杯.png" alt="">
+            </div>
+            <div class="p-data">
+              <h4>搖搖杯</h4>
+              <p>1 x NT$ 400</p>
+            </div>
+            <a href="javascript:void(0)" class="remove-item" aria-label="✕">×</a>
+          </li>
+        </ul>
+        <div class="cart-btn">
+          <div class="cart-total d-flex align-items-center justify-content-between">
+            <span>總計：</span><span>NT$1100</span>
+          </div>
+          <div class="cart-btns d-flex align-items-center justify-content-between mt-3">
+            <a class="btn btn-outline-secondary" th:href="@{/cart.html}" href="/cart.html">查看購物車</a>
+            <a class="btn btn-primary" th:href="@{/checkout.html}" href="/checkout.html">結帳</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </header>
