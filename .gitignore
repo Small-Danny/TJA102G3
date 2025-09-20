@@ -40,6 +40,7 @@ Thumbs.db
 *.key
 *.pem
 application.properties
+src/main/resources/application.properties
 
 # 使用者上傳的檔案
 uploaded-files/
