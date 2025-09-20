@@ -105,8 +105,8 @@
 		          <div class="data">
 		            <div class="ratings"><i class="fa-solid fa-star"></i><span>5.0</span></div>
 		            <h3>
-		              <a th:text="${p.productName}"
-		                 th:href="@{/shop/product/{id}(id=${p.productId})}">商品名稱</a>
+		              <a th:text="${@productService.displayNameWithoutSize(p)}"
+     					 th:href="@{/shop/product/{id}(id=${p.productId})}">商品名稱</a>
 		            </h3>
 		            <div class="price-range">
 		              <span>NT$ <span th:text="${#numbers.formatInteger(p.productPrice, 3, 'COMMA')}">0</span></span>

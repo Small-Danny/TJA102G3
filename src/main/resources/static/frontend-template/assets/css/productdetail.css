@@ -1,59 +1,157 @@
-.ratings,
-    #v-pills-messages-tab,
-    #v-pills-messages { 
-      display: none; 
-    }
+/* productdetail.css */
+.pd-data h2 {
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.pd-price {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 16px 0;
+  color: #111;
+}
+.pd-size {
+  margin: 20px 0;
+}
+.pd-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  color: #555;
+}
+.size-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.size-chip {
+  min-width: 50px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.size-chip:hover {
+  border-color: #ef233c;
+  color: #ef233c;
+}
+.size-chip.active {
+  background: #ef233c;
+  border-color: #ef233c;
+  color: #fff;
+}
+.pd-quality {
+  margin: 20px 0;
+}
+.pd-quality input {
+  width: 100px;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+.theme-btn {
+  display: inline-block;
+  background: #ef233c;
+  color: #fff !important;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 6px;
+  transition: opacity 0.2s ease-in-out;
+}
+.theme-btn:hover {
+  opacity: 0.9;
+}
+.pd-gallery img {
+  width: 100%;
+  max-width: 480px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
 
-    #v-pills-profile-tab,
-    #v-pills-profile {
-      display: none;
-    }
+/* Add to Cart 按鈕 */
+.btn-cart {
+  display: inline-block;
+  background: #ef233c;          /* 預設紅底 */
+  color: #fff !important;       /* 白字 */
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: 12px 26px;
+  border: 2px solid #ef233c;    /* 紅框 */
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease-in-out;
+}
 
-    .pd-size { 
-      margin: 0 0 16px 0; 
-    }
+/* 小三角裝飾 */
+.btn-cart::after{
+  content:'';
+  position:absolute;
+  bottom:0;
+  right:0;
+  border-style:solid;
+  border-width:0 0 12px 12px;
+  border-color:transparent transparent #ffffff transparent;
+}
 
-    .pd-size .pd-label {
-      display:inline-block; font-weight:700; letter-spacing: .05em; margin-bottom:8px;
-    }
-    .size-group { 
-      display:flex; flex-wrap:wrap; gap:10px; 
-    }
+/* Hover 效果：反白 */
+.btn-cart:hover {
+  background: #fff;             /* 白底 */
+  color: #ef233c !important;    /* 紅字 */
+}
 
-    .size-chip{
-      min-width: 52px; height: 40px; padding: 0 14px;
-      border:1px solid #ddd; border-radius:8px;
-      background:#fff; color:#111; font-weight:700; letter-spacing:.05em;
-      display:inline-flex; align-items:center; justify-content:center;
-      transition: all .15s ease-in-out; cursor:pointer; user-select:none;
-    }
+.btn-cart:hover::after {
+  border-color: transparent transparent #ef233c transparent; /* 三角變亮紅 */
+}
+/* 縮圖區 */
+.pd-thumbs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pd-thumbs .thumb-img {
+  width: 80px;
+  height: auto;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.pd-thumbs .thumb-img:hover {
+  border-color: #ef233c;
+}
+.pd-thumbs .thumb-img.active {
+  border-color: #ef233c;
+}
 
-    .size-chip:hover { 
-      border-color:#ff1f25; box-shadow: 0 0 0 2px rgba(255,31,37,.15) inset; 
-    }
+/* 主圖 */
+.pd-main .main-img {
+  max-width: 420px;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+@media (max-width: 991.98px) {
+  .pd-thumbs {
+    flex-direction: row;
+  }
+  .pd-thumbs .thumb-img {
+    width: 60px;
+  }
+}
 
-    .size-chip.is-selected{
-      background:#ff1f25; color:#fff; border-color:#ff1f25;
-      box-shadow: none;
-    }
-
-    .size-chip.is-disabled{
-      color:#999; background:#f2f2f2; border-color:#e5e5e5; cursor:not-allowed; opacity:.6;
-    }
-    .size-chip {
-	  cursor: pointer;
-	  pointer-events: auto;
-	  position: relative;
-	  z-index: 1;
-	}
-
-	.size-chip.active{
-	  background:#ff1f25; color:#fff; border-color:#ff1f25;
-	  box-shadow: none;
-	}
-
-	.size-chip.is-selected{
-	  background:#ff1f25; color:#fff; border-color:#ff1f25;
-	  box-shadow: none;
-	}
-	
+/* SKU 樣式：跟按鈕字感一致 */
+.pd-sku{
+  margin-top:14px;
+  font-size:14px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:#666;
+}
