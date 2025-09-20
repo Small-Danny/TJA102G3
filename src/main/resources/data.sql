@@ -27,26 +27,26 @@ TRUNCATE TABLE `admins`;
 TRUNCATE TABLE `users`;
 
 --
--- 產生 users 表格的假資料 (已修正 points_balance)
+-- 產生 users 表格的假資料 (已移除 forgot_password_url)
 --
 -- 1. 一般會員 (共8位)
-INSERT INTO `users` (`email`, `password`, `account_status`, `forgot_password_url`, `name`, `nick_name`, `phone`, `gender`, `height_cm`, `weight_kg`, `bmi`, `points_balance`) VALUES
-('user01@example.com', 'user123456', 1, 'https://example.com/reset/01', '王小明', '小明', '0911222333', 1, 175.5, 70.0, 22.86, 19),
-('user02@example.com', 'user123456', 1, 'https://example.com/reset/02', '陳大華', '大華', '0922333444', 1, 168.0, 65.5, 23.2, 8),
-('user03@example.com', 'user123456', 1, 'https://example.com/reset/03', '林美君', '美美', '0933444555', 2, 162.0, 55.0, 20.96, 6),
-('user04@example.com', 'user123456', 1, 'https://example.com/reset/04', '張志遠', '小張', '0944555666', 1, 180.5, 80.2, 24.58, 9),
-('user05@example.com', 'user123456', 1, 'https://example.com/reset/05', '黃玉珍', '小黃', '0955666777', 2, 158.0, 52.3, 20.97, 4),
-('user06@example.com', 'user123456', 1, 'https://example.com/reset/06', '劉文傑', '文傑', '0966777888', 1, 170.0, 72.8, 25.19, 10),
-('user07@example.com', 'user123456', 1, 'https://example.com/reset/07', '徐麗娟', '麗麗', '0977888999', 2, 165.0, 60.0, 22.04, 8),
-('user08@example.com', 'user123456', 1, 'https://example.com/reset/08', '趙偉宏', '阿宏', '0988999000', 1, 183.0, 85.0, 25.4, 0);
+INSERT INTO `users` (`email`, `password`, `account_status`, `name`, `nick_name`, `phone`, `gender`, `height_cm`, `weight_kg`, `bmi`, `points_balance`) VALUES
+                                                                                                                                                           ('user01@example.com', 'user123456', 1, '王小明', '小明', '0911222333', 1, 175.5, 70.0, 22.86, 19),
+                                                                                                                                                           ('user02@example.com', 'user123456', 1, '陳大華', '大華', '0922333444', 1, 168.0, 65.5, 23.2, 8),
+                                                                                                                                                           ('user03@example.com', 'user123456', 1, '林美君', '美美', '0933444555', 2, 162.0, 55.0, 20.96, 6),
+                                                                                                                                                           ('user04@example.com', 'user123456', 1, '張志遠', '小張', '0944555666', 1, 180.5, 80.2, 24.58, 9),
+                                                                                                                                                           ('user05@example.com', 'user123456', 1, '黃玉珍', '小黃', '0955666777', 2, 158.0, 52.3, 20.97, 4),
+                                                                                                                                                           ('user06@example.com', 'user123456', 1, '劉文傑', '文傑', '0966777888', 1, 170.0, 72.8, 25.19, 10),
+                                                                                                                                                           ('user07@example.com', 'user123456', 1, '徐麗娟', '麗麗', '0977888999', 2, 165.0, 60.0, 22.04, 8),
+                                                                                                                                                           ('user08@example.com', 'user123456', 1, '趙偉宏', '阿宏', '0988999000', 1, 183.0, 85.0, 25.4, 0);
 
 -- 2. 作為管理員的會員 (共2位)
-INSERT INTO `users` (`email`, `password`, `account_status`, `forgot_password_url`, `name`, `nick_name`, `phone`, `gender`, `height_cm`, `weight_kg`, `bmi`, `points_balance`) VALUES
-('admin01@example.com', 'user123456', 1, 'https://example.com/reset/admin', '系統管理員', 'Admin', '0900111222', 0, NULL, NULL, NULL, 0);
+INSERT INTO `users` (`email`, `password`, `account_status`, `name`, `nick_name`, `phone`, `gender`, `height_cm`, `weight_kg`, `bmi`, `points_balance`) VALUES
+    ('admin01@example.com', 'user123456', 1, '系統管理員', 'Admin', '0900111222', 0, NULL, NULL, NULL, 0);
 SET @admin_user_id = LAST_INSERT_ID();
 
-INSERT INTO `users` (`email`, `password`, `account_status`, `forgot_password_url`, `name`, `nick_name`, `phone`, `gender`, `height_cm`, `weight_kg`, `bmi`, `points_balance`) VALUES
-('admin02@example.com', 'user123456', 1, 'https://example.com/reset/staff', '李志強', '小李', '0933444555', 1, 178.0, 75.0, 23.67, 0);
+INSERT INTO `users` (`email`, `password`, `account_status`, `name`, `nick_name`, `phone`, `gender`, `height_cm`, `weight_kg`, `bmi`, `points_balance`) VALUES
+    ('admin02@example.com', 'user123456', 1, '李志強', '小李', '0933444555', 1, 178.0, 75.0, 23.67, 0);
 SET @staff_user_id = LAST_INSERT_ID();
 
 
@@ -54,10 +54,10 @@ SET @staff_user_id = LAST_INSERT_ID();
 -- 產生 admins 表格的假資料 (共2位)
 --
 INSERT INTO `admins` (`user_id`, `last_login_at`, `account`, `password`) VALUES
-(@admin_user_id, NOW(), 'system_admin01', 'admin123456');
+    (@admin_user_id, NOW(), 'system_admin01', 'admin123456');
 
 INSERT INTO `admins` (`user_id`, `last_login_at`, `account`, `password`) VALUES
-(@staff_user_id, '2025-08-18 10:00:00', 'system_admin02', 'admin123456');
+    (@staff_user_id, '2025-08-18 10:00:00', 'system_admin02', 'admin123456');
 
 
 
@@ -109,13 +109,13 @@ VALUES
 INSERT INTO `cart_item`
 (`product_id`, `user_id`, `cart_item_quantity`)
 VALUES
-(1, 1, 1),   -- user01 購物車：TibaFit 衣服 S號 (product_id=1)
-(2, 1, 2),   -- user01 購物車：TibaFit 衣服 M號 (product_id=2)
-(14, 2, 3),  -- user02 購物車：TibaFit 肌酸 500g (product_id=14)
-(16, 2, 1);  -- user02 購物車：TibaFit 乳清蛋白 500g (product_id=16)
+    (1, 1, 1),   -- user01 購物車：TibaFit 衣服 S號 (product_id=1)
+    (2, 1, 2),   -- user01 購物車：TibaFit 衣服 M號 (product_id=2)
+    (14, 2, 3),  -- user02 購物車：TibaFit 肌酸 500g (product_id=14)
+    (16, 2, 1);  -- user02 購物車：TibaFit 乳清蛋白 500g (product_id=16)
 
 --
--- 
+--
 INSERT INTO `orders`
 (`user_id`, `order_date`, `order_status`, `recipient_name`, `recipient_phone`, `recipient_address`, `used_points_amount`, `total_price`, `payment_time`, `payment_status`, `order_code`)
 VALUES
@@ -171,9 +171,9 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ========================
 INSERT INTO `task_type` (`task_type_id`, `task_type_name`, `create_time`, `update_time`)
 VALUES
-(1, '消耗卡路里', NOW(), NOW()),
-(2, '運動次數', NOW(), NOW()),
-(3, '運動時長', NOW(), NOW());
+    (1, '消耗卡路里', NOW(), NOW()),
+    (2, '運動次數', NOW(), NOW()),
+    (3, '運動時長', NOW(), NOW());
 
 -- ========================
 -- 任務表：task (4 筆)
@@ -181,18 +181,18 @@ VALUES
 INSERT INTO `task`
 (`task_type_id`, `task_name`, `target_value`, `unit`, `start_time`, `end_time`, `points`, `task_icon`, `admin_id`)
 VALUES
-(1, '燃燒 500 大卡', 500, '大卡', '2025-08-01', '2025-08-31', 10, 'https://example.com/icon1.png', 1),
-(3, '游泳 30 分鐘', 30, '分鐘', '2025-08-01', '2025-08-31', 8, 'https://example.com/icon2.png', 2),
-(3, '跑步 30 分鐘', 30, '分鐘', '2025-08-01', '2025-08-31', 12, 'https://example.com/icon3.png', 1),
-(2, '深蹲 40 下', 40, '次', '2025-08-01', '2025-08-31', 9, 'https://example.com/icon4.png', 2);
+    (1, '燃燒 500 大卡', 500, '大卡', '2025-08-01', '2025-08-31', 10, 'https://example.com/icon1.png', 1),
+    (3, '游泳 30 分鐘', 30, '分鐘', '2025-08-01', '2025-08-31', 8, 'https://example.com/icon2.png', 2),
+    (3, '跑步 30 分鐘', 30, '分鐘', '2025-08-01', '2025-08-31', 12, 'https://example.com/icon3.png', 1),
+    (2, '深蹲 40 下', 40, '次', '2025-08-01', '2025-08-31', 9, 'https://example.com/icon4.png', 2);
 
 -- ========================
 -- 狀態碼表：task_record_status_code (2 筆)
 -- ========================
 INSERT INTO `task_record_status_code` (`task_record_status`, `status_name`)
 VALUES
-(0, '未完成'),
-(1, '已完成');
+    (0, '未完成'),
+    (1, '已完成');
 
 -- ========================
 -- 使用者任務紀錄表：task_record (10 筆)
@@ -200,16 +200,16 @@ VALUES
 INSERT INTO `task_record`
 (`user_id`, `task_id`, `task_record_status`, `user_start_time`, `user_end_time`)
 VALUES
-(1, 1, 1, '2025-08-01 07:00:00', '2025-08-01 07:40:00'),   -- user01 完成 500大卡
-(2, 2, 0, '2025-08-02 20:00:00', NULL),                     -- user02 開始游泳 30 分鐘未完成
-(3, 3, 1, '2025-08-03 18:00:00', '2025-08-03 18:30:00'),   -- user03 完成 跑步 30 分鐘
-(4, 4, 1, '2025-08-04 06:30:00', '2025-08-04 06:50:00'),   -- user04 完成 深蹲40下
-(5, 1, 0, '2025-08-05 07:10:00', NULL),                     -- user05 開始500大卡但未完成
-(6, 1, 1, '2025-08-01 08:00:00', '2025-08-01 08:45:00'),   -- user06 完成 500大卡
-(7, 2, 1, '2025-08-02 19:00:00', '2025-08-02 19:20:00'),   -- user07 完成游泳 30 分鐘
-(8, 3, 0, '2025-08-03 17:30:00', NULL),                     -- user08 開始跑步30分鐘但未完成
-(1, 4, 1, '2025-08-04 06:00:00', '2025-08-04 06:25:00'),   -- user01 完成 深蹲40下
-(2, 4, 1, '2025-08-05 07:00:00', '2025-08-05 07:55:00');   -- user02 完成 深蹲40下
+    (1, 1, 1, '2025-08-01 07:00:00', '2025-08-01 07:40:00'),   -- user01 完成 500大卡
+    (2, 2, 0, '2025-08-02 20:00:00', NULL),                     -- user02 開始游泳 30 分鐘未完成
+    (3, 3, 1, '2025-08-03 18:00:00', '2025-08-03 18:30:00'),   -- user03 完成 跑步 30 分鐘
+    (4, 4, 1, '2025-08-04 06:30:00', '2025-08-04 06:50:00'),   -- user04 完成 深蹲40下
+    (5, 1, 0, '2025-08-05 07:10:00', NULL),                     -- user05 開始500大卡但未完成
+    (6, 1, 1, '2025-08-01 08:00:00', '2025-08-01 08:45:00'),   -- user06 完成 500大卡
+    (7, 2, 1, '2025-08-02 19:00:00', '2025-08-02 19:20:00'),   -- user07 完成游泳 30 分鐘
+    (8, 3, 0, '2025-08-03 17:30:00', NULL),                     -- user08 開始跑步30分鐘但未完成
+    (1, 4, 1, '2025-08-04 06:00:00', '2025-08-04 06:25:00'),   -- user01 完成 深蹲40下
+    (2, 4, 1, '2025-08-05 07:00:00', '2025-08-05 07:55:00');   -- user02 完成 深蹲40下
 
 
 --
@@ -240,12 +240,12 @@ VALUES
 --
 INSERT INTO `forum_type` (`forum_type_id`, `forum_type_name`)
 VALUES
-(1, '健身知識分享'),
-(2, '日常心得交流'),
-(3, '體育新聞'),
-(4, '健康飲食專區'),
-(5, '器材與裝備評測'),
-(6, '新手入門區');
+    (1, '健身知識分享'),
+    (2, '日常心得交流'),
+    (3, '體育新聞'),
+    (4, '健康飲食專區'),
+    (5, '器材與裝備評測'),
+    (6, '新手入門區');
 
 
 --
@@ -255,16 +255,16 @@ VALUES
 INSERT INTO `article`
 (`user_id`, `forum_type_id`, `title`, `content`, `cover_image_url`, `article_attribute`, `is_pinned`, `is_deleted`)
 VALUES
-(1, 1, '新手必看！三大健身基本原則', '這篇文章將介紹適合新手的三大健身原則...', 'images/article/cover1.jpg', '一般文章', 0, 0),
-(2, 1, '如何選擇適合自己的乳清蛋白？', '乳清蛋白的種類繁多，本文教你如何挑選...', 'images/article/cover2.jpg', '一般文章', 0, 0),
-(3, 2, '健身餐分享：簡單又美味的雞胸肉做法', '分享一個我常做的雞胸肉食譜，讓你的健身餐不再單調！', 'images/article/cover3.jpg', '一般文章', 0, 0),
-(4, 1, '深蹲技巧大公開，避免膝蓋受傷', '深蹲是健身之王，但姿勢錯誤容易受傷...', 'images/article/cover4.jpg', '一般文章', 0, 0),
-(5, 2, '運動後恢復的重要性', '運動後千萬別忽略了恢復，這篇教你如何快速恢復...', 'images/article/cover5.jpg', '一般文章', 0, 0),
-(6, 1, '增肌減脂的飲食策略', '想增肌又減脂？你需要掌握正確的飲食策略...', 'images/article/cover6.jpg', '一般文章', 0, 0),
-(7, 3, '最新體育新聞：奧運冠軍的訓練秘訣', '奧運金牌得主在賽後分享了他們的訓練秘訣，值得參考！', 'images/article/news1.jpg', '一般文章', 0, 0),
-(8, 1, '在家也能做的核心訓練', '沒有器材也能練核心，五個動作讓你練出馬甲線！', 'images/article/cover8.jpg', '一般文章', 0, 0),
-(9, 1, '網站公告：論壇新功能上線', '親愛的會員，論壇已新增...。', 'images/article/announcement.jpg', '公告', 1, 0),
-(10, 2, '管理員的心得分享：堅持就是勝利！', '作為管理員，我也和大家一樣...', 'images/article/staff_share.jpg', '一般文章', 0, 0);
+    (1, 1, '新手必看！三大健身基本原則', '這篇文章將介紹適合新手的三大健身原則...', 'images/article/cover1.jpg', '一般文章', 0, 0),
+    (2, 1, '如何選擇適合自己的乳清蛋白？', '乳清蛋白的種類繁多，本文教你如何挑選...', 'images/article/cover2.jpg', '一般文章', 0, 0),
+    (3, 2, '健身餐分享：簡單又美味的雞胸肉做法', '分享一個我常做的雞胸肉食譜，讓你的健身餐不再單調！', 'images/article/cover3.jpg', '一般文章', 0, 0),
+    (4, 1, '深蹲技巧大公開，避免膝蓋受傷', '深蹲是健身之王，但姿勢錯誤容易受傷...', 'images/article/cover4.jpg', '一般文章', 0, 0),
+    (5, 2, '運動後恢復的重要性', '運動後千萬別忽略了恢復，這篇教你如何快速恢復...', 'images/article/cover5.jpg', '一般文章', 0, 0),
+    (6, 1, '增肌減脂的飲食策略', '想增肌又減脂？你需要掌握正確的飲食策略...', 'images/article/cover6.jpg', '一般文章', 0, 0),
+    (7, 3, '最新體育新聞：奧運冠軍的訓練秘訣', '奧運金牌得主在賽後分享了他們的訓練秘訣，值得參考！', 'images/article/news1.jpg', '一般文章', 0, 0),
+    (8, 1, '在家也能做的核心訓練', '沒有器材也能練核心，五個動作讓你練出馬甲線！', 'images/article/cover8.jpg', '一般文章', 0, 0),
+    (9, 1, '網站公告：論壇新功能上線', '親愛的會員，論壇已新增...。', 'images/article/announcement.jpg', '公告', 1, 0),
+    (10, 2, '管理員的心得分享：堅持就是勝利！', '作為管理員，我也和大家一樣...', 'images/article/staff_share.jpg', '一般文章', 0, 0);
 
 
 --
@@ -272,16 +272,16 @@ VALUES
 --
 INSERT INTO `article_collection` (`user_id`, `article_id`, `collect_time`, `collection_status`)
 VALUES
-(1, 2, NOW(), 1),
-(2, 1, NOW(), 1),
-(3, 4, NOW(), 1),
-(4, 3, NOW(), 1),
-(5, 6, NOW(), 1),
-(6, 5, NOW(), 1),
-(7, 8, NOW(), 1),
-(8, 7, NOW(), 1),
-(1, 5, NOW(), 1),
-(2, 6, NOW(), 1);
+    (1, 2, NOW(), 1),
+    (2, 1, NOW(), 1),
+    (3, 4, NOW(), 1),
+    (4, 3, NOW(), 1),
+    (5, 6, NOW(), 1),
+    (6, 5, NOW(), 1),
+    (7, 8, NOW(), 1),
+    (8, 7, NOW(), 1),
+    (1, 5, NOW(), 1),
+    (2, 6, NOW(), 1);
 
 
 --
@@ -289,9 +289,9 @@ VALUES
 --
 INSERT INTO `report_type` (`report_type_name`)
 VALUES
-('色情內容'),
-('暴力血腥'),
-('人身攻擊');
+    ('色情內容'),
+    ('暴力血腥'),
+    ('人身攻擊');
 
 
 --
@@ -299,10 +299,10 @@ VALUES
 --
 INSERT INTO `report_status` (`report_status`, `status_name`)
 VALUES
-(0, '待處理'),
-(1, '已處理'),
-(2, '已駁回'),
-(3, '無效檢舉');
+    (0, '待處理'),
+    (1, '已處理'),
+    (2, '已駁回'),
+    (3, '無效檢舉');
 
 
 --
@@ -312,11 +312,11 @@ VALUES
 INSERT INTO `article_report`
 (`user_id`, `article_id`, `report_type_id`, `reason`, `report_time`, `report_status`)
 VALUES
-(1, 2, 3, '留言有不雅字眼', NOW(), 0),
-(2, 4, 1, '圖片不適合', NOW(), 1),
-(1, 6, 2, '內容血腥暴力', NOW(), 0),
-(2, 8, 3, '對作者人身攻擊', NOW(), 0),
-(3, 1, 1, '內容不符分類', NOW(), 2);
+    (1, 2, 3, '留言有不雅字眼', NOW(), 0),
+    (2, 4, 1, '圖片不適合', NOW(), 1),
+    (1, 6, 2, '內容血腥暴力', NOW(), 0),
+    (2, 8, 3, '對作者人身攻擊', NOW(), 0),
+    (3, 1, 1, '內容不符分類', NOW(), 2);
 
 
 
@@ -369,11 +369,11 @@ INSERT INTO `custom_sport` (
     user_id
 )
 VALUES
-('跳繩', '居家有氧運動，適合燃脂', 180, NULL, 1, 1),
-('爬樓梯', '日常鍛鍊腿部肌力', 150, NULL, 1, 1),
-('瑜珈伸展', '柔軟度訓練，放鬆全身肌肉', 100, NULL, 1, 1),
-('居家有氧操', '中等強度有氧操，燃脂效果佳', 200, NULL, 1, 1),
-('彈力帶訓練', '使用彈力帶進行上肢力量訓練', 160, NULL, 1, 1);
+    ('跳繩', '居家有氧運動，適合燃脂', 180, NULL, 1, 1),
+    ('爬樓梯', '日常鍛鍊腿部肌力', 150, NULL, 1, 1),
+    ('瑜珈伸展', '柔軟度訓練，放鬆全身肌肉', 100, NULL, 1, 1),
+    ('居家有氧操', '中等強度有氧操，燃脂效果佳', 200, NULL, 1, 1),
+    ('彈力帶訓練', '使用彈力帶進行上肢力量訓練', 160, NULL, 1, 1);
 
 
 
@@ -387,8 +387,8 @@ INSERT INTO `sport_type` (
 VALUES
     ('重訓', NULL),
     ('有氧', NULL);
-    
-    
+
+
 -- sport_type_item表假資料
 INSERT INTO `sport_type_item` (
     sport_type_id,
