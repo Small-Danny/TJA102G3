@@ -1,3 +1,5 @@
+// assets/js/productdetail.js
+
 (function () {
   const stockHint = document.getElementById('stockHint');
   const hidPid    = document.getElementById('variantProductId');
@@ -163,5 +165,45 @@
     setHint('請選擇尺寸以查看庫存', false);
   }
   
-  
+  // ==========================================================
+  // 新增：監聽 "Add to Cart" 按鈕
+  // ==========================================================
+  if (btnCart) {
+      btnCart.addEventListener('click', function(event) {
+          event.preventDefault();
+
+          // 檢查按鈕是否處於停用狀態
+          if (this.classList.contains('disabled')) {
+              alert('無法加入購物車：請選擇有庫存的尺寸');
+              return;
+          }
+
+          const productId = this.dataset.id;
+          const quantity = document.getElementById('qty')?.value || 1;
+          
+          if (!productId) {
+              console.error('找不到商品 ID，無法加入購物車。');
+              alert('無法加入購物車，缺少商品資訊。');
+              return;
+          }
+          
+          // 呼叫 cart.js 中的 addItemToCart 函式
+          // 確保 cart.js 檔案有正確定義 addItemToCart 函式
+          if (typeof addItemToCart === 'function') {
+              addItemToCart(productId, quantity, {
+                  onSuccess: function() {
+                      alert('商品已成功加入購物車！');
+                      // 可選：更新頁首的購物車圖示數量
+                      // updateCartIconCount();
+                  },
+                  onError: function() {
+                      alert('加入購物車失敗，請稍後再試。');
+                  }
+              });
+          } else {
+              alert('發生錯誤：購物車功能未正確載入。');
+          }
+      });
+  }
+
 })();

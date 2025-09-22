@@ -29,7 +29,7 @@
 		if (bad) return;
 
 		try {
-			const res = await fetch(API_MOCK_PAY, {
+			const res = await apiFetch(API_MOCK_PAY, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ userId, orderId, success: true }) // 想測試失敗就改成 false

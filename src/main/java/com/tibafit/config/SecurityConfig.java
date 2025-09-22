@@ -1,8 +1,10 @@
 package com.tibafit.config;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tibafit.config.filter.ReCaptchaAuthenticationFilter;
+import com.tibafit.service.user.AdminDetailsService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,13 +35,15 @@ import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tibafit.config.filter.ReCaptchaAuthenticationFilter;
-import com.tibafit.service.user.AdminDetailsService;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -193,88 +197,127 @@ public class SecurityConfig {
         return web -> web.httpFirewall(allowSemicolonHttpFirewall());
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
     /* =====================  Security Filter Chain  ===================== */
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 兩種 Provider
-            .authenticationProvider(adminAuthenticationProvider())
-            .authenticationProvider(customUserAuthenticationProvider)
+                // 兩種 Provider
+                .authenticationProvider(adminAuthenticationProvider())
+                .authenticationProvider(customUserAuthenticationProvider)
 
-            // 路由授權（你的白名單為主）
-            .authorizeHttpRequests(authorize -> authorize
-                // 後台登入頁
-                .requestMatchers("/admin/login").permitAll()
+                // 路由授權
+                .authorizeHttpRequests(authorize -> authorize
+                        // 後台登入頁
+                        .requestMatchers("/admin/login").permitAll()
 
-                // 前台公開頁與靜態資源
-                .requestMatchers("/", "/index.html", "/login.html", "/register.html",
-                        "/css/**", "/js/**", "/images/**", "/adminlte/**", "/frontend-template/**",
-                        "/assets/**", "/webjars/**", "/font/**", "/fonts/**").permitAll()
+                        // 前台公開頁與靜態資源
+                        .requestMatchers("/", "/index.html", "/login.html", "/register.html",
+                                "/css/**", "/js/**", "/images/**", "/adminlte/**", "/frontend-template/**",
+                                "/assets/**", "/webjars/**", "/font/**", "/fonts/**").permitAll()
 
-                // 商店頁（前台）
-                .requestMatchers("/shop/**").permitAll()
+                        // 商店頁（前台）
+                        .requestMatchers("/shop/**").permitAll()
 
-                // 錯誤與 well-known
-                .requestMatchers("/error", "/error/**", "/.well-known/**").permitAll()
+                        // 錯誤與 well-known
+                        .requestMatchers("/error", "/error/**", "/.well-known/**").permitAll()
 
-                // 你已開放的匿名 API
-                .requestMatchers(HttpMethod.GET,
-                        "/api/analytics/**", "/analytics", "/analytics/**",
-                        "/products", "/shop/products", "/shop/product/**",
-                        "/product_img/**").permitAll()
-                .requestMatchers("/api/users/register", "/api/users/login", "/api/users/send-code",
-                        "/api/users/request-password-reset", "/api/csrf-token", "/login").permitAll()
+                        // 匿名 API
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/analytics/**", "/analytics", "/analytics/**",
+                                "/products", "/shop/products", "/shop/product/**",
+                                "/product_img/**").permitAll()
+                        .requestMatchers("/api/users/register", "/api/users/login", "/api/users/send-code",
+                                "/api/users/request-password-reset", "/api/csrf-token", "/login", "/api/cart/**",
+                                "/api/checkout", "/api/line-pay/request", "/api/line-pay/mock-confirm",
+                                "/api/ecpay/**","/payment/ecpay","/api/ecpay/callback").permitAll()
 
-                // 商品讀取（匿名 GET）
-                .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        // 商品讀取（匿名 GET）
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        .requestMatchers("/api/cart/**").permitAll()
 
-                // 後台需 ADMIN
-                .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // 後台需 ADMIN
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                // 其餘需登入（若開發期要放行，可改 .anyRequest().permitAll()）
-                .anyRequest().authenticated()
-            )
+                        // 其餘需登入
+                        .anyRequest().authenticated()
+                )
 
-            // 後台表單登入
-            .formLogin(form -> form
-                .loginPage("/admin/login")
-                .loginProcessingUrl("/admin/login")
-                .defaultSuccessUrl("/admin/dashboard", true)
-                .failureUrl("/admin/login?error=true")
-            )
+                // 後台表單登入
+                .formLogin(form -> form
+                        .loginPage("/admin/login")
+                        .loginProcessingUrl("/admin/login")
+                        .defaultSuccessUrl("/admin/dashboard", true)
+                        .failureUrl("/admin/login?error=true")
+                )
 
-            // 未認證處理
-            .exceptionHandling(ex -> ex
-                .authenticationEntryPoint(delegatingAuthenticationEntryPoint)
-            )
+                // 未認證處理
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(delegatingAuthenticationEntryPoint)
+                )
 
-            // Remember-Me
-            .rememberMe(remember -> remember
-                .key(rememberMeKey)
-                .rememberMeServices(delegatingRememberMeServices(
-                        userRememberMeServices(), adminRememberMeServices()))
-            )
+                // Remember-Me
+                .rememberMe(remember -> remember
+                        .key(rememberMeKey)
+                        .rememberMeServices(delegatingRememberMeServices(
+                                userRememberMeServices(), adminRememberMeServices()))
+                )
 
-            // 登出
-            .logout(logout -> logout
-                .logoutRequestMatcher(new AntPathRequestMatcher("/**/logout", "POST"))
-                .logoutSuccessHandler(customLogoutSuccessHandler)
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .deleteCookies("JSESSIONID", "XSRF-TOKEN", "remember-me")
-            )
+                // 登出
+                .logout(logout -> logout
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/**/logout", "POST"))
+                        .logoutSuccessHandler(customLogoutSuccessHandler)
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID", "XSRF-TOKEN", "remember-me")
+                )
+                .cors(withDefaults())
+                // CSRF 配置
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers("/api/**", "/ecpay/callback", "/payment/ecpay", "/payment/ecpay/return")
+                )
 
-            // CSRF：採用 CookieCsrfTokenRepository，前端可讀取（例如 JS 取 XSRF-TOKEN）
-            .csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            )
+                // 安全標頭配置（包含綠界CSP）
+                .headers(headers -> headers
+                        .defaultsDisabled()
+                        .frameOptions(frame -> frame.sameOrigin())
+                        // 補充CSP配置，添加缺失的sha256
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("script-src 'self' " +
+                                        "https://payment-stage.ecpay.com.tw " +
+                                        "https://gpayment-stage.ecpay.com.tw " +
+                                        "https://*.googletagmanager.com " +
+                                        "https://www.googleadservices.com " +
+                                        "https://googleads.g.doubleclick.net " +
+                                        "https://www.google.com.tw " +
+                                        "https://*.google-analytics.com " +
+                                        "https://analytics.google.com " +
+                                        "https://payments.developers.google.com " +
+                                        "https://connect.facebook.net " +
+                                        "https://*.clarity.ms " +
+                                        "https://*.bing.com " +
+                                        "'unsafe-eval' " +
+                                        "'sha256-F1ogW9PGWrDvjjgNJcQcD4s7PYlq6ercHhJSTSCH84E=' " +
+                                        "'unsafe-inline';")
+                        )
+                )
 
-            // 若有 H2 console / 內嵌頁面需求
-            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
-
-            // reCAPTCHA 先於帳密驗證
-            .addFilterBefore(recaptchaAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                // reCAPTCHA 過濾器
+                .addFilterBefore(recaptchaAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

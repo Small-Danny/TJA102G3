@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tibafit.dto.product.ProductCreateDTO;
 import com.tibafit.dto.product.ProductDTO;
 import com.tibafit.dto.product.ProductUpdateDTO;
-import com.tibafit.model.cart.ProductsVO;
-import com.tibafit.model.product.ProductVO;
+import com.tibafit.model.cart.ProductVO;
 import com.tibafit.service.cart.ProductServices;
 
 import jakarta.validation.Valid;
@@ -42,7 +41,7 @@ public class ProductAdminController {
 	@PostMapping
 	public ProductDTO create(@RequestBody @Valid ProductCreateDTO req) {
 		// 將前端傳入的建立用 DTO → 組成 Entity（VO）
-		ProductsVO vo = new ProductsVO();
+		ProductVO vo = new ProductVO();
 		vo.setProductType(req.getProductType()); // 類別
 		vo.setProductName(req.getProductName()); // 名稱
 		vo.setProductDescription(req.getProductDescription()); // 描述
@@ -82,7 +81,7 @@ public class ProductAdminController {
 	@PutMapping("/{id}")
 	public ProductDTO update(@PathVariable Integer id, @RequestBody @Valid ProductUpdateDTO req) {
 		// 用一個新的 VO 承接更新資料（服務層會把它 merge 到既有資料）
-		ProductsVO data = new ProductsVO();
+		ProductVO data = new ProductVO();
 		data.setProductType(req.getProductType());
 		data.setProductName(req.getProductName());
 		data.setProductDescription(req.getProductDescription());

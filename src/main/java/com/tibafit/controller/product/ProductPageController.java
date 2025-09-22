@@ -1,13 +1,12 @@
 package com.tibafit.controller.product;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
+import com.tibafit.model.cart.ProductVO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.tibafit.model.product.ProductVO;
 import com.tibafit.service.product.ProductService;
 
 @Controller
