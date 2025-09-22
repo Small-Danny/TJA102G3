@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>正在導向至綠界支付頁面...</title>
+    <script th:src="@{/frontend-template/assets/js/ecpay-submit.js}"></script>
+</head>
+<body>
+    <h1>正在為您導向至綠界支付頁面，請稍候...</h1>
+    <form id="ecpay-form" method="post" action="https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5}">
+        <input type="hidden" name="MerchantID" th:value="${MerchantID}" />
+        <input type="hidden" name="MerchantTradeNo" th:value="${MerchantTradeNo}" />
+        <input type="hidden" name="MerchantTradeDate" th:value="${MerchantTradeDate}" />
+        <input type="hidden" name="PaymentType" th:value="${PaymentType}" />
+        <input type="hidden" name="TotalAmount" th:value="${TotalAmount}" />
+        <input type="hidden" name="TradeDesc" th:value="${TradeDesc}" />
+        <input type="hidden" name="ItemName" th:value="${ItemName}" />
+        <input type="hidden" name="ReturnURL" th:value="${ReturnURL}" />
+        <input type="hidden" name="ChoosePayment" th:value="${ChoosePayment}" />
+        <input type="hidden" name="CheckMacValue" th:value="${CheckMacValue}" />
+        <input type="hidden" name="EncryptType" th:value="${EncryptType}" />
+        <noscript>
+            <button type="submit">請點擊此處完成付款</button>
+        </noscript>
+    </form>
+</body>
+</html>

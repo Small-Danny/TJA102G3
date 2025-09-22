@@ -1,11 +1,17 @@
-package com.tibafit.model.product;
+package com.tibafit.model.cart; // 建議統一放在這個 package
+
+import jakarta.persistence.*;
 
 import java.io.Serializable;
-import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+
+//  ProductVO 是商品主檔的 JPA 實體，對應 product 表，包含類別、名稱、描述、價格、庫存、圖片、上下架
+//  狀態與 SKU 等欄位，並透過 orderItems 反向關聯到訂單明細。後台 CRUD 與前台查詢都會以此為資料來
+//  源；建議將 productStatus/productType 以常數或 Enum 管理，價格單位統一（整數元或分）。
 
 @Entity
 @Table(name = "product")
+// ★★★ 修改點 1 & 2：重新命名為 ProductVO 並加上 implements Serializable ★★★
 public class ProductVO implements Serializable {
 
 	@Id
@@ -28,16 +34,21 @@ public class ProductVO implements Serializable {
 	@Column(name = "stock_quantity", nullable = false)
 	private Integer stockQuantity;
 
-	@Column(name = "product_picture", length = 255)
+	@Column(name = "product_picture", nullable = false, length = 255)
 	private String productPicture;
 
 	@Column(name = "product_status", nullable = false)
 	private Integer productStatus;
 
-	@Column(name = "product_code", length = 64, unique = true)
+	// 我們之前比較時發現長度不一致，這裡保留註解完整的版本 (50)，若資料庫是 64，也可改為 64
+	@Column(name = "product_code", nullable = false, unique = true, length = 50)
 	private String productCode;
 
-	// --- Getter / Setter ---
+	@OneToMany(mappedBy = "product")
+	private List<OrderItemVO> orderItems;
+
+	// ===== Getter / Setter (以下完全不用動) =====
+
 	public Integer getProductId() {
 		return productId;
 	}
@@ -110,4 +121,11 @@ public class ProductVO implements Serializable {
 		this.productCode = productCode;
 	}
 
+	public List<OrderItemVO> getOrderItems() {
+		return orderItems;
+	}
+
+	public void setOrderItems(List<OrderItemVO> orderItems) {
+		this.orderItems = orderItems;
+	}
 }

@@ -1,16 +1,16 @@
 package com.tibafit.service.cart;
 
-import java.time.LocalDateTime;
-import java.util.Random;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.tibafit.model.cart.OrderItemVO;
 import com.tibafit.model.cart.OrdersVO;
 import com.tibafit.repository.cart.OrdersDAO;
 import com.tibafit.repository.cart.ProductDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
 //	CheckoutService 會把Redis 購物車轉成資料庫中的訂單主檔/明細：確認品項與價格、建立明細與總價、處
 //	理使用點數、存檔後清空購物車。另提供 markPaid/markFailed 更新付款狀態的兩個交易性方法。
@@ -110,5 +110,33 @@ public class CheckoutService {
 		o.setPaymentStatus(2); // 2=失敗
 		// 保留 paymentTime 為 null（或依需求清空）
 		return o;
+	}
+
+	/**
+	 * ★★★ 這就是我們要實作的新方法 ★★★
+	 * 根據訂單編號 (orderCode) 將訂單標記為已付款
+	 *
+	 * @param orderCode 來自綠界 Callback 的訂單編號 (MerchantTradeNo)
+	 * @return 更新後的訂單物件
+	 */
+	@Transactional // 加上 @Transactional 確保資料庫操作的原子性
+	public OrdersVO markPaidByOrderCode(String orderCode) {
+		// 1. 使用我們剛剛在 DAO 新增的方法，根據 orderCode 找出訂單
+		//    如果找不到，就拋出一個例外
+		OrdersVO order = ordersDAO.findByOrderCode(orderCode)
+				.orElseThrow(() -> new NoSuchElementException("找不到訂單，訂單編號: " + orderCode));
+
+		// 2. 檢查訂單是否已經是「已付款」狀態，避免重複處理
+		if (order.getPaymentStatus() != null && order.getPaymentStatus() == 1) {
+			System.out.println("訂單 " + orderCode + " 已是付款狀態，無需重複更新。");
+			return order;
+		}
+
+		// 3. 更新訂單狀態
+		order.setPaymentStatus(1); // 1 代表「已付款」
+		order.setPaymentTime(LocalDateTime.now()); // 記錄付款時間
+
+		// 4. 將更新後的訂單存回資料庫
+		return ordersDAO.save(order);
 	}
 }

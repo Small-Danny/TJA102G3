@@ -1,10 +1,9 @@
 package com.tibafit.service.product;
 
+import com.tibafit.model.cart.ProductVO;
 import org.springframework.stereotype.Service;
 
-import com.tibafit.model.product.ProductVO;
 import com.tibafit.repository.product.ProductRepository;
-import com.tibafit.repository.product.ProductVariantRow;
 
 import java.math.BigDecimal;
 import java.util.*;

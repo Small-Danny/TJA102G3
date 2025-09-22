@@ -21,7 +21,7 @@ public class OrderItemVO {
 
 	@ManyToOne(fetch = FetchType.LAZY) // 多筆明細(N) 對 一個商品(1)；LAZY 可減少 JOIN 負擔
 	@JoinColumn(name = "product_id", nullable = false)
-	private ProductsVO product; // N -> 1 product（關聯商品；建議下單時也把名稱/單價快照存到明細）
+	private ProductVO product; // N -> 1 product（關聯商品；建議下單時也把名稱/單價快照存到明細）
 
 	@Column(name = "order_item_quantity", nullable = false) // 數量（>0）
 	private Integer orderItemQuantity;
@@ -53,11 +53,11 @@ public class OrderItemVO {
 		this.order = order;
 	}
 
-	public ProductsVO getProduct() {
+	public ProductVO getProduct() {
 		return product;
 	}
 
-	public void setProduct(ProductsVO product) {
+	public void setProduct(ProductVO product) {
 		this.product = product;
 	}
 

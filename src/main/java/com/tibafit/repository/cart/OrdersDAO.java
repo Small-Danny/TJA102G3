@@ -1,10 +1,11 @@
 package com.tibafit.repository.cart;
 
+import com.tibafit.model.cart.OrdersVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.tibafit.model.cart.OrdersVO;
+import java.util.Optional;
 
 //	findByUserIdOrderByOrderDateDesc(...)：查某使用者的訂單列表（可分頁，時間新→舊）。
 //	existsByOrderCode(...)：檢查訂單碼是否重複，方便你在產生訂單碼時做唯一性驗證。
@@ -19,5 +20,5 @@ public interface OrdersDAO extends JpaRepository<OrdersVO, Integer> {
 
 	// 檢查訂單碼是否已存在（用於產生新訂單碼時的唯一性校驗）
 	boolean existsByOrderCode(String orderCode);
-
+	Optional<OrdersVO> findByOrderCode(String orderCode);
 }
