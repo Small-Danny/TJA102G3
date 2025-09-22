@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         });
       } else {
-        const res = await fetch('/api/cart/items', {
+        const res = await apiFetch('/api/cart/items', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ productId: Number(productId), qty: 1 })
