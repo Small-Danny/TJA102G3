@@ -1,11 +1,11 @@
 package com.tibafit.controller.product;
 
+import com.tibafit.model.cart.ProductVO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.tibafit.model.product.ProductVO;
 import com.tibafit.service.product.ProductService;
 
 @Controller

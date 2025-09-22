@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
 
-<style>
-  /* 任何時候，只要 body 有 page-loaded 就把 preloader 關掉 */
-  body.page-loaded .preloader { display:none !important; opacity:0 !important; visibility:hidden !important; }
+  <style>
+    /* 任何時候，只要 body 有 page-loaded 就把 preloader 關掉 */
+    body.page-loaded .preloader {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
 
-  /* 絕對保險：最多 3 秒自動收起（就算 onload 沒觸發） */
-  @keyframes preloaderTimeout { to { display:none; opacity:0; visibility:hidden; } }
-  .preloader { animation: preloaderTimeout 0s linear 3s forwards; }
-</style>
+    /* 絕對保險：最多 3 秒自動收起（就算 onload 沒觸發） */
+    @keyframes preloaderTimeout {
+      to {
+        display: none;
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    .preloader {
+      animation: preloaderTimeout 0s linear 3s forwards;
+    }
+  </style>
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -29,26 +43,50 @@
 
   <style>
     /* 你原本 header 版面的小調整（可留可刪） */
-    .social-item{display:flex;align-items:center;gap:8px}
-    .header-style-one .nav-bar{display:flex;align-items:center;gap:16px;width:100%}
-    .header-style-one .nav-bar>ul{flex:1 1 auto;display:flex;justify-content:center;gap:28px;margin:0;padding:0;list-style:none}
-    .header-style-one .nav-bar .extras{flex:0 0 auto}
+    .social-item {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .header-style-one .nav-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%
+    }
+
+    .header-style-one .nav-bar>ul {
+      flex: 1 1 auto;
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      margin: 0;
+      padding: 0;
+      list-style: none
+    }
+
+    .header-style-one .nav-bar .extras {
+      flex: 0 0 auto
+    }
   </style>
 </head>
+
 <body>
 
-<script>
-  // 有些版塊一定會塞很多圖，載不到就隱藏，不要一直報錯影響使用者
-  window.addEventListener('error', function(e){
-    var t = e.target;
-    if (t && t.tagName === 'IMG') { t.style.display = 'none'; }
-  }, true);
-</script>
+  <script>
+    // 有些版塊一定會塞很多圖，載不到就隱藏，不要一直報錯影響使用者
+    window.addEventListener('error', function (e) {
+      var t = e.target;
+      if (t && t.tagName === 'IMG') { t.style.display = 'none'; }
+    }, true);
+  </script>
 
   <!-- Loader -->
   <div class="preloader">
     <div class="loader-wrap-heading">
-      <div class="load-text"><span>L</span><span>o</span><span>a</span><span>d</span><span>i</span><span>n</span><span>g</span></div>
+      <div class="load-text">
+        <span>L</span><span>o</span><span>a</span><span>d</span><span>i</span><span>n</span><span>g</span></div>
     </div>
   </div>
 
@@ -158,22 +196,41 @@
     <div class="footer-p-2">
       <div class="container">
         <div class="row">
-          <div class="col-lg-4 col-md-6"><div class="footer-col"><h3>資訊</h3><p>這是一個運動平台，運動請量力而為，<br>評估自身情況</p></div></div>
           <div class="col-lg-4 col-md-6">
-            <div class="footer-col"><h3>社群</h3>
+            <div class="footer-col">
+              <h3>資訊</h3>
+              <p>這是一個運動平台，運動請量力而為，<br>評估自身情況</p>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="footer-col">
+              <h3>社群</h3>
               <ul>
-                <li class="social-item"><i class="fa-brands fa-facebook-f"></i><p>TibaFit</p></li>
-                <li class="social-item"><i class="flaticon-instagram"></i><p>@TibaFit</p></li>
-                <li class="social-item"><i class="fa-brands fa-line"></i><p>TibaFit</p></li>
+                <li class="social-item"><i class="fa-brands fa-facebook-f"></i>
+                  <p>TibaFit</p>
+                </li>
+                <li class="social-item"><i class="flaticon-instagram"></i>
+                  <p>@TibaFit</p>
+                </li>
+                <li class="social-item"><i class="fa-brands fa-line"></i>
+                  <p>TibaFit</p>
+                </li>
               </ul>
             </div>
           </div>
           <div class="col-lg-4 col-md-6">
-            <div class="footer-col"><h3>聯絡我們</h3>
+            <div class="footer-col">
+              <h3>聯絡我們</h3>
               <ul>
-                <li class="social-item"><i class="fa-solid fa-phone"></i><p>0800-000-000</p></li>
-                <li class="social-item"><i class="fa-solid fa-envelope"></i><p>TibaFit@gmail.com</p></li>
-                <li class="social-item"><i class="fa-solid fa-location-dot"></i><p>台北市中山區南京東路三段219號4F之401</p></li>
+                <li class="social-item"><i class="fa-solid fa-phone"></i>
+                  <p>0800-000-000</p>
+                </li>
+                <li class="social-item"><i class="fa-solid fa-envelope"></i>
+                  <p>TibaFit@gmail.com</p>
+                </li>
+                <li class="social-item"><i class="fa-solid fa-location-dot"></i>
+                  <p>台北市中山區南京東路三段219號4F之401</p>
+                </li>
               </ul>
             </div>
           </div>
@@ -188,13 +245,15 @@
   <!-- Scripts（順序依你原專案） -->
   <script src="assets/js/jquery.min.js"></script>
   <script src="assets/js/jquery.waypoints.min.js"></script>
-  
+
   <script src="assets/js/jquery.counterup.min.js"></script>
   <script src="assets/js/bootstrap.min.js"></script>
   <script src="assets/js/jquery.fancybox.min.js"></script>
   <script src="assets/js/jquery.nice-select.js"></script>
   <script src="assets/js/owl.carousel.min.js"></script>
   <script src="assets/js/custom.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/cart.js"></script>
 
   <!-- 你的購物車邏輯（會呼叫 /api/cart-items 與 /api/products） -->
   <script>
@@ -208,7 +267,8 @@
     fetch('header.html?v=' + Date.now(), { cache: 'no-store' })
       .then(r => r.text())
       .then(html => { document.getElementById('header').innerHTML = html; })
-      .catch(()=>{ /* 忽略 header 載入失敗 */ });
+      .catch(() => { /* 忽略 header 載入失敗 */ });
   </script>
 </body>
+
 </html>

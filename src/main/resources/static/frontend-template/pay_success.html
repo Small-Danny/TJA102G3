@@ -132,6 +132,9 @@
       pointer-events: none;
       z-index: -1 !important;
     }
+     #cart-popup {
+            display: none !important;
+        }
   </style>
 
 </head>
@@ -149,7 +152,7 @@
   <!-- Loader End -->
 
   <!-- Header Style One Start -->
-   <div id="header"></div>
+  <div id="header"></div>
   <!-- Header Style One End -->
 
   <!-- Banner Style One Start -->
@@ -329,14 +332,65 @@
   <script src="assets/js/custom.js"></script>
 
   <script src="assets/js/cart.js"></script>
+  <script src="assets/js/api.js"></script>
 
+  <script src="assets/js/checkout.js"></script>
   <script>
     fetch('header.txt?v=' + Date.now(), { cache: 'no-store' })
-    .then(r => r.text())
-    .then(html => {
-      document.getElementById('header').innerHTML = html;
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('header').innerHTML = html;
+      });
+  </script>
+  <script src="assets/js/api.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        // 從 sessionStorage 中讀取訂單資訊
+        const orderId = sessionStorage.getItem('orderIdForConfirmation');
+        const orderCode = sessionStorage.getItem('orderCodeForConfirmation');
+
+        // 在頁面上顯示訂單編號，讓使用者更安心
+        const descElement = document.querySelector('.payment-success .desc');
+        if (descElement && orderCode) {
+            descElement.textContent = `感謝您的購買，訂單 ${orderCode} 已成立！`;
+        }
+
+        if (!orderId) {
+            console.error('在成功頁找不到 orderId，無法執行確認');
+            return;
+        }
+
+        try {
+            console.log(`正在為訂單 ID: ${orderId} 執行最後的付款確認...`);
+            
+            // 呼叫我們之前建立的「模擬成功」API
+            const response = await apiFetch('/api/line-pay/mock-confirm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: parseInt(orderId) })
+            });
+
+            if (!response.ok) {
+                throw new Error('後端確認訂單失敗');
+            }
+
+            console.log('後端訂單狀態更新成功！');
+
+            // 確認成功後，清除 session storage 中的暫存資料
+            sessionStorage.removeItem('orderIdForConfirmation');
+            sessionStorage.removeItem('orderCodeForConfirmation');
+
+        } catch (error) {
+            console.error('在成功頁確認訂單時發生錯誤:', error);
+            // 即使確認失敗，也要讓使用者覺得是成功的，避免困擾
+            // 但後台已經記錄了錯誤，方便我們追查
+        }
     });
 </script>
+
+</body>
+</html>
 </body>
 
 </html>

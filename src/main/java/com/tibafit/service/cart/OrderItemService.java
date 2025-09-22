@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tibafit.model.cart.OrderItemVO;
 import com.tibafit.model.cart.OrdersVO;
-import com.tibafit.model.cart.ProductsVO;
+import com.tibafit.model.cart.ProductVO;
 import com.tibafit.repository.cart.OrderItemDAO;
 import com.tibafit.repository.cart.OrdersDAO;
 import com.tibafit.repository.cart.ProductDAO;
@@ -61,7 +61,7 @@ public class OrderItemService {
 
 		// ⚠ 這裡以「new ProductVO + 設 id」掛外鍵，Hibernate 有機會視為 transient 物件而報錯
 		// 建議改用：productDAO.getReferenceById(productId)（不命中 DB，直接給代理，安全掛 FK）
-		ProductsVO ref = new ProductsVO();
+		ProductVO ref = new ProductVO();
 		ref.setProductId(productId);
 		it.setProduct(ref);
 

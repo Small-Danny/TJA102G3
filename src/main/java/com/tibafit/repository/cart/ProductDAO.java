@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.tibafit.model.cart.ProductsVO;
+import com.tibafit.model.cart.ProductVO;
 
 //	findOnShelfPrice(id)：只在商品「上架」時回傳單價（無需撈整筆資料）。
 //	decreaseStock(id, qty)：原子性扣庫存（條件：庫存足夠且上架），回傳 0/1 表示是否成功。
@@ -18,7 +18,7 @@ import com.tibafit.model.cart.ProductsVO;
 //	findByProductNameContainingIgnoreCase(...)、findByProductStatus(...)：後台列表常用的條件＋分頁。
 //	findByProductIdIn(ids)：購物車/訂單一次撈多筆商品資料。
 
-public interface ProductDAO extends JpaRepository<ProductsVO, Integer> {
+public interface ProductDAO extends JpaRepository<ProductVO, Integer> {
 
 	// 取得「上架商品」的單價（只選 price 欄位，不撈整筆）
 	// 回傳：Integer（可能為 null：當商品不存在或已下架）
@@ -34,14 +34,14 @@ public interface ProductDAO extends JpaRepository<ProductsVO, Integer> {
 	int decreaseStock(@Param("id") Integer id, @Param("qty") Integer qty);
 
 	// 依商品代碼（SKU）查找單筆
-	Optional<ProductsVO> findByProductCode(String productCode);
+	Optional<ProductVO> findByProductCode(String productCode);
 
 	// 依商品名稱「模糊」（忽略大小寫）分頁查詢
-	Page<ProductsVO> findByProductNameContainingIgnoreCase(String keyword, Pageable pageable);
+	Page<ProductVO> findByProductNameContainingIgnoreCase(String keyword, Pageable pageable);
 
 	// 依商品狀態分頁查詢（例如 1=上架, 0=下架）
-	Page<ProductsVO> findByProductStatus(Integer status, Pageable pageable);
+	Page<ProductVO> findByProductStatus(Integer status, Pageable pageable);
 
 	// 批次依 ID 清單查詢（常用於購物車/訂單一次撈多筆）
-	List<ProductsVO> findByProductIdIn(List<Integer> ids);	  
+	List<ProductVO> findByProductIdIn(List<Integer> ids);	  
 }

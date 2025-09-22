@@ -1,7 +1,57 @@
 // assets/js/cart.js
-(function() {
-	'use strict';
 
+/**
+ * 全域可用的函式，用於將商品加入購物車
+ * @param {string} productId - 商品 ID
+ * @param {number} quantity - 商品數量
+ * @param {object} callbacks - 回呼函式，包含 onSuccess 和 onError
+ */
+function addItemToCart(productId, quantity, callbacks = {}) {
+	const userId = localStorage.getItem('uid') || 1; // 假設未登入預設為用戶 1
+
+	// 檢查 apiFetch 函式是否存在
+	if (typeof apiFetch !== 'function') {
+		console.error('發生錯誤：api.js 未正確載入。');
+		if (callbacks.onError) callbacks.onError();
+		return;
+	}
+
+	// 使用 apiFetch 發送請求
+	apiFetch('/api/cart/items', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			userId: parseInt(userId),
+			productId: parseInt(productId),
+			qty: parseInt(quantity)
+		})
+	})
+		.then(response => {
+			if (!response.ok) {
+				return response.json().then(err => {
+					throw new Error(err.message || '加入購物車失敗');
+				});
+			}
+			return response.json();
+		})
+		.then(data => {
+			console.log('購物車已更新:', data);
+			if (callbacks.onSuccess) callbacks.onSuccess();
+		})
+		.catch(error => {
+			console.error('加入購物車時發生錯誤:', error);
+			if (callbacks.onError) callbacks.onError();
+		});
+}
+
+
+(function () {
+	'use strict';
+	const $list = document.getElementById('cartList');
+	if (!$list) {
+		// 如果不在購物車頁面，就直接結束函式
+		return;
+	}
 	const USER_ID = window.USER_ID || 1;
 
 	// 對應 CartController
@@ -9,7 +59,7 @@
 	const API_ITEM = '/api/cart/items';       // POST / PUT
 	const API_PROD = '/api/products';         // GET
 
-	const $list = document.getElementById('cartList');
+
 	const $sumSubtotal = document.getElementById('sum-subtotal');
 	const $sumOrder = document.getElementById('sum-order');
 	const $sumGrand = document.getElementById('sum-grand');
@@ -19,9 +69,8 @@
 	let rows = []; // {cartItemId, productId, cartItemQuantity, productName, productPrice, productPicture}
 
 	const money = n => '$ ' + Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
-
 	async function fetchJson(url, opt) {
-		const r = await fetch(url, opt);
+		const r = await apiFetch(url, opt);
 		if (!r.ok) throw new Error('HTTP ' + r.status);
 		const text = await r.text();
 		return text ? JSON.parse(text) : {};
@@ -160,20 +209,21 @@
 
 	// 下一步
 	// 下一步：把使用點數與 userId 帶到訂單頁
-	$btnNext.addEventListener('click', (e) => {
-		e.preventDefault(); // 避免 <a> 先跳轉
+	if ($btnNext) {
+		$btnNext.addEventListener('click', (e) => {
+			e.preventDefault(); // 避免 <a> 先跳轉
 
-		// 取目前使用點數（或用 _cartSummary 的 used_points）
-		const used = Math.max(0, parseInt(($usePoints && $usePoints.value) || '0', 10));
+			// 取目前使用點數（或用 _cartSummary 的 used_points）
+			const used = Math.max(0, parseInt(($usePoints && $usePoints.value) || '0', 10));
 
-		// 存給 cart_order.html 讀
-		sessionStorage.setItem('usedPoints', String(used));
-		localStorage.setItem('uid', String(USER_ID));
+			// 存給 cart_order.html 讀
+			sessionStorage.setItem('usedPoints', String(used));
+			localStorage.setItem('uid', String(USER_ID));
 
-		// 前往訂單明細
-		location.href = 'cart_order.html';
-	});
-
+			// 前往訂單明細
+			location.href = 'cart_order.html';
+		});
+	}
 
 	load();
 })();

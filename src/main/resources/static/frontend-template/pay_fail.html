@@ -149,7 +149,7 @@
   <!-- Loader End -->
 
   <!-- Header Style One Start -->
-   <div id="header"></div>
+  <div id="header"></div>
   <!-- Header Style One End -->
 
   <!-- Banner Style One Start -->
@@ -329,14 +329,16 @@
   <script src="assets/js/custom.js"></script>
 
   <script src="assets/js/cart.js"></script>
+  <script src="assets/js/api.js"></script>
 
+  <script src="assets/js/checkout.js"></script>
   <script>
     fetch('header.txt?v=' + Date.now(), { cache: 'no-store' })
-    .then(r => r.text())
-    .then(html => {
-      document.getElementById('header').innerHTML = html;
-    });
-</script>
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('header').innerHTML = html;
+      });
+  </script>
 </body>
 
 </html>

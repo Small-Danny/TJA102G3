@@ -10,8 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tibafit.model.cart.ProductsVO;
-import com.tibafit.model.product.ProductVO;
+import com.tibafit.model.cart.ProductVO;
 import com.tibafit.repository.cart.ProductDAO;
 
 //	新增商品（含 SKU 唯一性檢查）、讀取單筆、分頁列表（支援關鍵字/狀態篩選）。
@@ -29,7 +28,7 @@ public class ProductServices {
 	}
 
 	@Transactional // 交易：包含唯一碼檢查與存檔
-	public ProductsVO create(ProductsVO vo) {
+	public ProductVO create(ProductVO vo) {
 		// SKU 唯一性檢查（有帶 productCode 才檢查）
 		if (vo.getProductCode() != null && productDAO.findByProductCode(vo.getProductCode()).isPresent())
 			throw new IllegalStateException("商品代碼已存在");
@@ -37,7 +36,7 @@ public class ProductServices {
 	}
 
 	// 讀單筆商品，找不到丟出業務例外（由 GlobalExceptionHandler 統一轉 400）
-	public ProductsVO get(Integer id) {
+	public ProductVO get(Integer id) {
 		return productDAO.findById(id).orElseThrow(() -> new IllegalStateException("找不到商品 ID " + id));
 	}
 
@@ -45,7 +44,7 @@ public class ProductServices {
 	 * 商品列表（分頁） 查詢優先順序： 1) 先看 keyword（名稱模糊、忽略大小寫） 2) 再看 status（上/下架） 3) 否則回全部
 	 * 排序：productId DESC（新到舊）
 	 */
-	public Page<ProductsVO> list(Integer status, String keyword, int page, int size) {
+	public Page<ProductVO> list(Integer status, String keyword, int page, int size) {
 		Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1),
 				Sort.by(Sort.Direction.DESC, "productId"));
 		if (keyword != null && !keyword.isBlank())
@@ -59,8 +58,8 @@ public class ProductServices {
 	 * 局部更新（只覆寫非 null 欄位） - 若修改了 productCode，仍需檢查唯一性
 	 */
 	@Transactional
-	public ProductsVO update(Integer id, ProductsVO data) {
-		ProductsVO db = get(id); // 先抓出資料庫內原物件（受管狀態）
+	public ProductVO update(Integer id, ProductVO data) {
+		ProductVO db = get(id); // 先抓出資料庫內原物件（受管狀態）
 		// SKU 改變時做唯一性檢查
 		if (data.getProductCode() != null && !data.getProductCode().equals(db.getProductCode())
 				&& productDAO.findByProductCode(data.getProductCode()).isPresent())
@@ -99,8 +98,8 @@ public class ProductServices {
 	 * @param delta 可正可負；結果不可 < 0
 	 */
 	@Transactional
-	public ProductsVO adjustStock(Integer id, int delta) {
-		ProductsVO p = get(id);
+	public ProductVO adjustStock(Integer id, int delta) {
+		ProductVO p = get(id);
 		int next = (p.getStockQuantity() == null ? 0 : p.getStockQuantity()) + delta;
 		if (next < 0)
 			throw new IllegalStateException("庫存不足");
@@ -108,7 +107,7 @@ public class ProductServices {
 		return p;
 	}
 
-	public List<ProductsVO> findAllByIds(List<Integer> ids) {
+	public List<ProductVO> findAllByIds(List<Integer> ids) {
 	    return productDAO.findByProductIdIn(ids);
 	}
 }

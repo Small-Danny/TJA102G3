@@ -2,7 +2,7 @@ package com.tibafit.dto.product;
 
 import java.time.LocalDateTime;
 
-import com.tibafit.model.cart.ProductsVO;
+import com.tibafit.model.cart.ProductVO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -121,7 +121,7 @@ public class ProductDTO {
 	 * 將 JPA Entity（ProductVO）轉為前端友善的 DTO。 - 僅映射你目前 VO 中常用欄位；若 VO 有
 	 * createdAt/updatedAt 也可在此處補上。 - 如需遮蔽內部欄位（成本價等），請勿加入 DTO。
 	 */
-	public static ProductDTO from(ProductsVO vo) {
+	public static ProductDTO from(ProductVO vo) {
 		ProductDTO dto = new ProductDTO();
 		dto.setProductId(vo.getProductId());
 		dto.setProductType(vo.getProductType());
