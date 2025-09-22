@@ -15,8 +15,9 @@ public class ReCaptchaServiceImpl implements ReCaptchaService{
     private static final String RECAPTCHA_VERIFY_URL = "https://www.google.com/recaptcha/api/siteverify";
 
     // 從 application.properties 中讀取我們儲存的密鑰
-    @Value("${google.recaptcha.secret-key}")
-    private String secretKey;
+	@Value("${google.recaptcha.secret-key:KEY_NOT_FOUND_IN_PROPERTIES}")
+	private String secretKey;
+
     
     // 使用 RestTemplate 來發送 HTTP的外部請求,是Spring用的
     private final RestTemplate restTemplate;

@@ -416,6 +416,7 @@ button.scrollTopStick.active:before,
     font-family: var(--theme-found);
 } 
 textarea {
+    resize: none;
     height: 180px;
     padding-left: 20px !important;
     padding-top: 16px;

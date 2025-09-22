@@ -110,7 +110,7 @@ public class PaymentController {
 
 
     // ECPay 非同步通知 (API)
-    @PostMapping("/api/ecpay/callback")
+    @PostMapping("/payment/ecpay/return")
     @ResponseBody
     public String handleEcpayCallback(@RequestParam Map<String, String> callbackData) {
         System.out.println("收到綠界 Callback 通知:");
