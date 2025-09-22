@@ -18,7 +18,8 @@ public class ProductService {
     private static final Set<String> BASE_SIZES = Set.of("S", "M", "L", "XL");
 
     // 允許「純數字」或「數字+單位」，單位可省略；大小寫皆可
-    private static final Pattern NUMERIC_SIZE = Pattern.compile("(?i)^\\s*(\\d+(?:\\.\\d+)?)\\s*(ML|L|G|KG)\\s*$");
+    private static final Pattern NUMERIC_SIZE =
+    	    Pattern.compile("(?i)^\\s*(\\d+(?:\\.\\d+)?)(?:\\s*(ML|L|G|KG))?\\s*$");
     
     private static final Pattern PURE_NUMBER = Pattern.compile("^\\s*(\\d+(?:\\.\\d+)?)\\s*$");
     
@@ -40,7 +41,7 @@ public class ProductService {
         if (t == null) return false;
         String u = t.trim().toUpperCase();
         if (BASE_SIZES.contains(u)) return true;
-        return NUMERIC_SIZE.matcher(u).matches();
+        return NUMERIC_SIZE.matcher(u).matches(); // 單位可省略後就能吃到 "500"
     }
     
     
