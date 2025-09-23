@@ -77,9 +77,12 @@
         <div class="col-lg-6">
           <div class="pd-data">
             <h2 th:text="${@productService.displayNameWithoutSize(product)}">商品名稱</h2>
-            <ul class="pd-price">
-              <li class="pd-sale-price">NT$ <span th:text="${product.productPrice}">0</span></li>
-            </ul>
+            <!-- 價格 -->
+			<ul class="pd-price">
+			  <li class="pd-sale-price">
+			    NT$ <span id="priceText" th:text="${currentPrice != null ? currentPrice : product.productPrice}">0</span>
+			  </li>
+			</ul>
    
             
             <!-- 尺寸 -->
@@ -89,24 +92,17 @@
 			  <!-- 有尺寸可選 -->
 			  <div th:if="${sizes != null and !#lists.isEmpty(sizes)}">
 				  <div class="size-group" id="sizeGroup" th:attr="data-product-id=${product.productId}">
-				    <button type="button"
-				            th:each="s : ${sizes}"
-				            class="size-chip"
-				            th:text="${(#strings.equalsIgnoreCase(s,'1') 
-				                        or #strings.equalsIgnoreCase(s,'F')
-				                        or #strings.equalsIgnoreCase(s,'FREE')
-				                        or #strings.equalsIgnoreCase(s,'ONE')
-				                        or #strings.equalsIgnoreCase(s,'ONE SIZE')
-				                        or #strings.equalsIgnoreCase(s,'ONESIZE')
-				                        or #strings.equalsIgnoreCase(s,'OS')) ? '均碼' : s}"
-				            th:classappend="${currentSize != null 
-				                            and (s.equalsIgnoreCase(currentSize) 
-				                                 or (#strings.equalsIgnoreCase(currentSize,'1') and #strings.equalsIgnoreCase(s,'F')) 
-				                                 or (#strings.equalsIgnoreCase(currentSize,'F') and #strings.equalsIgnoreCase(s,'1')))} ? ' active' : ''"
-				            th:data-size="${s}"
-				            th:attr="data-pid=${sizeMap.get(s)}, data-sku=${sizeSkuMap.get(s)}">
-				    </button>
-				  </div>
+				    <div class="size-group" id="sizeGroup" th:attr="data-product-id=${product.productId}">
+				  <button type="button"
+				          th:each="s : ${sizes}"
+				          class="size-chip"
+				          th:text="${(#strings.equalsIgnoreCase(s,'1') or #strings.equalsIgnoreCase(s,'F') or #strings.equalsIgnoreCase(s,'FREE') or #strings.equalsIgnoreCase(s,'ONE') or #strings.equalsIgnoreCase(s,'ONE SIZE') or #strings.equalsIgnoreCase(s,'ONESIZE') or #strings.equalsIgnoreCase(s,'OS')) ? '均碼' : s}"
+				          th:classappend="${currentSize != null and (s.equalsIgnoreCase(currentSize) or (#strings.equalsIgnoreCase(currentSize,'1') and #strings.equalsIgnoreCase(s,'F')) or (#strings.equalsIgnoreCase(currentSize,'F') and #strings.equalsIgnoreCase(s,'1')))} ? ' active' : ''"
+				          th:data-size="${s}"
+				          th:attr="data-pid=${sizeMap.get(s)}, data-sku=${sizeSkuMap.get(s)}"
+				          th:attrappend=" data-price=${sizePriceMap != null ? sizePriceMap.get(s) : product.productPrice}">
+				  </button>
+				</div>
 			
 			    <!-- 庫存提示：加上 data-stock-url 指向後端 API -->
 			    <div id="stockHint"
