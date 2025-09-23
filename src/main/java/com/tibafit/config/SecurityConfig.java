@@ -322,7 +322,6 @@ public class SecurityConfig {
                                 "/frontend-template/product_img/**",
                                 "/frontend-template/header.txt",
                                 "/adminlte/**"
-                                "/frontend-template/header.txt"
 
                         ).permitAll()
 
