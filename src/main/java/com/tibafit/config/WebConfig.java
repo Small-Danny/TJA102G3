@@ -20,6 +20,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         
+    	// 規則零：統一的上傳檔案入口
+    	// 當 URL 是 /uploads/** 時，直接對應到檔案系統的 uploadDir
+    	registry.addResourceHandler("/uploads/**")
+    	        .addResourceLocations("file:" + normalize(uploadDir));
+    	
         //規則一：專門處理使用者上傳的頭像
         // 當 URL 是 /avatars/** 時，去你設定的實體路徑下的 /avatars/ 子資料夾找檔案
         registry.addResourceHandler("/avatars/**")
@@ -45,6 +50,7 @@ public class WebConfig implements WebMvcConfigurer {
 	        registry.addResourceHandler("/frontend-template/**")
 	                .addResourceLocations("classpath:/static/frontend-template/");
 	    }
+    		
 	
 	    /** 確保結尾有斜線，避免路徑拼接變成資料夾底下再多一層同名檔案夾的問題 */
 	    private String normalize(String path) {

@@ -321,7 +321,10 @@ public class SecurityConfig {
                                 "/frontend-template/assets/**",
                                 "/frontend-template/product_img/**",
                                 "/frontend-template/header.txt",
-                                "/adminlte/**"
+                                "/adminlte/**",
+                                "/uploads/**",   // 商品圖片上傳路徑
+                                "/avatars/**",   // 使用者頭像
+                                "/images/**"     // 專案內部的 static/images/
                         ).permitAll()
 
                         // --- 公開 API (無需登入即可呼叫) ---
