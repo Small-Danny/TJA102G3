@@ -2,15 +2,14 @@
 <html lang="zh-TW">
 
 <head>
-
   <!-- Meta 選項 -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- 標題 -->
   <title>登入與註冊</title>
-  <!-- Bootstrap -->
 
+  <!-- 外部資源 -->
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/bootstrap.min.css">
   <link rel="icon" type="image/x-icon" href="/frontend-template/assets/images/heading-icon.png">
   <link rel="stylesheet" href="/frontend-template/assets/font/flaticon_mycollection.css">
@@ -19,20 +18,24 @@
   <link rel="stylesheet" href="/frontend-template/assets/css/jquery.fancybox.min.css">
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/fontawesome.min.css">
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/nice-select.css">
-  <!-- 樣式表 -->
+
+  <!-- 自定義樣式 -->
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/style.css">
-  <!-- 響應式 -->
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/responsive.css">
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
-  <!-- gooogle驗證用 -->
+
+  <!-- reCAPTCHA -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
   <style>
-    /* 登錄框樣式保持與注冊頁一致 */
+    /* 登錄框樣式 */
     .box.login {
       background-color: #f5f5f5;
       padding: 30px;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      margin: 0 auto;
     }
 
     .box.login h3 {
@@ -50,13 +53,20 @@
       border-radius: 4px;
       color: #333;
       font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .box.login input:focus {
+      border-color: #bb2d3b;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(187, 45, 59, 0.1);
     }
 
     .box.login input::placeholder {
       color: #999;
     }
 
-    /* 密碼顯示切換按鈕樣式 */
+    /* 密碼顯示切換按鈕 */
     .password-wrapper {
       position: relative;
     }
@@ -68,135 +78,149 @@
       transform: translateY(-50%);
       cursor: pointer;
       color: #555;
+      transition: color 0.3s ease;
+    }
+
+    .toggle-password:hover {
+      color: #bb2d3b;
     }
 
     /* 錯誤提示樣式 */
     .error-message {
       color: #dc3545;
       font-size: 14px;
-      margin-top: -10px;
-      margin-bottom: 15px;
+      margin-top: 5px;
       display: none;
+      min-height: 20px;
     }
 
     .error-message.show {
       display: block;
     }
 
-    /* 增強按鈕 hover 效果 */
+    /* 按鈕樣式增強 */
     .theme-btn {
       transition: all 0.3s ease;
-      /* 統一過渡動畫 */
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      /* 基礎陰影 */
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #dc3545;
+      color: white;
+      cursor: pointer;
     }
 
-    .theme-btn:hover {
+    .theme-btn:hover:not(:disabled) {
       background-color: #bb2d3b;
-      /* 更深的紅色 */
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      /* 增強陰影 */
       transform: translateY(-2px);
-      /* 輕微上移 */
     }
 
-    /* 如果有禁用狀態，也統一樣式 */
     .theme-btn:disabled {
       background-color: #f8d7da;
-      /* 淺紅色禁用態 */
       cursor: not-allowed;
       box-shadow: none;
       transform: none;
     }
 
-    input[type="password"]::-ms-reveal {
-      display: none;
+    /* 加載狀態指示器 */
+    .theme-btn.loading::after {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 10px;
     }
 
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* 表單組樣式 */
     .form-group {
-      /* 確保 form-group 有相對定位和底部空間 */
       position: relative;
-      padding-bottom: 22px;
-      margin-bottom: 5px;
+      margin-bottom: 20px;
     }
 
-    .error-message {
-      /* 確保錯誤訊息絕對定位在底部 */
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      margin-top: 0;
+    /* 記住我與忘記密碼 */
+    .remember {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 15px 0 25px;
     }
 
+    .remember .first {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-    /* 忘記密碼鏈接樣式 */
     .remember .second a {
       color: #333;
-      /* 保持黑色文字 */
       text-decoration: underline;
-      /* 默認顯示下劃線 */
       text-underline-offset: 2px;
-      /* 調整下劃線與文字的距離 */
+      transition: color 0.3s ease;
     }
 
-    /* 懸停狀態可選增強 */
     .remember .second a:hover {
       color: #bb2d3b;
-      /* 懸停時變為深紅色（與按鈕hover顏色協調） */
+      text-decoration: none;
     }
 
-    /* 將reCAPTCHA容器居中顯示 */
+    /* reCAPTCHA 樣式 */
     .g-recaptcha {
       display: flex;
       justify-content: center;
-      margin: 0 auto;
-      /* 保證水平居中 */
+      margin: 0 auto 20px;
       padding: 10px 0;
-      /* 可選：添加上下間距 */
     }
 
-    /* 登錄頁面錯誤提示樣式補充 */
-    .error-message {
-      /* 默認隱藏錯誤信息 */
-      display: none;
-      color: #dc3545;
-      /* 紅色錯誤提示 */
-      font-size: 13px;
-      margin-top: 5px;
+    /* 註冊鏈接 */
+    .register-link {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
     }
 
-    /* 顯示錯誤信息的類 */
-    .error-message.show {
-      display: block;
-      /* 顯示錯誤 */
+    .register-link a {
+      color: #bb2d3b;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 
 <body>
-  <!-- 加載器開始 -->
-
+  <!-- 加載器 -->
   <div class="preloader">
     <div class="loader-wrap-heading">
       <div class="load-text">
-        <span>加</span> <span>載</span> </span> <span>中</span>
+        <span>加</span> <span>載</span> <span>中</span>
       </div>
     </div>
   </div>
-  <!-- 加載器結束 -->
 
-  <!-- 頁首樣式一開始 -->
+  <!-- 頁首 -->
   <header>
     <div id="header"></div>
   </header>
 
-  <!-- 頁首樣式一結束 -->
-  <!-- 購物車彈出視窗 -->
-
-  <!-- 登入註冊 開始 -->
+  <!--  banner -->
   <section class="banner-style-one">
     <div class="parallax" style="background-image: url(/frontend-template/assets/images/banner-bg.jpg);"></div>
-
     <div class="container">
       <div class="row">
         <div class="banner-details">
@@ -207,42 +231,52 @@
     </div>
   </section>
 
+  <!-- 登入表單 -->
   <section class="gap login-register">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-6">
           <div class="box login">
             <h3>登入您的帳戶</h3>
-            <form id="loginForm">
-
+            <form id="loginForm" method="POST" action="/api/users/login">
+              <!-- 電子郵件 -->
               <div class="form-group">
                 <input type="email" name="email" id="email" placeholder="電子郵件地址" required>
                 <div class="error-message" id="emailError"></div>
               </div>
+
+              <!-- 密碼 -->
               <div class="form-group">
                 <div class="password-wrapper">
-                  <input type="password" name="password" id="password" placeholder="密碼" required> <i
-                    class="fa-solid fa-eye toggle-password" data-target="password"></i>
+                  <input type="password" name="password" id="password" placeholder="密碼" required>
+                  <i class="fa-solid fa-eye toggle-password" data-target="password"></i>
                 </div>
                 <div class="error-message" id="passwordError"></div>
               </div>
-              <div class="remember form-group">
+
+              <!-- 記住我與忘記密碼 -->
+              <div class="remember">
                 <div class="first">
-                  <input type="checkbox" name="remember-me" id="checkbox"><label for="checkbox">記住我</label>
+                  <input type="checkbox" name="remember-me" id="checkbox">
+                  <label for="checkbox">記住我</label>
                 </div>
                 <div class="second">
                   <a href="/frontend-template/forgot-password.html">忘記密碼？</a>
                 </div>
               </div>
+
+              <!-- reCAPTCHA -->
               <div class="form-group recaptcha-wrapper">
-                <div class="g-recaptcha" data-sitekey="6Lf1ZMkrAAAAAM9cTH1MFDhcmSsHq7jd6IZOxyAw">
-                </div>
+                <div class="g-recaptcha" data-sitekey="6Lf1ZMkrAAAAAM9cTH1MFDhcmSsHq7jd6IZOxyAw"></div>
                 <div class="error-message" id="recaptchaTokenError"></div>
               </div>
 
-              <button type="submit" class="theme-btn w-100">登入</button>
-              <div style="text-align: right; margin-top: 15px;">
-                <a href="/frontend-template/register.html">點我註冊</a>
+              <!-- 提交按鈕 -->
+              <button type="submit" class="theme-btn" id="loginBtn">登入</button>
+
+              <!-- 註冊鏈接 -->
+              <div class="register-link">
+                還沒有帳戶？<a href="/frontend-template/register.html">立即註冊</a>
               </div>
             </form>
           </div>
@@ -250,37 +284,27 @@
       </div>
     </div>
   </section>
-  <!-- 登入註冊 結束 -->
 
-  <!-- 頁腳樣式一 開始 -->
+  <!-- 頁腳 -->
   <footer class="footer-style-one" style="background-image: url(https://via.placeholder.com/1920x732);">
     <div class="footer-p-1">
       <div class="container">
         <div class="row">
           <div class="footer-first">
             <div class="footer-logo">
-              <a href="/frontend-template/index.html"> <img src="/frontend-template/assets/images/logo-2.svg"
-                  alt="頁腳標志">
+              <a href="/frontend-template/index.html">
+                <img src="/frontend-template/assets/images/logo-2.svg" alt="頁腳標志">
               </a>
             </div>
             <div class="contact-info d-flex-all">
               <div class="images d-flex-all justify-content-start">
-                <figure>
-                  <img src="https://via.placeholder.com/57x57" alt="聯系圖片">
-                </figure>
-                <figure>
-                  <img src="https://via.placeholder.com/57x57" alt="聯系圖片">
-                </figure>
-                <figure>
-                  <img src="https://via.placeholder.com/57x57" alt="聯系圖片">
-                </figure>
+                <figure><img src="https://via.placeholder.com/57x57" alt="聯系圖片"></figure>
+                <figure><img src="https://via.placeholder.com/57x57" alt="聯系圖片"></figure>
+                <figure><img src="https://via.placeholder.com/57x57" alt="聯系圖片"></figure>
               </div>
-              <p>
-                專業教練 <span>+1 (251) 344 0 66</span> 免費通話！
-              </p>
+              <p>專業教練 <span>+1 (251) 344 0 66</span> 免費通話！</p>
             </div>
-            <a href="/frontend-template/contact.html" class="theme-btn">獲取諮詢
-            </a>
+            <a href="/frontend-template/contact.html" class="theme-btn">獲取諮詢</a>
           </div>
         </div>
       </div>
@@ -293,10 +317,10 @@
               <h3>資訊</h3>
               <p>定期去健身房很棒，但如果您每天找不到大塊時間鍛煉，也不用擔心。</p>
               <ul class="social-media">
-                <li><a href="/frontend-template/#"><i class="fa-brands fa-facebook-f"></i></a></li>
-                <li><a href="/frontend-template/#"><i class="flaticon-twitter"></i></a></li>
-                <li><a href="/frontend-template/#"><i class="flaticon-instagram"></i></a></li>
-                <li><a href="/frontend-template/#"><i class="flaticon-pinterest"></i></a></li>
+                <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
+                <li><a href="#"><i class="flaticon-twitter"></i></a></li>
+                <li><a href="#"><i class="flaticon-instagram"></i></a></li>
+                <li><a href="#"><i class="flaticon-pinterest"></i></a></li>
               </ul>
             </div>
           </div>
@@ -308,15 +332,10 @@
                   <p>901 N Pitt Str., Suite 170, VA 22314, USA</p>
                 </li>
                 <li><i class="flaticon-iphone"></i>
-                  <p>
-                    <a href="/frontend-template/callto:(+380)503184707">(+380)
-                      50 318 47 07</a>
-                  </p>
+                  <p><a href="callto:(+380)503184707">(+380) 50 318 47 07</a></p>
                 </li>
                 <li><i class="flaticon-mail"></i>
-                  <p>
-                    <a href="/frontend-template/mailto:username@domain.com">username@domain.com</a>
-                  </p>
+                  <p><a href="mailto:username@domain.com">username@domain.com</a></p>
                 </li>
               </ul>
             </div>
@@ -327,9 +346,7 @@
               <p>訂閱我們的每週通訊以獲取最新消息</p>
               <form>
                 <input type="email" name="email" placeholder="輸入您的電子郵件">
-                <button>
-                  <i class="fa-solid fa-arrow-up-long"></i>
-                </button>
+                <button><i class="fa-solid fa-arrow-up-long"></i></button>
               </form>
             </div>
           </div>
@@ -337,63 +354,33 @@
       </div>
     </div>
     <ul class="image-gallery">
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
+      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
+        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
       </li>
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
+      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
+        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
       </li>
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
+      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
+        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
       </li>
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
+      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
+        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
       </li>
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
+      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
+        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
       </li>
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
+      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
+        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
       </li>
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
+      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
+        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
       </li>
     </ul>
     <div class="footer-p-3 rights">
       <div class="container">
         <div class="row">
           <div class="footer-col">
-            <p>
-              健身中心<i class="fa-solid fa-heart"></i> © 2024 <a href="/frontend-template/https://winsfolio.net/">
-                winsfolio.net</a> 保留所有權利
+            <p>健身中心<i class="fa-solid fa-heart"></i> © 2024 <a href="https://winsfolio.net/">winsfolio.net</a> 保留所有權利
             </p>
           </div>
         </div>
@@ -401,6 +388,7 @@
     </div>
   </footer>
 
+  <!-- 諮詢彈窗 -->
   <div class="modal fade popups conslt-popup" id="exampleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -415,16 +403,16 @@
               <div class="parallax" style="background-image: url(assets/images/pattren.png);"></div>
               <form>
                 <div class="row g-0">
-                  <input type="text" class="form-control" id="exampleInputText1" placeholder="完整姓名">
+                  <input type="text" class="form-control" placeholder="完整姓名">
                 </div>
                 <div class="row g-0">
-                  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="電子郵件地址">
+                  <input type="email" class="form-control" placeholder="電子郵件地址">
                 </div>
                 <div class="row g-0">
-                  <input type="number" class="form-control" id="exampleInputPassword1" placeholder="電話號碼">
+                  <input type="number" class="form-control" placeholder="電話號碼">
                 </div>
                 <div class="row g-0">
-                  <select id="inputState-21" class="form-control">
+                  <select class="form-control">
                     <option selected>主題</option>
                     <option>主題 1</option>
                     <option>主題 2</option>
@@ -442,156 +430,158 @@
       </div>
     </div>
   </div>
-  <!-- 頁腳樣式一 結束 -->
 
+  <!-- 滾動進度 -->
   <div id="scroll-percentage">
     <span id="scroll-percentage-value"></span>
   </div>
 
-  <!-- Jquery -->
-
+  <!-- 外部腳本 -->
   <script src="/frontend-template/assets/js/jquery.min.js"></script>
-
-  <!-- Waypoint -->
-
   <script src="/frontend-template/assets/js/jquery.waypoints.min.js"></script>
-
-
-  <!-- Counter -->
-
   <script src="/frontend-template/assets/js/jquery.counterup.min.js"></script>
-
-  <!-- Bootstrap Js -->
-
   <script src="/frontend-template/assets/js/bootstrap.min.js"></script>
-
-  <!-- Fancybox Js -->
-
   <script src="/frontend-template/assets/js/jquery.fancybox.min.js"></script>
-
-  <!-- Nice Select Js -->
-
   <script src="/frontend-template/assets/js/jquery.nice-select.js"></script>
-
-
-  <!-- Owl Carousal Js -->
-
   <script src="/frontend-template/assets/js/owl.carousel.min.js"></script>
-
-  <!-- Custom Js -->
-
   <script src="/frontend-template/assets/js/custom.js"></script>
   <script src="/frontend-template/assets/js/cart.js"></script>
 
-  <!-- ================================================================= -->
-  <!-- ======================= 唯一修改點：登入腳本 ======================= -->
-  <!-- ================================================================= -->
+  <!-- 登錄邏輯 -->
   <script>
-  
     document.addEventListener('DOMContentLoaded', function () {
-      // 補充錯誤提示函數（關鍵修覆）
-      function showError(elementId, message) {
-        const errorElement = document.getElementById(elementId);
-        if (errorElement) {
-          errorElement.textContent = message; // 設置錯誤文本
-          errorElement.classList.add('show'); // 顯示錯誤（添加show類）
-        }
-        }
-        fetch('/frontend-template/header.txt?v=' + Date.now(), { cache: 'no-store' })
-          .then(r => r.text())
-          .then(html => { if (document.getElementById('header')) { document.getElementById('header').innerHTML = html; } });
+      // 確保加載頁頭（如果失敗則印出錯誤）
+      fetch('/frontend-template/header.txt?v=' + Date.now(), { cache: 'no-store' })
+        .then(r => r.text())
+        .then(html => {
+          const headerEl = document.getElementById('header');
+          if (headerEl) headerEl.innerHTML = html;
+        })
+        .catch(err => console.error('加載頁頭失敗:', err));
 
-        document.querySelectorAll('.toggle-password').forEach(icon => {
-          icon.addEventListener('click', function () {
-            const targetId = this.getAttribute('data-target');
-            const input = document.getElementById(targetId);
-            input.setAttribute('type', input.getAttribute('type') === 'password' ? 'text' : 'password');
-            this.classList.toggle('fa-eye');
-            this.classList.toggle('fa-eye-slash');
-          });
-        });
-
-        // =================================================================
-        //  登入邏輯 (最終修正版)
-        // =================================================================
-        const loginForm = document.getElementById('loginForm');
-
-        loginForm.addEventListener('submit', async function (e) {
-          // 1. 阻止表單的傳統 HTML 提交行為
-          e.preventDefault();
-          console.log('表單提交事件觸發');
-
-          // 清除舊的錯誤訊息
-          document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
-
-          // 2. 執行 reCAPTCHA 驗證
-          const recaptchaToken = grecaptcha.getResponse();
-          if (!recaptchaToken) {
-            console.warn('reCAPTCHA 未完成驗證');
-            showError('recaptchaTokenError', '請完成「我不是機器人」驗證');
-            return; // 中斷提交
-          }
-
-          // 3. 執行前端欄位驗證
-          const email = document.getElementById('email').value;
-          const password = document.getElementById('password').value;
-          let isValid = true;
-          if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
-            showError('emailError', '請輸入有效的電子郵件');
-            isValid = false;
-          }
-          if (!password.trim()) {
-            showError('passwordError', '請輸入密碼');
-            isValid = false;
-          }
-          if (!isValid) {
-            console.warn('前端欄位驗證失敗');
-            grecaptcha.reset();
-            return;
-          }
-
-          // 4. 執行非同步登入
-          try {
-            const csrfResponse = await fetch('/api/csrf-token');
-            if (!csrfResponse.ok) throw new Error('無法獲取 CSRF token');
-            const csrfData = await csrfResponse.json();
-
-            const loginData = {
-              email: document.getElementById('email').value,
-              password: document.getElementById('password').value,
-              recaptchaToken: grecaptcha.getResponse(),
-              "remember-me": document.getElementById('checkbox').checked
-            };
-
-            const loginResponse = await fetch('/api/users/login', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                [csrfData.headerName]: csrfData.token
-              },
-              // ★★★ 關鍵修正：加上 credentials: 'include' ★★★
-              // 這會讓瀏覽器在發送請求時，自動帶上 JSESSIONID Cookie
-              credentials: 'include',
-              body: JSON.stringify(loginData)
-            });
-
-            if (!loginResponse.ok) {
-              const errorData = await loginResponse.json();
-              throw errorData;
-            }
-
-            // 登入成功後，後端會自動設定 Cookie，我們不再需要手動儲存 user 資料
-            alert('登入成功！即將跳轉至會員中心...');
-            window.location.href = '/frontend-template/profile.html'; // 直接跳轉
-
-          } catch (error) {
-            // ... (錯誤處理邏輯不變) ...
-            console.error('登入流程發生錯誤:', error);
-            alert(`登入失敗: ${error.message || '請檢查您的帳號密碼'}`);
-            grecaptcha.reset();
-          }
+      // 密碼顯示切換邏輯
+      document.querySelectorAll('.toggle-password').forEach(icon => {
+        icon.addEventListener('click', function () {
+          const targetId = this.getAttribute('data-target');
+          const input = document.getElementById(targetId);
+          const isPassword = input.getAttribute('type') === 'password';
+          input.setAttribute('type', isPassword ? 'text' : 'password');
+          this.classList.toggle('fa-eye');
+          this.classList.toggle('fa-eye-slash');
         });
       });
+
+      // 錯誤提示函數
+      function showError(elementId, message) {
+        const errorEl = document.getElementById(elementId);
+        if (errorEl) {
+          errorEl.textContent = message;
+          errorEl.classList.add('show');
+        }
+      }
+
+      // 登入表單提交事件
+      const loginForm = document.getElementById('loginForm');
+      loginForm.addEventListener('submit', async function (event) {
+        // 關鍵修正：這是最重要的一步，阻止瀏覽器預設的表單提交
+        event.preventDefault();
+
+        // 清除所有錯誤訊息
+        document.querySelectorAll('.error-message').forEach(el => {
+          el.textContent = '';
+          el.classList.remove('show');
+        });
+
+        // 獲取表單欄位與 reCAPTCHA token
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const recaptchaToken = grecaptcha.getResponse();
+
+        // 前端表單驗證
+        let isValid = true;
+        if (!email) {
+          showError('emailError', '請輸入電子郵件');
+          isValid = false;
+        } else if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email)) {
+          showError('emailError', '請輸入有效的電子郵件格式');
+          isValid = false;
+        }
+        if (!password) {
+          showError('passwordError', '請輸入密碼');
+          isValid = false;
+        } else if (password.length < 6) {
+          showError('passwordError', '密碼長度不能少於6位');
+          isValid = false;
+        }
+        if (!recaptchaToken) {
+          showError('recaptchaTokenError', '請完成「我不是機器人」驗證');
+          isValid = false;
+        }
+
+        if (!isValid) {
+          grecaptcha.reset(); // 重設 reCAPTCHA
+          return; // 驗證失敗，直接終止
+        }
+
+        // 禁用按鈕並顯示加載狀態
+        const loginBtn = document.getElementById('loginBtn');
+        loginBtn.disabled = true;
+        loginBtn.classList.add('loading');
+
+        try {
+          // 獲取 CSRF token
+          const csrfResponse = await fetch('/api/csrf-token');
+          if (!csrfResponse.ok) throw new Error('無法獲取 CSRF token');
+          const csrfData = await csrfResponse.json();
+
+          // 準備登入資料
+          const loginData = {
+            email: email,
+            password: password,
+            recaptchaToken: recaptchaToken,
+            rememberMe: document.getElementById('checkbox').checked
+          };
+
+          // 發送登入請求
+          const loginResponse = await fetch('/api/users/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              [csrfData.headerName]: csrfData.token
+            },
+            credentials: 'include', // 確保 cookie (如 JSESSIONID) 會被發送
+            body: JSON.stringify(loginData)
+          });
+
+          // 關鍵修正：先判斷 HTTP 狀態碼是否為成功 (2xx)
+          if (loginResponse.ok) {
+            // 登入成功，不需要再解析 JSON，直接跳轉
+            alert('登入成功！即將跳轉至會員中心...');
+            window.location.href = '/frontend-template/profile.html'; // 直接跳轉
+          } else {
+            // 如果 HTTP 狀態碼是 4xx 或 5xx，代表有錯誤，這時才解析錯誤的 JSON
+            const errorResult = await loginResponse.json();
+            throw errorResult; // 將後端傳來的錯誤物件拋出
+          }
+
+        } catch (error) {
+          console.error('登入錯誤:', error);
+          // 判斷錯誤是來自後端 (有 field 和 message) 還是網路問題
+          if (error.field && error.message) {
+            // 這是後端 ValidationException 回傳的標準錯誤格式
+            showError(error.field + 'Error', error.message);
+          } else {
+            // 其他錯誤（例如網路中斷，或後端其他類型的錯誤）
+            // 我們可以在一個通用的地方顯示錯誤訊息
+            showError('passwordError', error.message || '登入失敗，請檢查帳號或密碼');
+          }
+          grecaptcha.reset();
+        } finally {
+          loginBtn.disabled = false;
+          loginBtn.classList.remove('loading');
+        }
+      });
+    });
   </script>
 </body>
 

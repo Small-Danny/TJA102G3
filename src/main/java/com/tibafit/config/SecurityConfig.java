@@ -322,6 +322,8 @@ public class SecurityConfig {
                                 "/frontend-template/product_img/**",
                                 "/frontend-template/header.txt",
                                 "/adminlte/**"
+                                "/frontend-template/header.txt"
+
                         ).permitAll()
 
                         // --- 公開 API (無需登入即可呼叫) ---
@@ -344,6 +346,8 @@ public class SecurityConfig {
                                 "/api/line-pay/confirm"      // LINE Pay Server-to-Server
                         ).permitAll()
                          .requestMatchers("/admin/login").permitAll()
+
+
                         // ----------------------------------------------------------------
                         // 【規則 B: 管理員權限區 - 需要 ADMIN 角色】
                         // ----------------------------------------------------------------

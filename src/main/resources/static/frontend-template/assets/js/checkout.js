@@ -5,10 +5,10 @@
 	const API_CART_SUMMARY = (uid) => `/api/cart/${uid}/summary`;
 	const API_CHECKOUT = '/api/checkout';
 	const API_LINE_PAY_REQUEST = '/api/line-pay/request';
-	
+
 	const SUCCESS_URL = '/frontend-template/pay_success.html';
 	const LOGIN_URL = '/frontend-template/login.html';
-	const PLACEHOLDER_IMG = '/assets/images/placeholder.png';
+	const PLACEHOLDER_IMG = '/frontend-template/assets/images/placeholder.png';;
 	const DEFAULT_USER_ID = 1; // 預設使用者 ID
 
 	// ====== 從儲存中讀取資料 ======
@@ -69,7 +69,21 @@
 		}
 	}
 
-async function handleCheckout(paymentMethod) {
+	async function handleCheckout(paymentMethod) {
+		// ✨✨✨ 在這裡加入最關鍵的登入檢查 ✨✨✨
+		const isLoggedIn = localStorage.getItem('uid'); // 檢查 localStorage 是否有 uid
+
+		if (!isLoggedIn) {
+			alert('請先登入會員，再進行結帳。');
+
+			// 為了更好的使用者體驗，我們可以記住使用者原本想去結帳
+			// 這樣登入成功後，就可以自動跳轉回來
+			sessionStorage.setItem('redirectAfterLogin', window.location.href);
+
+			window.location.href = LOGIN_URL; // LOGIN_URL 變數已在檔案開頭定義
+			return; // 中斷後續所有結帳流程
+		}
+		// 檢查表單驗證
 		if (!$form.checkValidity()) {
 			$form.reportValidity();
 			return;
@@ -77,6 +91,7 @@ async function handleCheckout(paymentMethod) {
 		setAllCheckoutButtonsDisabled(true);
 
 		try {
+			// ✨✨✨ 關鍵還原點：這一段是您目前版本缺少的 ✨✨✨
 			// 步驟 1: 建立訂單 (所有付款方式共用)
 			const createOrderResponse = await apiFetch(API_CHECKOUT, {
 				method: 'POST',
@@ -90,8 +105,16 @@ async function handleCheckout(paymentMethod) {
 				})
 			});
 
-			if (createOrderResponse.status === 401) { /* ... 登入處理維持不變 ... */ }
-			if (!createOrderResponse.ok) { /* ... 錯誤處理維持不變 ... */ }
+			// 檢查建立訂單的回應
+			if (createOrderResponse.status === 401) {
+				alert('您尚未登入，將跳轉至登入頁面');
+				window.location.href = LOGIN_URL;
+				return;
+			}
+			if (!createOrderResponse.ok) {
+				throw new Error('建立訂單失敗');
+			}
+			// ✨✨✨ 關鍵還原點結束 ✨✨✨
 
 			const newOrder = await createOrderResponse.json();
 			const orderId = newOrder.orderId;
@@ -99,10 +122,19 @@ async function handleCheckout(paymentMethod) {
 
 			// 步驟 2: 根據付款方式，執行不同流程
 			if (paymentMethod === 'LINE_PAY') {
-                // LINE Pay 的流程維持原樣
 				console.log(`正在為訂單 ${orderId} 請求 LINE Pay 連結...`);
-				const linePayResponse = await apiFetch(API_LINE_PAY_REQUEST, { /* ... */ });
-				if (!linePayResponse.ok) throw new Error('請求 LINE Pay 連結失敗');
+
+				const linePayResponse = await apiFetch(API_LINE_PAY_REQUEST, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ orderId: orderId })
+				});
+
+				if (!linePayResponse.ok) {
+					const errorData = await linePayResponse.json();
+					throw new Error(`請求 LINE Pay 連結失敗: ${errorData.message || linePayResponse.statusText}`);
+				}
+
 				const linePayData = await linePayResponse.json();
 				if (linePayData.paymentUrl) {
 					window.location.href = linePayData.paymentUrl;
@@ -111,11 +143,8 @@ async function handleCheckout(paymentMethod) {
 				}
 
 			} else if (paymentMethod === 'CREDIT_CARD') {
-				// ★★★ 核心修正點：不再 call API，而是直接導向我們的 Controller ★★★
-                console.log(`訂單 ${orderId} 建立成功，準備重新導向至伺服器進行 ECPay 表單渲染...`);
-                
-                // 直接將瀏覽器導向到我們的後端 Controller，並帶上訂單 ID
-                window.location.href = `/payment/ecpay?orderId=${orderId}`;
+				console.log(`訂單 ${orderId} 建立成功，準備重新導向至伺服器進行 ECPay 表單渲染...`);
+				window.location.href = `/payment/ecpay?orderId=${orderId}`;
 			}
 		} catch (err) {
 			console.error('結帳流程失敗:', err);
