@@ -1,5 +1,7 @@
 package com.tibafit.config;
 
+import java.nio.file.Path;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -28,5 +30,25 @@ public class WebConfig implements WebMvcConfigurer {
         // 這是 Spring Boot 的標準作法，可以跟動態上傳的圖片分開處理
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("classpath:/static/images/");
-    }
+        
+        
+	     // 規則三（重點）：商品圖片
+	        // 1) 先從外部 uploads/frontend-template/assets/img/ 讀
+	        // 2) 找不到再回落到 classpath:/static/frontend-template/assets/img/
+	        registry.addResourceHandler("/frontend-template/assets/img/**")
+	                .addResourceLocations(
+	                        "file:" + normalize(uploadDir) + "frontend-template/assets/img/",
+	                        "classpath:/static/frontend-template/assets/img/"
+	                );
+	
+	        // 規則四：其餘前端靜態資源仍走 classpath
+	        registry.addResourceHandler("/frontend-template/**")
+	                .addResourceLocations("classpath:/static/frontend-template/");
+	    }
+	
+	    /** 確保結尾有斜線，避免路徑拼接變成資料夾底下再多一層同名檔案夾的問題 */
+	    private String normalize(String path) {
+	        if (path == null || path.isEmpty()) return "";
+	        return path.endsWith("/") || path.endsWith("\\") ? path : (path + "/");
+	    }
 }

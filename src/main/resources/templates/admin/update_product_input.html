@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org"
+<<<<<<< Upstream, based on branch 'master' of https://github.com/Small-Danny/TJA102G3.git
 	 th:replace="~{admin/layout :: layout(~{::title}, ~{::content}, ~{::#empty-scripts})}">
+=======
+	th:replace="~{admin/layout :: layout(~{::title}, ~{::content}, ~{::#empty-scripts})}">
+>>>>>>> 45750e6 update 圖片上傳相關
 <head>
 <title>編輯商品</title>
 </head>
@@ -17,9 +21,6 @@
 					<div class="col-sm-6">
 						<ol class="breadcrumb float-sm-end">
 							<li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Home</a></li>
-							<!-- 舊的 .do 寫法（保留註解）
-            <li class="breadcrumb-item"><a th:href="@{/product/product.do(action='getAll')}">商品清單</a></li>
-            -->
 							<li class="breadcrumb-item"><a th:href="@{/admin/products}">商品清單</a></li>
 							<li class="breadcrumb-item active" aria-current="page">編輯</li>
 						</ol>
@@ -42,12 +43,12 @@
 					th:text="${successMsg}">更新成功</div>
 
 				<!-- 表單 -->
-				
 				<form
 					th:action="@{/admin/products/{id}/edit(id=${product.productId})}"
-					method="post" class="card card-primary">
+					method="post" enctype="multipart/form-data"
+					class="card card-primary">
 
-					<!-- (可選) 若有啟用 CSRF，建議放入以下隱藏欄位 -->
+					<!-- (可選) CSRF -->
 					<!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/> -->
 
 					<div class="card-header">
@@ -104,25 +105,35 @@
 								</select>
 							</div>
 
+							<!-- 圖片區：檔名 + 檔案上傳 + 預覽 -->
 							<div class="col-md-8">
 								<label class="form-label">圖片檔名</label> <input type="text"
 									name="productPicture" id="pictureInput" class="form-control"
 									th:value="${product.productPicture}" maxlength="255"
 									placeholder="例如：clothes.png">
+
 								<div class="form-text">
 									放置位置：
 									<code>static/frontend-template/assets/img/</code>
 								</div>
+
+								<div class="mt-3">
+									<label class="form-label">上傳新圖片（不選擇則保留舊圖）</label> <input
+										type="file" name="imageFile" id="imageFile"
+										class="form-control" accept="image/*"> <small
+										class="form-text text-muted"> 選擇後會即時預覽，並自動帶入檔名。 </small>
+								</div>
 							</div>
 
 							<div class="col-md-4 d-flex align-items-end">
-								<img id="previewImage" class="img-fluid img-thumbnail"
+								<img id="previewImage" class="img-fluid img-thumbnail w-100"
 									alt="預覽圖片"
 									th:src="${product != null && product.productPicture != null} ?
                      @{/frontend-template/assets/img/{f}(f=${product.productPicture})} :
                      @{/frontend-template/assets/img/default.png}"
 									onerror="this.src='[[@{/frontend-template/assets/img/default.png}]]'">
 							</div>
+
 						</div>
 					</div>
 
@@ -139,16 +150,18 @@
 
 	<!-- 即時圖片預覽 -->
 	<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const input = document.getElementById("pictureInput");
-    const preview = document.getElementById("previewImage");
-    if (!input || !preview) return;
+  document.addEventListener('DOMContentLoaded', () => {
+    const file = document.getElementById('imageFile');
+    const nameInput = document.getElementById('pictureInput');
+    const preview = document.getElementById('previewImage');
+    if (!file) return;
 
-    input.addEventListener("input", function () {
-      const name = input.value.trim();
-      preview.src = name
-        ? `/frontend-template/assets/img/${name}`
-        : `/frontend-template/assets/img/default.png`;
+    file.addEventListener('change', () => {
+      const f = file.files && file.files[0];
+      if (!f) return;
+      const url = URL.createObjectURL(f);
+      if (preview) preview.src = url;
+      if (nameInput) nameInput.value = f.name; // 只帶入檔名
     });
   });
 </script>
