@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
+       th:replace="~{admin/layout :: layout(~{::title}, ~{::content}, ~{::#empty-scripts})}">
 
 <head>
     <title th:text="'會員資料 | ' + ${user.name}">會員詳細資料</title>
