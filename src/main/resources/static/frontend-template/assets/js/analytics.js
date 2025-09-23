@@ -257,6 +257,20 @@
         loadSeries(chartTitleEl, canvasEl, summaryWrapEl, totalEl);
       });
     }
+	
+	// —— 匯出報表（CSV） —— //
+	    const exportBtn = document.getElementById('btnExport');
+	    if (exportBtn) {
+	      exportBtn.addEventListener('click', () => {
+	        const params = new URLSearchParams({
+	          metric: state.metric,
+	          range: state.range,
+	          userId: String(state.userId || 1)
+	        });
+	        // 直接觸發下載
+	        window.location.href = `${API_BASE}/export?${params.toString()}`;
+	      });
+	    }
 
     // 最初載入
     loadSeries(chartTitleEl, canvasEl, summaryWrapEl, totalEl);
