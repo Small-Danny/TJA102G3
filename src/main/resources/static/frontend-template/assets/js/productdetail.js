@@ -6,6 +6,7 @@
   const hidSize   = document.getElementById('selectedSize');
   const btnCart   = document.getElementById('btnAddToCart');
   const skuText   = document.getElementById('skuText');
+  const priceText = document.getElementById('priceText');
 
   // 將 API 先取出一次
   const STOCK_API = stockHint ? (stockHint.dataset.stockUrl || '/shop/api/stock') : '/shop/api/stock';
@@ -22,6 +23,14 @@
     stockHint.classList.toggle('text-danger', !!isError);
     stockHint.classList.toggle('text-secondary', !isError);
   }
+  
+  // 價格格式化
+    function setPrice(val) {
+      if (!priceText) return;
+      if (val == null || val === '') return;
+      const n = Number(val);
+      priceText.textContent = Number.isFinite(n) ? n.toLocaleString('zh-TW') : String(val);
+    }
 
   // 控制請求並避免亂序
   let inflightCtrl = null;
@@ -131,6 +140,7 @@
     const size = chip.dataset.size || '';
     let pid    = chip.dataset.pid || '';
 	const sku  = chip.dataset.sku  || '';
+	const price = chip.dataset.price || '';
 
     // 正規化 pid（保留空字串；有值時轉成純數字字串）
     if (pid) {
@@ -150,8 +160,9 @@
 	  if (skuText && sku) skuText.textContent = sku;
     }
 
-    loadStock(pid);
-    // console.log('clicked size:', size, 'pid:', pid);
+	if (skuText && sku) skuText.textContent = sku;
+	setPrice(price);                                
+	loadStock(pid);
   });
 
   // 首次載入如果有預設 active 尺寸就查庫存；否則提示
