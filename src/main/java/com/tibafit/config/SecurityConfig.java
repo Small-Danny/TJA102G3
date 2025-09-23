@@ -320,7 +320,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/frontend-template/assets/**",
                                 "/frontend-template/product_img/**",
-                                "/frontend-template/header.txt"
+                                "/frontend-template/header.txt",
+                                "/adminlte/**"
                         ).permitAll()
 
                         // --- 公開 API (無需登入即可呼叫) ---
@@ -342,7 +343,7 @@ public class SecurityConfig {
                                 "/payment/ecpay/return",     // 綠界 前端跳轉
                                 "/api/line-pay/confirm"      // LINE Pay Server-to-Server
                         ).permitAll()
-
+                        .requestMatchers("/admin/login").permitAll()
                         // ----------------------------------------------------------------
                         // 【規則 B: 管理員權限區 - 需要 ADMIN 角色】
                         // ----------------------------------------------------------------
@@ -407,6 +408,7 @@ public class SecurityConfig {
                                         "https://payment-stage.ecpay.com.tw " + // 綠界支付
                                         "https://www.google.com " +             // reCAPTCHA
                                         "https://www.gstatic.com " +            // reCAPTCHA
+                                        "https://cdn.jsdelivr.net " + // ✨ [新增] 允許來自 jsdelivr CDN 的腳本
                                         "'unsafe-inline'; " +                   // 允許 inline script (某些舊套件可能需要)
                                         "frame-src 'self' https://www.google.com;"      // 允許 reCAPTCHA 的 iframe
                                 // 這裡可以繼續添加其他指令如 style-src, img-src 等
