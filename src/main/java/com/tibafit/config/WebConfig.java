@@ -20,10 +20,15 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         
-    	// 規則零：統一的上傳檔案入口
-    	// 當 URL 是 /uploads/** 時，直接對應到檔案系統的 uploadDir
-    	registry.addResourceHandler("/uploads/**")
-    	        .addResourceLocations("file:" + normalize(uploadDir));
+    	 // 規則零：統一的上傳檔案入口
+        String uploadRootUri = toDirUri(java.nio.file.Paths.get(uploadDir));
+        String uploadImgUri  = toDirUri(java.nio.file.Paths.get(uploadDir, "frontend-template", "assets", "img"));
+        String classpathImg  = "classpath:/static/frontend-template/assets/img/"; // <== 新增這個
+
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations(uploadRootUri) // 外部根
+                .addResourceLocations(uploadImgUri)  // 外部 img 夾
+                .addResourceLocations(classpathImg); // 內建靜態（你現在 clothes.png 的位置）
     	
         //規則一：專門處理使用者上傳的頭像
         // 當 URL 是 /avatars/** 時，去你設定的實體路徑下的 /avatars/ 子資料夾找檔案
@@ -56,5 +61,10 @@ public class WebConfig implements WebMvcConfigurer {
 	    private String normalize(String path) {
 	        if (path == null || path.isEmpty()) return "";
 	        return path.endsWith("/") || path.endsWith("\\") ? path : (path + "/");
+	    }
+	    
+	    private static String toDirUri(java.nio.file.Path dir) {
+	        String uri = dir.toAbsolutePath().toUri().toString(); // e.g. file:///D:/app-data/.../img/
+	        return uri.endsWith("/") ? uri : uri + "/";
 	    }
 }

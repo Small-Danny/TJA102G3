@@ -101,10 +101,11 @@
 
 							<!-- 圖片區：檔名 + 上傳 + 預覽 -->
 							<div class="col-md-8">
-								<label class="form-label" for="pictureInput">圖片檔名</label> <input
-									type="text" id="pictureInput" name="productPicture"
-									class="form-control" th:value="${product.productPicture}"
-									placeholder="例如：products/clothes.png">
+								<label class="form-label" for="pictureInput">圖片檔名</label> 
+								<input type="text" id="pictureInput" name="productPicture"
+								       class="form-control" th:value="${product.productPicture}"
+								       th:attr="data-original-name=${product.productPicture}"
+								       placeholder="例如：products/clothes.png">
 								<div class="form-text">
 									圖片由後端存到
 									<code>/uploads</code>
@@ -125,9 +126,12 @@
 
 							<div class="col-md-4 d-flex align-items-end">
 								<img id="previewImage" data-mode="edit"
-								     th:src="${product != null && product.productPicture != null} ?
-								             @{/uploads/{f}(f=${product.productPicture})} :
-								             @{/frontend-template/assets/img/default.png}"
+								     th:src="${product != null and product.productPicture != null} ?
+								              @{/uploads/{f}(f=${product.productPicture})} :
+								              @{/frontend-template/assets/img/default.png}"
+								     th:attr="data-original-src=${product != null and product.productPicture != null} ?
+								              @{/uploads/{f}(f=${product.productPicture})} :
+								              @{/frontend-template/assets/img/default.png}"
 								     onerror="this.src='/frontend-template/assets/img/default.png'"
 								     class="img-fluid img-thumbnail w-100" alt="預覽圖片">
 							</div>
@@ -148,49 +152,55 @@
 	<div id="empty-scripts" th:fragment="empty-scripts">
   <script>
   (() => {
-    console.log('[product] preview script loaded');
-    const file = document.getElementById('imageFile');
-    const nameInput = document.getElementById('pictureInput');
-    const preview = document.getElementById('previewImage');
-    let lastUrl = null;
+	  console.log('[product] preview script loaded');
+	  const file = document.getElementById('imageFile');
+	  const nameInput = document.getElementById('pictureInput');
+	  const preview = document.getElementById('previewImage');
+	  let lastUrl = null;
 
-    if (!file || !preview) {
-      console.warn('[product] missing #imageFile or #previewImage');
-      return;
-    }
+	  if (!file || !preview) {
+	    console.warn('[product] missing #imageFile or #previewImage');
+	    return;
+	  }
 
-    file.addEventListener('change', () => {
-      const f = file.files && file.files[0];
-      if (!f) {
-        if (lastUrl) { URL.revokeObjectURL(lastUrl); lastUrl = null; }
-        // 新增頁：還原預設圖；編輯頁：不動原圖（看你需求）
-        if (preview.dataset.mode === 'add') {
-          preview.onerror = null;
-          preview.src = '/frontend-template/assets/img/default.png';
-        }
-        return;
-      }
-      if (!/^image\//i.test(f.type)) {
-        alert('請選擇圖片檔案');
-        file.value = '';
-        return;
-      }
-      if (lastUrl) { URL.revokeObjectURL(lastUrl); lastUrl = null; }
+	  // 讀取原圖與原檔名（供還原用）
+	  const originalSrc  = preview.getAttribute('data-original-src') || preview.src;
+	  const originalName = nameInput ? (nameInput.getAttribute('data-original-name') ?? nameInput.value) : null;
 
-      const url = URL.createObjectURL(f);
-      lastUrl = url;
+	  file.addEventListener('change', () => {
+	    const f = file.files && file.files[0];
 
-      // 先取消 onerror，避免 default.png 介入
-      preview.onerror = null;
-      preview.src = url;
-      preview.onload = () => {
-        if (lastUrl) { URL.revokeObjectURL(lastUrl); lastUrl = null; }
-      };
+	    // === 沒有選任何檔案（或被清空） → 一律還原成「原圖」與「原檔名」 ===
+	    if (!f) {
+	      if (lastUrl) { URL.revokeObjectURL(lastUrl); lastUrl = null; }
+	      preview.onerror = null;
+	      preview.src = originalSrc;
+	      if (nameInput != null && originalName != null) nameInput.value = originalName;
+	      return;
+	    }
 
-      // 自動帶檔名
-      if (nameInput) nameInput.value = f.name;
-    });
-  })();
+	    // 基本檔型與 URL 生命週期管理
+	    if (!/^image\//i.test(f.type)) {
+	      alert('請選擇圖片檔案');
+	      file.value = '';
+	      return;
+	    }
+	    if (lastUrl) { URL.revokeObjectURL(lastUrl); lastUrl = null; }
+
+	    const url = URL.createObjectURL(f);
+	    lastUrl = url;
+
+	    // 顯示本地預覽
+	    preview.onerror = null;
+	    preview.src = url;
+	    preview.onload = () => {
+	      if (lastUrl) { URL.revokeObjectURL(lastUrl); lastUrl = null; }
+	    };
+
+	    // 自動帶入檔名（若你不想改動文字框，可移除這行）
+	    if (nameInput) nameInput.value = f.name;
+	  });
+	})();
   </script>
 </div>
 </body>

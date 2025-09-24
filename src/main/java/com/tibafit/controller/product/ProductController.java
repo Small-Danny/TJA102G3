@@ -26,12 +26,9 @@ public class ProductController {
     // 動態路徑
     @Value("${file.upload-dir}")
     private String uploadDir;
-
     public ProductController(ProductService svc) {
         this.svc = svc;
     }
-
-    // ===== RESTful =====
 
     @GetMapping
     public String list(Model model) {
