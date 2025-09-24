@@ -23,7 +23,7 @@ public class ProductController {
 
     private final ProductService svc;
 
-    // 由環境變數給定（你說這個不能動）
+    // 動態路徑
     @Value("${file.upload-dir}")
     private String uploadDir;
 
@@ -68,7 +68,7 @@ public class ProductController {
     }
 
     /** 新增商品（支援上傳 imageFile） */
-    @PostMapping
+    @PostMapping("/add")
     public String insert(
             ProductVO form,
             @RequestParam(name = "imageFile", required = false) MultipartFile imageFile,
@@ -143,27 +143,48 @@ public class ProductController {
     private String saveImageIfPresent(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) return null;
 
+        // 檢查檔案是否為圖片
         String ct = Optional.ofNullable(file.getContentType()).orElse("").toLowerCase();
         if (!ct.startsWith("image/")) {
             throw new IOException("檔案類型不正確（僅允許圖片）");
         }
 
+        // 建立存放資料夾
         Path imgDir = Paths.get(uploadDir, "frontend-template", "assets", "img");
         Files.createDirectories(imgDir);
 
-        String ext = Optional.ofNullable(file.getOriginalFilename())
-                .filter(n -> n.contains("."))
-                .map(n -> n.substring(n.lastIndexOf('.') + 1))
-                .orElse("png")
-                .toLowerCase();
+        // 取原始檔名（僅檔名部分，避免路徑注入）
+        String originalFileName = Optional.ofNullable(file.getOriginalFilename())
+                .map(name -> Paths.get(name).getFileName().toString())
+                .orElseThrow(() -> new IOException("檔名不存在"));
 
-        String stamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-        String fileName = stamp + "-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8) + "." + ext;
-
-        Path target = imgDir.resolve(fileName);
-        try (InputStream in = file.getInputStream()) {
-            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+        // 拆出副檔名與主檔名
+        String baseName;
+        String ext = "";
+        int dot = originalFileName.lastIndexOf('.');
+        if (dot != -1) {
+            baseName = originalFileName.substring(0, dot);
+            ext = originalFileName.substring(dot); // 包含「.」
+        } else {
+            baseName = originalFileName;
         }
-        return fileName;
+
+        // 生成最終檔名（若重複就自動加 (1), (2)...）
+        String finalFileName = originalFileName;
+        Path target = imgDir.resolve(finalFileName);
+        int count = 1;
+        while (Files.exists(target)) {
+            finalFileName = baseName + "(" + count + ")" + ext;
+            target = imgDir.resolve(finalFileName);
+            count++;
+        }
+
+        // 寫入檔案
+        try (InputStream in = file.getInputStream()) {
+            Files.copy(in, target);
+        }
+
+        return finalFileName;
     }
+
 }
