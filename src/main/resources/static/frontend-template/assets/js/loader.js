@@ -1,17 +1,17 @@
 // loader.js (指南最終版)
 $(function () {
-    window.TibaFit = window.TibaFit || {};
-    const headerPlaceholder = $('#header-placeholder');
-    const footerPlaceholder = $('#footer-placeholder');
-    const basePath = '/frontend-template';
+  window.TibaFit = window.TibaFit || {};
+  const headerPlaceholder = $('#header-placeholder');
+  const footerPlaceholder = $('#footer-placeholder');
+  const basePath = '/frontend-template';
 
-    // 載入共用組件
-    async function loadComponent(url, placeholder) {
-        try {
-            const html = await $.get(`${url}?v=${Date.now()}`);
-            if (placeholder.length) placeholder.html(html);
-        } catch (error) { console.error(`載入組件失敗: ${url}`, error); }
-    }
+  // 載入共用組件
+  async function loadComponent(url, placeholder) {
+    try {
+      const html = await $.get(`${url}?v=${Date.now()}`);
+      if (placeholder.length) placeholder.html(html);
+    } catch (error) { console.error(`載入組件失敗: ${url}`, error); }
+  }
 
   function initializeHeaderScripts() {
     console.log("Header 已載入，開始直接綁帶事件...");
@@ -24,88 +24,106 @@ $(function () {
     }
 
     // 使用事件代理來綁帶動態載入的元素
-    $(document).on('click', '#mobile-menu', function(e) { e.preventDefault(); $('#mobile-nav').toggleClass('open'); });
-    $(document).on('click', '#res-cross', function(e) { e.preventDefault(); $('#mobile-nav').removeClass('open'); });
-    $(document).on('click', '#mobile-nav .menu-item-has-children > a', function(e) {
-        e.preventDefault();
-        $(this).parent().toggleClass('active').siblings().removeClass('active');
+    $(document).on('click', '#mobile-menu', function (e) { e.preventDefault(); $('#mobile-nav').toggleClass('open'); });
+    $(document).on('click', '#res-cross', function (e) { e.preventDefault(); $('#mobile-nav').removeClass('open'); });
+    $(document).on('click', '#mobile-nav .menu-item-has-children > a', function (e) {
+      e.preventDefault();
+      $(this).parent().toggleClass('active').siblings().removeClass('active');
     });
-     $(document).on('click', '#open-cart', function (e) { e.preventDefault(); $('#cart-lightbox').addClass('is-visible'); });
-        $(document).on('click', '.lightbox-close, #cart-lightbox', function (e) {
-            if (e.target === this) { $('#cart-lightbox').removeClass('is-visible'); }
-        });
+    $(document).on('click', '#open-cart', function (e) { e.preventDefault(); $('#cart-lightbox').addClass('is-visible'); });
+    $(document).on('click', '.lightbox-close, #cart-lightbox', function (e) {
+      if (e.target === this) { $('#cart-lightbox').removeClass('is-visible'); }
+    });
 
-        // 【核心】監聽來自其他 JS (如 productlist.js) 的購物車變更事件
-        $(document).on('cart:changed', function() {
-            console.log('收到 cart:changed 事件，正在更新購物車資訊...');
-            updateCartInfo();
-        });
-    }
+    // 【核心】監聽來自其他 JS (如 productlist.js) 的購物車變更事件
+    $(document).on('cart:changed', function () {
+      console.log('收到 cart:changed 事件，正在更新購物車資訊...');
+      updateCartInfo();
+    });
+  }
 
   // 在 loader.js 中
   // 【核心】狀態查詢函式 (Single Source of Truth)
-    async function checkLoginStatus() {
-        const authLinksContainer = $('#auth-links');
-        if (!authLinksContainer.length) return;
-        try {
-            const profileResponse = await fetch('/api/users/profile', { credentials: 'include', cache: 'no-store' });
-            if (profileResponse.ok) {
-                const user = await profileResponse.json();
-                authLinksContainer.html(`<a href="${basePath}/profile.html" class="login">會員中心 (${user.nickName || user.name})</a> / <a href="#" class="logout-link login">登出</a>`);
-            } else {
-                authLinksContainer.html(`<a href="${basePath}/login.html" class="login">登入 / 註冊</a>`);
-            }
-        } catch (error) {
-            console.error('檢查登入狀態時發生錯誤:', error);
-            authLinksContainer.html(`<a href="${basePath}/login.html" class="login">登入 / 註冊</a>`);
-        }
-    }
-    
- // 在 loader.js 中
-
-// 【核心】登出邏輯 (最終修正版)
-$(document).on('click', '.logout-link', async function(e) {
-    e.preventDefault(); 
-    
-    if (!confirm('您確定要登出嗎？')) {
-        return;
-    }
-
+  async function checkLoginStatus() {
+    const authLinksContainer = $('#auth-links');
+    if (!authLinksContainer.length) return;
     try {
-        // 步驟 1: 在執行登出前，先主動獲取一個最新的 CSRF Token
-        const csrfResponse = await fetch('/api/csrf-token', { 
-            method: 'GET',
-            credentials: 'include' 
-        });
+      const profileResponse = await fetch('/api/users/profile', { credentials: 'include', cache: 'no-store' });
+      if (profileResponse.ok) {
+        const user = await profileResponse.json();
+        authLinksContainer.html(`<a href="${basePath}/profile.html" class="login">會員中心 (${user.nickName || user.name})</a> / <a href="#" class="logout-link login">登出</a>`);
+      } else {
+        authLinksContainer.html(`<a href="${basePath}/login.html" class="login">登入 / 註冊</a>`);
+      }
+    } catch (error) {
+      console.error('檢查登入狀態時發生錯誤:', error);
+      authLinksContainer.html(`<a href="${basePath}/login.html" class="login">登入 / 註冊</a>`);
+    }
+  }
 
-        if (!csrfResponse.ok) {
-            throw new Error('無法獲取登出驗證資訊，請稍後再試。');
+  // 在 loader.js 中
+
+  // 【核心】登出邏輯 (最終修正版)
+ $(document).on('click', '.logout-link', function(e) {
+    e.preventDefault();
+
+    // 增加一個檢查，確保 Swal 函式庫已載入
+    if (typeof Swal === 'undefined') {
+        console.error('SweetAlert2 (Swal) is not loaded!');
+        // 如果 Swal 不存在，可以給一個簡單的瀏覽器原生提示
+        if (confirm('您確定要登出嗎？')) {
+            // 執行不依賴 Swal 的登出邏輯
+            performLogout();
         }
+    } else {
+        // 如果 Swal 存在，使用漂亮的彈窗
+        Swal.fire({
+            title: '您確定要登出嗎？',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '確定登出',
+            cancelButtonText: '取消'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                performLogout();
+            }
+        });
+    }
+});
+
+// 將實際的登出 fetch 邏輯抽出來，方便共用
+async function performLogout() {
+    try {
+        const csrfResponse = await fetch('/api/csrf-token');
         const csrfData = await csrfResponse.json();
 
-        // 步驟 2: 使用剛剛獲取到的新 Token 來發送登出請求
-        const logoutResponse = await fetch('/api/users/logout', { 
-            method: 'POST', 
-            credentials: 'include',
+        const response = await fetch('/api/users/logout', {
+            method: 'POST',
             headers: {
-                // 將 Token 放在正確的 header 中
                 [csrfData.headerName]: csrfData.token
             }
         });
 
-        if (logoutResponse.ok) {
-            alert('您已成功登出！');
-            // 登出成功後，重新導向到首頁
-            window.location.href = '/frontend-template/index.html';
+        if (response.ok) {
+            // 登出成功後，清除 sessionStorage 並跳轉
+            sessionStorage.removeItem('loggedInUser');
+            window.location.href = response.url; // 由後端決定跳轉到哪
         } else {
-            const errorData = await logoutResponse.json();
-            throw new Error(errorData.message || '登出時發生錯誤。');
+            throw new Error('登出失敗');
         }
     } catch (error) {
-        console.error('登出請求失敗:', error);
-        alert(`登出失敗：${error.message}`);
+        console.error('登出時發生錯誤:', error);
+        // 如果 Swal 存在，可以用它來顯示錯誤
+        if (typeof Swal !== 'undefined') {
+            Swal.fire('錯誤', '登出時發生問題，請稍後再試', 'error');
+        } else {
+            alert('登出時發生問題，請稍後再試');
+        }
     }
-});
+}
+
   async function updateCartInfo() {
     const cartCountEl = $('#cart-count');
     const cartItemsContainer = $('#cart-items-container');
@@ -144,18 +162,18 @@ $(document).on('click', '.logout-link', async function(e) {
 
   window.TibaFit.updateCartInfo = updateCartInfo;
 
-   // 主執行流程
-    async function main() {
-        await Promise.all([
-            loadComponent(`${basePath}/assets/layout/header.inc`, headerPlaceholder),
-            loadComponent(`${basePath}/assets/layout/footer.inc`, footerPlaceholder)
-        ]);
-        if (headerPlaceholder.length) {
-            initializeHeaderScripts();
-            await checkLoginStatus(); // 等待登入狀態確認完畢
-            updateCartInfo();     // 再更新購物車
-        }
+  // 主執行流程
+  async function main() {
+    await Promise.all([
+      loadComponent(`${basePath}/assets/layout/header.inc`, headerPlaceholder),
+      loadComponent(`${basePath}/assets/layout/footer.inc`, footerPlaceholder)
+    ]);
+    if (headerPlaceholder.length) {
+      initializeHeaderScripts();
+      await checkLoginStatus(); // 等待登入狀態確認完畢
+      updateCartInfo();     // 再更新購物車
     }
+  }
 
-    main();
+  main();
 });

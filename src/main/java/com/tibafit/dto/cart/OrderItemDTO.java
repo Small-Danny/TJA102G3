@@ -9,12 +9,21 @@ import com.tibafit.model.cart.OrderItemVO;
 
 public class OrderItemDTO {
 	private Integer productId; // 商品 ID（由關聯的 Product 取出）
+	private String productName;
 	private Integer quantity; // 數量
 	private Integer buyPrice; // 成交單價（下單當下的快照）
 	private Integer itemTotalPrice; // 小計（通常 = buyPrice * quantity）
 	private String orderItemCode; // 訂單明細代碼（若有規則碼或流水）
 
 	// ===== Getter / Setter（JavaBean 命名，便於 Spring/Jackson 綁定）=====
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
 	public Integer getProductId() {
 		return productId;
 	}
@@ -67,7 +76,15 @@ public class OrderItemDTO {
 		// Integer pid = (oiv.getProduct() != null) ? oiv.getProduct().getProductId() :
 		// null;
 		// oid.setProductId(pid);
-		oid.setProductId(oiv.getProduct().getProductId());
+		if (oiv.getProduct() != null) {
+			oid.setProductId(oiv.getProduct().getProductId());
+			// 假設您的 ProductVO 中有名為 getProductName() 的方法
+			oid.setProductName(oiv.getProduct().getProductName());
+		} else {
+			// 如果關聯的商品因故不存在，提供一個預設值
+			oid.setProductId(null);
+			oid.setProductName("商品資料不存在");
+		}
 
 		oid.setQuantity(oiv.getOrderItemQuantity()); // 訂單明細數量
 		oid.setBuyPrice(oiv.getBuyPrice()); // 成交單價（快照）

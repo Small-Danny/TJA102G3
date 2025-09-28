@@ -184,10 +184,31 @@ public class SecurityConfig {
 
     @Bean("userRememberMeServices")
     public RememberMeServices userRememberMeServices() {
-        // TokenBasedRememberMeServices 是標準的實現，安全可靠
-        TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(rememberMeKey, userDetailsService);
-        rememberMe.setTokenValiditySeconds(86400 * 14); // cookie 有效期 14 天
+        TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(rememberMeKey, userDetailsService) {
 
+            // ▼▼▼ 【 關鍵的最終修正 】 ▼▼▼
+            // 覆寫這個方法，讓它永遠回傳 true。
+            // 因為我們是從 Service 手動調用 loginSuccess，我們自己已經確認過使用者想要「記住我」，
+            // 所以我們在這裡直接告訴 Spring Security 不用再去檢查 HTTP 請求參數了。
+            @Override
+            protected boolean rememberMeRequested(HttpServletRequest request, String parameter) {
+                return true;
+            }
+            // ▲▲▲ 【 關鍵的最終修正 】 ▲▲▲
+
+            // 以下的日誌可以暫時保留，用來確認最終的執行情況
+            @Override
+            public void onLoginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication successfulAuthentication) {
+                super.onLoginSuccess(request, response, successfulAuthentication);
+            }
+
+            @Override
+            protected void setCookie(String[] tokens, int maxAge, HttpServletRequest request, HttpServletResponse response) {
+                super.setCookie(tokens, maxAge, request, response);
+            }
+        };
+
+        rememberMe.setTokenValiditySeconds(86400 * 14);
         return rememberMe;
     }
 

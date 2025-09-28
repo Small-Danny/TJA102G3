@@ -13,7 +13,6 @@
 	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 	<style>
@@ -502,6 +501,8 @@
 	<!-- ======================= 唯一修改點：會員中心腳本 ======================= -->
 	<script src="/frontend-template/assets/js/jquery.min.js"></script>
 	<script src="/frontend-template/assets/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="/frontend-template/assets/js/api.js"></script>
 	<script src="/frontend-template/assets/js/loader.js"></script>
 	<script src="/frontend-template/assets/js/custom.js"></script>
 
@@ -560,21 +561,79 @@
 					// 成功獲取資料後，才開始填充頁面和綁定事件
 					populateUserData();
 					bindEventListeners();
+					loadUserOrders();
+				} catch (error) {
+					console.error('初始化會員中心頁面失敗:', error.message);
+					// ★★★ 修改點：登入失敗時使用 Swal.fire ★★★
+					Swal.fire({
+						title: '未登入',
+						text: '您尚未登入或會話已過期，將跳轉至登入頁面',
+						icon: 'warning',
+						showConfirmButton: false,
+						timer: 2000
+					}).then(() => {
+						window.location.href = '/frontend-template/login.html';
+					});
+				}
+			}
+			async function loadUserOrders() {
+				const orderListContainer = document.querySelector('#orders .order-list');
+				try {
+					// 您的 API 端點是 /api/orders/my
+					// 假設 apiFetch 是您封裝好的 fetch 函數
+					const response = await fetch('/api/orders/my', { credentials: 'include' });
+					if (!response.ok) throw new Error('無法獲取訂單');
+
+					const orders = await response.json();
+
+					// 清空原本的靜態假資料
+					orderListContainer.innerHTML = '';
+
+					if (!orders || orders.length === 0) {
+						orderListContainer.innerHTML = '<p class="text-center text-muted">您目前沒有任何訂單記錄。</p>';
+						return;
+					}
+
+					orders.forEach(order => {
+						// ▼▼▼【核心修改點】▼▼▼
+						// 使用 map 產生每一個訂單明細的 HTML <li> 元素，然後用 join('') 組合成一個字串
+						const itemsHtml = order.items && order.items.length > 0
+							? `<ul class="list-group list-group-flush mt-2">
+                        ${order.items.map(item => `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>商品：${item.productName || 'N/A'}</span>
+                                <div>
+                                    <span class="me-3">數量: ${item.quantity}</span>
+                                    <span>單價: $${item.buyPrice.toLocaleString()}</span>
+                                </div>
+                            </li>
+                        `).join('')}
+                   </ul>`
+							: '<p class="text-muted small mt-2">此訂單沒有明細資料。</p>';
+
+						// 組合完整的訂單 HTML，包含主檔資訊和剛產生的明細 HTML
+						const orderHtml = `
+                <div class="order-item mb-4 border p-3 rounded">
+                    <h5 class="mb-2">訂單編號：${order.orderCode}</h5>
+                    <p class="mb-1 text-secondary">
+                        日期：${new Date(order.orderDate).toLocaleDateString()} |
+                        金額：NT$ ${order.totalPrice.toLocaleString()} |
+                        狀態：${order.paymentStatus === 1 ? '<span class="text-success">已付款</span>' : '<span class="text-warning">未付款</span>'}
+                    </p>
+                    <h6>訂單內容：</h6>
+                    ${itemsHtml}
+                </div>
+            `;
+						// ▲▲▲【核心修改點】▲▲▲
+
+						orderListContainer.insertAdjacentHTML('beforeend', orderHtml);
+					});
 
 				} catch (error) {
-                console.error('初始化會員中心頁面失敗:', error.message);
-                // ★★★ 修改點：登入失敗時使用 Swal.fire ★★★
-                Swal.fire({
-                    title: '未登入',
-                    text: '您尚未登入或會話已過期，將跳轉至登入頁面',
-                    icon: 'warning',
-                    showConfirmButton: false,
-                    timer: 2000
-                }).then(() => {
-                    window.location.href = '/frontend-template/login.html';
-                });
-            }
-        }
+					console.error('載入訂單失敗:', error);
+					orderListContainer.innerHTML = '<p class="text-center text-danger">載入訂單時發生錯誤，請稍後再試。</p>';
+				}
+			}
 			// =================================================================
 			// 功能函數區
 			// =================================================================
@@ -738,15 +797,24 @@
 				}
 
 				if (orderSearch) {
+					// ▼▼▼【修改這裡】▼▼▼
 					orderSearch.addEventListener('input', function () {
-						const searchTerm = this.value.toLowerCase();
-						orderItems.forEach(item => {
-							const text = item.dataset.order.toLowerCase();
-							item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+						const searchTerm = this.value.toLowerCase().trim();
+
+						// 在每次輸入時，都重新獲取當前頁面上所有的 .order-item 元素
+						const currentOrderItems = document.querySelectorAll('#orders .order-list .order-item');
+
+						currentOrderItems.forEach(item => {
+							// 使用 textContent 來獲取整個訂單卡片的所有文字內容進行比對
+							const itemText = item.textContent.toLowerCase();
+							if (itemText.includes(searchTerm)) {
+								item.style.display = 'block'; // 符合條件的顯示
+							} else {
+								item.style.display = 'none';  // 不符合的隱藏
+							}
 						});
 					});
 				}
-
 				favoriteBtns.forEach(btn => {
 					btn.addEventListener('click', function () {
 						const isActive = this.classList.contains('active');
@@ -779,28 +847,28 @@
 							credentials: 'include',
 							body: formData
 						});
-						 if (!response.ok) throw await response.json();
-                    const responseData = await response.json();
-                    user.profilePicture = responseData.newPicturePath;
-                    
-                    // 成功彈窗
-                    Swal.fire({
-                        title: '更新成功！',
-                        text: '頭像已成功更新。',
-                        icon: 'success'
-                    });
-                    avatarPreview.src = `/${responseData.newPicturePath}?t=${new Date().getTime()}`;
-                } catch (error) {
-                    console.error('頭像上傳失敗:', error);
-                    // 失敗彈窗
-                    Swal.fire({
-                        title: '更新失敗',
-                        text: `頭像上傳失敗：${error.message || '請稍後再試'}`,
-                        icon: 'error'
-                    });
-                    populateUserData();
-                }
-            });
+						if (!response.ok) throw await response.json();
+						const responseData = await response.json();
+						user.profilePicture = responseData.newPicturePath;
+
+						// 成功彈窗
+						Swal.fire({
+							title: '更新成功！',
+							text: '頭像已成功更新。',
+							icon: 'success'
+						});
+						avatarPreview.src = `/${responseData.newPicturePath}?t=${new Date().getTime()}`;
+					} catch (error) {
+						console.error('頭像上傳失敗:', error);
+						// 失敗彈窗
+						Swal.fire({
+							title: '更新失敗',
+							text: `頭像上傳失敗：${error.message || '請稍後再試'}`,
+							icon: 'error'
+						});
+						populateUserData();
+					}
+				});
 
 				profileForm.addEventListener('submit', async function (e) {
 					e.preventDefault();
@@ -825,30 +893,30 @@
 							credentials: 'include',
 							body: JSON.stringify(updateData)
 						});
-			 if (!response.ok) throw await response.json();
-                    
-                    // 成功彈窗
-                    Swal.fire({
-                        title: '更新成功！',
-                        text: '會員資料已成功儲存。',
-                        icon: 'success'
-                    });
-                    const updatedUser = await response.json();
-                    user = updatedUser;
-                    populateUserData();
-                    updateHeaderNickname(updatedUser.nickName || updatedUser.name);
-                    nicknameDisplayArea.style.display = 'block';
-                    nicknameEditArea.style.display = 'none';
-                } catch (error) {
-                    console.error('更新資料時出錯:', error);
-                    // 失敗彈窗
-                    Swal.fire({
-                        title: '更新失敗',
-                        text: `更新失敗：${error.message || '請稍後再試'}`,
-                        icon: 'error'
-                    });
-                }
-            });
+						if (!response.ok) throw await response.json();
+
+						// 成功彈窗
+						Swal.fire({
+							title: '更新成功！',
+							text: '會員資料已成功儲存。',
+							icon: 'success'
+						});
+						const updatedUser = await response.json();
+						user = updatedUser;
+						populateUserData();
+						updateHeaderNickname(updatedUser.nickName || updatedUser.name);
+						nicknameDisplayArea.style.display = 'block';
+						nicknameEditArea.style.display = 'none';
+					} catch (error) {
+						console.error('更新資料時出錯:', error);
+						// 失敗彈窗
+						Swal.fire({
+							title: '更新失敗',
+							text: `更新失敗：${error.message || '請稍後再試'}`,
+							icon: 'error'
+						});
+					}
+				});
 
 				changePasswordForm.addEventListener('submit', async function (e) {
 					e.preventDefault();
@@ -870,34 +938,34 @@
 							credentials: 'include',
 							body: JSON.stringify(changePasswordData)
 						});
-			  if (!response.ok) throw await response.json();
-                    const responseData = await response.json();
-                    
-                    // 成功彈窗
-                    Swal.fire({
-                        title: '更新成功！',
-                        text: responseData.message || '密碼已成功更新，請重新登入。',
-                        icon: 'success',
-                        showConfirmButton: false,
-                        timer: 2000
-                    }).then(() => {
-                        sessionStorage.removeItem('loggedInUser');
-                        window.location.href = 'login.html';
-                    });
-                } catch (error) {
-                    console.error('修改密碼失敗:', error);
-                    if (error.field && error.message) {
-                        showError(error.field + 'Error', error.message);
-                    } else {
-                        // 失敗彈窗
-                        Swal.fire({
-                            title: '修改失敗',
-                            text: `修改密碼失敗：${error.message || '請稍後重試'}`,
-                            icon: 'error'
-                        });
-                    }
-                }
-            });
+						if (!response.ok) throw await response.json();
+						const responseData = await response.json();
+
+						// 成功彈窗
+						Swal.fire({
+							title: '更新成功！',
+							text: responseData.message || '密碼已成功更新，請重新登入。',
+							icon: 'success',
+							showConfirmButton: false,
+							timer: 2000
+						}).then(() => {
+							sessionStorage.removeItem('loggedInUser');
+							window.location.href = 'login.html';
+						});
+					} catch (error) {
+						console.error('修改密碼失敗:', error);
+						if (error.field && error.message) {
+							showError(error.field + 'Error', error.message);
+						} else {
+							// 失敗彈窗
+							Swal.fire({
+								title: '修改失敗',
+								text: `修改密碼失敗：${error.message || '請稍後重試'}`,
+								icon: 'error'
+							});
+						}
+					}
+				});
 
 				nicknameInput.addEventListener('input', function () {
 					const nickname = this.value.trim();
