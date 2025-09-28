@@ -6,8 +6,8 @@
         <div class="col-lg-4 col-md-6 col-sm-12">
           <div class="footer-col">
             <h3>Line 客服</h3>
-            <p>掃描 QRCode 加入好友，或搜尋 ID: @tibafit</p>
-            <img src="/frontend-template/assets/images/line_qrcode_placeholder.png" alt="Line QRCode" style="width: 150px; height: 150px; margin-top: 10px; background-color: white; padding: 5px;">
+            <p>掃描 QRCode 加入好友，或搜尋 ID: @323hrlbn</p>
+            <img src="/frontend-template/assets/images/line_qrcode_placeholder.svg" alt="Line QRCode" style="width: 150px; height: 150px; margin-top: 10px; background-color: white; padding: 5px;">
           </div>
         </div>
 
@@ -32,12 +32,10 @@
             <div class="footer-col">
               <h3>訂閱通訊</h3>
               <p>訂閱我們的每週通訊以獲取最新消息</p>
-              <form>
-                <input type="email" name="email" placeholder="輸入您的電子郵件">
-                <button><i class="fa-solid fa-arrow-up-long"></i></button>
-              </form>
+        <div id="newsletter-box">
             </div>
         </div>
+</div>
 
       </div>
     </div>

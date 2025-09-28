@@ -528,5 +528,30 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
     }
+    @Override
+    @Transactional
+    public String subscribeNewsletter(String email) {
+        // 1. 利用現有的 findByEmail 找出使用者
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ValidationException("email", "此 Email 未註冊為會員，無法訂閱"));
 
+        // 2. 檢查是否已經訂閱過
+        if (user.isSubscribed()) {
+            return "您已訂閱過電子報，無需重複訂閱。";
+        }
+
+        // 3. 更新訂閱狀態並儲存
+        user.setSubscribed(true);
+        userRepository.save(user);
+
+        // 4. 呼叫現有的 MailService 寄送確認信
+        try {
+            mailService.sendMail(email, "TibaFit | 成功訂閱電子報！", "感謝您的訂閱！我們將會定期為您帶來最新的健身資訊與活動消息。");
+        } catch (Exception e) {
+            // 即使信件沒寄出，訂閱本身還是成功的，所以只在後台記錄錯誤
+            log.error("訂閱確認信發送失敗: " + email, e);
+        }
+
+        return "訂閱成功！確認信已發送至您的信箱。";
+    }
 }
