@@ -102,35 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 先用 cart.js 的 addItemToCart（若已載入），否則退回 fetch API
     const useCartJs = (typeof window.addItemToCart === 'function');
 
-    try {
-      if (useCartJs) {
-        await new Promise((resolve, reject) => {
-          window.addItemToCart(productId, 1, {
-            onSuccess: resolve,
-            onError: reject
-          });
-        });
-      } else {
-        const res = await apiFetch('/api/cart/items', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId: Number(productId), qty: 1 })
-        });
-        if (!res.ok) throw new Error('加入購物車失敗');
-      }
+   try {
+    // ★★★ 關鍵修正：只呼叫我們在 cart.js 中定義好的函式 ★★★
+    await addItemToCart(productId, 1);
+    alert('商品已成功加入購物車！');
 
-      // 成功後事件與提示（讓頁首購物車徽章能聽這個事件去更新）
-      document.dispatchEvent(new Event('cart:changed'));
-      alert('商品已成功加入購物車！');
-
-      // 如果你有函式可直接更新徽章，也可在這裡呼叫：
-      // if (typeof updateCartIconCount === 'function') updateCartIconCount();
-
-    } catch (err) {
-      console.error(err);
-      alert(useCartJs
-        ? '加入購物車失敗，請稍後再試。（cart.js onError）'
-        : '加入購物車失敗，請稍後再試。');
-    }
+} catch (err) {
+    alert(`加入購物車失敗：${err.message}`);
+}
   });
 });

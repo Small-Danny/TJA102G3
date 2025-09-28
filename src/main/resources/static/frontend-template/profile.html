@@ -7,16 +7,21 @@
 	<title>會員中心</title>
 	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/bootstrap.min.css">
 	<link rel="icon" type="image/x-icon" href="/frontend-template/assets/images/heading-icon.png">
-	<link rel="stylesheet" href="/frontend-template/assets/font/flaticon_mycollection.css">
-	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.carouselousel.min.css">
-	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.theme.default.min.css">
-	<link rel="stylesheet" href="/frontend-template/assets/css/jquery.fancybox.min.css">
-	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/fontawesome.min.css">
-	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/nice-select.css">
+
 	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/style.css">
 	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/responsive.css">
 	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 	<style>
+		/* 隱藏 Edge 瀏覽器預設的密碼顯示按鈕 */
+		input[type="password"]::-ms-reveal {
+			display: none;
+		}
+
 		/* 會員中心特有樣式 */
 		.member-container {
 			background-color: #f5f5f5;
@@ -225,793 +230,691 @@
 			background-color: #6b0000;
 			border-color: #4d0000;
 		}
-
-
 	</style>
 </head>
 
 <body>
-<div class="preloader">
-	<div class="loader-wrap-heading">
-		<div class="load-text">
-			<span>加</span> <span>載</span> <span>中</span>
-		</div>
-	</div>
-</div>
+	<div id="header-placeholder"></div>
 
-<div id="header"></div>
-
-<section class="banner-style-one">
-	<div class="parallax" style="background-image: url(https://via.placeholder.com/1920x640);"></div>
-	<div class="container">
-		<div class="row">
-			<div class="banner-details">
-				<h2>會員中心</h2>
-				<p>歡迎回來！管理您的個人資料與服務</p>
+	<section class="banner-style-one">
+		<div class="parallax"></div>
+		<div class="container">
+			<div class="row">
+				<div class="banner-details">
+					<h2>會員中心</h2>
+					<p>歡迎回來！管理您的個人資料與服務</p>
+				</div>
 			</div>
 		</div>
-	</div>
-</section>
+	</section>
 
-<section class="gap">
-	<div class="container">
-		<div class="row justify-content-center">
-			<div class="col-lg-10">
-				<div class="member-container">
-					<ul class="nav nav-tabs" id="memberTab" role="tablist">
-						<li class="nav-item" role="presentation">
-							<button class="nav-link active" id="profile-tab" data-bs-toggle="tab"
+	<section class="gap">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-lg-10">
+					<div class="member-container">
+						<ul class="nav nav-tabs" id="memberTab" role="tablist">
+							<li class="nav-item" role="presentation">
+								<button class="nav-link active" id="profile-tab" data-bs-toggle="tab"
 									data-bs-target="#profile" type="button" role="tab">會員資料</button>
-						</li>
-						<li class="nav-item" role="presentation">
-							<button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders"
+							</li>
+							<li class="nav-item" role="presentation">
+								<button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders"
 									type="button" role="tab">訂單管理</button>
-						</li>
-						<li class="nav-item" role="presentation">
-							<button class="nav-link" id="articles-tab" data-bs-toggle="tab"
+							</li>
+							<li class="nav-item" role="presentation">
+								<button class="nav-link" id="articles-tab" data-bs-toggle="tab"
 									data-bs-target="#articles" type="button" role="tab">我的文章</button>
-						</li>
-						<li class="nav-item" role="presentation">
-							<button class="nav-link" id="favorites-tab" data-bs-toggle="tab"
+							</li>
+							<li class="nav-item" role="presentation">
+								<button class="nav-link" id="favorites-tab" data-bs-toggle="tab"
 									data-bs-target="#favorites" type="button" role="tab">我的收藏</button>
-						</li>
-						<li class="nav-item" role="presentation">
-							<button class="nav-link" id="points-tab" data-bs-toggle="tab" data-bs-target="#points"
+							</li>
+							<li class="nav-item" role="presentation">
+								<button class="nav-link" id="points-tab" data-bs-toggle="tab" data-bs-target="#points"
 									type="button" role="tab">我的點數</button>
-						</li>
-						<li class="nav-item" role="presentation">
-							<button class="nav-link" id="password-tab" data-bs-toggle="tab"
+							</li>
+							<li class="nav-item" role="presentation">
+								<button class="nav-link" id="password-tab" data-bs-toggle="tab"
 									data-bs-target="#password" type="button" role="tab">更改密碼</button>
-						</li>
-					</ul>
+							</li>
+						</ul>
 
-					<div class="tab-content" id="memberTabContent">
-						<div class="tab-pane fade show active" id="profile" role="tabpanel">
-							<form id="profileForm" method="post" enctype="multipart/form-data" action="user">
-								<div class="avatar-upload">
-									<label for="avatar"> <img
-											src="/frontend-template/assets/images/default-avatar.png"
-											id="avatarPreview" class="avatar-img">
-									</label> <input type="file" id="avatar" name="profilePicture" accept="image/*"
-													style="display: none;"> <a href="/frontend-template/#"
-																			   class="upload-icon">更換頭像</a>
+						<div class="tab-content" id="memberTabContent">
+							<div class="tab-pane fade show active" id="profile" role="tabpanel">
+								<form id="profileForm" method="post" enctype="multipart/form-data" action="user">
+									<div class="avatar-upload">
+										<label for="avatar"> <img
+												src="/frontend-template/assets/images/default-avatar.png"
+												id="avatarPreview" class="avatar-img">
+										</label> <input type="file" id="avatar" name="profilePicture" accept="image/*"
+											style="display: none;"> <a href="/frontend-template/#"
+											class="upload-icon">更換頭像</a>
 
-									<div class="form-group mt-3" id="nicknameDisplayArea">
-										<h5 id="displayNickname" class="mb-2"></h5>
-										<a href="/frontend-template/#" id="editNicknameBtn" class="upload-icon"
-										   style="font-size: 14px;">編輯暱稱</a>
-									</div>
+										<div class="form-group mt-3" id="nicknameDisplayArea">
+											<h5 id="displayNickname" class="mb-2"></h5>
+											<a href="/frontend-template/#" id="editNicknameBtn" class="upload-icon"
+												style="font-size: 14px;">編輯暱稱</a>
+										</div>
 
-									<div class="form-group mt-2" id="nicknameEditArea" style="display: none;">
-										<input type="text" class="form-control" id="nickname" name="nickname"
-											   placeholder="請輸入暱稱"
-											   style="text-align: center; max-width: 250px; margin: 0 auto;">
-										<div class="nickname-hint">請輸入3-10個字的暱稱，將顯示在您的個人頁面</div>
-									</div>
-								</div>
-
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>帳號（Email）</label> <input type="email" id="email" name="email"
-																			  class="form-control" readonly>
+										<div class="form-group mt-2" id="nicknameEditArea" style="display: none;">
+											<input type="text" class="form-control" id="nickname" name="nickname"
+												placeholder="請輸入暱稱"
+												style="text-align: center; max-width: 250px; margin: 0 auto;">
+											<div class="nickname-hint">請輸入3-10個字的暱稱，將顯示在您的個人頁面</div>
 										</div>
 									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>姓名</label> <input type="text" id="fullname" name="name"
-																	   class="form-control" placeholder="請輸入您的姓名">
-											<div class="error-message" id="fullnameError"></div>
-										</div>
-									</div>
-								</div>
 
-								<div class="row">
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>手機號碼</label> <input type="text" id="phone" name="phone"
-																		   class="form-control" placeholder="請輸入您的手機號碼">
-											<div class="error-message" id="phoneError"></div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>帳號（Email）</label> <input type="email" id="email" name="email"
+													class="form-control" readonly>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>姓名</label> <input type="text" id="fullname" name="name"
+													class="form-control" placeholder="請輸入您的姓名">
+												<div class="error-message" id="fullnameError"></div>
+											</div>
 										</div>
 									</div>
-									<div class="col-md-6">
-										<div class="form-group">
-											<label>性別</label> <select class="form-control" id="gender"
-																		name="gender">
-											<option value="0">不透露</option>
-											<option value="1">男</option>
-											<option value="2">女</option>
-										</select>
-										</div>
-									</div>
-								</div>
 
-								<div class="row">
-									<div class="col-md-4">
-										<div class="form-group">
-											<label>身高（公分）</label> <input type="number" class="form-control"
-																			 id="height" name="heightCm" min="50" max="250" placeholder="例如：175">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>手機號碼</label> <input type="text" id="phone" name="phone"
+													class="form-control" placeholder="請輸入您的手機號碼">
+												<div class="error-message" id="phoneError"></div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>性別</label> <select class="form-control" id="gender"
+													name="gender">
+													<option value="0">不透露</option>
+													<option value="1">男</option>
+													<option value="2">女</option>
+												</select>
+											</div>
 										</div>
 									</div>
-									<div class="col-md-4">
-										<div class="form-group">
-											<label>體重（公斤）</label> <input type="number" class="form-control"
-																			 id="weight" name="weightKg" min="10" max="300" placeholder="例如：65">
-										</div>
-									</div>
-									<div class="col-md-4">
-										<div class="form-group">
-											<label>BMI</label> <input type="number" class="form-control" id="bmi"
-																	  readonly placeholder="自動計算">
-										</div>
-									</div>
-								</div>
 
-								<button type="submit" class="theme-btn">儲存修改</button>
-							</form>
-						</div>
+									<div class="row">
+										<div class="col-md-4">
+											<div class="form-group">
+												<label>身高（公分）</label> <input type="number" class="form-control"
+													id="height" name="heightCm" min="50" max="250" placeholder="例如：175">
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group">
+												<label>體重（公斤）</label> <input type="number" class="form-control"
+													id="weight" name="weightKg" min="10" max="300" placeholder="例如：65">
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group">
+												<label>BMI</label> <input type="number" class="form-control" id="bmi"
+													readonly placeholder="自動計算">
+											</div>
+										</div>
+									</div>
 
-						<div class="tab-pane fade" id="orders" role="tabpanel">
-							<h4>訂單管理</h4>
-							<div class="form-group">
-								<input type="text" id="orderSearch" class="form-control" placeholder="搜尋訂單編號或商品名稱">
+									<button type="submit" class="theme-btn">儲存修改</button>
+								</form>
 							</div>
-							<div class="order-list">
-								<div class="order-item" data-order="ORD20240501001 課程購買">
-									<h5>訂單編號：ORD20240501001</h5>
-									<p>日期：2024-05-01 | 金額：NT$ 2,500 | 狀態：已完成</p>
-									<p>商品：健身課程（初級）</p>
-								</div>
-								<div class="order-item" data-order="ORD20240415002 營養品">
-									<h5>訂單編號：ORD20240415002</h5>
-									<p>日期：2024-04-15 | 金額：NT$ 1,200 | 狀態：已完成</p>
-									<p>商品：高蛋白粉 1kg</p>
-								</div>
-							</div>
-						</div>
 
-						<div class="tab-pane fade" id="articles" role="tabpanel">
-							<h4>我的文章</h4>
-							<div class="article-list">
-								<div class="article-item">
-									<h5>
-										<a href="/frontend-template/#">健身新手入門指南</a>
-									</h5>
-									<p>發布時間：2024-03-20 | 閱讀量：128</p>
-									<div class="article-actions">
-										<button class="favorite-btn" data-article="guide">
-											<i class="fa-regular fa-heart"></i> <span>收藏</span>
-										</button>
-									</div>
-								</div>
-								<div class="article-item">
-									<h5>
-										<a href="/frontend-template/#">居家鍛煉必備動作</a>
-									</h5>
-									<p>發布時間：2024-02-15 | 閱讀量：95</p>
-									<div class="article-actions">
-										<button class="favorite-btn" data-article="home-workout">
-											<i class="fa-regular fa-heart"></i> <span>收藏</span>
-										</button>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<div class="tab-pane fade" id="favorites" role="tabpanel">
-							<h4>我的收藏</h4>
-							<div class="article-list">
-								<div class="article-item">
-									<h5>
-										<a href="/frontend-template/#">營養飲食指南</a>
-									</h5>
-									<p>發布時間：2024-04-05 | 來源：健身雜誌</p>
-									<div class="article-actions">
-										<button class="favorite-btn" data-article="nutrition">
-											<i class="fa-regular fa-heart"></i> <span>收藏</span>
-										</button>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<div class="tab-pane fade" id="points" role="tabpanel">
-							<h4>我的點數</h4>
-							<p>當前點數：1250 點</p>
-							<button class="points-history-toggle">
-								點數歷史記錄 <i class="fa-solid fa-chevron-down" id="pointsToggleIcon"></i>
-							</button>
-
-							<div class="points-history" id="pointsHistory">
-								<div class="points-item">
-									<p>購買課程獲得：+500 點（2024-05-01）</p>
-								</div>
-								<div class="points-item">
-									<p>每日簽到獲得：+50 點（2024-04-28）</p>
-								</div>
-								<div class="points-item">
-									<p>購買營養品獲得：+200 點（2024-04-15）</p>
-								</div>
-								<div class="points-item">
-									<p>會員註冊獎勵：+500 點（2024-04-10）</p>
-								</div>
-							</div>
-						</div>
-
-						<div class="tab-pane fade" id="password" role="tabpanel">
-							<form id="changePasswordForm">
+							<div class="tab-pane fade" id="orders" role="tabpanel">
+								<h4>訂單管理</h4>
 								<div class="form-group">
-									<label>原密碼</label>
-									<div class="password-wrapper">
-										<input type="password" class="form-control" id="currentPassword"
-											   placeholder="請輸入原密碼" required>
-										<i class="fa-solid fa-eye toggle-password"
-										   data-target="currentPassword"></i>
-									</div>
-									<div class="error-message" id="currentPasswordError"></div>
+									<input type="text" id="orderSearch" class="form-control" placeholder="搜尋訂單編號或商品名稱">
 								</div>
-								<div class="form-group">
-									<label>新密碼</label>
-									<div class="password-wrapper">
-										<input type="password" class="form-control" id="newPassword"
-											   placeholder="請輸入新密碼" required> <i
-											class="fa-solid fa-eye toggle-password" data-target="newPassword"></i>
+								<div class="order-list">
+									<div class="order-item" data-order="ORD20240501001 課程購買">
+										<h5>訂單編號：ORD20240501001</h5>
+										<p>日期：2024-05-01 | 金額：NT$ 2,500 | 狀態：已完成</p>
+										<p>商品：健身課程（初級）</p>
 									</div>
-									<div class="password-strength">
-										<div class="strength-bar" id="strengthBar"></div>
+									<div class="order-item" data-order="ORD20240415002 營養品">
+										<h5>訂單編號：ORD20240415002</h5>
+										<p>日期：2024-04-15 | 金額：NT$ 1,200 | 狀態：已完成</p>
+										<p>商品：高蛋白粉 1kg</p>
 									</div>
-									<div class="password-hint">密碼須至少8個字元，包含大小寫字母、數字及特殊符號</div>
-									<div class="error-message" id="newPasswordError"></div>
 								</div>
-								<div class="form-group">
-									<label>確認新密碼</label>
-									<div class="password-wrapper">
-										<input type="password" class="form-control" id="confirmNewPassword"
-											   placeholder="請確認新密碼" required>
-										<i class="fa-solid fa-eye toggle-password"
-										   data-target="confirmNewPassword"></i>
+							</div>
+
+							<div class="tab-pane fade" id="articles" role="tabpanel">
+								<h4>我的文章</h4>
+								<div class="article-list">
+									<div class="article-item">
+										<h5>
+											<a href="/frontend-template/#">健身新手入門指南</a>
+										</h5>
+										<p>發布時間：2024-03-20 | 閱讀量：128</p>
+										<div class="article-actions">
+											<button class="favorite-btn" data-article="guide">
+												<i class="fa-regular fa-heart"></i> <span>收藏</span>
+											</button>
+										</div>
 									</div>
-									<div class="error-message" id="confirmPasswordError"></div>
+									<div class="article-item">
+										<h5>
+											<a href="/frontend-template/#">居家鍛煉必備動作</a>
+										</h5>
+										<p>發布時間：2024-02-15 | 閱讀量：95</p>
+										<div class="article-actions">
+											<button class="favorite-btn" data-article="home-workout">
+												<i class="fa-regular fa-heart"></i> <span>收藏</span>
+											</button>
+										</div>
+									</div>
 								</div>
-								<button type="submit" class="theme-btn">確認更改</button>
-							</form>
+							</div>
+
+							<div class="tab-pane fade" id="favorites" role="tabpanel">
+								<h4>我的收藏</h4>
+								<div class="article-list">
+									<div class="article-item">
+										<h5>
+											<a href="/frontend-template/#">營養飲食指南</a>
+										</h5>
+										<p>發布時間：2024-04-05 | 來源：健身雜誌</p>
+										<div class="article-actions">
+											<button class="favorite-btn" data-article="nutrition">
+												<i class="fa-regular fa-heart"></i> <span>收藏</span>
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="tab-pane fade" id="points" role="tabpanel">
+								<h4>我的點數</h4>
+								<p>當前點數：1250 點</p>
+								<button class="points-history-toggle">
+									點數歷史記錄 <i class="fa-solid fa-chevron-down" id="pointsToggleIcon"></i>
+								</button>
+
+								<div class="points-history" id="pointsHistory">
+									<div class="points-item">
+										<p>購買課程獲得：+500 點（2024-05-01）</p>
+									</div>
+									<div class="points-item">
+										<p>每日簽到獲得：+50 點（2024-04-28）</p>
+									</div>
+									<div class="points-item">
+										<p>購買營養品獲得：+200 點（2024-04-15）</p>
+									</div>
+									<div class="points-item">
+										<p>會員註冊獎勵：+500 點（2024-04-10）</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="tab-pane fade" id="password" role="tabpanel">
+								<form id="changePasswordForm">
+									<div class="form-group">
+										<label>原密碼</label>
+										<div class="password-wrapper">
+											<input type="password" class="form-control" id="currentPassword"
+												placeholder="請輸入原密碼" required>
+											<i class="fa-solid fa-eye toggle-password"
+												data-target="currentPassword"></i>
+										</div>
+										<div class="error-message" id="currentPasswordError"></div>
+									</div>
+									<div class="form-group">
+										<label>新密碼</label>
+										<div class="password-wrapper">
+											<input type="password" class="form-control" id="newPassword"
+												placeholder="請輸入新密碼" required> <i
+												class="fa-solid fa-eye toggle-password" data-target="newPassword"></i>
+										</div>
+										<div class="password-strength">
+											<div class="strength-bar" id="strengthBar"></div>
+										</div>
+										<div class="password-hint">密碼須至少8個字元，包含大小寫字母、數字及特殊符號</div>
+										<div class="error-message" id="newPasswordError"></div>
+									</div>
+									<div class="form-group">
+										<label>確認新密碼</label>
+										<div class="password-wrapper">
+											<input type="password" class="form-control" id="confirmNewPassword"
+												placeholder="請確認新密碼" required>
+											<i class="fa-solid fa-eye toggle-password"
+												data-target="confirmNewPassword"></i>
+										</div>
+										<div class="error-message" id="confirmPasswordError"></div>
+									</div>
+									<button type="submit" class="theme-btn">確認更改</button>
+								</form>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-</section>
+	</section>
+	<!--  頁尾 -->
+	<div id="footer-placeholder"></div>
+	<!-- ======================= 唯一修改點：會員中心腳本 ======================= -->
+	<script src="/frontend-template/assets/js/jquery.min.js"></script>
+	<script src="/frontend-template/assets/js/bootstrap.min.js"></script>
+	<script src="/frontend-template/assets/js/loader.js"></script>
+	<script src="/frontend-template/assets/js/custom.js"></script>
 
-<footer class="footer-style-one" style="background-image: url(https://via.placeholder.com/1920x732);">
-	<div class="footer-p-1">
-		<div class="container">
-			<div class="row">
-				<div class="footer-first">
-					<div class="footer-logo">
-						<a href="/frontend-template/index.html"> <img
-								src="/frontend-template/assets/images/logo.png" alt="Logo">
-						</a>
-					</div>
-					<p>提供專業的健身指導和高品質的健身器材，幫助您實現健康生活目標。</p>
-					<div class="footer-social">
-						<a href="/frontend-template/#"><i class="flaticon-facebook"></i></a>
-						<a href="/frontend-template/#"><i class="flaticon-twitter"></i></a>
-						<a href="/frontend-template/#"><i class="flaticon-instagram"></i></a>
-						<a href="/frontend-template/#"><i class="flaticon-linkedin"></i></a>
-					</div>
-				</div>
-				<div class="footer-col">
-					<h4>快速鏈接</h4>
-					<ul>
-						<li><a href="/frontend-template/index.html">首頁</a></li>
-						<li><a href="/frontend-template/about.html">關於我們</a></li>
-						<li><a href="/frontend-template/classes.html">課程介紹</a></li>
-						<li><a href="/frontend-template/trainers.html">教練團隊</a></li>
-						<li><a href="/frontend-template/contact.html">聯繫我們</a></li>
-					</ul>
-				</div>
-				<div class="footer-col">
-					<h4>課程</h4>
-					<ul>
-						<li><a href="/frontend-template/#">健身課程</a></li>
-						<li><a href="/frontend-template/#">瑜伽課程</a></li>
-						<li><a href="/frontend-template/#">有氧運動</a></li>
-						<li><a href="/frontend-template/#">無氧運動</a></li>
-						<li><a href="/frontend-template/#">私人教練</a></li>
-					</ul>
-				</div>
-				<div class="footer-col">
-					<h4>聯繫我們</h4>
-					<ul>
-						<li><i class="fa-solid fa-map-marker-alt"></i>
-							台北市中正區忠孝東路一段123號</li>
-						<li><i class="fa-solid fa-phone"></i> (02) 1234-5678</li>
-						<li><i class="fa-solid fa-envelope"></i>
-							info@fitnesscenter.com</li>
-						<li><i class="fa-solid fa-clock"></i> 週一至週日 06:00 - 22:00</li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="footer-p-3 rights">
-		<div class="container">
-			<div class="row">
-				<div class="footer-col">
-					<p>
-						健身中心<i class="fa-solid fa-heart"></i> © 2024 <a
-							href="/frontend-template/https://winsfolio.net/">
-						winsfolio.net</a> 保留所有權利
-					</p>
-				</div>
-			</div>
-		</div>
-	</div>
-</footer>
+	<script>
+		// ★★★ 修正 1：將所有程式碼包裹在 DOMContentLoaded 事件中 ★★★
+		// 確保頁面所有元素都載入完成後，才執行我們的腳本
+		document.addEventListener('DOMContentLoaded', function () {
 
-<script src="/frontend-template/assets/js/jquery.min.js"></script>
-<script src="/frontend-template/assets/js/bootstrap.min.js"></script>
-<script src="/frontend-template/assets/js/jquery.fancybox.min.js"></script>
-<script src="/frontend-template/assets/js/owl.carousel.min.js"></script>
-<script src="/frontend-template/assets/js/jquery.nice-select.min.js"></script>
+			// 將所有變數和函數都放在這個監聽器內
+			let user = null; // 用來儲存從後端獲取的使用者資料
 
-<!-- ================================================================= -->
-<!-- ======================= 唯一修改點：會員中心腳本 ======================= -->
-<!-- ================================================================= -->
-<script>
-	document.addEventListener('DOMContentLoaded', async function () {
-		// =================================================================
-		// 全局變數區
-		// =================================================================
-		let csrfToken = null;
-		let csrfHeaderName = null;
-		let user = null; // ★★★ 不再從 sessionStorage 讀取，改為 null
+			// =================================================================
+			// 變量宣告區
+			// =================================================================
+			const avatarInput = document.getElementById('avatar');
+			const avatarPreview = document.getElementById('avatarPreview');
+			const nicknameDisplayArea = document.getElementById('nicknameDisplayArea');
+			const nicknameEditArea = document.getElementById('nicknameEditArea');
+			const displayNickname = document.getElementById('displayNickname');
+			const nicknameInput = document.getElementById('nickname');
+			const heightInput = document.getElementById('height');
+			const weightInput = document.getElementById('weight');
+			const bmiInput = document.getElementById('bmi');
+			const changePasswordForm = document.getElementById('changePasswordForm');
+			const profileForm = document.getElementById('profileForm');
+			const fullnameInput = document.getElementById('fullname');
+			const phoneInput = document.getElementById('phone');
+			const editNicknameBtn = document.getElementById('editNicknameBtn');
+			const newPasswordInput = document.getElementById('newPassword');
+			const strengthBar = document.getElementById('strengthBar');
+			const passwordStrength = document.querySelector('.password-strength');
+			const pointsToggle = document.querySelector('.points-history-toggle');
+			const pointsHistory = document.getElementById('pointsHistory');
+			const pointsToggleIcon = document.getElementById('pointsToggleIcon');
+			const orderSearch = document.getElementById('orderSearch');
+			const orderItems = document.querySelectorAll('.order-item');
+			const favoriteBtns = document.querySelectorAll('.favorite-btn');
+			const togglePasswordBtns = document.querySelectorAll('.toggle-password');
+			const uploadAvatarLink = document.querySelector('.avatar-upload .upload-icon');
+			const nicknameHint = document.querySelector('.nickname-hint');
 
-		// =================================================================
-		// 核心邏輯：載入時驗證 Session 並獲取使用者資料
-		// =================================================================
-		try {
-			// 'credentials: include' 會強制 fetch 請求把 JSESSIONID Cookie 一起送出去
-			const csrfResponse = await fetch('/api/csrf-token', { credentials: 'include' });
-			if (!csrfResponse.ok) throw new Error('無法獲取 CSRF Token');
-			const csrfData = await csrfResponse.json();
-			csrfToken = csrfData.token;
-			csrfHeaderName = csrfData.headerName;
-			csrfParameterName = csrfData.parameterName;
+			// ★★★ 修正 2：移除重複定義的 initializeProfilePage 函數 ★★★
+			// (已將重複的定義刪除，只保留下面這一個)
 
-			const profileResponse = await fetch('/api/users/profile', { credentials: 'include' });
-			if (!profileResponse.ok) {
-				throw new Error('使用者未登入');
+			// =================================================================
+			// 核心啟動函數 (整個頁面的入口)
+			// =================================================================
+			async function initializeProfilePage() {
+				try {
+					const profileResponse = await fetch('/api/users/profile', { credentials: 'include' });
+					if (!profileResponse.ok) {
+						throw new Error('使用者未登入或 Session 過期');
+					}
+					user = await profileResponse.json();
+
+					// 成功獲取資料後，才開始填充頁面和綁定事件
+					populateUserData();
+					bindEventListeners();
+
+				} catch (error) {
+                console.error('初始化會員中心頁面失敗:', error.message);
+                // ★★★ 修改點：登入失敗時使用 Swal.fire ★★★
+                Swal.fire({
+                    title: '未登入',
+                    text: '您尚未登入或會話已過期，將跳轉至登入頁面',
+                    icon: 'warning',
+                    showConfirmButton: false,
+                    timer: 2000
+                }).then(() => {
+                    window.location.href = '/frontend-template/login.html';
+                });
+            }
+        }
+			// =================================================================
+			// 功能函數區
+			// =================================================================
+
+			function showError(elementId, message) {
+				const errorElement = document.getElementById(elementId);
+				if (errorElement) {
+					errorElement.textContent = message;
+					errorElement.classList.add('show');
+				}
 			}
 
-			user = await profileResponse.json();
+			function clearErrors(containerSelector) {
+				document.querySelectorAll(`${containerSelector} .error-message`).forEach(el => {
+					el.textContent = '';
+					el.classList.remove('show');
+				});
+			}
 
-		} catch (error) {
-			console.error('初始化頁面失敗:', error.message);
-			// 這就是你截圖中看到的彈窗
-			alert('您尚未登入或會話已過期，將跳轉至登入頁面');
-			window.location.href = '/frontend-template/login.html';
-			return;
-		}
+			function populateUserData() {
+				document.getElementById('email').value = user.email || '';
+				fullnameInput.value = user.name || '';
+				phoneInput.value = user.phone || '';
+				document.getElementById('gender').value = user.gender !== undefined ? user.gender : 0;
+				heightInput.value = user.heightCm || '';
+				weightInput.value = user.weightKg || '';
+				const nickname = user.nickName || '';
+				nicknameInput.value = nickname;
+				displayNickname.textContent = nickname || '請設置您的暱稱';
+				if (nickname) {
+					nicknameDisplayArea.style.display = 'block';
+					nicknameEditArea.style.display = 'none';
+				} else {
+					nicknameDisplayArea.style.display = 'none';
+					nicknameEditArea.style.display = 'block';
+				}
 
-		// 如果成功，頁面繼續載入...
-		document.querySelector('.preloader').style.display = 'none';
+				if (user.profilePicture) {
+					avatarPreview.src = `/${user.profilePicture}?t=${new Date().getTime()}`;
+				} else {
+					avatarPreview.src = '/frontend-template/assets/images/default-avatar.png';
+				}
+				calculateBMI();
+			}
 
-		// 動態載入 header
-		fetch('/frontend-template/header.txt?v=' + Date.now(), { cache: 'no-store' })
-				.then(r => r.text())
-				.then(html => {
-					const headerContainer = document.getElementById('header');
-					if (headerContainer) {
-						headerContainer.innerHTML = html;
-						updateHeaderAuthState();
+			function calculateBMI() {
+				const height = parseFloat(heightInput.value) / 100;
+				const weight = parseFloat(weightInput.value);
+				bmiInput.value = (height > 0 && weight > 0) ? (weight / (height * height)).toFixed(1) : '';
+			}
+
+			function checkPasswordStrength(password) {
+				let strength = 0;
+				passwordStrength.classList.add('show');
+				if (password.length >= 8) strength++;
+				if (/[a-z]/.test(password)) strength++;
+				if (/[A-Z]/.test(password)) strength++;
+				if (/[0-9]/.test(password)) strength++;
+				if (/[^A-Za-z0-9]/.test(password)) strength++;
+				strengthBar.className = 'strength-bar';
+				if (strength <= 2) strengthBar.classList.add('strength-weak');
+				else if (strength <= 4) strengthBar.classList.add('strength-medium');
+				else strengthBar.classList.add('strength-strong');
+				if (!password) passwordStrength.classList.remove('show');
+			}
+
+			function validateProfileForm() {
+				let isValid = true;
+				clearErrors('#profileForm');
+				const fullname = fullnameInput.value.trim();
+				const nameRegex = /^[a-zA-Z\u4e00-\u9fa5]+$/;
+				if (!fullname) { showError('fullnameError', '請輸入您的姓名'); isValid = false; }
+				else if (fullname.length < 2 || fullname.length > 20) { showError('fullnameError', '姓名長度必須介於 2 到 20 個字元之間'); isValid = false; }
+				else if (!nameRegex.test(fullname)) { showError('fullnameError', '姓名只能包含中英文'); isValid = false; }
+				const phoneValue = phoneInput.value.trim();
+				const phoneRegex = /^09\d{8}$/;
+				if (phoneValue && !phoneRegex.test(phoneValue)) { showError('phoneError', '請輸入有效的手機號碼（09開頭，共10位數）'); isValid = false; }
+				const nickname = nicknameInput.value.trim();
+				if (nickname && (nickname.length < 3 || nickname.length > 10)) {
+					nicknameHint.textContent = '暱稱長度必須介於3-10個字之間';
+					nicknameHint.classList.add('show');
+					isValid = false;
+				} else {
+					nicknameHint.classList.remove('show');
+				}
+				return isValid;
+			}
+
+			function validatePasswordForm() {
+				let isValid = true;
+				clearErrors('#changePasswordForm');
+				const currentPwd = document.getElementById('currentPassword').value;
+				const newPwd = newPasswordInput.value;
+				const confirmPwd = document.getElementById('confirmNewPassword').value;
+				if (!currentPwd) { showError('currentPasswordError', '請輸入原密碼'); isValid = false; }
+				const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
+				if (!newPwd) { showError('newPasswordError', '請輸入新密碼'); isValid = false; }
+				else if (!pwdRegex.test(newPwd)) { showError('newPasswordError', '密碼不符合要求，須包含大小寫、數字及特殊符號，且不少於8位'); isValid = false; }
+				if (!confirmPwd) { showError('confirmPasswordError', '請確認新密碼'); isValid = false; }
+				else if (newPwd !== confirmPwd) { showError('confirmPasswordError', '兩次輸入的密碼不一致'); isValid = false; }
+				return isValid;
+			}
+
+			function updateFavoriteBtn(btn, isFavorite) {
+				const icon = btn.querySelector('i');
+				const text = btn.querySelector('span');
+				if (isFavorite) {
+					btn.classList.add('active');
+					icon.classList.add('fa-solid');
+					icon.classList.remove('fa-regular');
+					if (text) text.textContent = '已收藏';
+				} else {
+					btn.classList.remove('active');
+					icon.classList.remove('fa-solid');
+					icon.classList.add('fa-regular');
+					if (text) text.textContent = '收藏';
+				}
+			}
+			// ▼▼▼ 步驟 2：在這裡新增這個輔助函數 ▼▼▼
+			/**
+			 * 即時更新 Header 中的使用者暱稱
+			 * @param {string} newName - 新的暱稱
+			 */
+			function updateHeaderNickname(newName) {
+				// #auth-links 是由 loader.js 產生的，我們找到裡面的第一個 a 連結
+				const userLink = document.querySelector('#auth-links a:first-child');
+				if (userLink) {
+					// 更新文字內容，保留 "會員中心" 和括號
+					userLink.textContent = `會員中心 (${newName})`;
+				}
+			}
+			// ▲▲▲ 新增結束 ▲▲▲
+			// =================================================================
+			// 事件綁定區
+			// =================================================================
+			function bindEventListeners() {
+				heightInput.addEventListener('input', calculateBMI);
+				weightInput.addEventListener('input', calculateBMI);
+				newPasswordInput.addEventListener('input', () => checkPasswordStrength(newPasswordInput.value));
+
+				editNicknameBtn.addEventListener('click', (e) => {
+					e.preventDefault();
+					nicknameDisplayArea.style.display = 'none';
+					nicknameEditArea.style.display = 'block';
+					nicknameInput.focus();
+				});
+
+				if (uploadAvatarLink) {
+					uploadAvatarLink.addEventListener('click', (e) => {
+						e.preventDefault();
+						avatarInput.click();
+					});
+				}
+
+				if (pointsToggle) {
+					pointsToggle.addEventListener('click', function () {
+						pointsHistory.classList.toggle('expanded');
+						pointsToggleIcon.classList.toggle('fa-chevron-up');
+						pointsToggleIcon.classList.toggle('fa-chevron-down');
+					});
+				}
+
+				if (orderSearch) {
+					orderSearch.addEventListener('input', function () {
+						const searchTerm = this.value.toLowerCase();
+						orderItems.forEach(item => {
+							const text = item.dataset.order.toLowerCase();
+							item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+						});
+					});
+				}
+
+				favoriteBtns.forEach(btn => {
+					btn.addEventListener('click', function () {
+						const isActive = this.classList.contains('active');
+						updateFavoriteBtn(this, !isActive);
+					});
+				});
+
+				togglePasswordBtns.forEach(btn => {
+					btn.addEventListener('click', function () {
+						const targetId = this.dataset.target;
+						const input = document.getElementById(targetId);
+						const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+						input.setAttribute('type', type);
+						this.classList.toggle('fa-eye');
+						this.classList.toggle('fa-eye-slash');
+					});
+				});
+
+				avatarInput.addEventListener('change', async function (event) {
+					const file = event.target.files[0];
+					if (!file) return;
+					const formData = new FormData();
+					formData.append('profilePicture', file);
+					try {
+						const csrfResponse = await fetch('/api/csrf-token', { credentials: 'include' });
+						const csrfData = await csrfResponse.json();
+						const response = await fetch(`/api/users/${user.userId}/profile-picture`, {
+							method: 'PUT',
+							headers: { [csrfData.headerName]: csrfData.token },
+							credentials: 'include',
+							body: formData
+						});
+						 if (!response.ok) throw await response.json();
+                    const responseData = await response.json();
+                    user.profilePicture = responseData.newPicturePath;
+                    
+                    // 成功彈窗
+                    Swal.fire({
+                        title: '更新成功！',
+                        text: '頭像已成功更新。',
+                        icon: 'success'
+                    });
+                    avatarPreview.src = `/${responseData.newPicturePath}?t=${new Date().getTime()}`;
+                } catch (error) {
+                    console.error('頭像上傳失敗:', error);
+                    // 失敗彈窗
+                    Swal.fire({
+                        title: '更新失敗',
+                        text: `頭像上傳失敗：${error.message || '請稍後再試'}`,
+                        icon: 'error'
+                    });
+                    populateUserData();
+                }
+            });
+
+				profileForm.addEventListener('submit', async function (e) {
+					e.preventDefault();
+					if (!validateProfileForm()) return;
+					const csrfResponse = await fetch('/api/csrf-token', { credentials: 'include' });
+					const csrfData = await csrfResponse.json();
+					const updateData = {
+						name: document.getElementById('fullname').value,
+						phone: document.getElementById('phone').value,
+						gender: parseInt(document.getElementById('gender').value, 10),
+						heightCm: parseFloat(document.getElementById('height').value) || null,
+						weightKg: parseFloat(document.getElementById('weight').value) || null,
+						nickName: document.getElementById('nickname').value
+					};
+					try {
+						const response = await fetch(`/api/users/${user.userId}`, {
+							method: 'PUT',
+							headers: {
+								'Content-Type': 'application/json',
+								[csrfData.headerName]: csrfData.token
+							},
+							credentials: 'include',
+							body: JSON.stringify(updateData)
+						});
+			 if (!response.ok) throw await response.json();
+                    
+                    // 成功彈窗
+                    Swal.fire({
+                        title: '更新成功！',
+                        text: '會員資料已成功儲存。',
+                        icon: 'success'
+                    });
+                    const updatedUser = await response.json();
+                    user = updatedUser;
+                    populateUserData();
+                    updateHeaderNickname(updatedUser.nickName || updatedUser.name);
+                    nicknameDisplayArea.style.display = 'block';
+                    nicknameEditArea.style.display = 'none';
+                } catch (error) {
+                    console.error('更新資料時出錯:', error);
+                    // 失敗彈窗
+                    Swal.fire({
+                        title: '更新失敗',
+                        text: `更新失敗：${error.message || '請稍後再試'}`,
+                        icon: 'error'
+                    });
+                }
+            });
+
+				changePasswordForm.addEventListener('submit', async function (e) {
+					e.preventDefault();
+					if (!validatePasswordForm()) return;
+					const csrfResponse = await fetch('/api/csrf-token', { credentials: 'include' });
+					const csrfData = await csrfResponse.json();
+					const changePasswordData = {
+						currentPassword: document.getElementById('currentPassword').value,
+						newPassword: newPasswordInput.value,
+						confirmPassword: document.getElementById('confirmNewPassword').value
+					};
+					try {
+						const response = await fetch(`/api/users/${user.userId}/password`, {
+							method: 'PUT',
+							headers: {
+								'Content-Type': 'application/json',
+								[csrfData.headerName]: csrfData.token
+							},
+							credentials: 'include',
+							body: JSON.stringify(changePasswordData)
+						});
+			  if (!response.ok) throw await response.json();
+                    const responseData = await response.json();
+                    
+                    // 成功彈窗
+                    Swal.fire({
+                        title: '更新成功！',
+                        text: responseData.message || '密碼已成功更新，請重新登入。',
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => {
+                        sessionStorage.removeItem('loggedInUser');
+                        window.location.href = 'login.html';
+                    });
+                } catch (error) {
+                    console.error('修改密碼失敗:', error);
+                    if (error.field && error.message) {
+                        showError(error.field + 'Error', error.message);
+                    } else {
+                        // 失敗彈窗
+                        Swal.fire({
+                            title: '修改失敗',
+                            text: `修改密碼失敗：${error.message || '請稍後重試'}`,
+                            icon: 'error'
+                        });
+                    }
+                }
+            });
+
+				nicknameInput.addEventListener('input', function () {
+					const nickname = this.value.trim();
+					if (nickname && (nickname.length < 3 || nickname.length > 10)) {
+						nicknameHint.textContent = '暱稱長度必須介於3-10個字之間';
+						nicknameHint.classList.add('show');
+					} else {
+						nicknameHint.classList.remove('show');
 					}
 				});
-
-		// =================================================================
-		// 變量宣告區 (基於您的原始碼)
-		// =================================================================
-		const avatarInput = document.getElementById('avatar');
-		const avatarPreview = document.getElementById('avatarPreview');
-		const nicknameDisplayArea = document.getElementById('nicknameDisplayArea');
-		const nicknameEditArea = document.getElementById('nicknameEditArea');
-		const displayNickname = document.getElementById('displayNickname');
-		const nicknameInput = document.getElementById('nickname');
-		const heightInput = document.getElementById('height');
-		const weightInput = document.getElementById('weight');
-		const bmiInput = document.getElementById('bmi');
-		const changePasswordForm = document.getElementById('changePasswordForm');
-		const profileForm = document.getElementById('profileForm');
-		const fullnameInput = document.getElementById('fullname');
-		const phoneInput = document.getElementById('phone');
-		const editNicknameBtn = document.getElementById('editNicknameBtn');
-		const newPasswordInput = document.getElementById('newPassword');
-		const strengthBar = document.getElementById('strengthBar');
-		const passwordStrength = document.querySelector('.password-strength');
-		const pointsToggle = document.querySelector('.points-history-toggle');
-		const pointsHistory = document.getElementById('pointsHistory');
-		const pointsToggleIcon = document.getElementById('pointsToggleIcon');
-		const orderSearch = document.getElementById('orderSearch');
-		const orderItems = document.querySelectorAll('.order-item');
-		const favoriteBtns = document.querySelectorAll('.favorite-btn');
-		const togglePasswordBtns = document.querySelectorAll('.toggle-password');
-		const uploadAvatarLink = document.querySelector('.avatar-upload .upload-icon');
-		const nicknameHint = document.querySelector('.nickname-hint');
-
-		// =================================================================
-		// 功能函數區
-		// =================================================================
-
-		function showError(elementId, message) {
-			const errorElement = document.getElementById(elementId);
-			if (errorElement) {
-				errorElement.textContent = message;
-				errorElement.classList.add('show');
-			}
-		}
-
-		function clearErrors(containerSelector) {
-			document.querySelectorAll(`${containerSelector} .error-message`).forEach(el => {
-				el.textContent = '';
-				el.classList.remove('show');
-			});
-		}
-
-		function populateUserData() {
-			document.getElementById('email').value = user.email || '';
-			fullnameInput.value = user.name || '';
-			phoneInput.value = user.phone || '';
-			document.getElementById('gender').value = user.gender !== undefined ? user.gender : 0;
-			heightInput.value = user.heightCm || '';
-			weightInput.value = user.weightKg || '';
-			const nickname = user.nickName || '';
-			nicknameInput.value = nickname;
-			displayNickname.textContent = nickname || '請設置您的暱稱';
-			if (nickname) {
-				nicknameDisplayArea.style.display = 'block';
-				nicknameEditArea.style.display = 'none';
-			} else {
-				nicknameDisplayArea.style.display = 'none';
-				nicknameEditArea.style.display = 'block';
 			}
 
-			// 頭像路徑
-			if (user.profilePicture) {
-				// 在路徑後面加上 "?t=" 和當前時間的毫秒數，以確保瀏覽器每次都重新載入
-				avatarPreview.src = `/${user.profilePicture}?t=${new Date().getTime()}`;
-			} else {
-				avatarPreview.src = '/frontend-template/assets/images/default-avatar.png';
-			}
-			calculateBMI();
-		}
+			// ★★★ 修正 3：將啟動呼叫移至 DOMContentLoaded 的最末端，確保所有函數都已定義 ★★★
+			initializeProfilePage();
 
-		function updateHeaderAuthState() {
-			const authLinksContainer = document.getElementById('auth-links');
-			if (!authLinksContainer) return;
-			const loggedInHTML = `
-                <a href="/frontend-template/profile.html" class="login">會員中心 (${user.nickName || user.name})</a>
-                <span style="color: white; margin: 0 8px;">/</span>
-                <a href="#" id="logoutBtn" class="login">登出</a>`;
-			authLinksContainer.innerHTML = loggedInHTML;
-
-			const logoutBtn = document.getElementById('logoutBtn');
-			if (logoutBtn) {
-				logoutBtn.addEventListener('click', function (e) {
-					e.preventDefault();
-
-					// ★★★ 核心修正點：使用動態表單來觸發登出 ★★★
-					const form = document.createElement('form');
-					form.method = 'POST';
-					form.action = '/logout'; // 必須對應 SecurityConfig 中的 .logoutUrl()
-
-					// 創建一個隱藏的 input 欄位來存放 CSRF token
-					const csrfInput = document.createElement('input');
-					csrfInput.type = 'hidden';
-					csrfInput.name = csrfParameterName; // 使用從 API 獲取的 token 參數名稱
-					csrfInput.value = csrfToken;   // 使用從 API 獲取的 token 值
-					form.appendChild(csrfInput);
-
-					document.body.appendChild(form);
-					form.submit(); // 提交這個包含 CSRF token 的表單
-				});
-			}
-		}
-
-
-		function calculateBMI() {
-			const height = parseFloat(heightInput.value) / 100;
-			const weight = parseFloat(weightInput.value);
-			bmiInput.value = (height > 0 && weight > 0) ? (weight / (height * height)).toFixed(1) : '';
-		}
-
-		function checkPasswordStrength(password) {
-			let strength = 0;
-			passwordStrength.classList.add('show');
-			if (password.length >= 8) strength++;
-			if (/[a-z]/.test(password)) strength++;
-			if (/[A-Z]/.test(password)) strength++;
-			if (/[0-9]/.test(password)) strength++;
-			if (/[^A-Za-z0-9]/.test(password)) strength++;
-			strengthBar.className = 'strength-bar';
-			if (strength <= 2) strengthBar.classList.add('strength-weak');
-			else if (strength <= 4) strengthBar.classList.add('strength-medium');
-			else strengthBar.classList.add('strength-strong');
-			if (!password) passwordStrength.classList.remove('show');
-		}
-
-		function validateProfileForm() {
-			let isValid = true;
-			clearErrors('#profileForm');
-			const fullname = fullnameInput.value.trim();
-			const nameRegex = /^[a-zA-Z\u4e00-\u9fa5]+$/;
-			if (!fullname) { showError('fullnameError', '請輸入您的姓名'); isValid = false; }
-			else if (fullname.length < 2 || fullname.length > 20) { showError('fullnameError', '姓名長度必須介於 2 到 20 個字元之間'); isValid = false; }
-			else if (!nameRegex.test(fullname)) { showError('fullnameError', '姓名只能包含中英文'); isValid = false; }
-			const phoneValue = phoneInput.value.trim();
-			const phoneRegex = /^09\d{8}$/;
-			if (phoneValue && !phoneRegex.test(phoneValue)) { showError('phoneError', '請輸入有效的手機號碼（09開頭，共10位數）'); isValid = false; }
-
-			const nickname = nicknameInput.value.trim();
-			if (nickname && (nickname.length < 3 || nickname.length > 10)) {
-				nicknameHint.textContent = '暱稱長度必須介於3-10個字之間';
-				nicknameHint.classList.add('show');
-				isValid = false;
-			} else {
-				nicknameHint.classList.remove('show');
-			}
-
-			return isValid;
-		}
-
-		function validatePasswordForm() {
-			let isValid = true;
-			clearErrors('#changePasswordForm');
-			const currentPwd = document.getElementById('currentPassword').value;
-			const newPwd = newPasswordInput.value;
-			const confirmPwd = document.getElementById('confirmNewPassword').value;
-			if (!currentPwd) { showError('currentPasswordError', '請輸入原密碼'); isValid = false; }
-			const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
-			if (!newPwd) { showError('newPasswordError', '請輸入新密碼'); isValid = false; }
-			else if (!pwdRegex.test(newPwd)) { showError('newPasswordError', '密碼不符合要求，須包含大小寫、數字及特殊符號，且不少於8位'); isValid = false; }
-			if (!confirmPwd) { showError('confirmPasswordError', '請確認新密碼'); isValid = false; }
-			else if (newPwd !== confirmPwd) { showError('confirmPasswordError', '兩次輸入的密碼不一致'); isValid = false; }
-			return isValid;
-		}
-
-		function updateFavoriteBtn(btn, isFavorite) {
-			const icon = btn.querySelector('i');
-			const text = btn.querySelector('span');
-			if (isFavorite) {
-				btn.classList.add('active');
-				icon.classList.add('fa-solid');
-				icon.classList.remove('fa-regular');
-				if (text) text.textContent = '已收藏';
-			} else {
-				btn.classList.remove('active');
-				icon.classList.remove('fa-solid');
-				icon.classList.add('fa-regular');
-				if (text) text.textContent = '收藏';
-			}
-		}
-
-		// =================================================================
-		// 事件綁定區
-		// =================================================================
-		populateUserData();
-		heightInput.addEventListener('input', calculateBMI);
-		weightInput.addEventListener('input', calculateBMI);
-		newPasswordInput.addEventListener('input', () => checkPasswordStrength(newPasswordInput.value));
-
-		editNicknameBtn.addEventListener('click', (e) => {
-			e.preventDefault();
-			nicknameDisplayArea.style.display = 'none';
-			nicknameEditArea.style.display = 'block';
-			nicknameInput.focus();
 		});
-
-		if (uploadAvatarLink) {
-			uploadAvatarLink.addEventListener('click', (e) => {
-				e.preventDefault();
-				avatarInput.click();
-			});
-		}
-
-		if (pointsToggle) {
-			pointsToggle.addEventListener('click', function () {
-				pointsHistory.classList.toggle('expanded');
-				pointsToggleIcon.classList.toggle('fa-chevron-up');
-				pointsToggleIcon.classList.toggle('fa-chevron-down');
-			});
-		}
-
-		if (orderSearch) {
-			orderSearch.addEventListener('input', function () {
-				const searchTerm = this.value.toLowerCase();
-				orderItems.forEach(item => {
-					const text = item.dataset.order.toLowerCase();
-					item.style.display = text.includes(searchTerm) ? 'block' : 'none';
-				});
-			});
-		}
-
-		favoriteBtns.forEach(btn => {
-			btn.addEventListener('click', function () {
-				const isActive = this.classList.contains('active');
-				updateFavoriteBtn(this, !isActive);
-			});
-		});
-
-		togglePasswordBtns.forEach(btn => {
-			btn.addEventListener('click', function () {
-				const targetId = this.dataset.target;
-				const input = document.getElementById(targetId);
-				const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-				input.setAttribute('type', type);
-				this.classList.toggle('fa-eye');
-				this.classList.toggle('fa-eye-slash');
-			});
-		});
-
-		avatarInput.addEventListener('change', async function (event) {
-			const file = event.target.files[0];
-			if (!file) return;
-
-			const reader = new FileReader();
-			reader.onload = e => {
-				avatarPreview.src = e.target.result;
-			};
-			reader.readAsDataURL(file);
-
-			const formData = new FormData();
-			formData.append('profilePicture', file);
-
-			// document.getElementById('avatarLoading').style.display = 'block';
-
-			try {
-				const response = await fetch(`/api/users/${user.userId}/profile-picture`, {
-					method: 'PUT',
-					headers: { [csrfHeaderName]: csrfToken },
-					credentials: 'include', // ★★★ 新增此行 ★★★
-					body: formData
-				});
-				if (!response.ok) {
-					const errorData = await response.json();
-					throw errorData;
-				}
-				// 1. 將回應解析為 JSON
-				const responseData = await response.json();
-				// 2. 從 JSON 物件中取得正確的圖片路徑
-				const newPicturePath = responseData.newPicturePath;
-
-				// 3. 更新前端暫存的 user 物件
-				user.profilePicture = newPicturePath;
-				// sessionStorage.setItem('loggedInUser', JSON.stringify(user));不操作sessionStorage
-				alert('頭像更新成功');
-				avatarPreview.src = `/${newPicturePath}?t=${new Date().getTime()}`;
-			} catch (error) {
-				console.error('頭像上傳失敗:', error);
-				alert(`錯誤：${error.message || '頭像上傳失敗，請稍後重試'}`);
-				populateUserData();
-			} finally {
-				// document.getElementById('avatarLoading').style.display = 'none';
-			}
-		});
-
-		profileForm.addEventListener('submit', async function (e) {
-			e.preventDefault();
-			if (!validateProfileForm()) return;
-
-			const updateData = {
-				name: fullnameInput.value.trim(),
-				nickName: nicknameInput.value.trim(),
-				phone: phoneInput.value.trim(),
-				gender: parseInt(document.getElementById('gender').value),
-				heightCm: parseFloat(heightInput.value) || null,
-				weightKg: parseFloat(weightInput.value) || null
-			};
-
-			try {
-				const response = await fetch(`/api/users/${user.userId}`, {
-					method: 'PUT',
-					headers: {
-						'Content-Type': 'application/json',
-						[csrfHeaderName]: csrfToken
-					},
-					credentials: 'include', // ★★★ 新增此行 ★★★
-					body: JSON.stringify(updateData)
-				});
-				if (!response.ok) {
-					const err = await response.json();
-					throw err;
-				}
-				const updatedUser = await response.json();
-
-				// sessionStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
-				user = updatedUser;
-
-				alert('個人資料更新成功！');
-				populateUserData();
-			} catch (error) {
-				console.error('更新資料時出錯:', error);
-				alert(`更新失敗：${error.message || '請稍後再試'}`);
-			}
-		});
-
-		changePasswordForm.addEventListener('submit', async function (e) {
-			e.preventDefault();
-			if (!validatePasswordForm()) return;
-
-			const changePasswordData = {
-				currentPassword: document.getElementById('currentPassword').value,
-				newPassword: newPasswordInput.value,
-				confirmPassword: document.getElementById('confirmNewPassword').value
-			};
-
-			try {
-				const response = await fetch(`/api/users/${user.userId}/password`, {
-					method: 'PUT',
-					headers: {
-						'Content-Type': 'application/json',
-						[csrfHeaderName]: csrfToken
-					},
-					credentials: 'include', // ★★★ 新增此行 ★★★
-					body: JSON.stringify(changePasswordData)
-				});
-				if (!response.ok) {
-					const err = await response.json();
-					throw err;
-				}
-				const responseData = await response.json();
-				const message = responseData.message;
-				alert(message);
-				sessionStorage.removeItem('loggedInUser');
-				window.location.href = 'login.html';
-			} catch (error) {
-				console.error('修改密碼失敗:', error);
-				if (error.field && error.message) {
-					showError(error.field + 'Error', error.message);
-				} else {
-					alert(`修改密碼失敗：${error.message || '請稍後重試'}`);
-				}
-			}
-		});
-
-		nicknameInput.addEventListener('input', function () {
-			const nickname = this.value.trim();
-			if (nickname && (nickname.length < 3 || nickname.length > 10)) {
-				nicknameHint.textContent = '暱稱長度必須介於3-10個字之間';
-				nicknameHint.classList.add('show');
-			} else {
-				nicknameHint.classList.remove('show');
-			}
-		}); populateUserData();
-	});
-</script>
-
-
-
-
+	</script>
 </body>
 
 </html>

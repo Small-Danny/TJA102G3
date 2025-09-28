@@ -2,32 +2,27 @@
 <html lang="zh-TW">
 
 <head>
-  <!-- Meta 選項 -->
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- 標題 -->
   <title>登入與註冊</title>
-
-  <!-- 外部資源 -->
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/bootstrap.min.css">
   <link rel="icon" type="image/x-icon" href="/frontend-template/assets/images/heading-icon.png">
-  <link rel="stylesheet" href="/frontend-template/assets/font/flaticon_mycollection.css">
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.carousel.min.css">
-  <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.theme.default.min.css">
-  <link rel="stylesheet" href="/frontend-template/assets/css/jquery.fancybox.min.css">
-  <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/fontawesome.min.css">
-  <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/nice-select.css">
-
-  <!-- 自定義樣式 -->
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/style.css">
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/responsive.css">
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
-
-  <!-- reCAPTCHA -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 
   <style>
+    /* 隱藏 Edge 瀏覽器預設的密碼顯示按鈕 */
+    input[type="password"]::-ms-reveal {
+      display: none;
+    }
+
     /* 登錄框樣式 */
     .box.login {
       background-color: #f5f5f5;
@@ -200,27 +195,27 @@
     .register-link a:hover {
       text-decoration: underline;
     }
+
+    /* --- reCAPTCHA 響應式修正 --- */
+    @media (max-width: 400px) {
+      .g-recaptcha {
+        /* 使用 transform: scale() 來縮放 reCAPTCHA 元件 */
+        transform: scale(0.8);
+        /* 因為縮放是從中心點開始，需要調整回來，讓它靠左對齊 */
+        transform-origin: 0 0;
+        /* 可能需要手動調整高度以避免空白 */
+        height: 60px;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <!-- 加載器 -->
-  <div class="preloader">
-    <div class="loader-wrap-heading">
-      <div class="load-text">
-        <span>加</span> <span>載</span> <span>中</span>
-      </div>
-    </div>
-  </div>
-
   <!-- 頁首 -->
-  <header>
-    <div id="header"></div>
-  </header>
-
+  <div id="header-placeholder"></div>
   <!--  banner -->
   <section class="banner-style-one">
-    <div class="parallax" style="background-image: url(/frontend-template/assets/images/banner-bg.jpg);"></div>
+
     <div class="container">
       <div class="row">
         <div class="banner-details">
@@ -286,107 +281,7 @@
   </section>
 
   <!-- 頁腳 -->
-  <footer class="footer-style-one" style="background-image: url(https://via.placeholder.com/1920x732);">
-    <div class="footer-p-1">
-      <div class="container">
-        <div class="row">
-          <div class="footer-first">
-            <div class="footer-logo">
-              <a href="/frontend-template/index.html">
-                <img src="/frontend-template/assets/images/logo-2.svg" alt="頁腳標志">
-              </a>
-            </div>
-            <div class="contact-info d-flex-all">
-              <div class="images d-flex-all justify-content-start">
-                <figure><img src="https://via.placeholder.com/57x57" alt="聯系圖片"></figure>
-                <figure><img src="https://via.placeholder.com/57x57" alt="聯系圖片"></figure>
-                <figure><img src="https://via.placeholder.com/57x57" alt="聯系圖片"></figure>
-              </div>
-              <p>專業教練 <span>+1 (251) 344 0 66</span> 免費通話！</p>
-            </div>
-            <a href="/frontend-template/contact.html" class="theme-btn">獲取諮詢</a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="footer-p-2">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="footer-col">
-              <h3>資訊</h3>
-              <p>定期去健身房很棒，但如果您每天找不到大塊時間鍛煉，也不用擔心。</p>
-              <ul class="social-media">
-                <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
-                <li><a href="#"><i class="flaticon-twitter"></i></a></li>
-                <li><a href="#"><i class="flaticon-instagram"></i></a></li>
-                <li><a href="#"><i class="flaticon-pinterest"></i></a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="footer-col">
-              <h3>聯繫我們</h3>
-              <ul>
-                <li><i class="flaticon-maps"></i>
-                  <p>901 N Pitt Str., Suite 170, VA 22314, USA</p>
-                </li>
-                <li><i class="flaticon-iphone"></i>
-                  <p><a href="callto:(+380)503184707">(+380) 50 318 47 07</a></p>
-                </li>
-                <li><i class="flaticon-mail"></i>
-                  <p><a href="mailto:username@domain.com">username@domain.com</a></p>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="footer-col">
-              <h3>訂閱通訊</h3>
-              <p>訂閱我們的每週通訊以獲取最新消息</p>
-              <form>
-                <input type="email" name="email" placeholder="輸入您的電子郵件">
-                <button><i class="fa-solid fa-arrow-up-long"></i></button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <ul class="image-gallery">
-      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
-        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
-      </li>
-      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
-        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
-      </li>
-      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
-        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
-      </li>
-      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
-        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
-      </li>
-      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
-        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
-      </li>
-      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
-        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
-      </li>
-      <li><a href="https://via.placeholder.com/250x150" data-fancybox="gallery"><i class="flaticon-instagram"></i></a>
-        <figure><img alt="女孩" src="https://via.placeholder.com/250x150"></figure>
-      </li>
-    </ul>
-    <div class="footer-p-3 rights">
-      <div class="container">
-        <div class="row">
-          <div class="footer-col">
-            <p>健身中心<i class="fa-solid fa-heart"></i> © 2024 <a href="https://winsfolio.net/">winsfolio.net</a> 保留所有權利
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </footer>
+  <div id="footer-placeholder"></div>
 
   <!-- 諮詢彈窗 -->
   <div class="modal fade popups conslt-popup" id="exampleModal" tabindex="-1" aria-hidden="true">
@@ -396,7 +291,6 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <img src="https://via.placeholder.com/420x591" alt="圖片">
           <div class="contact-form-one popup">
             <div class="c-form-2">
               <h3>開始諮詢</h3>
@@ -438,27 +332,30 @@
 
   <!-- 外部腳本 -->
   <script src="/frontend-template/assets/js/jquery.min.js"></script>
-  <script src="/frontend-template/assets/js/jquery.waypoints.min.js"></script>
-  <script src="/frontend-template/assets/js/jquery.counterup.min.js"></script>
   <script src="/frontend-template/assets/js/bootstrap.min.js"></script>
-  <script src="/frontend-template/assets/js/jquery.fancybox.min.js"></script>
-  <script src="/frontend-template/assets/js/jquery.nice-select.js"></script>
-  <script src="/frontend-template/assets/js/owl.carousel.min.js"></script>
+  <script src="/frontend-template/assets/js/loader.js"></script>
   <script src="/frontend-template/assets/js/custom.js"></script>
-  <script src="/frontend-template/assets/js/cart.js"></script>
-
   <!-- 登錄邏輯 -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // 確保加載頁頭（如果失敗則印出錯誤）
-      fetch('/frontend-template/header.txt?v=' + Date.now(), { cache: 'no-store' })
-        .then(r => r.text())
-        .then(html => {
-          const headerEl = document.getElementById('header');
-          if (headerEl) headerEl.innerHTML = html;
+      // ▼▼▼ 新增：頁面載入時檢查登入狀態 ▼▼▼
+      fetch('/api/users/profile', {
+        credentials: 'include',
+        cache: 'no-store'
+      })
+        .then(response => {
+          if (response.ok) {
+            // 如果 response.ok 是 true，代表使用者已登入
+            console.log('使用者已登入，自動跳轉至會員中心...');
+            // 直接跳轉到會員中心頁面
+            window.location.href = '/frontend-template/profile.html';
+          }
+          // 如果 response.ok 是 false (例如 401)，代表未登入，則什麼都不做，讓用戶看到登入表單
         })
-        .catch(err => console.error('加載頁頭失敗:', err));
-
+        .catch(err => {
+          // 發生網路錯誤等，也讓用戶留在登入頁
+          console.error('檢查登入狀態時發生錯誤:', err);
+        });
       // 密碼顯示切換邏輯
       document.querySelectorAll('.toggle-password').forEach(icon => {
         icon.addEventListener('click', function () {
@@ -556,8 +453,16 @@
           // 關鍵修正：先判斷 HTTP 狀態碼是否為成功 (2xx)
           if (loginResponse.ok) {
             // 登入成功，不需要再解析 JSON，直接跳轉
-            alert('登入成功！即將跳轉至會員中心...');
-            window.location.href = '/frontend-template/profile.html'; // 直接跳轉
+            Swal.fire({
+              title: '登入成功！',
+              text: '即將跳轉至會員中心...',
+              icon: 'success',
+              timer: 2000, // 2秒後自動關閉
+              showConfirmButton: false
+            }).then(() => {
+              window.location.href = '/frontend-template/profile.html'; // 提示框關閉後再跳轉
+            });
+
           } else {
             // 如果 HTTP 狀態碼是 4xx 或 5xx，代表有錯誤，這時才解析錯誤的 JSON
             const errorResult = await loginResponse.json();

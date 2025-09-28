@@ -1,5 +1,3 @@
-// assets/js/productdetail.js
-
 (function () {
   const stockHint = document.getElementById('stockHint');
   const hidPid    = document.getElementById('variantProductId');
@@ -25,12 +23,12 @@
   }
   
   // 價格格式化
-    function setPrice(val) {
-      if (!priceText) return;
-      if (val == null || val === '') return;
-      const n = Number(val);
-      priceText.textContent = Number.isFinite(n) ? n.toLocaleString('zh-TW') : String(val);
-    }
+  function setPrice(val) {
+    if (!priceText) return;
+    if (val == null || val === '') return;
+    const n = Number(val);
+    priceText.textContent = Number.isFinite(n) ? n.toLocaleString('zh-TW') : String(val);
+  }
 
   // 控制請求並避免亂序
   let inflightCtrl = null;
@@ -139,8 +137,8 @@
 
     const size = chip.dataset.size || '';
     let pid    = chip.dataset.pid || '';
-	const sku  = chip.dataset.sku  || '';
-	const price = chip.dataset.price || '';
+    const sku  = chip.dataset.sku  || '';
+    const price = chip.dataset.price || '';
 
     // 正規化 pid（保留空字串；有值時轉成純數字字串）
     if (pid) {
@@ -157,19 +155,19 @@
       } else {
         btnCart.removeAttribute('data-id');
       }
-	  if (skuText && sku) skuText.textContent = sku;
+      if (skuText && sku) skuText.textContent = sku;
     }
 
-	if (skuText && sku) skuText.textContent = sku;
-	setPrice(price);                                
-	loadStock(pid);
+    if (skuText && sku) skuText.textContent = sku;
+    setPrice(price);                                
+    loadStock(pid);
   });
 
   // 首次載入如果有預設 active 尺寸就查庫存；否則提示
   const active = document.querySelector('#sizeGroup .size-chip.active');
   if (active) {
     const pid = active.dataset.pid || '';
-	const sku = active.dataset.sku || '';
+    const sku = active.dataset.sku || '';
     active.setAttribute('aria-selected', 'true');
     loadStock(pid);
   } else {
@@ -177,44 +175,49 @@
   }
   
   // ==========================================================
-  // 新增：監聽 "Add to Cart" 按鈕
+  // 「加入購物車」按鈕邏輯（合併重複代碼，保留完整功能）
   // ==========================================================
   if (btnCart) {
-      btnCart.addEventListener('click', function(event) {
-          event.preventDefault();
+    btnCart.addEventListener('click', function(event) {
+      event.preventDefault();
 
-          // 檢查按鈕是否處於停用狀態
-          if (this.classList.contains('disabled')) {
-              alert('無法加入購物車：請選擇有庫存的尺寸');
-              return;
-          }
+      // 檢查按鈕是否處於停用狀態
+      if (this.classList.contains('disabled') || this.getAttribute('aria-disabled') === 'true') {
+        setHint('請先選擇有庫存的尺寸', true);
+        return;
+      }
 
-          const productId = this.dataset.id;
-          const quantity = document.getElementById('qty')?.value || 1;
-          
-          if (!productId) {
-              console.error('找不到商品 ID，無法加入購物車。');
-              alert('無法加入購物車，缺少商品資訊。');
-              return;
+      const productId = this.dataset.id;
+      const quantityInput = document.getElementById('qty');
+      const quantity = quantityInput ? quantityInput.value : 1;
+      
+      if (!productId) {
+        console.error('找不到商品 Variant ID，無法加入購物車。');
+        setHint('無法加入購物車，請重新選擇尺寸', true);
+        return;
+      }
+      
+      // 呼叫 cart.js 中的 addItemToCart 函式
+      if (typeof addItemToCart === 'function') {
+        addItemToCart(productId, quantity, {
+          onSuccess: function(data) {
+            alert('商品已成功加入購物車！');
+            
+            // 1. 觸發通用事件（與 productlist.js 保持一致，便於全局監聽）
+            document.dispatchEvent(new CustomEvent('cart:changed', { detail: data }));
+            
+            // 2. 保留原始的 updateCartInfo 調用（兼容既有邏輯）
+            if (typeof window.TibaFit?.updateCartInfo === 'function') {
+              window.TibaFit.updateCartInfo();
+            }
+          },
+          onError: function(error) {
+            alert('加入購物車失敗：' + (error?.message || '請稍後再試'));
           }
-          
-          // 呼叫 cart.js 中的 addItemToCart 函式
-          // 確保 cart.js 檔案有正確定義 addItemToCart 函式
-          if (typeof addItemToCart === 'function') {
-              addItemToCart(productId, quantity, {
-                  onSuccess: function() {
-                      alert('商品已成功加入購物車！');
-                      // 可選：更新頁首的購物車圖示數量
-                      // updateCartIconCount();
-                  },
-                  onError: function() {
-                      alert('加入購物車失敗，請稍後再試。');
-                  }
-              });
-          } else {
-              alert('發生錯誤：購物車功能未正確載入。');
-          }
-      });
+        });
+      } else {
+        alert('發生錯誤：購物車功能未正確載入。');
+      }
+    });
   }
-
 })();

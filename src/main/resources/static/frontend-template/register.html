@@ -11,7 +11,7 @@
   <!-- Bootstrap -->
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/bootstrap.min.css">
   <link rel="icon" type="image/x-icon" href="/frontend-template/assets/images/heading-icon.png">
-  <link rel="stylesheet" href="/frontend-template/assets/font/flaticon_mycollection.css">
+
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.carousel.min.css">
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.theme.default.min.css">
   <link rel="stylesheet" href="/frontend-template/assets/css/jquery.fancybox.min.css">
@@ -24,8 +24,13 @@
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
   <!-- gooogle驗證用 -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
+    /* 隱藏 Edge 瀏覽器預設的密碼顯示按鈕 */
+    input[type="password"]::-ms-reveal {
+      display: none;
+    }
+
     /* 這是一個「視覺修正」，用來抵銷錯覺 */
     .email-code-container.form-group {
       margin-top: -20px;
@@ -242,30 +247,30 @@
       padding: 10px 0;
       /* 可選：添加上下間距 */
     }
+
+    /* --- reCAPTCHA 響應式修正 --- */
+    @media (max-width: 400px) {
+      .g-recaptcha {
+        /* 使用 transform: scale() 來縮放 reCAPTCHA 元件 */
+        transform: scale(0.8);
+        /* 因為縮放是從中心點開始，需要調整回來，讓它靠左對齊 */
+        transform-origin: 0 0;
+        /* 可能需要手動調整高度以避免空白 */
+        height: 60px;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <!-- 加載器開始 -->
-  <div class="preloader">
-    <div class="loader-wrap-heading">
-      <div class="load-text">
-        <span>加</span> <span>載</span> <span>中</span>
-      </div>
-    </div>
-  </div>
-  <!-- 加載器結束 -->
-
   <!-- 頁首樣式一開始 -->
-  <header>
-    <div id="header"></div>
-  </header>
+  <div id="header-placeholder"></div>
   <!-- 頁首樣式一結束 -->
 
 
   <!-- 橫幅樣式一 開始 -->
   <section class="banner-style-one">
-    <div class="parallax" style="background-image: url(https://via.placeholder.com/1920x640);"></div>
+    <div class="parallax"></div>
     <div class="container">
       <div class="row">
         <div class="banner-details">
@@ -395,151 +400,7 @@
     </div>
   </div>
   <!-- 頁腳樣式一 開始 -->
-  <footer class="footer-style-one" style="background-image: url(https://via.placeholder.com/1920x732);">
-    <div class="footer-p-1">
-      <div class="container">
-        <div class="row">
-          <div class="footer-first">
-            <div class="footer-logo">
-              <a href="/frontend-template/index.html"> <img src="/frontend-template/assets/images/logo-2.svg"
-                  alt="頁腳標誌">
-              </a>
-            </div>
-            <div class="contact-info d-flex-all">
-              <div class="images d-flex-all justify-content-start">
-                <figure>
-                  <img src="https://via.placeholder.com/57x57" alt="聯繫圖片">
-                </figure>
-                <figure>
-                  <img src="https://via.placeholder.com/57x57" alt="聯繫圖片">
-                </figure>
-                <figure>
-                  <img src="https://via.placeholder.com/57x57" alt="聯繫圖片">
-                </figure>
-              </div>
-              <p>
-                專業教練 <span>+1 (251) 344 0 66</span> 免費通話！
-              </p>
-            </div>
-            <a href="/frontend-template/contact.html" class="theme-btn">獲取諮詢 </a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="footer-p-2">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="footer-col">
-              <h3>資訊</h3>
-              <p>定期去健身房很棒，但如果您每天找不到大塊時間鍛煉，也不用擔心。</p>
-              <ul class="social-media">
-                <li><a href="/frontend-template/#"><i class="fa-brands fa-facebook-f"></i></a></li>
-                <li><a href="/frontend-template/#"><i class="flaticon-twitter"></i></a></li>
-                <li><a href="/frontend-template/#"><i class="flaticon-instagram"></i></a></li>
-                <li><a href="/frontend-template/#"><i class="flaticon-pinterest"></i></a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="footer-col">
-              <h3>聯繫我們</h3>
-              <ul>
-                <li><i class="flaticon-maps"></i>
-                  <p>901 N Pitt Str., Suite 170, VA 22314, USA</p>
-                </li>
-                <li><i class="flaticon-iphone"></i>
-                  <p>
-                    <a href="/frontend-template/callto:(+380)503184707">(+380) 50 318 47 07</a>
-                  </p>
-                </li>
-                <li><i class="flaticon-mail"></i>
-                  <p>
-                    <a href="/frontend-template/mailto:username@domain.com">username@domain.com</a>
-                  </p>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="footer-col">
-              <h3>訂閱通訊</h3>
-              <p>訂閱我們的每週通訊以獲取最新消息</p>
-              <form>
-                <input type="email" name="email" placeholder="輸入您的電子郵件">
-                <button>
-                  <i class="fa-solid fa-arrow-up-long"></i>
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <ul class="image-gallery">
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
-      </li>
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
-      </li>
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
-      </li>
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
-      </li>
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
-      </li>
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
-      </li>
-      <li><a href="/frontend-template/https://via.placeholder.com/250x150" data-fancybox="gallery"> <i
-            class="flaticon-instagram"></i>
-        </a>
-        <figure>
-          <img alt="女孩" src="https://via.placeholder.com/250x150">
-        </figure>
-      </li>
-    </ul>
-    <div class="footer-p-3 rights">
-      <div class="container">
-        <div class="row">
-          <div class="footer-col">
-            <p>
-              健身中心<i class="fa-solid fa-heart"></i> © 2024 <a href="/frontend-template/https://winsfolio.net/">
-                winsfolio.net</a> 保留所有權利
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </footer>
+  <div id="footer-placeholder"></div>
 
   <div class="modal fade popups conslt-popup" id="exampleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -548,7 +409,6 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <img src="https://via.placeholder.com/420x591" alt="圖片">
           <div class="contact-form-one popup">
             <div class="c-form-2">
               <h3>開始諮詢</h3>
@@ -603,9 +463,8 @@
   <!-- Owl Carousal Js -->
   <script src="/frontend-template/assets/js/owl.carousel.min.js"></script>
   <!-- Custom Js -->
+  <script src="/frontend-template/assets/js/loader.js"></script>
   <script src="/frontend-template/assets/js/custom.js"></script>
-  <script src="/frontend-template/assets/js/cart.js"></script>
-
   <script>
     // --- 共用變數宣告 ---
     const sendCodeBtn = document.getElementById('sendCodeBtn');
@@ -668,65 +527,72 @@
       isCountdownActive = true;
       clearAllErrors();
 
-    
-        try {
-            // 1. 獲取 CSRF Token
-            const csrfResponse = await fetch('/api/csrf-token');
-            if (!csrfResponse.ok) {
-                throw new Error('無法獲取驗證信息，請稍後再試');
-            }
-            const csrfData = await csrfResponse.json();
 
-            // 2. 發送驗證碼請求
-            const response = await fetch('/api/users/send-code', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    [csrfData.headerName]: csrfData.token
-                },
-                body: JSON.stringify({ email: emailInput.value })
-            });
-            
-            // 3. 檢查後端回應是否成功
-            if (!response.ok) {
-                // 如果不成功 (例如 email 已被註冊)，就解析錯誤訊息並拋出
-                const errorData = await response.json(); // ★ 修正點：加上 const
-                throw errorData;
-            }
-
-            // 4. 如果程式能走到這裡，代表回應是成功的
-            const successData = await response.json();
-            alert(successData.message);
-            verificationSent = true;
-
-            // 開始倒數計時 (這段邏輯不變)
-            let countdown = 60;
-            sendCodeBtn.textContent = `重新發送(${countdown}s)`;
-            const timer = setInterval(() => {
-                countdown--;
-                sendCodeBtn.textContent = `重新發送(${countdown}s)`;
-                if (countdown <= 0) {
-                    clearInterval(timer);
-                    sendCodeBtn.textContent = '發送驗證碼';
-                    isCountdownActive = false;
-                    if (emailRegex.test(emailInput.value)) {
-                        sendCodeBtn.disabled = false;
-                    }
-                }
-            }, 1000);
-
-        } catch (error) {
-            // 5. 統一的錯誤處理區塊
-            console.error('發送驗證碼失敗:', error);
-            if (error.field && error.message) {
-                showError(error.field + 'Error', error.message);
-            } else {
-                alert(error.message || '發送失敗，請稍後再試。');
-            }
-            // 重置按鈕狀態
-            sendCodeBtn.disabled = false;
-            isCountdownActive = false;
+      try {
+        // 1. 獲取 CSRF Token
+        const csrfResponse = await fetch('/api/csrf-token');
+        if (!csrfResponse.ok) {
+          throw new Error('無法獲取驗證信息，請稍後再試');
         }
+        const csrfData = await csrfResponse.json();
+
+        // 2. 發送驗證碼請求
+        const response = await fetch('/api/users/send-code', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            [csrfData.headerName]: csrfData.token
+          },
+          body: JSON.stringify({ email: emailInput.value })
+        });
+
+        // 3. 檢查後端回應是否成功
+        if (!response.ok) {
+          // 如果不成功 (例如 email 已被註冊)，就解析錯誤訊息並拋出
+          const errorData = await response.json(); // ★ 修正點：加上 const
+          throw errorData;
+        }
+
+        // 4. 如果程式能走到這裡，代表回應是成功的
+        const successData = await response.json();
+        Swal.fire({
+          title: '發送成功！',
+          text: successData.message,
+          icon: 'success'
+        });
+        verificationSent = true;
+
+        // 開始倒數計時 (這段邏輯不變)
+        let countdown = 60;
+        sendCodeBtn.textContent = `重新發送(${countdown}s)`;
+        const timer = setInterval(() => {
+          countdown--;
+          sendCodeBtn.textContent = `重新發送(${countdown}s)`;
+          if (countdown <= 0) {
+            clearInterval(timer);
+            sendCodeBtn.textContent = '發送驗證碼';
+            isCountdownActive = false;
+            if (emailRegex.test(emailInput.value)) {
+              sendCodeBtn.disabled = false;
+            }
+          }
+        }, 1000);
+
+      } catch (error) {
+        // 5. 統一的錯誤處理區塊
+        console.error('發送驗證碼失敗:', error);
+        if (error.field && error.message) {
+          showError(error.field + 'Error', error.message);
+        } else {
+          Swal.fire({
+            title: '發送失敗！',
+            text: error.message || '發送失敗，請稍後再試。',
+            icon: 'error'
+          });
+        }
+        sendCodeBtn.disabled = false;
+        isCountdownActive = false;
+      }
     });
 
 
@@ -837,10 +703,14 @@
         if (error.field && error.message) {
           showError(error.field + 'Error', error.message);
         } else {
-          alert('註冊失敗，請稍後再試。');
+          // ★★★ 修改點：註冊失敗時使用 Swal.fire ★★★
+          Swal.fire({
+            title: '註冊失敗！',
+            text: '註冊失敗，請稍後再試。',
+            icon: 'error'
+          });
         }
-        grecaptcha.reset(); // 【新增】重設 reCAPTCHA
-
+        grecaptcha.reset();
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = '確認送出';

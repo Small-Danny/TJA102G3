@@ -1,80 +1,131 @@
 package com.tibafit.service.cart;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tibafit.model.cart.CartItemVO;
-import com.tibafit.repository.cart.CartItemDAO;
+import java.time.Duration;
+import java.util.Map;
 
-//	key：cart:{userId}
-//	field：{productId}（字串）
-//	value：qty（整數）提供讀取、加入/累加、設定數量、刪除單品與清空整車；每次寫入會把購物車 key 的 TTL 續期為 30 天。
-
-@Service // 服務層：專責操作 Redis 中的購物車（Hash 結構）
+@Service
 public class CartService {
 
-	private final RedisTemplate<String, Object> redis; // 由 CartRedisConfig 提供（key:String / value:Object）
+	private final RedisTemplate<String, Object> redis;
+	private static final Logger log = LoggerFactory.getLogger(CartService.class);
 
 	@Autowired
 	public CartService(RedisTemplate<String, Object> redis) {
 		this.redis = redis;
 	}
 
-	/** 產生使用者購物車的 Redis key：格式 cart:{userId} */
-	private String key(Integer userId) {
-		return "cart:" + userId;
+	private String key(String cartId) {
+		return "cart:" + cartId;
 	}
 
-	/** 讀取購物車（Redis Hash → Map<Object,Object>） */
+	// --- 為了兼容舊程式碼，保留所有接收 Integer userId 的方法 ---
 	public Map<Object, Object> getCart(Integer userId) {
-		return redis.opsForHash().entries(key(userId)); // HGETALL cart:{userId}
+		return getCart(String.valueOf(userId));
 	}
-
-	/**
-	 * 新增 / 累加商品數量 規則： - 若原本不存在：視為 0，再加上 quantity - 若加總後 <= 0：視為刪除該商品 - 每次操作後刷新 TTL
-	 * 30 天
-	 */
 	public void addItem(Integer userId, Integer productId, Integer quantity) {
-		HashOperations<String, Object, Object> ops = redis.opsForHash();
-		Integer cur = (Integer) ops.get(key(userId), productId.toString()); // HGET
-		int newQty = (cur == null ? 0 : cur) + quantity;
-		if (newQty <= 0) {
-			ops.delete(key(userId), productId.toString()); // HDEL
-		} else {
-			ops.put(key(userId), productId.toString(), newQty); // HSET
-		}
-		redis.expire(key(userId), Duration.ofDays(30)); // EXPIRE（滾動 TTL）
-		// ⚠ 併發下更穩的作法可改用 ops.increment(hashKey, field, delta) 以確保原子性（HINCRBY）
+		addItem(String.valueOf(userId), productId, quantity);
 	}
 
-	/**
-	 * 設定商品數量（idempotent） 規則： - quantity <= 0 視為刪除該商品 - 否則直接覆寫數量並刷新 TTL 30 天
-	 */
 	public void setQuantity(Integer userId, Integer productId, Integer quantity) {
+		if (userId == null) return;
+		setQuantity(String.valueOf(userId), productId, quantity); // 呼叫下面的新方法
+	}
+
+	public void removeItem(Integer userId, Integer productId) {
+		if (userId == null) return;
+		removeItem(String.valueOf(userId), productId); // 呼叫下面的新方法
+	}
+
+	public void clear(Integer userId) {
+		if (userId == null) return;
+		clear(String.valueOf(userId)); // 呼叫下面的新方法
+	}
+
+
+	// --- 新的、接收 String cartId 的核心方法 ---
+	public Map<Object, Object> getCart(String cartId) {
+		if (cartId == null || cartId.isBlank()) return Map.of();
+		return redis.opsForHash().entries(key(cartId));
+	}
+
+
+	public void addItem(String cartId, Integer productId, Integer quantity) {
+		if (cartId == null || cartId.isBlank()) return;
 		HashOperations<String, Object, Object> ops = redis.opsForHash();
+		ops.increment(key(cartId), String.valueOf(productId), quantity);
+		redis.expire(key(cartId), Duration.ofDays(30));
+	}
+
+
+
+	public void setQuantity(String cartId, Integer productId, Integer quantity) {
+		if (cartId == null || cartId.isBlank()) return;
+		HashOperations<String, Object, Object> ops = redis.opsForHash();
+		String productField = String.valueOf(productId);
 		if (quantity == null || quantity <= 0) {
-			ops.delete(key(userId), productId.toString()); // HDEL
+			ops.delete(key(cartId), productField);
 		} else {
-			ops.put(key(userId), productId.toString(), quantity); // HSET
-			redis.expire(key(userId), Duration.ofDays(30)); // EXPIRE
+			ops.put(key(cartId), productField, quantity);
+			redis.expire(key(cartId), Duration.ofDays(30));
 		}
 	}
 
-	/** 移除單一商品 */
-	public void removeItem(Integer userId, Integer productId) {
-		redis.opsForHash().delete(key(userId), productId.toString()); // HDEL
+	public void removeItem(String cartId, Integer productId) {
+		if (cartId == null || cartId.isBlank()) return;
+		redis.opsForHash().delete(key(cartId), String.valueOf(productId));
 	}
 
-	/** 清空整車（直接刪除 key） */
-	public void clear(Integer userId) {
-		redis.delete(key(userId)); // DEL cart:{userId}
+	public void clear(String cartId) {
+		if (cartId == null || cartId.isBlank()) return;
+		redis.delete(key(cartId));
+	}
+	/**
+	 * 【核心邏輯】合併訪客購物車到會員購物車
+	 */
+	@Transactional
+	public void mergeCart(String sessionId, Integer userId) {
+		// 3. 【★★★ 在方法開頭加入 Log ★★★】
+		log.info("mergeCart 方法被呼叫，傳入 sessionId: {}, userId: {}", sessionId, userId);
+
+		String sessionCartId = sessionId;
+		String userCartId = String.valueOf(userId);
+
+		if (sessionCartId == null || sessionCartId.isBlank() || sessionCartId.equals(userCartId)) {
+			log.warn("sessionId 為空或與 userId 相同，取消合併。");
+			return;
+		}
+
+		Map<Object, Object> sessionCart = getCart(sessionCartId);
+
+		// 4. 【★★★ 在找到購物車後加入 Log ★★★】
+		if (sessionCart.isEmpty()) {
+			log.warn("在 Redis 中找不到 sessionId 為 {} 的訪客購物車，或者購物車是空的。無需合併。", sessionId);
+			return;
+		}
+
+		log.info("成功找到訪客購物車 (sessionId: {})，內容為: {}", sessionId, sessionCart);
+		log.info("準備將商品合併到會員購物車 (userId: {})", userId);
+
+		for (Map.Entry<Object, Object> entry : sessionCart.entrySet()) {
+			try {
+				Integer productId = Integer.valueOf(entry.getKey().toString());
+				Integer quantity = Integer.parseInt(entry.getValue().toString());
+				if (productId != null && quantity > 0) {
+					addItem(userCartId, productId, quantity);
+				}
+			} catch (NumberFormatException e) {
+				System.err.println("合併購物車時解析商品資料失敗: " + entry);
+			}
+		}
+		clear(sessionCartId);
+		log.info("商品合併完成，已清除訪客購物車 (sessionId: {})。", sessionId);
 	}
 }

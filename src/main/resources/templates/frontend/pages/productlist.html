@@ -27,11 +27,11 @@
 <body>
 
 	<!-- header -->
-	<div th:replace="~{frontend/layout/header :: siteHeader}"></div>
+	<div id="header-placeholder"></div>
 
 	<!-- Banner -->
 	<section class="banner-style-one">
-		<div class="parallax" style="background-image: url(https://via.placeholder.com/1920x640);"></div>
+		<div class="parallax"></div>
 		<div class="container">
 			<div class="row">
 				<div class="banner-details">
@@ -154,6 +154,7 @@
 	<script th:src="@{/frontend-template/assets/js/cart.js}"></script>
 	<script src="/frontend-template/assets/js/api.js"></script>
 	<script src="/frontend-template/assets/js/productlist.js" defer></script>
+	<script th:src="@{/frontend-template/assets/js/loader.js}"></script>
 </body>
 
 </html>
