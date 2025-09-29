@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>TaskRecord 管理 - select_page</title>
+
+    <head th:insert="~{/admin/taskrecord/included-fragment}"></head>
+    <style>
+        :root {
+            --card: #fff;
+            --border: #dee2e6;
+            --muted: #6c757d;
+            --soft: #f8f9fa;
+        }
+
+        body {
+            padding-top: 72px;
+        }
+
+        .container-wide {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 12px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.1fr .9fr;
+            gap: 1rem;
+        }
+
+        @media(max-width:992px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: .5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+        }
+
+        .card-header,
+        .card-footer {
+            padding: .75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-footer {
+            border-top: 1px solid var(--border);
+            border-bottom: none;
+            background: var(--soft);
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .title {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: .375rem .75rem;
+            border: 1px solid #198754;
+            color: #198754;
+            border-radius: .375rem;
+            text-decoration: none;
+            cursor: pointer;
+            background: #fff;
+        }
+
+        .btn:hover {
+            background: #198754;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #6c757d;
+            color: #fff;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 160px 1fr auto;
+            gap: .5rem .75rem;
+            align-items: center;
+        }
+
+        @media(max-width:768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-grid input,
+        .form-grid select {
+            width: 100%;
+            padding: .375rem .5rem;
+            border: 1px solid #e9ecef;
+            border-radius: .375rem;
+        }
+
+        .errorblock {
+            color: #dc3545;
+            margin: .25rem 0 .75rem;
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: .9rem;
+        }
+
+        .divider {
+            height: 1px;
+            background: #eef1f4;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
+        <div class="text-center">
+            <h2 class="m-0">TaskRecord 管理 - select_page</h2>
+            <div class="mt-1">
+                <a class="navbar-brand" th:href="@{/}"><img th:src="@{/images/back1.gif}" alt="返回"> 回 index</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-wide">
+        <div class="grid mt-3">
+            <!-- 左：查詢/導航 -->
+            <section class="card">
+                <header class="card-header">
+                    <h3 class="title">資料查詢</h3>
+                    <div>
+                        <a class="btn" th:href="@{/taskrecord/add}">新增紀錄</a>
+                        <a class="btn btn-secondary" th:href="@{/taskrecord/listAll}">瀏覽全部</a>
+                    </div>
+                </header>
+                <div class="card-body">
+                    <div class="errorblock" th:utext="${errorMessage}"></div>
+
+                    <form class="form-grid" method="get" th:action="@{/taskrecord/getOne}">
+                        <label>輸入紀錄ID</label>
+                        <input type="text" name="taskRecordId" placeholder="例如：5" th:value="${param.taskRecordId}" />
+                        <button type="submit" class="btn">查詢</button>
+                    </form>
+
+                    <div class="divider"></div>
+
+                    <form class="form-grid" method="get" th:action="@{/taskrecord/getOne}">
+                        <label>選擇紀錄ID</label>
+                        <select name="taskRecordId">
+                            <option th:each="rec : ${taskRecordListData}" th:value="${rec.taskRecordId}"
+                                th:text="${rec.taskRecordId}"></option>
+                        </select>
+                        <button type="submit" class="btn">查詢</button>
+                    </form>
+                </div>
+                <footer class="card-footer">
+                    <span class="hint">提示：右側會顯示最近一次查詢的單筆結果。</span>
+                </footer>
+            </section>
+
+            <!-- 右：單筆預覽（片段） -->
+            <aside class="card" th:if="${taskRecordVO != null}">
+                <header class="card-header">
+                    <h3 class="title">單筆預覽</h3>
+                    <a class="btn btn-secondary" th:href="@{/taskrecord/select_page}">清除預覽</a>
+                </header>
+                <div class="card-body">
+                    <div th:insert="~{/back-end/taskrecord/listOneTaskRecord :: listOneTaskRecord-frag}"></div>
+                </div>
+            </aside>
+        </div>
+    </main>
+</body>
+
+</html>

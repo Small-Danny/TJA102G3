@@ -53,13 +53,12 @@ public class TasknoController {
 
         if (taskVO == null) {
             model.addAttribute("errorMessage", "查無資料");
-            // 視圖路徑：/back-end/emp/... → /back-end/task/...
-            return "back-end/task/select_page";
+            return "admin/task/select_page";
         }
 
         // 3) 成功：放入單筆 taskVO，回 select_page 由 fragment 顯示
         model.addAttribute("taskVO", taskVO); // 給 listOneTask.html 片段/或 select_page 右側區塊使用
-        return "back-end/task/select_page";
+        return "admin/task/select_page";
     }
 
     // 驗證失敗的例外處理（沿用你原本的寫法，物件/路徑改為 Task 版）
@@ -75,7 +74,7 @@ public class TasknoController {
         List<TaskVO> list = taskSvc.getAll();
         model.addAttribute("taskListData", list);
 
-        return new ModelAndView("back-end/task/select_page",
+        return new ModelAndView("admin/task/select_page",
                 "errorMessage", "請修正以下錯誤:<br>" + sb);
     }
 }

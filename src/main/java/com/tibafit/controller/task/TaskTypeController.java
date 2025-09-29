@@ -30,7 +30,7 @@ public class TaskTypeController {
     @GetMapping("/select_page")
     public String selectPage(Model model) {
         model.addAttribute("taskTypeListData", taskTypeService.getAll()); // 供下拉
-        return "back-end/tasktype/select_page";
+        return "admin/tasktype/select_page";
     }
     
     @ModelAttribute("taskTypeListData")
@@ -51,21 +51,21 @@ public class TaskTypeController {
     /** 進入選擇頁（可放查詢單筆/新增入口） */
 //    @GetMapping("/select_page")
 //    public String selectPage() {
-//        return "back-end/tasktype/select_page";
+//        return "admin/tasktype/select_page";
 //    }
 
     /** 列出所有 TaskType */
     @GetMapping("/listAll")
     public String listAll(Model model) {
         model.addAttribute("list", taskTypeService.getAll());
-        return "back-end/tasktype/listAllTaskType";
+        return "admin/tasktype/listAllTaskType";
     }
 
     /** 新增頁面 */
     @GetMapping("/add")
     public String addPage(Model model) {
         model.addAttribute("taskTypeVO", new TaskTypeVO());
-        return "back-end/tasktype/add_tasktype";
+        return "admin/tasktype/add_tasktype";
     }
 
     /** 新增動作 */
@@ -80,13 +80,13 @@ public class TaskTypeController {
         }
 
         if (result.hasErrors()) {
-            return "back-end/tasktype/add_tasktype";
+            return "admin/tasktype/add_tasktype";
         }
 
         taskTypeService.addTaskType(taskTypeVO);
         // 新增完導回列表
         model.addAttribute("list", taskTypeService.getAll());
-        return "back-end/tasktype/listAllTaskType";
+        return "admin/tasktype/listAllTaskType";
     }
 
     /** 顯示單筆（依 id） */
@@ -95,10 +95,10 @@ public class TaskTypeController {
         TaskTypeVO vo = taskTypeService.getOneTaskType(taskTypeId);
         if (vo == null) {
             model.addAttribute("errorMessage", "查無資料：id=" + taskTypeId);
-            return "back-end/tasktype/select_page";
+            return "admin/tasktype/select_page";
         }
         model.addAttribute("taskTypeVO", vo);
-        return "back-end/tasktype/listOneTaskType";
+        return "admin/tasktype/listOneTaskType";
     }
 
     /** 進入修改頁 */
@@ -107,10 +107,10 @@ public class TaskTypeController {
         TaskTypeVO vo = taskTypeService.getOneTaskType(taskTypeId);
         if (vo == null) {
             model.addAttribute("errorMessage", "查無資料：id=" + taskTypeId);
-            return "back-end/tasktype/select_page";
+            return "admin/tasktype/select_page";
         }
         model.addAttribute("taskTypeVO", vo);
-        return "back-end/tasktype/update_tasktype_input";
+        return "admin/tasktype/update_tasktype_input";
     }
 
     /** 修改動作 */
@@ -122,7 +122,7 @@ public class TaskTypeController {
         TaskTypeVO dbVO = taskTypeService.getOneTaskType(formVO.getTaskTypeId());
         if (dbVO == null) {
             model.addAttribute("errorMessage", "資料不存在或已被刪除：id=" + formVO.getTaskTypeId());
-            return "back-end/tasktype/select_page";
+            return "admin/tasktype/select_page";
         }
 
         if (formVO.getTaskTypeName() != null) {
@@ -134,12 +134,12 @@ public class TaskTypeController {
         }
 
         if (result.hasErrors()) {
-            return "back-end/tasktype/update_tasktype_input";
+            return "admin/tasktype/update_tasktype_input";
         }
 
         taskTypeService.updateTaskType(formVO);
         model.addAttribute("taskTypeVO", taskTypeService.getOneTaskType(formVO.getTaskTypeId()));
-        return "back-end/tasktype/listOneTaskType";
+        return "admin/tasktype/listOneTaskType";
     }
 
     /** 刪除 */
@@ -148,6 +148,6 @@ public class TaskTypeController {
         // 若有外鍵關聯，這裡可補 try-catch 給出友善訊息
         taskTypeService.deleteTaskType(taskTypeId);
         model.addAttribute("list", taskTypeService.getAll());
-        return "back-end/tasktype/listAllTaskType";
+        return "admin/tasktype/listAllTaskType";
     }
 }
