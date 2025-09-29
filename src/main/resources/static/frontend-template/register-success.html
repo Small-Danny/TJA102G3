@@ -8,7 +8,7 @@
     <!-- 共用样式表 -->
     <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/bootstrap.min.css">
     <link rel="icon" type="image/x-icon" href="/frontend-template/assets/images/heading-icon.png">
-    <link rel="stylesheet" href="/frontend-template/assets/font/flaticon_mycollection.css">
+    
     <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.carousel.min.css">
     <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.theme.default.min.css">
     <link rel="stylesheet" href="/frontend-template/assets/css/jquery.fancybox.min.css">
@@ -17,7 +17,7 @@
     <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/style.css">
     <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/responsive.css">
     <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* 成功提示样式 */
         .success-container {
@@ -90,13 +90,11 @@
     </div>
 
     <!-- 页首容器 -->
-    <header>
-        <div id="header"></div>
-    </header>
+         <div id="header-placeholder"></div>
 
     <!-- 横幅 -->
     <section class="banner-style-one">
-        <div class="parallax" style="background-image: url(https://via.placeholder.com/1920x640);"></div>
+        <div class="parallax"></div>
         <div class="container">
             <div class="row">
                 <div class="banner-details">
@@ -130,49 +128,12 @@
     </section>
 
     <!-- 页脚 -->
-    <footer class="footer-style-one" style="background-image: url(https://via.placeholder.com/1920x732);">
-        <!-- 页脚内容与其他页面保持一致（复用现有结构） -->
-        <div class="footer-p-1">
-            <div class="container">
-                <div class="row">
-                    <div class="footer-first">
-                        <div class="footer-logo">
-                            <a href="/frontend-template/index.html">
-                                <img src="/frontend-template/assets/images/logo-2.svg" alt="页脚标志">
-                            </a>
-                        </div>
-                        <div class="contact-info d-flex-all">
-                            <div class="images d-flex-all justify-content-start">
-                                <figure>
-                                    <img src="https://via.placeholder.com/57x57" alt="联系图片">
-                                </figure>
-                                <figure>
-                                    <img src="https://via.placeholder.com/57x57" alt="联系图片">
-                                </figure>
-                                <figure>
-                                    <img src="https://via.placeholder.com/57x57" alt="联系图片">
-                                </figure>
-                            </div>
-                            <p>專業教練 <span>+1 (251) 344 0 66</span> 免費通話！</p>
-                        </div>
-                        <a href="/frontend-template/contact.html" class="theme-btn">獲取諮詢 </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- 省略部分重复页脚内容（与login.html保持一致） -->
-    </footer>
+  <div id="footer-placeholder"></div>
 
     <!-- 脚本 -->
     <script src="/frontend-template/assets/js/jquery.min.js"></script>
     <script src="/frontend-template/assets/js/bootstrap.min.js"></script>
     <script src="/frontend-template/assets/js/custom.js"></script>
-    <script>
-        // 加载共用页头
-        fetch('header.txt?v=' + Date.now(), { cache: 'no-store' })
-            .then(r => r.text())
-            .then(html => { document.getElementById('header').innerHTML = html; });
-    </script>
 </body>
 
 </html>

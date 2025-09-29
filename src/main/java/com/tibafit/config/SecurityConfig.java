@@ -33,6 +33,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -68,7 +69,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
     // =======================================================================================
     // I. 依賴注入 (Dependencies Injection)
     // ---------------------------------------------------------------------------------------
@@ -184,10 +184,31 @@ public class SecurityConfig {
 
     @Bean("userRememberMeServices")
     public RememberMeServices userRememberMeServices() {
-        // TokenBasedRememberMeServices 是標準的實現，安全可靠
-        TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(rememberMeKey, userDetailsService);
-        rememberMe.setTokenValiditySeconds(86400 * 14); // cookie 有效期 14 天
-        rememberMe.setAlwaysRemember(true); // 總是啟用 "記住我"
+        TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(rememberMeKey, userDetailsService) {
+
+            // ▼▼▼ 【 關鍵的最終修正 】 ▼▼▼
+            // 覆寫這個方法，讓它永遠回傳 true。
+            // 因為我們是從 Service 手動調用 loginSuccess，我們自己已經確認過使用者想要「記住我」，
+            // 所以我們在這裡直接告訴 Spring Security 不用再去檢查 HTTP 請求參數了。
+            @Override
+            protected boolean rememberMeRequested(HttpServletRequest request, String parameter) {
+                return true;
+            }
+            // ▲▲▲ 【 關鍵的最終修正 】 ▲▲▲
+
+            // 以下的日誌可以暫時保留，用來確認最終的執行情況
+            @Override
+            public void onLoginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication successfulAuthentication) {
+                super.onLoginSuccess(request, response, successfulAuthentication);
+            }
+
+            @Override
+            protected void setCookie(String[] tokens, int maxAge, HttpServletRequest request, HttpServletResponse response) {
+                super.setCookie(tokens, maxAge, request, response);
+            }
+        };
+
+        rememberMe.setTokenValiditySeconds(86400 * 14);
         return rememberMe;
     }
 
@@ -318,13 +339,8 @@ public class SecurityConfig {
 
                         // --- 靜態資源 (CSS, JS, 圖片等，必須開放) ---
                         .requestMatchers(
-                                "/frontend-template/assets/**",
-                                "/frontend-template/product_img/**",
-                                "/frontend-template/header.txt",
-                                "/adminlte/**",
-                                "/uploads/**",   // 商品圖片上傳路徑
-                                "/avatars/**",   // 使用者頭像
-                                "/images/**"     // 專案內部的 static/images/
+                                "/frontend-template/**",
+                                "/adminlte/**"
                         ).permitAll()
 
                         // --- 公開 API (無需登入即可呼叫) ---
@@ -333,6 +349,7 @@ public class SecurityConfig {
                                 "/api/users/register",
                                 "/api/users/login",
                                 "/api/users/send-code",
+                                "/api/users/profile",
                                 "/api/users/request-password-reset",
                                 "/api/csrf-token",
 
@@ -377,11 +394,18 @@ public class SecurityConfig {
 
                 // 步驟 6: 登出設定
                 .logout(logout -> logout
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/**/logout", "POST")) // 攔截 POST 到 /logout 或 /admin/logout 的請求
-                        .logoutSuccessHandler(customLogoutSuccessHandler) // 使用自訂的登出成功處理器
+                        // 監聽前台和後台的登出路徑
+                        .logoutRequestMatcher(new OrRequestMatcher(
+                                new AntPathRequestMatcher("/api/users/logout", "POST"),
+                                new AntPathRequestMatcher("/admin/logout", "POST")
+                        ))
+                        // ★★★ 關鍵修正：使用你原本就寫好的 CustomLogoutSuccessHandler ★★★
+                        // 它能智慧地判斷要重新導向到前台還是後台
+                        .logoutSuccessHandler(customLogoutSuccessHandler)
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID", "XSRF-TOKEN", "remember-me") // 清除所有相關 cookie
+                        .deleteCookies("JSESSIONID", "remember-me", "XSRF-TOKEN") // 清理所有 cookie
+                        .permitAll()
                 )
 
                 // 步驟 7: 啟用 CORS (使用上面定義的 corsConfigurationSource)

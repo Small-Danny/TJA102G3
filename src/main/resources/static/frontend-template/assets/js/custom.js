@@ -164,37 +164,37 @@
       });
     }
 
-    /* 17 mobile-nav */
-    if (hasEl(".mobile-nav .menu-item-has-children")) {
-      $(".mobile-nav .menu-item-has-children").on("click", function (e) {
-        $(this).toggleClass("active");
-        e.stopPropagation();
-      });
-    }
+    // /* 17 mobile-nav */
+    // if (hasEl(".mobile-nav .menu-item-has-children")) {
+    //   $(".mobile-nav .menu-item-has-children").on("click", function (e) {
+    //     $(this).toggleClass("active");
+    //     e.stopPropagation();
+    //   });
+    // }
 
-    /* 18 #mobile-menu */
-    if (hasEl("#mobile-menu")) {
-      $("#mobile-menu").on("click", function () {
-        $(this).toggleClass("open");
-        toggleClass("#mobile-nav", "open");
-      });
-    }
+    // /* 18 #mobile-menu */
+    // if (hasEl("#mobile-menu")) {
+    //   $("#mobile-menu").on("click", function () {
+    //     $(this).toggleClass("open");
+    //     toggleClass("#mobile-nav", "open");
+    //   });
+    // }
 
-    /* 19 #desktop-menu */
-    if (hasEl("#desktop-menu")) {
-      $("#desktop-menu").on("click", function () {
-        $(this).toggleClass("open");
-        toggleClass(".desktop-menu", "open");
-      });
-    }
+    // /* 19 #desktop-menu */
+    // if (hasEl("#desktop-menu")) {
+    //   $("#desktop-menu").on("click", function () {
+    //     $(this).toggleClass("open");
+    //     toggleClass(".desktop-menu", "open");
+    //   });
+    // }
 
-    /* 20 #res-cross */
-    if (hasEl("#res-cross")) {
-      $("#res-cross").on("click", function () {
-        removeClass("#mobile-nav", "open");
-        removeClass("#mobile-menu", "open");
-      });
-    }
+    // /* 20 #res-cross */
+    // if (hasEl("#res-cross")) {
+    //   $("#res-cross").on("click", function () {
+    //     removeClass("#mobile-nav", "open");
+    //     removeClass("#mobile-menu", "open");
+    //   });
+    // }
 
     /* 21 li-pd-imgs（無 Nzoom 依賴） */
     if (hasEl(".li-pd-imgs")) {

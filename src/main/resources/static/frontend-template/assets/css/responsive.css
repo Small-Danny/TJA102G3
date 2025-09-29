@@ -1167,8 +1167,7 @@ header.header-style-one.three:before {
         margin-bottom: 0;
     }
     .innovation ul li {
-        height: 80px;
-        padding-left: 10px;
+        width: 50%;
     }
     .client-review-slider .slider-data h3 {
         margin-bottom: 30px;
@@ -1278,26 +1277,129 @@ header.header-style-one.three:before {
     .about-style-one .about-data-left:before {
         height: 110%;
     }
-    .footer-style-one .footer-p-2 {
-        padding: 80px 0;
+    .about-style-one .about-data-right {
+        padding-top: 80px;
     }
-    .renovation .reno-data h3 {
-        line-height: 60px;
+    .client-review-slider .owl-dots {
+        margin-top: 40px;
     }
-    .gap {
-        padding: 80px 0;
+    .footer-style-one .footer-p-2 .footer-col p {
+        width: 100%;
     }
-    .no-top {
-        padding-top: 0;
-    }
-    .no-bottom {
-        padding-bottom: 0;
+    .counter-style-one .counter-data {
+        width: 95%;
     }
     .renovation .reno-data h2 {
-        font-size: 80px;
+        font-size: 70px;
     }
+    .renovation .reno-data h3 {
+        font-size: 35px;
+        line-height: 55px;
+    }
+    .client-slider.owl-carousel .owl-item img {
+        width: auto !important;
+    }
+    .footer-style-one .footer-p-3 .footer-col p {
+        width: 100%;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .footer-style-one .footer-p-3.rights .footer-col {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .footer-p-2 .footer-col {
+        margin-bottom: 40px;
+    }
+    .footer-style-one .footer-p-2 .footer-col h3 {
+        margin-bottom: 15px;
+    }
+    .client-review-slider .owl-dots {
+        margin-bottom: 60px;
+    }
+    .renovation .reno-data:before {
+        right: -20%;
+    }
+        .renovation:after {
+        right: -50%;
+    }
+    .video-play-btn {
+        width: 150px;
+        height: 150px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    } 
+    .core-features .video:before {
+        left: 45%;
+        top: 50%; 
+    }
+    .core-features .video:before {
+        height: 400px;
+    }
+    ul.image-gallery li {
+      width: 33.27%;
+     }
+    .renovation .reno-data {
+    top: auto;
+    position: relative;
+    background-color: black;
+    padding: 80px 40px;
+        }
+    .jumbotron,.core-features .shape:before,.renovation video {
+        display: none;
+    }
+
+    .core-features .video figure img {
+        width: 100%;
+    }
+    .core-features .video {
+        clip-path: unset;
+        width: 100%;
+    }
+    .heading-style-2,
+    .client-review-slider .slider-data h3 {
+        margin-bottom: 30px;
+    }
+    .heading h2, .heading.heading-style-3 h2 span, .data h2,
+    .about-style-one .about-data-right h2, .heading h2, .heading-style-2 .data h2, .heading-style-2,
+    .client-review-slider .slider-data h3, .about-style-one .about-data-right h2, 
+    .blog-style-three .blog-heading h2, .heading.heading-style-3 h2 span, .about-first h2,
+    .about-key-benefits .data h2, .client-review-slider .slider-data h3, .revolution .head h2,
+    .contact-form-2 .data h2, .client-review-style-one .head-review h3,.together h2 {
+        font-size: 46px;
+        line-height: 50px;
+    }
+    .cta-section .cta-data h2 {
+        line-height: 74px;
+        font-size: 74px !important;
+    }
+    .about-style-one .about-data-right .about-info {
+        padding-left: 0;
+    }
+    .about-style-one .about-data-left .about-image {
+        margin-bottom: 0;
+    }
+    .service-style-one .service-data {
+        margin-bottom: 40px;
+    }
+    .together {
+        padding: 50px 18px;
+     }
     .project-completed .prj-slider {
-        padding-left: 4%;
+        padding-left: 0;
+        max-width: 700px;
+    }
+    .blog-style-three .blog-posts h3 {
+        font-size: 24px;
+        line-height: 32px; 
+    }
+    .footer-p-4 div {
+        width: 50%;
+        padding: 35px 32px;
+    }
+    div#countdown ul li {
+        padding: 10px 32px;
     }
 }
 @media(max-width: 992px) {
@@ -1929,7 +2031,7 @@ header.header-style-one.three:before {
         justify-content: center;
     }
     .footer-p-2 .footer-col {
-        margin-bottom: 40px;
+        margin-bottom: 30px;
     }
     .footer-style-one .footer-p-2 .footer-col h3 {
         margin-bottom: 15px;
@@ -2525,7 +2627,7 @@ header.header-style-one.three:before {
         margin-bottom: 40px;
     }
     .mobile-nav {
-        width: 75%;
+        width: 320px;
     }
     .checkout .order-note textarea {
         height: 200px;
@@ -2759,7 +2861,7 @@ header.header-style-one.three:before {
         font-size: 20px;
         line-height: 20px;
     }
-    .mobile-nav > ul > li > a {
+    .mobile-nav > ul li > a {
         font-size: 30px;
         line-height: 30px;
     }
@@ -2941,7 +3043,7 @@ header.header-style-one.three:before {
     .about-style-one .about-data-right {
         padding-top: 60px;
     }
-    .where-we-work .heading-style-2 {
+.where-we-work .heading-style-2 {
         margin-bottom: 20px;
     }
     .first .tab-data {
@@ -3629,4 +3731,4 @@ header.header-style-one.three:before {
     .team-style-one .owl-item.open.active {
         width: 7% !important;
     }
-} 
+}

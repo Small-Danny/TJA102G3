@@ -13,7 +13,7 @@
 
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/bootstrap.min.css">
   <link rel="icon" type="image/x-icon" href="/frontend-template/assets/images/heading-icon.png">
-  <link rel="stylesheet" href="/frontend-template/assets/font/flaticon_mycollection.css">
+  
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.carousel.min.css">
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.theme.default.min.css">
   <link rel="stylesheet" href="/frontend-template/assets/css/jquery.fancybox.min.css">
@@ -23,6 +23,7 @@
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/style.css">
   <!-- Responsive -->
   <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/responsive.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
     .social-item {
@@ -152,12 +153,12 @@
   <!-- Loader End -->
 
   <!-- Header Style One Start -->
-  <div id="header"></div>
+   <div id="header-placeholder"></div>
   <!-- Header Style One End -->
 
   <!-- Banner Style One Start -->
   <section class="banner-style-one">
-    <div class="parallax" style="background-image: url(https://via.placeholder.com/1920x640);"></div>
+    <div class="parallax"></div>
     <div class="container">
       <div class="row">
         <div class="banner-details">
@@ -197,58 +198,7 @@
   </main>
 
   <!-- Footer Style One Start -->
-  <footer class="footer-style-one" style="background-image: url(https://via.placeholder.com/1920x732);">
-    <div class="footer-p-2">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="footer-col">
-              <h3>資訊</h3>
-              <p>這是一個運動平台，運動請量力而為，<br>評估自身情況</p>
-            </div>
-          </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="footer-col">
-              <h3>社群</h3>
-              <ul>
-                <li class="social-item">
-                  <i class="fa-brands fa-facebook-f"></i>
-                  <p>TibaFit</p>
-                </li>
-                <li class="social-item">
-                  <i class="flaticon-instagram"></i>
-                  <p>@TibaFit</p>
-                </li>
-                <li class="social-item">
-                  <i class="fa-brands fa-line"></i>
-                  <p>TibaFit</p>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="footer-col">
-              <h3>聯絡我們</h3>
-              <ul>
-                <li class="social-item">
-                  <i class="fa-solid fa-phone"></i>
-                  <p>0800-000-000</p>
-                </li>
-                <li class="social-item">
-                  <i class="fa-solid fa-envelope"></i>
-                  <p>TibaFit@gmail.com</p>
-                </li>
-                <li class="social-item">
-                  <i class="fa-solid fa-location-dot"></i>
-                  <p>台北市中山區南京東路三段219號4F之401</p>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </footer>
+  <div id="footer-placeholder"></div>
 
   <div class="modal fade popups conslt-popup" id="exampleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -257,8 +207,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <img src="https://via.placeholder.com/420x591" alt="img">
-          <div class="contact-form-one popup">
+                    <div class="contact-form-one popup">
             <div class="c-form-2">
               <h3>Start Consulting</h3>
               <div class="parallax" style="background-image: url(assets/images/pattren.png);"></div>
@@ -328,21 +277,12 @@
   <script src="/frontend-template/assets/js/owl.carousel.min.js"></script>
 
   <!-- Custom Js -->
-
+  <script src="/frontend-template/assets/js/loader.js"></script>
   <script src="/frontend-template/assets/js/custom.js"></script>
 
   <script src="/frontend-template/assets/js/cart.js"></script>
   <script src="/frontend-template/assets/js/api.js"></script>
-
   <script src="/frontend-template/assets/js/checkout.js"></script>
-  <script>
-    fetch('header.txt?v=' + Date.now(), { cache: 'no-store' })
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById('header').innerHTML = html;
-      });
-  </script>
-  <script src="/frontend-template/assets/js/api.js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
