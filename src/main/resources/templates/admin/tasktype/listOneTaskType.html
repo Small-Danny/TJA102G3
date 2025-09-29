@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>類別個人資料 - listOneTaskType (Simple0)</title>
+
+    <head th:insert="~{/admin/tasktype/included-fragment}"></head>
+    <style>
+        :root {
+            --card-bg: #fff;
+            --card-border: #dee2e6;
+            --soft: #f8f9fa;
+            --nav-h: 72px;
+        }
+
+        body {
+            padding-top: var(--nav-h);
+        }
+
+        [id] {
+            scroll-margin-top: var(--nav-h);
+        }
+
+        .container-narrow {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 12px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: .5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+        }
+
+        .card-header {
+            padding: .75rem 1rem;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .card-footer {
+            padding: .75rem 1rem;
+            border-top: 1px solid var(--card-border);
+            background: var(--soft);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: .5rem .75rem;
+            align-items: center;
+        }
+
+        @media (max-width:768px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .details-grid .label {
+            font-weight: 700;
+            color: #333;
+        }
+
+        .details-grid .value {
+            color: #111;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: .375rem .75rem;
+            border: 1px solid #198754;
+            color: #198754;
+            background: #fff;
+            border-radius: .375rem;
+            text-decoration: none;
+            font-size: .9rem;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #198754;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #6c757d;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
+        <div class="text-center">
+            <h2 class="m-0">類別個人資料 - listOneTaskType</h2>
+            <div class="mt-1">
+                <a class="navbar-brand" th:href="@{/tasktype/select_page}"><img th:src="@{/images/back1.gif}"
+                        alt="返回">回查詢頁</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-narrow">
+        <section class="card mt-3">
+            <header class="card-header">
+                <h3 class="card-title">查詢結果</h3>
+                <a class="btn btn-secondary" th:href="@{/tasktype/select_page}">返回</a>
+            </header>
+            <div class="card-body">
+                <div class="details-grid">
+                    <div class="label">類別ID</div>
+                    <div class="value" th:text="${taskTypeVO.taskTypeId}"></div>
+
+                    <div class="label">類別名稱</div>
+                    <div class="value" th:text="${taskTypeVO.taskTypeName}"></div>
+                </div>
+            </div>
+            <footer class="card-footer">
+                <div>
+                    <form th:action="@{/tasktype/getOne_For_Update}" method="get" style="display:inline">
+                        <input type="hidden" name="taskTypeId" th:value="${taskTypeVO.taskTypeId}" />
+                        <button type="submit" class="btn">修改</button>
+                    </form>
+                    <form th:action="@{/tasktype/delete}" method="post" style="display:inline;margin-left:.5rem">
+                        <input type="hidden" name="taskTypeId" th:value="${taskTypeVO.taskTypeId}" />
+                        <button type="submit" class="btn btn-secondary">刪除</button>
+                    </form>
+                </div>
+            </footer>
+        </section>
+    </main>
+
+    <!-- 供右側預覽用的片段 -->
+<!--     <div th:fragment="listOneTaskType-div"> -->
+<!--         <section class="card"> -->
+<!--             <header class="card-header"> -->
+<!--                 <h3 class="card-title">查詢結果</h3> -->
+<!--             </header> -->
+<!--             <div class="card-body"> -->
+<!--                 <div class="details-grid"> -->
+<!--                     <div class="label">類別ID</div> -->
+<!--                     <div class="value" th:text="${taskTypeVO.taskTypeId}"></div> -->
+
+<!--                     <div class="label">類別名稱</div> -->
+<!--                     <div class="value" th:text="${taskTypeVO.taskTypeName}"></div> -->
+<!--                 </div> -->
+<!--             </div> -->
+<!--         </section> -->
+<!--     </div> -->
+</body>
+
+</html>
