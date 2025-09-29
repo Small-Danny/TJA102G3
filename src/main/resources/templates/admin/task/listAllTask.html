@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>所有任務資料 - listAllTask (Simple0 風格)</title>
+  <!-- jQuery：保留既有分頁用 -->
+  <script th:src="@{/js/jquery-1.11.3.min.js}"></script>
+  <!-- 若專案已在 included-fragment 載入 Bootstrap / AdminLTE，這裡不需再引入 -->
+  <head th:insert="~{/admin/task/included-fragment}"></head>
+
+  <style>
+    /* 基本外觀：模擬 simple0 的卡片 + 邊框表格風格（AdminLTE/Bootstrap 類名） */
+    :root {
+      --card-bg: #fff;
+      --card-border: #dee2e6;
+      --muted: #6c757d;
+    }
+    body { padding-top: 72px; }
+
+    .container-narrow { max-width: 1200px; margin: 0 auto; padding: 0 12px; }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: .5rem; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    .card-header { padding: .75rem 1rem; border-bottom: 1px solid var(--card-border); display:flex; align-items:center; justify-content:space-between; }
+    .card-title { margin: 0; font-size: 1.1rem; font-weight: 600; }
+    .card-body { padding: 1rem; }
+    .card-footer { padding: .75rem 1rem; border-top: 1px solid var(--card-border); background: #f8f9fa; }
+
+    .btn { display:inline-block; padding:.375rem .75rem; border:1px solid #198754; color:#198754; background:#fff; border-radius:.375rem; text-decoration:none; font-size:.9rem; }
+    .btn:hover { background:#198754; color:#fff; }
+
+    .table { width:100%; border-collapse: collapse; background:#fff; }
+    .table thead th { background:#f3f6f9; font-weight:600; }
+    .table th, .table td { border:1px solid #e9ecef; padding:.5rem .5rem; text-align:center; vertical-align: middle; }
+    .table img { display:block; margin:0 auto; border-radius:.375rem; }
+
+    .badge { display:inline-block; padding:.25rem .5rem; border-radius:.375rem; font-size:.75rem; }
+
+    /* pagination（仿 simple0 的 .pagination.pagination-sm） */
+    .pagination { display:flex; gap:.25rem; margin:0; list-style:none; padding:0; }
+    .pagination .page-item .page-link { display:block; padding:.25rem .5rem; border:1px solid #dee2e6; border-radius:.375rem; text-decoration:none; color:#0d6efd; }
+    .pagination .page-item.active .page-link { background:#0d6efd; color:#fff; border-color:#0d6efd; }
+    .pagination .page-item.disabled .page-link { color: var(--muted); pointer-events: none; background:#f8f9fa; }
+
+    .subhead { color: var(--muted); font-size:.9rem; }
+    .toolbar { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; }
+  </style>
+
+  <script>
+    // 以「ul.pagination」控制分頁，保留你原先的分頁邏輯並改寫為更貼近 simple0 的 UI
+    $(function () {
+      var $table = $("#taskTable");
+      var currentPage = 0;
+      var pageSize = 5; // 預設每頁 5 筆（可自行調整）
+
+      function renderPage() {
+        var $rows = $table.find('tbody tr');
+        $rows.hide().slice(currentPage * pageSize, (currentPage + 1) * pageSize).show();
+        $('#currentPage').text(currentPage + 1);
+      }
+
+      // 計算總頁數與渲染分頁按鈕
+      var sumRows = $table.find('tbody tr').length;
+      var sumPages = Math.max(1, Math.ceil(sumRows / pageSize));
+      $('#pageNumber').text(sumPages);
+
+      var $pager = $('#pager');
+      function buildPager() {
+        $pager.empty();
+        // «
+        $('<li class="page-item"><a class="page-link" href="#" aria-label="Previous">&laquo;</a></li>')
+          .toggleClass('disabled', currentPage === 0)
+          .on('click', function (e) { e.preventDefault(); if (currentPage > 0) { currentPage--; update(); } })
+          .appendTo($pager);
+        // 1..N
+        for (var i = 0; i < sumPages; i++) {
+          (function (pageIndex) {
+            var $li = $('<li class="page-item"><a class="page-link" href="#">' + (pageIndex + 1) + '</a></li>');
+            if (pageIndex === currentPage) $li.addClass('active');
+            $li.on('click', function (e) { e.preventDefault(); currentPage = pageIndex; update(); });
+            $li.appendTo($pager);
+          })(i);
+        }
+        // »
+        $('<li class="page-item"><a class="page-link" href="#" aria-label="Next">&raquo;</a></li>')
+          .toggleClass('disabled', currentPage >= sumPages - 1)
+          .on('click', function (e) { e.preventDefault(); if (currentPage < sumPages - 1) { currentPage++; update(); } })
+          .appendTo($pager);
+      }
+
+      function update() {
+        renderPage();
+        buildPager();
+      }
+
+      // 初始
+      update();
+    });
+  </script>
+</head>
+
+<body>
+  <!-- 導覽列（保留你的 bg-success 風格與返回查詢頁連結） -->
+  <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
+    <div class="text-center">
+      <h2 class="m-0">所有任務資料 - listAllTask</h2>
+      <div class="mt-1">
+        <a class="navbar-brand" th:href="@{/tasks/select_page}">
+          <img th:src="@{/images/back1.gif}" alt="返回" /> 回查詢頁
+          <label th:text="${success}"></label>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container-narrow">
+    <!-- 資訊列 -->
+    <div class="subhead my-3 text-center">
+      <b>第 <span id="currentPage">1</span>/<span id="pageNumber"></span> 頁</b>
+      <span class="mx-2">•</span>
+      <b>符合條件共 <span class="text-danger" th:text="${taskListData.size}"></span> 筆</b>
+    </div>
+
+    <!-- 卡片：模仿 simple0 的 Bordered Table 卡片結構 -->
+    <section class="card mb-4">
+      <header class="card-header">
+        <h3 class="card-title">任務列表</h3>
+        <div class="toolbar">
+          <a class="btn" th:href="@{/tasks/select_page}">回查詢頁</a>
+        </div>
+      </header>
+
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="taskTable" class="table table-bordered align-middle">
+            <thead>
+              <tr>
+                <th style="width: 60px">#</th>
+                <th style="width: 90px">任務ID</th>
+                <th>任務名稱</th>
+                <th>類型</th>
+                <th style="width: 90px">目標值</th>
+                <th style="width: 90px">單位</th>
+                <th>開始日</th>
+                <th>結束日</th>
+                <th style="width: 80px">點數</th>
+                <th style="width: 120px">圖示</th>
+                <th style="width: 110px">建立人ID</th>
+                <th style="width: 80px">修改</th>
+                <th style="width: 80px">刪除</th>
+              </tr>
+            </thead>
+            <tbody>
+              <th:block th:each="taskVO, taskVOStat : ${taskListData}">
+                <tr>
+                  <td th:text="${taskVOStat.count}"></td>
+                  <td th:text="${taskVO.taskId}"></td>
+                  <td th:text="${taskVO.taskName}"></td>
+                  <td th:text="${taskVO.taskTypeVO.taskTypeName}"></td>
+                  <td th:text="${taskVO.targetValue}"></td>
+                  <td th:text="${taskVO.unit}"></td>
+                  <td th:text="${#temporals.format(taskVO.startTime, 'yyyy-MM-dd')}"></td>
+                  <td th:text="${#temporals.format(taskVO.endTime, 'yyyy-MM-dd')}"></td>
+                  <td><span class="badge" th:text="${taskVO.points}"></span></td>
+                  <td>
+                    <img th:src="@{/tasks/DBGifReader} + '?taskId=' + ${taskVO.taskId}" alt="icon" width="80" height="80" />
+                  </td>
+                  <td th:text="${taskVO.adminId}"></td>
+                  <td>
+                    <form method="post" th:action="@{/tasks/getOne_For_Update}" style="margin:0">
+                      <input type="hidden" name="taskId" th:value="${taskVO.taskId}" />
+                      <input type="submit" class="btn" value="修改" />
+                    </form>
+                  </td>
+                  <td>
+                    <form method="post" th:action="@{/tasks/delete}" style="margin:0">
+                      <input type="hidden" name="taskId" th:value="${taskVO.taskId}" />
+                      <input type="submit" class="btn" value="刪除" />
+                    </form>
+                  </td>
+                </tr>
+              </th:block>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <footer class="card-footer clearfix">
+        <ul id="pager" class="pagination pagination-sm m-0" style="justify-content:flex-end"></ul>
+      </footer>
+    </section>
+  </main>
+</body>
+</html>
