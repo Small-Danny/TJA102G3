@@ -95,20 +95,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const productId = btn.dataset.id || btn.getAttribute('data-id');
     if (!productId) {
       console.error('找不到 Product ID！');
-      alert('無法加入購物車，缺少商品資訊。');
+      // 錯誤提示也改用 Swal
+      Swal.fire('錯誤', '無法加入購物車，缺少商品資訊。', 'error');
       return;
     }
 
-    // 先用 cart.js 的 addItemToCart（若已載入），否則退回 fetch API
-    const useCartJs = (typeof window.addItemToCart === 'function');
+    try {
+      // 呼叫 cart.js 中的核心函式
+      await addItemToCart(productId, 1);
+      
+      // 成功提示改用 Swal
+      Swal.fire({
+        icon: 'success',
+        title: '成功加入購物車！',
+        showConfirmButton: false,
+        timer: 1500 // 1.5秒後自動關閉
+      });
 
-   try {
-    // ★★★ 關鍵修正：只呼叫我們在 cart.js 中定義好的函式 ★★★
-    await addItemToCart(productId, 1);
-    alert('商品已成功加入購物車！');
-
-} catch (err) {
-    alert(`加入購物車失敗：${err.message}`);
-}
+    } catch (err) {
+      // 失敗提示也改用 Swal
+      Swal.fire({
+        icon: 'error',
+        title: '加入失敗',
+        text: err.message || '請稍後再試'
+      });
+    }
   });
 });

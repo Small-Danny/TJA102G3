@@ -177,47 +177,50 @@
   // ==========================================================
   // 「加入購物車」按鈕邏輯（合併重複代碼，保留完整功能）
   // ==========================================================
-  if (btnCart) {
-    btnCart.addEventListener('click', function(event) {
-      event.preventDefault();
+if (btnCart) {
+  btnCart.addEventListener('click', async function(event) { // <--- 加上 async
+    event.preventDefault();
 
-      // 檢查按鈕是否處於停用狀態
-      if (this.classList.contains('disabled') || this.getAttribute('aria-disabled') === 'true') {
-        setHint('請先選擇有庫存的尺寸', true);
-        return;
-      }
+    if (this.classList.contains('disabled') || this.getAttribute('aria-disabled') === 'true') {
+      setHint('請先選擇有庫存的尺寸', true);
+      return;
+    }
 
-      const productId = this.dataset.id;
-      const quantityInput = document.getElementById('qty');
-      const quantity = quantityInput ? quantityInput.value : 1;
-      
-      if (!productId) {
-        console.error('找不到商品 Variant ID，無法加入購物車。');
-        setHint('無法加入購物車，請重新選擇尺寸', true);
-        return;
+    const productId = this.dataset.id;
+    const quantityInput = document.getElementById('qty');
+    const quantity = quantityInput ? quantityInput.value : 1;
+
+    if (!productId) {
+      console.error('找不到商品 Variant ID，無法加入購物車。');
+      setHint('無法加入購物車，請重新選擇尺寸', true);
+      return;
+    }
+
+    // ★★★ 使用 async/await 和 try/catch，並將 alert 改為 Swal ★★★
+    try {
+      if (typeof addItemToCart !== 'function') {
+        throw new Error('購物車功能未正確載入。');
       }
       
-      // 呼叫 cart.js 中的 addItemToCart 函式
-      if (typeof addItemToCart === 'function') {
-        addItemToCart(productId, quantity, {
-          onSuccess: function(data) {
-            alert('商品已成功加入購物車！');
-            
-            // 1. 觸發通用事件（與 productlist.js 保持一致，便於全局監聽）
-            document.dispatchEvent(new CustomEvent('cart:changed', { detail: data }));
-            
-            // 2. 保留原始的 updateCartInfo 調用（兼容既有邏輯）
-            if (typeof window.TibaFit?.updateCartInfo === 'function') {
-              window.TibaFit.updateCartInfo();
-            }
-          },
-          onError: function(error) {
-            alert('加入購物車失敗：' + (error?.message || '請稍後再試'));
-          }
-        });
-      } else {
-        alert('發生錯誤：購物車功能未正確載入。');
-      }
-    });
-  }
+      const data = await addItemToCart(productId, quantity);
+      
+      // 成功提示改用 Swal
+      Swal.fire({
+        icon: 'success',
+        title: '成功加入購物車！',
+        showConfirmButton: false,
+        timer: 1500
+      });
+      
+    } catch (error) {
+      // 失敗提示也改用 Swal
+      Swal.fire({
+        icon: 'error',
+        title: '加入失敗',
+        text: error.message || '請稍後再試'
+      });
+    }
+  });
+}
+
 })();
