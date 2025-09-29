@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>TaskRecord 修改 - update_taskrecord_input</title>
+
+    <head th:insert="~{/admin/taskrecord/included-fragment}"></head>
+    <style>
+        :root {
+            --border: #dee2e6;
+            --muted: #6c757d;
+            --soft: #f8f9fa;
+        }
+
+        body {
+            padding-top: 72px;
+        }
+
+        .container-narrow {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 12px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: .5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+        }
+
+        .card-header {
+            padding: .75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .card-footer {
+            padding: .75rem 1rem;
+            border-top: 1px solid var(--border);
+            background: var(--soft);
+        }
+
+        .title {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .form {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: .5rem .75rem;
+            align-items: center;
+        }
+
+        @media(max-width:768px) {
+            .form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form input,
+        .form select,
+        .form textarea {
+            width: 100%;
+            padding: .375rem .5rem;
+            border: 1px solid #e9ecef;
+            border-radius: .375rem;
+        }
+
+        .readonly {
+            border: 0;
+            background: transparent;
+            font-weight: 700;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: .85rem;
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: .9rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: .375rem .75rem;
+            border: 1px solid #198754;
+            color: #198754;
+            border-radius: .375rem;
+            background: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #198754;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #6c757d;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
+        <div class="text-center">
+            <h2 class="m-0">TaskRecord 修改 - update_taskrecord_input</h2>
+            <div class="mt-1">
+                <a class="navbar-brand" th:href="@{/taskrecord/select_page}"><img th:src="@{/images/back1.gif}"
+                        alt="返回"> 回查詢頁</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-narrow">
+        <section class="card mt-3">
+            <header class="card-header">
+                <h3 class="title">修改紀錄</h3>
+                <a class="btn btn-secondary" th:href="@{/taskrecord/select_page}">返回</a>
+            </header>
+
+            <div class="card-body">
+                <form th:action="@{/taskrecord/update}" method="post" th:object="${taskRecordVO}">
+                    <label>紀錄ID</label>
+                    <div><input th:field="*{taskRecordId}" class="readonly" readonly /></div>
+
+                    <label>會員ID</label>
+                    <div><input th:field="*{userVO.userId}" class="readonly" readonly /></div>
+
+                    <label>任務</label>
+                    <div>
+                        <select th:field="*{taskVO.taskId}">
+                            <option th:each="t : ${taskListData}" th:value="${t.taskId}"
+                                th:text="${t.taskId + ' - ' + t.taskName}"></option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('taskVO.taskId')}" th:errors="*{taskVO.taskId}" class="error"
+                            id="taskVO.taskId.errors"></span>
+                    </div>
+
+                    <!-- 開始時間 -->
+                    <label>開始時間</label>
+                    <div>
+                        <!-- 綁 VO 的 LocalDateTime：getUserStartTime()/setUserStartTime(...) -->
+                        <input type="datetime-local" th:field="*{userStartTime}" />
+                        <span th:if="${#fields.hasErrors('userStartTime')}" th:errors="*{userStartTime}"
+                            class="error"></span>
+                    </div>
+
+                    <!-- 結束時間 -->
+                    <label>結束時間</label>
+                    <div>
+                        <!-- 綁 VO 的 LocalDateTime：getUserEndTime()/setUserEndTime(...) -->
+                        <input type="datetime-local" th:field="*{userEndTime}" />
+                        <span th:if="${#fields.hasErrors('userEndTime')}" th:errors="*{userEndTime}"
+                            class="error"></span>
+                    </div>
+
+                    <label>狀態</label>
+                    <div>
+                        <select th:field="*{taskRecordStatusVO.taskRecordStatus}">
+                            <option value="" disabled selected>請選擇狀態</option>
+                            <option th:each="s : ${taskRecordStatusListData}" th:value="${s.taskRecordStatus}"
+                                th:text="${s.statusName}">
+                            </option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('taskRecordStatusVO.taskRecordStatus')}"
+                            th:errors="*{taskRecordStatusVO.taskRecordStatus}" class="error"
+                            id="taskRecordStatusVO.taskRecordStatus.errors"></span>
+                    </div>
+
+
+
+                    <div class="text-end mt-3">
+                        <button type="submit" class="btn">送出修改</button>
+                    </div>
+                </form>
+            </div>
+
+            <footer class="card-footer">
+                <span class="hint">提示：若你的欄位不同，請將上方 <code>th:field</code> 名稱改為你的 VO 欄位。</span>
+            </footer>
+        </section>
+    </main>
+</body>
+
+</html>

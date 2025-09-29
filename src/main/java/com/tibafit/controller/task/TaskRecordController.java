@@ -80,21 +80,21 @@ public class TaskRecordController {
 	/** 入口頁 */
 	@GetMapping("/select_page")
 	public String selectPage() {
-		return "back-end/taskrecord/select_page";
+		return "admin/taskrecord/select_page";
 	}
 
 	/** 列出全部 */
 	@GetMapping("/listAll")
 	public String listAll(Model model) {
 		model.addAttribute("list", taskRecordService.getAll());
-		return "back-end/taskrecord/listAllTaskRecord";
+		return "admin/taskrecord/listAllTaskRecord";
 	}
 
 	/** 進入新增頁 */
 	@GetMapping("/add")
 	public String addPage(Model model) {
 		model.addAttribute("taskRecordVO", new TaskRecordVO());
-		return "back-end/taskrecord/add_taskrecord";
+		return "admin/taskrecord/add_taskrecord";
 	}
 
 	/** 新增 */
@@ -103,12 +103,12 @@ public class TaskRecordController {
 			Model model) {
 
 		if (result.hasErrors()) {
-			return "back-end/taskrecord/add_taskrecord";
+			return "admin/taskrecord/add_taskrecord";
 		}
 
 		taskRecordService.addTaskRecord(taskRecordVO);
 		model.addAttribute("list", taskRecordService.getAll());
-		return "back-end/taskrecord/listAllTaskRecord";
+		return "admin/taskrecord/listAllTaskRecord";
 	}
 
 	/** 查單筆 */
@@ -117,10 +117,10 @@ public class TaskRecordController {
 		TaskRecordVO vo = taskRecordService.getOneTaskRecord(taskRecordId);
 		if (vo == null) {
 			model.addAttribute("errorMessage", "查無資料：id=" + taskRecordId);
-			return "back-end/taskrecord/select_page";
+			return "admin/taskrecord/select_page";
 		}
 		model.addAttribute("taskRecordVO", vo);
-		return "back-end/taskrecord/listOneTaskRecord";
+		return "admin/taskrecord/listOneTaskRecord";
 	}
 
 	/** 進入修改頁 */
@@ -129,10 +129,10 @@ public class TaskRecordController {
 		TaskRecordVO vo = taskRecordService.getOneTaskRecord(taskRecordId);
 		if (vo == null) {
 			model.addAttribute("errorMessage", "資料不存在或已被刪除：id=" + taskRecordId);
-			return "back-end/taskrecord/select_page";
+			return "admin/taskrecord/select_page";
 		}
 		model.addAttribute("taskRecordVO", vo);
-		return "back-end/taskrecord/update_taskrecord_input";
+		return "admin/taskrecord/update_taskrecord_input";
 	}
 
 	/** 修改 */
@@ -141,12 +141,12 @@ public class TaskRecordController {
 			Model model) {
 
 		if (result.hasErrors()) {
-			return "back-end/taskrecord/update_taskrecord_input";
+			return "admin/taskrecord/update_taskrecord_input";
 		}
 
 		taskRecordService.updateTaskRecord(formVO);
 		model.addAttribute("taskRecordVO", taskRecordService.getOneTaskRecord(formVO.getTaskRecordId()));
-		return "back-end/taskrecord/listOneTaskRecord";
+		return "admin/taskrecord/listOneTaskRecord";
 	}
 
 	/** 刪除 */
@@ -155,6 +155,6 @@ public class TaskRecordController {
 		// 如有外鍵限制（任務/會員）可在此 try-catch 並回報友善訊息
 		taskRecordService.deleteTaskRecord(taskRecordId);
 		model.addAttribute("list", taskRecordService.getAll());
-		return "back-end/taskrecord/listAllTaskRecord";
+		return "admin/taskrecord/listAllTaskRecord";
 	}
 }
