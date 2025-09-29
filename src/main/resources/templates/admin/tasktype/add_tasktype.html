@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>類別資料新增 - add_tasktype (Simple0)</title>
+
+    <head th:insert="~{/admin/tasktype/included-fragment}"></head>
+    <style>
+        :root {
+            --card-bg: #fff;
+            --card-border: #dee2e6;
+            --muted: #6c757d;
+            --soft: #f8f9fa;
+        }
+
+        body {
+            padding-top: 72px;
+        }
+
+        .container-narrow {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 12px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: .5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+        }
+
+        .card-header {
+            padding: .75rem 1rem;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .card-footer {
+            padding: .75rem 1rem;
+            border-top: 1px solid var(--card-border);
+            background: var(--soft);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: .5rem .75rem;
+            align-items: center;
+        }
+
+        @media (max-width:768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid label {
+                margin-top: .25rem;
+            }
+        }
+
+        .form-grid label {
+            font-weight: 600;
+        }
+
+        .form-grid input[type=text] {
+            width: 100%;
+            padding: .375rem .5rem;
+            border: 1px solid #e9ecef;
+            border-radius: .375rem;
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: .9rem;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: .85rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: .375rem .75rem;
+            border: 1px solid #198754;
+            color: #198754;
+            background: #fff;
+            border-radius: .375rem;
+            text-decoration: none;
+            font-size: .9rem;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #198754;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #6c757d;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
+        <div class="text-center">
+            <h2 class="m-0">類別資料新增 - add_tasktype</h2>
+            <div class="mt-1">
+                <a class="navbar-brand" th:href="@{/tasktype/select_page}"><img th:src="@{/images/back1.gif}"
+                        alt="返回">回查詢頁</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-narrow">
+        <p class="hint mt-3 mb-2 text-center"><b>所有欄位皆為必填欄位</b></p>
+
+        <section class="card mb-4">
+            <header class="card-header">
+                <h3 class="card-title">新增類別</h3>
+                <a class="btn btn-secondary" th:href="@{/tasktype/select_page}">回查詢頁</a>
+            </header>
+
+            <div class="card-body">
+                <!-- Post 至 /tasktype/insert；綁定 taskTypeVO -->
+                <form th:action="@{/tasktype/insert}" method="post" th:object="${taskTypeVO}">
+                    <div class="form-grid">
+                        <label>類別名稱</label>
+                        <div>
+                            <input type="text" th:field="*{taskTypeName}"
+                                onclick="hideContent('taskTypeName.errors');" />
+                            <span th:if="${#fields.hasErrors('taskTypeName')}" th:errors="*{taskTypeName}" class="error"
+                                id="taskTypeName.errors"></span>
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <button type="submit" class="btn" id="submit">送出新增</button>
+                    </div>
+                </form>
+            </div>
+
+            <footer class="card-footer">
+                <span class="hint">提示：採 Thymeleaf <code>th:field</code> 綁定，Controller 會做名稱重複驗證。</span>
+            </footer>
+        </section>
+    </main>
+
+    <script>
+        function hideContent(id) { var el = document.getElementById(id); if (el) el.style.display = 'none'; }
+    </script>
+</body>
+
+</html>
