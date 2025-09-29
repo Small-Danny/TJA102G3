@@ -50,7 +50,7 @@ public class TaskController {
 		TaskVO taskVO = new TaskVO();
 		taskVO.setPoints(0);
 		model.addAttribute("taskVO", taskVO);
-		return "back-end/task/addTask";
+		return "admin/task/addTask";
 	}
 
 	/* ======== 新增處理 ======== */
@@ -70,11 +70,11 @@ public class TaskController {
 //			}
 //		}
 //		if (result.hasErrors() || parts[0].isEmpty()) {
-//			return "back-end/emp/addTask";
+//			return "admin/emp/addTask";
 //		}
 //		// taskIcon 必填且為 URL（若在 entity 用 @NotBlank 已驗證，這段可省略或換為更精細的檢核）
 //		if (result.hasErrors()) {
-//			return "back-end/task/addTask";
+//			return "admin/task/addTask";
 //		}
 //
 //		taskSvc.addTask(taskVO);
@@ -89,7 +89,7 @@ public class TaskController {
 //	public String getOne_For_Update(@RequestParam("taskId") Integer taskId, ModelMap model) {
 //		TaskVO taskVO = taskSvc.getOneTask(taskId);
 //		model.addAttribute("taskVO", taskVO);
-//		return "back-end/task/update_task_input";
+//		return "admin/task/update_task_input";
 //	}
 	
 	/* ======== 新增處理 new======== */
@@ -133,7 +133,7 @@ public class TaskController {
 
 	    // 若還有其他欄位驗證錯誤 → 回表單
 	    if (result.hasErrors()) {
-	        return "back-end/task/addTask"; // 這裡順便把你原本的 emp 路徑修正為 task
+	        return "admin/task/addTask"; // 這裡順便把你原本的 emp 路徑修正為 task
 	    }
 
 	    taskSvc.addTask(taskVO);
@@ -148,7 +148,7 @@ public class TaskController {
 	        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))*/;
 	    model.addAttribute("taskVO", taskVO);
 	    model.addAttribute("taskTypeListData", taskTypeSvc.getAll());
-	    return "back-end/task/update_task_input";
+	    return "admin/task/update_task_input";
 	}
 
 
@@ -172,7 +172,7 @@ public class TaskController {
 			}
 		}
 		if (result.hasErrors()) {
-			return "back-end/task/update_task_input";
+			return "admin/task/update_task_input";
 		}
 		
 
@@ -181,7 +181,7 @@ public class TaskController {
 		model.addAttribute("success", "- (修改成功)");
 		taskVO = taskSvc.getOneTask(taskVO.getTaskId());
 		model.addAttribute("taskVO", taskVO);
-		return "back-end/task/listOneTask";
+		return "admin/task/listOneTask";
 	}
 
 	/* ======== 刪除 ======== */
@@ -189,7 +189,7 @@ public class TaskController {
 	public String delete(@RequestParam("taskId") Integer taskId, ModelMap model) {
 		taskSvc.deleteTask(taskId);
 		model.addAttribute("success", "- (刪除成功)");
-		return "back-end/task/listAllTask";
+		return "admin/task/listAllTask";
 	}
 
 	/* ======== 下拉/列表資料供 View 使用 ======== */
