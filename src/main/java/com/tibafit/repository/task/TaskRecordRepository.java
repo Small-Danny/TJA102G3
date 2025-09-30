@@ -15,7 +15,7 @@ public interface TaskRecordRepository extends JpaRepository<TaskRecordVO, Intege
 	 @Query("SELECT tr FROM TaskRecordVO tr WHERE tr.taskVO.taskId = :taskId")
 	 List<TaskRecordVO> findByTaskId(@Param("taskId")Integer taskId);
      
-     @Query("SELECT tr FROM TaskRecordVO tr WHERE tr.userVO.userId = :userId")
+     @Query("SELECT tr FROM TaskRecordVO tr WHERE tr.user.userId = :userId")
      List<TaskRecordVO> findAllByUserId(@Param("userId") Integer userId);
      
      @org.springframework.data.jpa.repository.Modifying
