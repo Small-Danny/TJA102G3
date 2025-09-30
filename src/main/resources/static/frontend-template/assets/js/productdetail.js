@@ -5,8 +5,9 @@
   const btnCart   = document.getElementById('btnAddToCart');
   const skuText   = document.getElementById('skuText');
   const priceText = document.getElementById('priceText');
+  const qtyInput  = document.getElementById('qty'); // 數量輸入框控制
 
-  // 將 API 先取出一次
+  // 先取出庫存 API
   const STOCK_API = stockHint ? (stockHint.dataset.stockUrl || '/shop/api/stock') : '/shop/api/stock';
 
   // 初始按鈕狀態：沒有 pid 就先停用
@@ -14,6 +15,7 @@
     btnCart.setAttribute('aria-disabled', 'true');
     btnCart.classList.add('disabled');
   }
+  if (qtyInput) qtyInput.disabled = !btnCart || btnCart.classList.contains('disabled');
 
   function setHint(text, isError) {
     if (!stockHint) return;
@@ -21,7 +23,7 @@
     stockHint.classList.toggle('text-danger', !!isError);
     stockHint.classList.toggle('text-secondary', !isError);
   }
-  
+
   // 價格格式化
   function setPrice(val) {
     if (!priceText) return;
@@ -30,19 +32,51 @@
     priceText.textContent = Number.isFinite(n) ? n.toLocaleString('zh-TW') : String(val);
   }
 
+  // 一鍵停用/啟用購買 UI（數量＋加入購物車）
+  function disablePurchase(msg) {
+    setHint(msg || '此尺寸已下架或無庫存', true);
+    if (qtyInput) { qtyInput.value = 1; qtyInput.disabled = true; }
+    if (btnCart)  { btnCart.setAttribute('aria-disabled', 'true'); btnCart.classList.add('disabled'); }
+  }
+  function enablePurchase(stock) {
+    if (stock > 0) {
+      setHint(`庫存：${stock} 件`, false);
+      if (qtyInput) qtyInput.disabled = false;
+      if (btnCart)  { btnCart.removeAttribute('aria-disabled'); btnCart.classList.remove('disabled'); }
+    } else {
+      disablePurchase('目前缺貨');
+    }
+  }
+
+  // 判斷/標記下架尺寸（無 pid 或 aria-disabled=true）
+  function markDisabledChip(chip) {
+    if (!chip) return;
+    chip.classList.add('disabled', 'opacity-50');
+    chip.setAttribute('aria-disabled', 'true');
+    chip.removeAttribute('aria-selected');
+    chip.classList.remove('active');
+  }
+  function isChipDisabled(chip) {
+    if (!chip) return true;
+    const pid = (chip.dataset.pid || '').trim().toLowerCase();
+    const ariaDisabled = chip.getAttribute('aria-disabled') === 'true';
+    return ariaDisabled || pid === '' || pid === '0' || pid === 'null' || pid === 'undefined';
+  }
+
+  // 初始掃描：沒有 pid 或 aria-disabled=true → 灰掉 & 不可點
+  document.querySelectorAll('#sizeGroup .size-chip').forEach(chip => {
+    if (isChipDisabled(chip)) {
+      markDisabledChip(chip);
+    }
+  });
+
   // 控制請求並避免亂序
   let inflightCtrl = null;
 
   async function loadStock(pid) {
-    if (!stockHint) return;
-
     // 無 pid：代表此尺寸未上架或未選
     if (!pid) {
-      setHint('此尺寸未上架或尚未選擇尺寸', true);
-      if (btnCart) {
-        btnCart.setAttribute('aria-disabled', 'true');
-        btnCart.classList.add('disabled');
-      }
+      disablePurchase('此尺寸已下架或無庫存');
       return;
     }
 
@@ -55,65 +89,28 @@
     try {
       const r = await fetch(`${STOCK_API}?productId=${encodeURIComponent(pid)}`, {
         credentials: 'same-origin',
-        signal: inflightCtrl.signal
+        signal: inflightCtrl.signal,
+        headers: { 'Accept': 'application/json' }
       });
 
-      // content-type 檢查以避免非 JSON 回傳
       const ctype = r.headers.get('content-type') || '';
       const isJson = ctype.toLowerCase().includes('application/json');
-
-      if (!isJson) {
-        // 非 JSON 直接當作錯誤處理
-        throw new Error('Non-JSON response');
-      }
+      if (!isJson) throw new Error('Non-JSON response');
 
       const data = await r.json();
-
       if (!r.ok) throw new Error('HTTP ' + r.status);
 
-      // 預期結構 { ok: true, stock: number }
+      // 預期結構 { ok:true, stock:number }
       if (data && data.ok === true && typeof data.stock === 'number') {
-        if (data.stock > 0) {
-          setHint(`庫存：${data.stock} 件`, false);
-          if (btnCart) {
-            btnCart.removeAttribute('aria-disabled');
-            btnCart.classList.remove('disabled');
-          }
-        } else {
-          setHint('目前缺貨', true);
-          if (btnCart) {
-            btnCart.setAttribute('aria-disabled', 'true');
-            btnCart.classList.add('disabled');
-          }
-        }
+        enablePurchase(data.stock);
       } else {
-        // 後端欄位名稱不一致時的降級處理
         const stock = Number(data?.stock ?? data?.quantity ?? NaN);
-        if (!Number.isNaN(stock)) {
-          if (stock > 0) {
-            setHint(`庫存：${stock} 件`, false);
-            if (btnCart) {
-              btnCart.removeAttribute('aria-disabled');
-              btnCart.classList.remove('disabled');
-            }
-          } else {
-            setHint('目前缺貨', true);
-            if (btnCart) {
-              btnCart.setAttribute('aria-disabled', 'true');
-              btnCart.classList.add('disabled');
-            }
-          }
-        } else {
-          throw new Error('Invalid payload');
-        }
+        if (!Number.isNaN(stock)) enablePurchase(stock);
+        else throw new Error('Invalid payload');
       }
     } catch (err) {
       if (err.name === 'AbortError') return; // 使用者又選了其他尺寸
-      setHint('無法取得庫存，請稍後再試', true);
-      if (btnCart) {
-        btnCart.setAttribute('aria-disabled', 'true');
-        btnCart.classList.add('disabled');
-      }
+      disablePurchase('無法取得庫存，請稍後再試');
     }
   }
 
@@ -121,6 +118,12 @@
   document.addEventListener('click', (e) => {
     const chip = e.target.closest('.size-chip');
     if (!chip) return;
+
+    // 如果這顆是下架（沒有 pid / 被標示 aria-disabled / .disabled），就直接擋下
+    if (isChipDisabled(chip)) {
+      e.preventDefault();
+      return;
+    }
 
     e.preventDefault();
 
@@ -135,9 +138,9 @@
       chip.setAttribute('aria-selected', 'true');
     }
 
-    const size = chip.dataset.size || '';
-    let pid    = chip.dataset.pid || '';
-    const sku  = chip.dataset.sku  || '';
+    const size  = chip.dataset.size  || '';
+    let   pid   = chip.dataset.pid   || '';
+    const sku   = chip.dataset.sku   || '';
     const price = chip.dataset.price || '';
 
     // 正規化 pid（保留空字串；有值時轉成純數字字串）
@@ -150,77 +153,89 @@
     if (hidPid)  hidPid.value  = pid;
 
     if (btnCart) {
-      if (pid) {
-        btnCart.setAttribute('data-id', pid);
-      } else {
-        btnCart.removeAttribute('data-id');
-      }
-      if (skuText && sku) skuText.textContent = sku;
+      if (pid) btnCart.setAttribute('data-id', pid);
+      else     btnCart.removeAttribute('data-id');
     }
-
     if (skuText && sku) skuText.textContent = sku;
-    setPrice(price);                                
-    loadStock(pid);
-  });
 
-  // 首次載入如果有預設 active 尺寸就查庫存；否則提示
-  const active = document.querySelector('#sizeGroup .size-chip.active');
-  if (active) {
-    const pid = active.dataset.pid || '';
-    const sku = active.dataset.sku || '';
-    active.setAttribute('aria-selected', 'true');
+    setPrice(price);
     loadStock(pid);
-  } else {
-    setHint('請選擇尺寸以查看庫存', false);
-  }
-  
-  // ==========================================================
-  // 「加入購物車」按鈕邏輯（合併重複代碼，保留完整功能）
-  // ==========================================================
-if (btnCart) {
-  btnCart.addEventListener('click', async function(event) { // <--- 加上 async
-    event.preventDefault();
+  }, true);
 
-    if (this.classList.contains('disabled') || this.getAttribute('aria-disabled') === 'true') {
-      setHint('請先選擇有庫存的尺寸', true);
-      return;
+  // 首次載入：盡量選可賣的尺寸（有 pid 的 active；否則第一個可賣的；都沒有就停用）
+  (function init() {
+    const chips = Array.from(document.querySelectorAll('#sizeGroup .size-chip'));
+    // 若預設 active 是下架，移除並提示
+    const presetActive = document.querySelector('#sizeGroup .size-chip.active');
+    if (presetActive && isChipDisabled(presetActive)) {
+      markDisabledChip(presetActive);
+      disablePurchase('此尺寸已下架或無庫存');
     }
 
-    const productId = this.dataset.id;
-    const quantityInput = document.getElementById('qty');
-    const quantity = quantityInput ? quantityInput.value : 1;
+    const active = document.querySelector('#sizeGroup .size-chip.active');
+    const candidate = (active && (active.dataset.pid || '').trim() && !isChipDisabled(active))
+      ? active
+      : chips.find(c => (c.dataset.pid || '').trim() && !isChipDisabled(c));
 
-    if (!productId) {
-      console.error('找不到商品 Variant ID，無法加入購物車。');
-      setHint('無法加入購物車，請重新選擇尺寸', true);
-      return;
+    if (candidate) {
+      candidate.setAttribute('aria-selected', 'true');
+      const pid = candidate.dataset.pid || '';
+      const sku = candidate.dataset.sku || '';
+      const price = candidate.dataset.price || '';
+      if (skuText && sku) skuText.textContent = sku;
+      setPrice(price);
+      loadStock(pid);
+    } else {
+      disablePurchase('此商品已下架或無庫存');
     }
+  })();
 
-    // ★★★ 使用 async/await 和 try/catch，並將 alert 改為 Swal ★★★
-    try {
-      if (typeof addItemToCart !== 'function') {
-        throw new Error('購物車功能未正確載入。');
+  // 「加入購物車」按鈕
+  if (btnCart) {
+    btnCart.addEventListener('click', async function(event) {
+      event.preventDefault();
+
+      // 任一停用狀態都直接提示
+      if (this.classList.contains('disabled') || this.getAttribute('aria-disabled') === 'true' || (qtyInput && qtyInput.disabled)) {
+        setHint('請先選擇有庫存的尺寸', true);
+        return;
       }
-      
-      const data = await addItemToCart(productId, quantity);
-      
-      // 成功提示改用 Swal
-      Swal.fire({
-        icon: 'success',
-        title: '成功加入購物車！',
-        showConfirmButton: false,
-        timer: 1500
-      });
-      
-    } catch (error) {
-      // 失敗提示也改用 Swal
-      Swal.fire({
-        icon: 'error',
-        title: '加入失敗',
-        text: error.message || '請稍後再試'
-      });
+
+      const productId     = this.dataset.id;
+      const quantity      = qtyInput ? qtyInput.value : 1;
+
+      if (!productId) {
+        console.error('找不到商品 Variant ID，無法加入購物車。');
+        setHint('無法加入購物車，請重新選擇尺寸', true);
+        return;
+      }
+
+      try {
+        if (typeof addItemToCart !== 'function') {
+          throw new Error('購物車功能未正確載入。');
+        }
+        await addItemToCart(productId, quantity);
+
+        Swal.fire({
+          icon: 'success',
+          title: '成功加入購物車！',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: '加入失敗',
+          text: error.message || '請稍後再試'
+        });
+      }
+    });
+  }
+
+  // 再保險一次：若模板端已標 aria-disabled 或無 pid，強制灰掉
+  document.querySelectorAll('#sizeGroup .size-chip').forEach(chip => {
+    if (isChipDisabled(chip)) {
+      markDisabledChip(chip);
     }
   });
-}
-
 })();
