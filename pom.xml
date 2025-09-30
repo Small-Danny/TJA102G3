@@ -91,6 +91,19 @@
 			<artifactId>commons-csv</artifactId>
 			<version>1.10.0</version>
 		</dependency>
+		
+		 <!--cloudinary雲端圖片庫-->
+        <dependency>
+   			 <groupId>com.cloudinary</groupId>
+    		 <artifactId>cloudinary-http44</artifactId>
+    	     <version>1.32.0</version>
+		</dependency>
+		<!-- Jsoup -->
+			<dependency>
+    		<groupId>org.jsoup</groupId>
+    		<artifactId>jsoup</artifactId>
+    		<version>1.16.1</version>
+		</dependency>
 
 	</dependencies>
 
