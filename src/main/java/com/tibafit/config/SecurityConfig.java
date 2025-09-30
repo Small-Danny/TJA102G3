@@ -420,7 +420,9 @@ public class SecurityConfig {
                                 "/ecpay/callback",
                                 "/payment/ecpay",
                                 "/payment/ecpay/return",
-                                "/api/line-pay/confirm" // Line Pay 也需要排除
+                                "/api/line-pay/confirm",// Line Pay 也需要排除
+                                "/api/line-pay/callback",
+                                "/api/line-pay/notification"
                         )
                 )
 

@@ -119,10 +119,9 @@ public class CheckoutService {
 	 * @param orderCode 來自綠界 Callback 的訂單編號 (MerchantTradeNo)
 	 * @return 更新後的訂單物件
 	 */
-	@Transactional // 加上 @Transactional 確保資料庫操作的原子性
+	@Transactional
 	public OrdersVO markPaidByOrderCode(String orderCode) {
 		// 1. 使用我們剛剛在 DAO 新增的方法，根據 orderCode 找出訂單
-		//    如果找不到，就拋出一個例外
 		OrdersVO order = ordersDAO.findByOrderCode(orderCode)
 				.orElseThrow(() -> new NoSuchElementException("找不到訂單，訂單編號: " + orderCode));
 
@@ -137,6 +136,9 @@ public class CheckoutService {
 		order.setPaymentTime(LocalDateTime.now()); // 記錄付款時間
 
 		// 4. 將更新後的訂單存回資料庫
-		return ordersDAO.save(order);
+		// ★★★ 修正點：將 save() 的回傳值賦回給 order 變數 ★★★
+		OrdersVO savedOrder = ordersDAO.save(order);
+
+		return savedOrder;
 	}
 }
