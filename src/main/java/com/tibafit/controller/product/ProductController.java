@@ -130,6 +130,23 @@ public class ProductController {
         if (productId == null) return "redirect:/admin/products/select";
         return "redirect:/admin/products/" + productId;
     }
+    
+    // 商品上下架
+    @PostMapping("/{id}/status")
+    public String switchStatus(@PathVariable Integer id,
+                               @RequestParam("status") Integer status,
+                               RedirectAttributes ra) {
+        ProductVO p = svc.getOne(id);
+        if (p == null) {
+            ra.addFlashAttribute("successMsg", "找不到商品");
+            return "redirect:/admin/products";
+        }
+        p.setProductStatus((status != null && status == 1) ? 1 : 0);
+        svc.update(p);
+        ra.addFlashAttribute("successMsg",
+                "已將【" + p.getProductName() + "】設為" + (p.getProductStatus() == 1 ? "上架" : "下架"));
+        return "redirect:/admin/products";
+    }
 
     // ===================== 工具方法 =====================
 
