@@ -46,25 +46,14 @@ public class CheckoutController {
 
 		try {
 			// 呼叫 Service 的邏輯完全不變
-			OrdersVO newOrder = checkoutService.createOrderFromCart(
-					userId,
-					req.getRecipientName(),
-					req.getRecipientPhone(),
-					req.getRecipientAddress(),
-					req.getUsedPoints()
-			);
+			OrdersVO newOrder = checkoutService.createOrderFromCart(userId, req.getRecipientName(),
+					req.getRecipientPhone(), req.getRecipientAddress(), req.getUsedPoints());
 			// 回傳一個包含 orderId 和 orderCode 的物件
 			// 這樣前端才知道要用哪個 ID 去呼叫付款 API
-			Map<String, Object> response = Map.of(
-					"message", "訂單已成功建立",
-					"orderId", newOrder.getOrderId(),
-					"orderCode", newOrder.getOrderCode()
-			);
-			return ResponseEntity.ok(Map.of(
-					"message", "訂單已成功建立",
-					"orderId", newOrder.getOrderId(),
-					"orderCode", newOrder.getOrderCode()
-			));
+			Map<String, Object> response = Map.of("message", "訂單已成功建立", "orderId", newOrder.getOrderId(), "orderCode",
+					newOrder.getOrderCode());
+			return ResponseEntity.ok(Map.of("message", "訂單已成功建立", "orderId", newOrder.getOrderId(), "orderCode",
+					newOrder.getOrderCode()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(500).body(Map.of("message", "建立訂單時發生錯誤: " + e.getMessage()));

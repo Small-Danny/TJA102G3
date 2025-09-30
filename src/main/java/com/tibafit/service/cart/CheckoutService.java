@@ -1,25 +1,30 @@
 package com.tibafit.service.cart;
 
-import com.tibafit.model.cart.OrderItemVO;
-import com.tibafit.model.cart.OrdersVO;
-import com.tibafit.repository.cart.OrdersDAO;
-import com.tibafit.repository.cart.ProductDAO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-//	CheckoutService 會把Redis 購物車轉成資料庫中的訂單主檔/明細：確認品項與價格、建立明細與總價、處
-//	理使用點數、存檔後清空購物車。另提供 markPaid/markFailed 更新付款狀態的兩個交易性方法。
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Service // 結帳流程服務：把 Redis 購物車轉成資料庫中的訂單（orders + order_item）
+import com.tibafit.model.cart.OrderItemVO;
+import com.tibafit.model.cart.OrdersVO;
+import com.tibafit.model.cart.ProductVO;
+import com.tibafit.repository.cart.OrdersDAO;
+import com.tibafit.repository.cart.ProductDAO;
+
+/**
+ * CheckoutService 負責： 1. 從 Redis 購物車建立訂單 2. 鎖定庫存（reserved_stock） 3. 更新付款狀態（成功 →
+ * 扣庫存，失敗 → 釋放 reserved_stock）
+ *
+ * 📌 注意： - reserved_stock：下單時鎖定，避免超賣 - stock_quantity：付款成功後才真正扣除
+ */
+@Service
 public class CheckoutService {
-	private final CartService cartservice;
-	private final OrdersDAO ordersDAO;
-	private final ProductDAO productDAO;
+	private final CartService cartservice; // 購物車服務（操作 Redis 購物車）
+	private final OrdersDAO ordersDAO; // Orders DAO
+	private final ProductDAO productDAO; // Product DAO
 
 	@Autowired
 	public CheckoutService(CartService cartservice, OrdersDAO ordersDAO, ProductDAO productDAO) {
@@ -29,9 +34,8 @@ public class CheckoutService {
 	}
 
 	/**
-	 * 由購物車建立訂單 步驟： 1) 讀 Redis 購物車，無品項則丟錯 2) 建立 OrdersVO 主檔（未付款、未出貨），帶收件資訊與訂單碼 3)
-	 * 逐品項查「上架時的單價」組成明細 OrderItemVO，計算總價與點數使用 4) save(orders) 讓 JPA 以 cascade
-	 * 一次存主檔與明細 5) 清空 Redis 購物車
+	 * 建立訂單流程： 1. 從 Redis 取購物車 2. 建立 OrdersVO 主檔（未付款狀態） 3. 檢查庫存，鎖定 reserved_stock 4.
+	 * 建立訂單明細（OrderItemVO） 5. 儲存訂單（含明細） 6. 清空 Redis 購物車
 	 */
 	@Transactional
 	public OrdersVO createOrderFromCart(Integer userId, String rn, String rp, String ra, Integer usedPts) {
@@ -41,14 +45,11 @@ public class CheckoutService {
 
 		OrdersVO vo = new OrdersVO();
 		vo.setUserId(userId);
-		vo.setOrderStatus(0); // 0=新訂單/待處理（依你的狀態碼設計）
-		vo.setPaymentStatus(0); // 0=未付款
-		vo.setPaymentTime(null); // 未付款不寫時間（配合你已改為可為 null）
-		vo.setOrderCode("ORD" + System.currentTimeMillis() + (new Random().nextInt(9000) + 1000)); // 簡單流水；如需保證唯一可用
-																									// existsByOrderCode
-																									// 重試
+		vo.setOrderStatus(0); // 0 = 新訂單/待處理
+		vo.setPaymentStatus(0); // 0 = 未付款
+		vo.setPaymentTime(null);
+		vo.setOrderCode("ORD" + System.currentTimeMillis() + (new Random().nextInt(9000) + 1000));
 
-		// 收件資訊（非空才覆寫 entity 預設值）
 		if (rn != null)
 			vo.setRecipientName(rn);
 		if (rp != null)
@@ -61,60 +62,68 @@ public class CheckoutService {
 			Integer pid = Integer.valueOf(e.getKey().toString());
 			Integer qty = (Integer) e.getValue();
 
-			// 只在商品上架時回單價；否則回 null
-			Integer price = productDAO.findOnShelfPrice(pid);
-			if (price == null)
-				throw new IllegalStateException("商品 " + pid + " 不存在或未上架");
+			ProductVO product = productDAO.findById(pid).orElseThrow(() -> new NoSuchElementException("找不到商品 " + pid));
 
-			// 建立訂單明細（快照：單價、小計、商品參照）
+			// ✅ 檢查是否有足夠庫存可供鎖定
+			if (product.getReservedStock() == null)
+				product.setReservedStock(0);
+			if (product.getStockQuantity() - product.getReservedStock() < qty) {
+				throw new IllegalStateException("商品 " + product.getProductName() + " 庫存不足");
+			}
+
+			// ✅ 鎖定庫存（reserved_stock 增加）
+			product.setReservedStock(product.getReservedStock() + qty);
+			productDAO.save(product);
+
+			// 建立訂單明細
 			OrderItemVO oit = new OrderItemVO();
-			oit.setOrder(vo); // 維護雙向關聯（子指向父）
-			oit.setProduct(productDAO.getReferenceById(pid)); // 使用 reference 掛外鍵，不會額外查詢 DB
+			oit.setOrder(vo);
+			oit.setProduct(product);
 			oit.setOrderItemQuantity(qty);
-			oit.setBuyPrice(price);
-			oit.setItemTotalPrice(price * qty);
-			oit.setOrderItemCode("ITM" + pid + "_" + (new Random().nextInt(900000) + 100000)); // 簡單碼
+			oit.setBuyPrice(product.getProductPrice());
+			oit.setItemTotalPrice(product.getProductPrice() * qty);
+			oit.setOrderItemCode("ITM" + pid + "_" + (new Random().nextInt(900000) + 100000));
 
-			vo.getOrderItems().add(oit); // 父持有子（OneToMany），交由 cascade 一起存
+			vo.getOrderItems().add(oit);
 			total += oit.getItemTotalPrice();
 		}
 
-		// 使用點數：不可超過總價、不可為負（null 視為 0）
+		// 點數使用：不可超過總價
 		int safeUsed = Math.max(0, Math.min(usedPts == null ? 0 : usedPts, total));
 		vo.setUsedPointsAmount(safeUsed);
-
 		vo.setTotalPrice(total);
 
-		// 儲存：有設定 cascade=ALL，所以會一併存入 order_items
 		OrdersVO saved = ordersDAO.save(vo);
 
-		// 成功建單後，清空 Redis 購物車
+		// ✅ 清空 Redis 購物車
 		cartservice.clear(userId);
 
 		return saved;
 	}
 
-	/** 標示付款成功（設為已付並寫入付款時間） */
+	/**
+	 * 根據 ID 標示付款成功（單純更新狀態，不含庫存操作）
+	 */
 	@Transactional
 	public OrdersVO markPaid(Integer id) {
 		var o = ordersDAO.findById(id).orElseThrow();
-		o.setPaymentStatus(1); // 1=已付款
-		o.setPaymentTime(LocalDateTime.now()); // 付款時間
-		return o; // 於交易結束時由 JPA flush
-	}
-
-	/** 標示付款失敗（僅狀態改為失敗） */
-	@Transactional
-	public OrdersVO markFailed(Integer id) {
-		var o = ordersDAO.findById(id).orElseThrow();
-		o.setPaymentStatus(2); // 2=失敗
-		// 保留 paymentTime 為 null（或依需求清空）
+		o.setPaymentStatus(1);
+		o.setPaymentTime(LocalDateTime.now());
 		return o;
 	}
 
 	/**
-	 * ★★★ 這就是我們要實作的新方法 ★★★
-	 * 根據訂單編號 (orderCode) 將訂單標記為已付款
+	 * 根據 ID 標示付款失敗（單純更新狀態，不含庫存操作）
+	 */
+	@Transactional
+	public OrdersVO markFailed(Integer id) {
+		var o = ordersDAO.findById(id).orElseThrow();
+		o.setPaymentStatus(2);
+		return o;
+	}
+
+	/**
+	 * ★★★ 這就是我們要實作的新方法 ★★★ 根據訂單編號 (orderCode) 將訂單標記為已付款
 	 *
 	 * @param orderCode 來自綠界 Callback 的訂單編號 (MerchantTradeNo)
 	 * @return 更新後的訂單物件
@@ -135,10 +144,38 @@ public class CheckoutService {
 		order.setPaymentStatus(1); // 1 代表「已付款」
 		order.setPaymentTime(LocalDateTime.now()); // 記錄付款時間
 
+		// ✅ 扣庫存（把 reserved_stock 一起扣回來）
+		for (OrderItemVO item : order.getOrderItems()) {
+			ProductVO product = item.getProduct();
+			product.setStockQuantity(product.getStockQuantity() - item.getOrderItemQuantity());
+			product.setReservedStock(product.getReservedStock() - item.getOrderItemQuantity());
+			productDAO.save(product);
+		}
+
 		// 4. 將更新後的訂單存回資料庫
 		// ★★★ 修正點：將 save() 的回傳值賦回給 order 變數 ★★★
 		OrdersVO savedOrder = ordersDAO.save(order);
 
 		return savedOrder;
+	}
+
+	/**
+	 * 根據 orderCode 標示付款失敗（給綠界/金流回調） ✅ 僅釋放 reserved_stock，不扣庫存
+	 */
+	@Transactional
+	public OrdersVO markFailedByOrderCode(String orderCode) {
+		OrdersVO order = ordersDAO.findByOrderCode(orderCode)
+				.orElseThrow(() -> new NoSuchElementException("找不到訂單，訂單編號: " + orderCode));
+
+		order.setPaymentStatus(2);
+
+		// ✅ 釋放 reserved_stock
+		for (OrderItemVO item : order.getOrderItems()) {
+			ProductVO product = item.getProduct();
+			product.setReservedStock(product.getReservedStock() - item.getOrderItemQuantity());
+			productDAO.save(product);
+		}
+
+		return ordersDAO.save(order);
 	}
 }

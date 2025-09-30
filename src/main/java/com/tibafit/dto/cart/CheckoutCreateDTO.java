@@ -14,8 +14,7 @@ public class CheckoutCreateDTO {
 	private String recipientName;
 
 	@NotBlank(message = "收貨人電話必填")
-	@Pattern(
-			regexp = "^(09\\d{8}|02-?\\d{8}|0[3-8]-?\\d{7,8})$", message = "收貨人電話格式不正確（手機 09xxxxxxxx 或市話 0x-xxxxxxx / 0xx-xxxxxxx）")
+	@Pattern(regexp = "^(09\\d{8}|02-?\\d{8}|0[3-8]-?\\d{7,8})$", message = "收貨人電話格式不正確（手機 09xxxxxxxx 或市話 0x-xxxxxxx / 0xx-xxxxxxx）")
 	private String recipientPhone;
 
 	@NotBlank(message = "收貨人地址必填")

@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>訂單管理</title>
+<!-- CSRF（你的 SecurityConfig 使用 CookieCsrfTokenRepository） -->
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+<style>
+/* ====== 頁面樣式 ====== */
+.content-wrapper {
+	margin: 20px;
+}
+
+.toolbar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 15px;
+}
+
+.search-box {
+	display: flex;
+	gap: 8px;
+}
+
+.search-box input {
+	padding: 6px 10px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	width: 250px;
+}
+
+/* 分頁 */
+.pagination {
+	display: flex;
+	justify-content: center;
+	list-style: none;
+	padding: 0;
+	margin-top: 15px;
+}
+
+.pagination li {
+	margin: 0 5px;
+}
+
+.pagination button {
+	border: 1px solid #ccc;
+	background: #fff;
+	padding: 5px 10px;
+	cursor: pointer;
+	border-radius: 4px;
+}
+
+.pagination button.active {
+	background: #0d6efd;
+	color: #fff;
+	border-color: #0d6efd;
+}
+
+.pagination button:disabled {
+	background: #eee;
+	cursor: not-allowed;
+}
+
+/* 出貨狀態欄固定寬，不撐滿整格；選單縮小 */
+.status-col {
+	width: 140px;
+}
+
+.status-select {
+	width: 120px;
+	display: inline-block;
+	padding: .25rem .5rem;
+	font-size: .9rem;
+	height: calc(1.5em + .5rem);
+}
+
+/* 金額不換行，避免被擠掉 */
+.amount-col {
+	white-space: nowrap;
+}
+
+/* 操作欄固定寬 */
+.action-col {
+	width: 90px;
+}
+
+/* 尚未儲存的修改（高亮） */
+tr.dirty-row {
+	background: #fff7e6;
+} /* 淺橘 */
+</style>
+</head>
+<body>
+	<!-- ✅ 套用後台 layout -->
+	<div th:replace="~{admin/layout :: layout(~{::title}, ~{::section}, ~{::#pageScripts})}">
+
+		<title>訂單管理</title>
+
+		<section class="content-wrapper">
+			<div class="card">
+				<div class="card-header">
+					<h3 class="card-title">訂單管理</h3>
+				</div>
+
+				<div class="card-body">
+					<!-- 工具列：搜尋 + 匯出 -->
+					<div class="toolbar">
+						<div class="search-box">
+							<input type="text" id="searchInput" placeholder="輸入關鍵字搜尋...">
+							<button class="btn btn-primary" id="searchBtn">搜尋</button>
+						</div>
+						<button class="btn btn-success" id="exportBtn">Export</button>
+					</div>
+
+					<!-- 訂單表格 -->
+					<table id="orderTable" class="table table-bordered table-striped">
+						<thead>
+							<tr>
+								<th>訂單編號</th>
+								<th>成立日期</th>
+								<th>會員ID</th>
+								<th>收件人</th>
+								<th>付款狀態</th>
+								<th class="status-col">出貨狀態</th>
+								<th class="amount-col">總金額</th>
+								<th class="action-col">操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- ✅ 渲染訂單 -->
+							<tr th:each="order : ${orders}">
+								<td th:text="${order.orderId}"></td>
+								<td
+									th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+								<td th:text="${order.userId}"></td>
+								<td th:text="${order.recipientName}"></td>
+								<td>
+  <span th:attr="data-payment=${order.paymentStatus}"
+        th:text="${order.paymentStatus == 1 ? '已付款' : '未付款'}"
+        th:classappend="${order.paymentStatus == 1} ? 'badge bg-success' : 'badge bg-secondary'">
+  </span>
+</td>
+
+
+								<!-- 出貨狀態下拉 -->
+								<td class="status-col"><select
+									class="form-select form-select-sm status-select"
+									th:attr="data-order-id=${order.orderId}"
+									th:value="${order.orderStatus}">
+										<option value="0" th:selected="${order.orderStatus == 0}">待出貨</option>
+										<option value="1" th:selected="${order.orderStatus == 1}">處理中</option>
+										<option value="2" th:selected="${order.orderStatus == 2}">已出貨</option>
+										<option value="3" th:selected="${order.orderStatus == 3}">已完成</option>
+										<option value="4" th:selected="${order.orderStatus == 4}">取消</option>
+								</select></td>
+
+								<td class="amount-col" th:text="|$${order.totalPrice}|"></td>
+
+								<!-- 操作：儲存 -->
+								<td class="action-col">
+									<button type="button"
+										class="btn btn-sm btn-outline-primary save-status-btn"
+										th:attr="data-order-id=${order.orderId}">儲存</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<!-- 分頁 -->
+					<ul id="pagination" class="pagination"></ul>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<script>
+    /* ===== 列表搜尋 / 分頁 / 匯出 ===== */
+    const rowsPerPage = 10;
+    let currentPage = 1;
+
+    function renderTable() {
+      const filter = document.getElementById("searchInput").value.trim().toLowerCase();
+      const rows = document.querySelectorAll("#orderTable tbody tr");
+
+      const filteredRows = Array.from(rows).filter(row => {
+        if (filter === "") return true;
+        const orderId = row.querySelector("td:nth-child(1)").innerText.toLowerCase();
+        const text = row.innerText.toLowerCase();
+        if (!isNaN(filter)) return orderId === filter; else return text.includes(filter);
+      });
+
+      const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+      if (currentPage > totalPages) currentPage = totalPages || 1;
+
+      rows.forEach(r => r.style.display = "none");
+      filteredRows.forEach((row, i) => {
+        if (i >= (currentPage - 1) * rowsPerPage && i < currentPage * rowsPerPage) row.style.display = "";
+      });
+
+      renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+      const pagination = document.getElementById("pagination");
+      pagination.innerHTML = "";
+      if (totalPages <= 1) return;
+
+      const addBtn = (label, disabled, onClick, active=false) => {
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.innerText = label;
+        btn.disabled = disabled;
+        if (active) btn.classList.add("active");
+        btn.addEventListener("click", onClick);
+        li.appendChild(btn); pagination.appendChild(li);
+      };
+
+      addBtn("«", currentPage === 1, () => { if (currentPage>1){ currentPage--; renderTable(); } });
+
+      for (let i=1;i<=totalPages;i++) {
+        addBtn(String(i), false, () => { currentPage = i; renderTable(); }, i===currentPage);
+      }
+
+      addBtn("»", currentPage === totalPages, () => { if (currentPage<totalPages){ currentPage++; renderTable(); } });
+    }
+
+    document.getElementById("exportBtn").addEventListener("click", function () {
+      const rows = document.querySelectorAll("#orderTable tbody tr");
+      const csv = [];
+      rows.forEach(row => {
+        if (row.style.display !== "none") {
+          const cols = row.querySelectorAll("td, th");
+          const rowData = [];
+          cols.forEach(col => rowData.push('"' + col.innerText.trim().replaceAll('"','""') + '"'));
+          csv.push(rowData.join(","));
+        }
+      });
+      const blob = new Blob(["\ufeff" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "orders_page_" + currentPage + ".csv";
+      a.click(); URL.revokeObjectURL(url);
+    });
+
+    document.getElementById("searchBtn").addEventListener("click", () => { currentPage = 1; renderTable(); });
+    document.getElementById("searchInput").addEventListener("keypress", e => {
+      if (e.key === "Enter") { currentPage = 1; renderTable(); }
+    });
+
+    // 初始渲染
+    window.onload = renderTable;
+
+    /* ===== 出貨狀態：標記變更 + 儲存呼叫 API ===== */
+    // 只宣告一次 CSRF
+    const CSRF_TOKEN  = document.querySelector('meta[name="_csrf"]')?.content;
+    const CSRF_HEADER = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+    function bindDirtyMarker() {
+      document.querySelectorAll('.status-select').forEach(sel => {
+        sel.addEventListener('change', e => {
+          e.target.closest('tr')?.classList.add('dirty-row');
+        });
+      });
+    }
+
+    function bindSaveButtons() {
+      document.querySelectorAll('.save-status-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const row = e.target.closest('tr');
+          const selectEl = row.querySelector('.status-select');
+          const orderId  = selectEl.dataset.orderId;
+          const newVal   = parseInt(selectEl.value, 10);
+
+          if (!row.classList.contains('dirty-row')) return;
+
+          const headers = { 'Content-Type': 'application/json' };
+          if (CSRF_TOKEN && CSRF_HEADER) headers[CSRF_HEADER] = CSRF_TOKEN;
+
+          btn.disabled = true;
+          selectEl.disabled = true;
+          try {
+            const resp = await fetch(`/api/admin/orders/${orderId}/status`, {
+              method: 'PUT',
+              headers,
+              body: JSON.stringify({ orderStatus: newVal })
+            });
+            if (!resp.ok) throw new Error(`更新失敗 (${resp.status})`);
+
+            row.classList.remove('dirty-row');
+            btn.classList.remove('btn-outline-primary');
+            btn.classList.add('btn-success');
+            btn.textContent = '已儲存';
+            setTimeout(() => {
+              btn.classList.remove('btn-success');
+              btn.classList.add('btn-outline-primary');
+              btn.textContent = '儲存';
+            }, 1200);
+          } catch (err) {
+            alert(err.message || '儲存失敗，請稍後再試');
+          } finally {
+            btn.disabled = false;
+            selectEl.disabled = false;
+          }
+        });
+      });
+    }
+
+    // 只包裝一次 renderTable：每次渲染後重綁事件
+    const _origRenderTable = renderTable;
+    window.renderTable = function () {
+      _origRenderTable();
+      bindDirtyMarker();
+      bindSaveButtons();
+    };
+
+    // 首次載入就綁一次
+    document.addEventListener('DOMContentLoaded', () => {
+      bindDirtyMarker();
+      bindSaveButtons();
+    });
+  </script>
+</body>
+</html>

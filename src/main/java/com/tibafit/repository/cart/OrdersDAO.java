@@ -17,9 +17,9 @@ public interface OrdersDAO extends JpaRepository<OrdersVO, Integer> {
 	// 使用方式範例：
 	// Page<OrdersVO> p = ordersDAO.findByUserIdOrderByOrderDateDesc(userId,
 	// PageRequest.of(page, size));
-	Page<OrdersVO> findByUserIdOrderByOrderDateDesc(Integer userId, Pageable pageable);
+	Page<OrdersVO> findByUserIdOrderByOrderDateAsc(Integer userId, Pageable pageable);
 
-	List<OrdersVO> findByUserIdOrderByOrderDateDesc(Integer userId);
+	List<OrdersVO> findByUserIdOrderByOrderDateAsc(Integer userId);
 
 	// 檢查訂單碼是否已存在（用於產生新訂單碼時的唯一性校驗）
 	boolean existsByOrderCode(String orderCode);

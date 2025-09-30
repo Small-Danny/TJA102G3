@@ -47,6 +47,9 @@ public class ProductVO implements Serializable {
 	@OneToMany(mappedBy = "product")
 	private List<OrderItemVO> orderItems;
 
+	@Column(name = "reserved_stock", nullable = false)
+	private Integer reservedStock;
+
 	// ===== Getter / Setter (以下完全不用動) =====
 
 	public Integer getProductId() {
@@ -128,4 +131,13 @@ public class ProductVO implements Serializable {
 	public void setOrderItems(List<OrderItemVO> orderItems) {
 		this.orderItems = orderItems;
 	}
+
+	public Integer getReservedStock() {
+		return reservedStock;
+	}
+
+	public void setReservedStock(Integer reservedStock) {
+		this.reservedStock = reservedStock;
+	}
+
 }
