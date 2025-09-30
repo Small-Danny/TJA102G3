@@ -105,7 +105,8 @@ CREATE TABLE `article` (
                            `is_pinned` tinyint NOT NULL DEFAULT '0' COMMENT '是否置頂 (0:否, 1:是)',
                            `is_deleted` tinyint NOT NULL DEFAULT '0' COMMENT '是否已刪除 (0:否, 1:是)',
                            `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '建立時間',
-                           `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新時間',
+                           `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新時間',
+                           `views` int NOT NULL DEFAULT 0 COMMENT '瀏覽'
                            PRIMARY KEY (`article_id`),
                            KEY `user_id` (`user_id`),
                            KEY `forum_type_id` (`forum_type_id`),

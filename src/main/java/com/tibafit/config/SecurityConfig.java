@@ -335,6 +335,13 @@ public class SecurityConfig {
                                 // --- 商品相關頁面 (關鍵修改) ---
                                 "/shop/products",      // 商品列表頁
                                 "/shop/product/**"     // 所有商品詳情頁
+
+                                // 文章區頁面
+                                "/frontend-template/forum.html",
+                                "/frontend-template/article-detail.html"
+//                                "/frontend-template/myarticles.html",
+//                                "/frontend-template/mycollection.html"
+//                                "/frontend-template/post-article.html"
                         ).permitAll()
 
                         // --- 靜態資源 (CSS, JS, 圖片等，必須開放) ---
@@ -362,6 +369,12 @@ public class SecurityConfig {
                                 "/api/ecpay/callback",       // 綠界 Server-to-Server
                                 "/payment/ecpay/return",     // 綠界 前端跳轉
                                 "/api/line-pay/confirm"      // LINE Pay Server-to-Server
+
+                                //公開文章區 API
+                                "/api/posts/**",
+                                "/api/sidebar",
+                                "/api/categories",
+                                "/api/report-types"
                         ).permitAll()
                         .requestMatchers("/admin/login").permitAll()
                         // ----------------------------------------------------------------
@@ -422,7 +435,10 @@ public class SecurityConfig {
                                 "/payment/ecpay/return",
                                 "/api/line-pay/confirm",// Line Pay 也需要排除
                                 "/api/line-pay/callback",
-                                "/api/line-pay/notification"
+                                "/api/line-pay/notification",
+                                "/api/posts/**",
+                                "/api/mycollection/**",
+                                "/api/myarticles/**"
                         )
                 )
 
