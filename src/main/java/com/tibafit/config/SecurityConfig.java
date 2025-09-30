@@ -310,10 +310,18 @@ public class SecurityConfig {
                                 "/frontend-template/cart.html",
                                 "/frontend-template/cart_order.html",
                                 "/frontend-template/pay_success.html", // 付款成功頁
-
+                                
                                 // --- 商品相關頁面 (關鍵修改) ---
                                 "/shop/products",      // 商品列表頁
-                                "/shop/product/**"     // 所有商品詳情頁
+                                "/shop/product/**",     // 所有商品詳情頁
+                                
+                                // 文章區頁面
+                                "/frontend-template/forum.html",
+                                "/frontend-template/article-detail.html"
+//                                "/frontend-template/myarticles.html",
+//                                "/frontend-template/mycollection.html"
+//                                "/frontend-template/post-article.html"
+                                
                         ).permitAll()
 
                         // --- 靜態資源 (CSS, JS, 圖片等，必須開放) ---
@@ -321,8 +329,8 @@ public class SecurityConfig {
                                 "/frontend-template/assets/**",
                                 "/frontend-template/product_img/**",
                                 "/frontend-template/header.txt",
-                                "/adminlte/**"
-                                "/frontend-template/header.txt"
+                                "/adminlte/**",
+                                "/images/**"
 
                         ).permitAll()
 
@@ -343,7 +351,13 @@ public class SecurityConfig {
                                 // 金流 Callback API (必須公開，因為是金流方主動呼叫)
                                 "/api/ecpay/callback",       // 綠界 Server-to-Server
                                 "/payment/ecpay/return",     // 綠界 前端跳轉
-                                "/api/line-pay/confirm"      // LINE Pay Server-to-Server
+                                "/api/line-pay/confirm",      // LINE Pay Server-to-Server
+                                
+                                //公開文章區 API
+                                "/api/posts/**",   
+                                "/api/sidebar",
+                                "/api/categories",
+                                "/api/report-types"    
                         ).permitAll()
                          .requestMatchers("/admin/login").permitAll()
 
@@ -397,7 +411,11 @@ public class SecurityConfig {
                                 "/ecpay/callback",
                                 "/payment/ecpay",
                                 "/payment/ecpay/return",
-                                "/api/line-pay/confirm" // Line Pay 也需要排除
+                                "/api/line-pay/confirm", // Line Pay 也需要排除
+                                "/api/posts/**",
+                                "/api/mycollection/**",
+                                "/api/myarticles/**"
+                              
                         )
                 )
 
@@ -412,8 +430,11 @@ public class SecurityConfig {
                                         "https://payment-stage.ecpay.com.tw " + // 綠界支付
                                         "https://www.google.com " +             // reCAPTCHA
                                         "https://www.gstatic.com " +            // reCAPTCHA
+                                        "https://cdn.jsdelivr.net " + 			//文章區三點式圖形
+                                        "https://cdn.quilljs.com " +
                                         "'unsafe-inline'; " +                   // 允許 inline script (某些舊套件可能需要)
                                         "frame-src 'self' https://www.google.com;"      // 允許 reCAPTCHA 的 iframe
+                                        
                                 // 這裡可以繼續添加其他指令如 style-src, img-src 等
                         ))
                 )
