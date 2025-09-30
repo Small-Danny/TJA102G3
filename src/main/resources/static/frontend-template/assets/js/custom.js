@@ -51,7 +51,7 @@
         mouseDrag: false,
         margin: 10,
         navContainer: ".team-slider-nav",
-        responsive: { 0:{items:1}, 756:{items:2}, 992:{items:3}, 1200:{items:4} }
+        responsive: { 0:{items:1}, 756:{items:2}, 992:{items:3}, 1200:{items:3} }
       });
     }
 

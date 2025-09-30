@@ -3732,3 +3732,10 @@ header.header-style-one.three:before {
         width: 7% !important;
     }
 }
+/* 解決使用者見證卡片高度不一的問題 */
+.team-slider .team-data .team-info {
+  min-height: 230px; /* 設定一個最小高度 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 讓內容垂直置中 */
+}

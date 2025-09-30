@@ -12,7 +12,6 @@
 	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/responsive.css">
 	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 
 	<style>
@@ -370,17 +369,8 @@
 								<div class="form-group">
 									<input type="text" id="orderSearch" class="form-control" placeholder="搜尋訂單編號或商品名稱">
 								</div>
+
 								<div class="order-list">
-									<div class="order-item" data-order="ORD20240501001 課程購買">
-										<h5>訂單編號：ORD20240501001</h5>
-										<p>日期：2024-05-01 | 金額：NT$ 2,500 | 狀態：已完成</p>
-										<p>商品：健身課程（初級）</p>
-									</div>
-									<div class="order-item" data-order="ORD20240415002 營養品">
-										<h5>訂單編號：ORD20240415002</h5>
-										<p>日期：2024-04-15 | 金額：NT$ 1,200 | 狀態：已完成</p>
-										<p>商品：高蛋白粉 1kg</p>
-									</div>
 								</div>
 							</div>
 
@@ -431,25 +421,9 @@
 
 							<div class="tab-pane fade" id="points" role="tabpanel">
 								<h4>我的點數</h4>
-								<p>當前點數：1250 點</p>
-								<button class="points-history-toggle">
-									點數歷史記錄 <i class="fa-solid fa-chevron-down" id="pointsToggleIcon"></i>
-								</button>
-
-								<div class="points-history" id="pointsHistory">
-									<div class="points-item">
-										<p>購買課程獲得：+500 點（2024-05-01）</p>
-									</div>
-									<div class="points-item">
-										<p>每日簽到獲得：+50 點（2024-04-28）</p>
-									</div>
-									<div class="points-item">
-										<p>購買營養品獲得：+200 點（2024-04-15）</p>
-									</div>
-									<div class="points-item">
-										<p>會員註冊獎勵：+500 點（2024-04-10）</p>
-									</div>
-								</div>
+								<p style="font-size: 1.2rem;">
+									當前點數：<span id="points-balance-display" style="font-weight: bold;">載入中...</span> 點
+								</p>
 							</div>
 
 							<div class="tab-pane fade" id="password" role="tabpanel">
@@ -505,7 +479,7 @@
 	<script src="/frontend-template/assets/js/api.js"></script>
 	<script src="/frontend-template/assets/js/loader.js"></script>
 	<script src="/frontend-template/assets/js/custom.js"></script>
-
+	<script src="/frontend-template/assets/js/profile.js"></script>
 	<script>
 		// ★★★ 修正 1：將所有程式碼包裹在 DOMContentLoaded 事件中 ★★★
 		// 確保頁面所有元素都載入完成後，才執行我們的腳本
