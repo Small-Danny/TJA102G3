@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>TaskRecord 列表 - listAllTaskRecord</title>
+
+    <script th:src="@{/js/jquery-1.11.3.min.js}"></script>
+
+    <head th:insert="~{/admin/taskrecord/included-fragment}"></head>
+    <style>
+        :root {
+            --border: #dee2e6;
+            --muted: #6c757d;
+        }
+
+        body {
+            padding-top: 72px;
+        }
+
+        .container-narrow {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 12px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: .5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+        }
+
+        .card-header {
+            padding: .75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: .375rem .75rem;
+            border: 1px solid #198754;
+            color: #198754;
+            border-radius: .375rem;
+            text-decoration: none;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #198754;
+            color: #fff;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            border: 1px solid #e9ecef;
+            padding: .5rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table thead th {
+            background: #f3f6f9;
+        }
+
+        .subhead {
+            color: var(--muted);
+            font-size: .9rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .pagination {
+            display: flex;
+            gap: .25rem;
+            list-style: none;
+            justify-content: flex-end;
+            padding: 0;
+            margin: 0;
+        }
+
+        .page-link {
+            display: block;
+            padding: .25rem .5rem;
+            border: 1px solid #dee2e6;
+            border-radius: .375rem;
+            text-decoration: none;
+        }
+
+        .active .page-link {
+            background: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+        }
+
+        .disabled .page-link {
+            color: var(--muted);
+            pointer-events: none;
+            background: #f8f9fa;
+        }
+    </style>
+    <script>
+        $(function () {
+            var $rows = $("#recTable tbody tr"), current = 0, size = 10;
+            function render() { $rows.hide().slice(current * size, (current + 1) * size).show(); $("#cur").text(current + 1); }
+            var total = $rows.length, pages = Math.max(1, Math.ceil(total / size)); $("#pages").text(pages);
+            function rebuild() {
+                var $p = $("#pager").empty();
+                $('<li class="page-item"><a class="page-link" href="#">&laquo;</a></li>')
+                    .toggleClass('disabled', current === 0)
+                    .on('click', e => { e.preventDefault(); if (current > 0) { current--; update(); } })
+                    .appendTo($p);
+                for (let i = 0; i < pages; i++) {
+                    $('<li class="page-item' + (i === current ? ' active' : '') + '"><a class="page-link" href="#">' + (i + 1) + '</a></li>')
+                        .on('click', e => { e.preventDefault(); current = i; update(); })
+                        .appendTo($p);
+                }
+                $('<li class="page-item"><a class="page-link" href="#">&raquo;</a></li>')
+                    .toggleClass('disabled', current >= pages - 1)
+                    .on('click', e => { e.preventDefault(); if (current < pages - 1) { current++; update(); } })
+                    .appendTo($p);
+            }
+            function update() { render(); rebuild(); }
+            update();
+        });
+    </script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
+        <div class="text-center">
+            <h2 class="m-0">TaskRecord 列表 - listAllTaskRecord</h2>
+            <div class="mt-1">
+                <a class="navbar-brand" th:href="@{/taskrecord/select_page}"><img th:src="@{/images/back1.gif}"
+                        alt="返回"> 回查詢頁</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-narrow">
+        <div class="subhead">
+            <b>第 <span id="cur">1</span>/<span id="pages"></span> 頁</b>
+            <span class="mx-2">•</span>
+            <b>共 <span class="text-danger" th:text="${list.size()}"></span> 筆</b>
+        </div>
+
+        <section class="card mb-4">
+            <header class="card-header">
+                <h3 class="card-title">紀錄列表</h3>
+                <a class="btn" th:href="@{/taskrecord/add}">新增紀錄</a>
+            </header>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="recTable" class="table table-bordered align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>紀錄ID</th>
+                                <th>任務ID</th>
+                                <th>會員ID</th>
+                                <th>開始時間</th>
+                                <th>結束時間</th>
+                                <th>狀態</th>
+                                <th>修改</th>
+                                <th>刪除</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <th:block th:each="rec, st : ${list}">
+                                <tr>
+                                    <td th:text="${st.count}"></td>
+                                    <td th:text="${rec.taskRecordId}"></td>
+                                    <td th:text="${rec.taskVO.taskId}"></td>
+                                    <td th:text="${rec.userVO.userId}"></td>
+                                    <td
+                                        th:text="${rec.userStartTime == null ? '-' : #temporals.format(rec.userStartTime, 'yyyy-MM-dd HH:mm')}">
+                                    </td>
+                                    <td
+                                        th:text="${rec.userEndTime == null ? '-' : #temporals.format(rec.userEndTime, 'yyyy-MM-dd HH:mm')}">
+                                    </td>
+                                    <!-- <td th:text="${rec.taskRecordStatusVO.statusName}"></td> -->
+                                    <td
+                                        th:text="${rec.taskRecordStatusVO == null ? '-' : rec.taskRecordStatusVO.statusName}">
+                                    </td>
+                                    <td>
+                                        <form method="get" th:action="@{/taskrecord/getOne_For_Update}"
+                                            style="margin:0">
+                                            <input type="hidden" name="taskRecordId" th:value="${rec.taskRecordId}" />
+                                            <input type="submit" class="btn" value="修改" />
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form method="post" th:action="@{/taskrecord/delete}" style="margin:0">
+                                            <input type="hidden" name="taskRecordId" th:value="${rec.taskRecordId}" />
+                                            <input type="submit" class="btn" value="刪除" />
+                                        </form>
+                                    </td>
+                                </tr>
+                            </th:block>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <footer class="card-footer">
+                <ul id="pager" class="pagination pagination-sm"></ul>
+            </footer>
+        </section>
+    </main>
+</body>
+
+</html>

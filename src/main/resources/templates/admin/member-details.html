@@ -1,172 +1,92 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
+    th:replace="~{admin/layout :: layout(~{::title}, ~{::content}, ~{::#empty-scripts})}">
 
 <head>
     <title th:text="'會員資料 | ' + ${user.name}">會員詳細資料</title>
 </head>
 
 <body>
-<div th:fragment="content">
-    <div class="app-content-header">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-6">
-                    <h3 class="mb-0" th:text="${user.name}">會員姓名</h3>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Home</a></li>
-                        <li class="breadcrumb-item"><a th:href="@{/admin/members}">會員列表</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">詳細資料</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="app-content">
-        <div class="container-fluid">
-            <div class="row">
-                <!-- 基本資料卡片 -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">基本資料</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="text-center mb-4">
-                                <img th:src="${user.profilePicture != null ? '/' + user.profilePicture : '/images/default-avatar.png'}"
-                                     alt="大頭照" class="img-circle img-fluid"
-                                     style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #dee2e6;">
+    <div th:fragment="content">
+        <div class="app-content">
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="col-lg-5">
+                        <div class="card card-primary card-outline">
+                            <div class="card-body box-profile">
+                                <div class="text-center mb-4">
+                                    <img class="profile-user-img img-fluid img-circle"
+                                        th:src="${user.profilePicture != null ? '/' + user.profilePicture : '/images/default-avatar.png'}"
+                                        alt="User profile picture"
+                                        style="width: 120px; height: 120px; object-fit: cover;">
+                                </div>
+
+                                <h3 class="profile-username text-center" th:text="${user.name}">王小明</h3>
+                                <p class="text-muted text-center"
+                                    th:text="${user.nickName != null ? user.nickName : '尚未設定暱稱'}">小明</p>
+
+                                <ul class="list-group list-group-unbordered mb-3">
+                                    <li class="list-group-item">
+                                        <b>會員 ID</b> <a class="float-right" th:text="${user.userId}">12</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Email</b> <a class="float-right"
+                                            th:text="${user.email}">user01@example.com</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>電話</b> <a class="float-right"
+                                            th:text="${user.phone != null ? user.phone : 'N/A'}">0911222333</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>帳戶點數</b> <a class="float-right" th:text="${user.pointsBalance}">19</a>
+                                    </li>
+                                </ul>
+
+                                <strong><i class="fas fa-book mr-1"></i> 身體數據</strong>
+                                <p class="text-muted">
+                                    性別: <span th:switch="${user.gender}"><span th:case="1">男</span><span
+                                            th:case="2">女</span><span th:case="*">不透露</span></span><br>
+                                    身高/體重: <span
+                                        th:text="${user.heightCm != null ? user.heightCm + ' cm' : 'N/A'}"></span> /
+                                    <span th:text="${user.weightKg != null ? user.weightKg + ' kg' : 'N/A'}"></span><br>
+                                    BMI: <span th:text="${user.bmi != null ? user.bmi : 'N/A'}"></span>
+                                </p>
+                                <hr>
+                                <strong><i class="far fa-file-alt mr-1"></i> 帳號資訊</strong>
+                                <p class="text-muted">
+                                    帳號狀態:
+                                    <span th:if="${user.accountStatus == 1}" class="badge bg-success">啟用</span>
+                                    <span th:if="${user.accountStatus == 0}" class="badge bg-danger">停權</span>
+                                    <br>
+                                    註冊日期: <span th:text="${#dates.format(user.createTime, 'yyyy-MM-dd')}"></span><br>
+                                    最後更新: <span
+                                        th:text="${user.updateTime != null ? #dates.format(user.updateTime, 'yyyy-MM-dd HH:mm') : '無'}"></span>
+                                </p>
                             </div>
-                            <table class="table table-bordered">
-                                <tbody>
-                                    <tr>
-                                        <th style="width: 150px">會員 ID</th>
-                                        <td th:text="${user.userId}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>姓名</th>
-                                        <td th:text="${user.name}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>暱稱</th>
-                                        <td th:text="${user.nickName != null ? user.nickName : '尚未設定'}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Email</th>
-                                        <td th:text="${user.email}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>電話</th>
-                                        <td th:text="${user.phone != null ? user.phone : '尚未提供'}"></td>
-                                    </tr>
-                                     <tr>
-                                        <th>收貨人地址</th>
-                                        <td>(此處未來將顯示會員的收貨地址)</td>
-                                    </tr>
-                                    <tr>
-                                        <th>性別</th>
-                                        <td th:switch="${user.gender}">
-                                            <span th:case="1">男</span>
-                                            <span th:case="2">女</span>
-                                            <span th:case="*">不透露</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>身高 (cm)</th>
-                                        <td th:text="${user.heightCm}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>體重 (kg)</th>
-                                        <td th:text="${user.weightKg}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>BMI</th>
-                                        <td th:text="${user.bmi}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>帳戶點數</th>
-                                        <td th:text="${user.pointsBalance}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>帳號狀態</th>
-                                        <td>
-                                            <span th:if="${user.accountStatus == 1}" class="badge text-bg-success">啟用</span>
-                                            <span th:if="${user.accountStatus == 0}" class="badge text-bg-danger">停權</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>註冊日期</th>
-                                        <td th:text="${#dates.format(user.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>最後更新</th>
-                                        <td th:text="${user.updateTime != null ? #dates.format(user.updateTime, 'yyyy-MM-dd HH:mm:ss') : '無更新紀錄'}"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 其他資訊卡片 -->
-                <div class="col-md-6">
-                    <!-- 訂單紀錄卡片 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">訂單紀錄</h3>
-                        </div>
-                        <div class="card-body">
-                            <p>(此處未來將顯示該會員的歷史訂單列表...)</p>
-                            <!-- 未來迭代訂單的表格範例 -->
-                            <!--
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>訂單編號</th>
-                                        <th>訂單日期</th>
-                                        <th>總金額</th>
-                                        <th>狀態</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="order : ${user.orders}">
-                                        <td th:text="${order.orderNumber}"></td>
-                                        <td th:text="${#dates.format(order.orderDate, 'yyyy-MM-dd')}"></td>
-                                        <td th:text="${order.totalAmount}"></td>
-                                        <td th:text="${order.status}"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            -->
-                        </div>
-                    </div>
-                    
-                    <!-- 運動紀錄卡片 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">運動紀錄</h3>
-                        </div>
-                        <div class="card-body">
-                            <p>(此處未來將顯示該會員詳細的運動數據圖表與歷史紀錄...)</p>
                         </div>
                     </div>
 
-                    <!-- 點數歷史紀錄卡片 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">點數歷史紀錄</h3>
-                        </div>
-                        <div class="card-body">
-                           <p>(此處未來將顯示該會員詳細的點數獲得與使用明細...)</p>
+                    <div class="col-lg-7">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">訂單紀錄</h3>
+                            </div>
+                            <div class="card-body" id="order-list-container"
+                                style="max-height: 800px; overflow-y: auto;">
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
-    </div>
-</div>
-</body>
-</html>
+        <script th:src="@{/frontend-template/assets/js/jquery.min.js}"></script>
+        <script th:src="@{/frontend-template/assets/js/bootstrap.min.js}"></script>
+        <script th:src="@{/adminlte/js/adminlte.min.js}"></script>
 
+        <script th:src="@{/adminlte/js/member-details.js}"></script>
+</body>
+</body>
+
+</html>

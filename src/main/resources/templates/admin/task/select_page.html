@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>任務資料管理 - select_page (Simple0 風格)</title>
+  <!-- 共用片段（若已含 Bootstrap/AdminLTE，這裡會自動套用樣式） -->
+
+  <head th:insert="~{/admin/task/included-fragment}"></head>
+
+  <style>
+    :root {
+      --card-bg: #fff;
+      --card-border: #dee2e6;
+      --muted: #6c757d;
+      --soft: #f8f9fa;
+    }
+
+    body {
+      padding-top: 72px;
+    }
+
+    .container-wide {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 12px;
+    }
+
+    /* Simple0 卡片樣式 */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: .5rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+    }
+
+    .card-header {
+      padding: .75rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 1rem;
+    }
+
+    .card-footer {
+      padding: .75rem 1rem;
+      border-top: 1px solid var(--card-border);
+      background: var(--soft);
+    }
+
+    /* 兩欄主版面：左查詢 / 右單筆預覽 */
+    .grid-main {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 992px) {
+      .grid-main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 表單行為 */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 150px 1fr auto;
+      gap: .5rem .75rem;
+      align-items: center;
+    }
+
+    .form-grid.noselect {
+      grid-template-columns: 150px 220px auto;
+    }
+
+    @media (max-width: 768px) {
+
+      .form-grid,
+      .form-grid.noselect {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-grid label {
+      font-weight: 600;
+    }
+
+    .form-grid input[type=text],
+    .form-grid select {
+      width: 100%;
+      padding: .375rem .5rem;
+      border: 1px solid #e9ecef;
+      border-radius: .375rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: .375rem .75rem;
+      border: 1px solid #198754;
+      color: #198754;
+      background: #fff;
+      border-radius: .375rem;
+      text-decoration: none;
+      font-size: .9rem;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #198754;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      border-color: #6c757d;
+      color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background: #6c757d;
+      color: #fff;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .errorblock {
+      color: #dc3545;
+      margin: .25rem 0 .75rem 0;
+    }
+
+    /* 清單連結區塊 */
+    .list-links {
+      list-style: none;
+      padding-left: 1rem;
+      margin: 0;
+    }
+
+    .list-links li {
+      margin: .25rem 0;
+    }
+
+    .divider-soft {
+      height: 1px;
+      background: #eef1f4;
+      margin: .5rem 0 1rem 0;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 導覽列（延續 bg-success） -->
+  <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
+    <div class="text-center">
+      <h2 class="m-0">任務資料管理 - select_page</h2>
+      <div class="mt-1">
+        <a class="navbar-brand" th:href="@{/}"><img th:src="@{/images/back1.gif}" alt="返回">回 index</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container-wide">
+    <div class="grid-main mt-3">
+      <!-- 左側：查詢/導航卡片 -->
+      <section class="card">
+        <header class="card-header">
+          <h3 class="card-title">資料查詢</h3>
+          <a class="btn btn-secondary" th:href="@{/tasks/addTask}">新增任務</a>
+        </header>
+        <div class="card-body">
+          <!-- 錯誤訊息 -->
+          <div class="errorblock" th:utext="${errorMessage}"></div>
+
+          <!-- 快速連結 -->
+          <ul class="list-links">
+            <li>
+              <a class="btn" th:href="@{/tasks/listAllTask}">瀏覽所有任務</a>
+              <span class="hint">（List all Tasks）</span>
+            </li>
+          </ul>
+
+          <div class="divider-soft"></div>
+
+          <!-- 以任務ID（輸入）查單筆 -->
+          <form class="form-grid noselect" method="post" th:action="@{/tasks/getOne_For_Display}">
+            <label>輸入任務ID</label>
+            <input type="text" name="taskId" th:value="${param.taskId}" placeholder="例如：1001" />
+            <button type="submit" class="btn">送出</button>
+          </form>
+
+          <!-- 以任務ID（下拉）查單筆 -->
+          <form class="form-grid mt-3" method="post" th:action="@{/tasks/getOne_For_Display}">
+            <label>選擇任務ID</label>
+            <select name="taskId">
+              <option th:each="taskVO : ${taskListData}" th:value="${taskVO.taskId}" th:text="${taskVO.taskId}">
+              </option>
+            </select>
+            <button type="submit" class="btn">送出</button>
+          </form>
+
+          <!-- 以任務名稱（下拉）查單筆 -->
+          <form class="form-grid mt-3" method="post" th:action="@{/tasks/getOne_For_Display}">
+            <label>選擇任務名稱</label>
+            <select name="taskId">
+              <option th:each="taskVO : ${taskListData}" th:value="${taskVO.taskId}" th:text="${taskVO.taskName}">
+              </option>
+            </select>
+            <button type="submit" class="btn">送出</button>
+          </form>
+        </div>
+        <footer class="card-footer">
+          <span class="hint">提示：此頁提供三種查詢方式，並可直接前往「新增任務」或「瀏覽全部」。</span>
+        </footer>
+      </section>
+
+      <!-- 右側：單筆預覽卡片（沿用你原本的 listOneTask 片段） -->
+      <aside class="card" th:if="${taskVO != null}">
+        <header class="card-header">
+          <h3 class="card-title">單筆任務預覽</h3>
+          <a class="btn btn-secondary" th:href="@{/tasks/select_page}">清除預覽</a>
+        </header>
+        <div class="card-body">
+          <div th:insert="~{/back-end/task/listOneTask :: listOneTask-div}"></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</body>
+
+</html>

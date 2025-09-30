@@ -1,11 +1,10 @@
-// assets/js/productdetail.js
-
 (function () {
   const stockHint = document.getElementById('stockHint');
   const hidPid    = document.getElementById('variantProductId');
   const hidSize   = document.getElementById('selectedSize');
   const btnCart   = document.getElementById('btnAddToCart');
   const skuText   = document.getElementById('skuText');
+  const priceText = document.getElementById('priceText');
 
   // 將 API 先取出一次
   const STOCK_API = stockHint ? (stockHint.dataset.stockUrl || '/shop/api/stock') : '/shop/api/stock';
@@ -21,6 +20,14 @@
     stockHint.textContent = text;
     stockHint.classList.toggle('text-danger', !!isError);
     stockHint.classList.toggle('text-secondary', !isError);
+  }
+  
+  // 價格格式化
+  function setPrice(val) {
+    if (!priceText) return;
+    if (val == null || val === '') return;
+    const n = Number(val);
+    priceText.textContent = Number.isFinite(n) ? n.toLocaleString('zh-TW') : String(val);
   }
 
   // 控制請求並避免亂序
@@ -130,7 +137,8 @@
 
     const size = chip.dataset.size || '';
     let pid    = chip.dataset.pid || '';
-	const sku  = chip.dataset.sku  || '';
+    const sku  = chip.dataset.sku  || '';
+    const price = chip.dataset.price || '';
 
     // 正規化 pid（保留空字串；有值時轉成純數字字串）
     if (pid) {
@@ -147,18 +155,19 @@
       } else {
         btnCart.removeAttribute('data-id');
       }
-	  if (skuText && sku) skuText.textContent = sku;
+      if (skuText && sku) skuText.textContent = sku;
     }
 
+    if (skuText && sku) skuText.textContent = sku;
+    setPrice(price);                                
     loadStock(pid);
-    // console.log('clicked size:', size, 'pid:', pid);
   });
 
   // 首次載入如果有預設 active 尺寸就查庫存；否則提示
   const active = document.querySelector('#sizeGroup .size-chip.active');
   if (active) {
     const pid = active.dataset.pid || '';
-	const sku = active.dataset.sku || '';
+    const sku = active.dataset.sku || '';
     active.setAttribute('aria-selected', 'true');
     loadStock(pid);
   } else {
@@ -166,44 +175,52 @@
   }
   
   // ==========================================================
-  // 新增：監聽 "Add to Cart" 按鈕
+  // 「加入購物車」按鈕邏輯（合併重複代碼，保留完整功能）
   // ==========================================================
-  if (btnCart) {
-      btnCart.addEventListener('click', function(event) {
-          event.preventDefault();
+if (btnCart) {
+  btnCart.addEventListener('click', async function(event) { // <--- 加上 async
+    event.preventDefault();
 
-          // 檢查按鈕是否處於停用狀態
-          if (this.classList.contains('disabled')) {
-              alert('無法加入購物車：請選擇有庫存的尺寸');
-              return;
-          }
+    if (this.classList.contains('disabled') || this.getAttribute('aria-disabled') === 'true') {
+      setHint('請先選擇有庫存的尺寸', true);
+      return;
+    }
 
-          const productId = this.dataset.id;
-          const quantity = document.getElementById('qty')?.value || 1;
-          
-          if (!productId) {
-              console.error('找不到商品 ID，無法加入購物車。');
-              alert('無法加入購物車，缺少商品資訊。');
-              return;
-          }
-          
-          // 呼叫 cart.js 中的 addItemToCart 函式
-          // 確保 cart.js 檔案有正確定義 addItemToCart 函式
-          if (typeof addItemToCart === 'function') {
-              addItemToCart(productId, quantity, {
-                  onSuccess: function() {
-                      alert('商品已成功加入購物車！');
-                      // 可選：更新頁首的購物車圖示數量
-                      // updateCartIconCount();
-                  },
-                  onError: function() {
-                      alert('加入購物車失敗，請稍後再試。');
-                  }
-              });
-          } else {
-              alert('發生錯誤：購物車功能未正確載入。');
-          }
+    const productId = this.dataset.id;
+    const quantityInput = document.getElementById('qty');
+    const quantity = quantityInput ? quantityInput.value : 1;
+
+    if (!productId) {
+      console.error('找不到商品 Variant ID，無法加入購物車。');
+      setHint('無法加入購物車，請重新選擇尺寸', true);
+      return;
+    }
+
+    // ★★★ 使用 async/await 和 try/catch，並將 alert 改為 Swal ★★★
+    try {
+      if (typeof addItemToCart !== 'function') {
+        throw new Error('購物車功能未正確載入。');
+      }
+      
+      const data = await addItemToCart(productId, quantity);
+      
+      // 成功提示改用 Swal
+      Swal.fire({
+        icon: 'success',
+        title: '成功加入購物車！',
+        showConfirmButton: false,
+        timer: 1500
       });
-  }
+      
+    } catch (error) {
+      // 失敗提示也改用 Swal
+      Swal.fire({
+        icon: 'error',
+        title: '加入失敗',
+        text: error.message || '請稍後再試'
+      });
+    }
+  });
+}
 
 })();

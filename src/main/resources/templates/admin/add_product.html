@@ -1,128 +1,187 @@
 <!DOCTYPE html>
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{admin/layout :: layout(~{::title}, ~{::content})}">
+	th:replace="~{admin/layout :: layout(~{::title}, ~{::content}, ~{::#empty-scripts})}">
 <head>
-  <title>新增商品</title>
+<title>新增商品</title>
 </head>
 <body>
-<div th:fragment="content">
+	<div th:fragment="content">
 
-  <!-- 頁首 -->
-  <div class="app-content-header">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-6">
-          <h3 class="mb-0">新增商品</h3>
-        </div>
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-end">
-            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Home</a></li>
-            <li class="breadcrumb-item"><a th:href="@{/admin/products}">商品清單</a></li>
-            <li class="breadcrumb-item active" aria-current="page">新增</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </div>
+		<!-- 頁首 -->
+		<div class="app-content-header">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-sm-6">
+						<h3 class="mb-0">新增商品</h3>
+					</div>
+					<div class="col-sm-6">
+						<ol class="breadcrumb float-sm-end">
+							<li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Home</a></li>
+							<li class="breadcrumb-item"><a th:href="@{/admin/products}">商品清單</a></li>
+							<li class="breadcrumb-item active" aria-current="page">新增</li>
+						</ol>
+					</div>
+				</div>
+			</div>
+		</div>
 
-  <!-- 內容 -->
-  <div class="app-content">
-    <div class="container-fluid">
+		<!-- 內容 -->
+		<div class="app-content">
+			<div class="container-fluid">
 
-      <!-- 訊息區 -->
-      <div class="alert alert-danger" th:if="${errorMsgs}">
-        <ul class="mb-0">
-          <li th:each="err : ${errorMsgs}" th:text="${err}">錯誤訊息</li>
-        </ul>
-      </div>
-      <div class="alert alert-success" th:if="${successMsg}"
-           th:text="${successMsg}">新增成功</div>
+				<!-- 訊息 -->
+				<div class="alert alert-danger" th:if="${errorMsgs}">
+					<ul class="mb-0">
+						<li th:each="err : ${errorMsgs}" th:text="${err}">錯誤訊息</li>
+					</ul>
+				</div>
+				<div class="alert alert-success" th:if="${successMsg}"
+					th:text="${successMsg}">新增成功</div>
 
-      <!-- 表單 -->
-      <form th:action="@{/admin/products}" method="post" class="card card-primary">
-        <div class="card-header">
-          <h3 class="card-title">請輸入商品資料</h3>
-        </div>
+				<!-- 表單 -->
+				<form th:action="@{/admin/products/add}" method="post"
+					enctype="multipart/form-data" class="card card-primary">
+					<div class="card-header">
+						<h3 class="card-title">請輸入商品資料</h3>
+					</div>
 
-        <div class="card-body">
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">商品代碼 <span class="text-danger">*</span></label>
-              <input type="text" name="productCode" class="form-control"
-                     th:value="${product != null ? product.productCode : ''}"
-                     required maxlength="64">
-            </div>
+					<div class="card-body">
+						<div class="row g-3">
 
-            <div class="col-md-4">
-              <label class="form-label">商品名稱 <span class="text-danger">*</span></label>
-              <input type="text" name="productName" class="form-control"
-                     th:value="${product != null ? product.productName : ''}"
-                     required maxlength="255">
-            </div>
+							<div class="col-md-4">
+								<label class="form-label">商品代碼 <span class="text-danger">*</span></label>
+								<input type="text" name="productCode" class="form-control"
+									required maxlength="64">
+							</div>
 
-            <div class="col-md-4">
-              <label class="form-label">商品分類（type）</label>
-              <input type="number" name="productType" class="form-control"
-                     th:value="${product != null ? product.productType : ''}"
-                     min="0" step="1">
-            </div>
+							<div class="col-md-4">
+								<label class="form-label">商品名稱 <span class="text-danger">*</span></label>
+								<input type="text" name="productName" class="form-control"
+									required maxlength="255">
+							</div>
 
-            <div class="col-md-12">
-              <label class="form-label">商品描述</label>
-              <textarea name="productDescription" class="form-control"
-                        rows="3" maxlength="255"
-                        th:text="${product != null ? product.productDescription : ''}"></textarea>
-            </div>
+							<div class="col-md-4">
+								<label class="form-label">商品分類（type）</label> <input
+									type="number" name="productType" class="form-control" min="0"
+									step="1" value="0">
+							</div>
 
-            <div class="col-md-4">
-              <label class="form-label">價格 <span class="text-danger">*</span></label>
-              <input type="number" name="productPrice" class="form-control"
-                     th:value="${product != null ? product.productPrice : ''}"
-                     min="0" step="1" required>
-            </div>
+							<div class="col-12">
+								<label class="form-label">商品描述</label>
+								<textarea name="productDescription" class="form-control"
+									rows="3" maxlength="255"></textarea>
+							</div>
 
-            <div class="col-md-4">
-              <label class="form-label">庫存 <span class="text-danger">*</span></label>
-              <input type="number" name="stockQuantity" class="form-control"
-                     th:value="${product != null ? product.stockQuantity : ''}"
-                     min="0" step="1" required>
-            </div>
+							<div class="col-md-4">
+								<label class="form-label">價格 <span class="text-danger">*</span></label>
+								<input type="number" name="productPrice" class="form-control"
+									min="0" step="1" required>
+							</div>
 
-            <div class="col-md-4">
-              <label class="form-label">狀態</label>
-              <select name="productStatus" class="form-select">
-                <option value="1" th:selected="${product != null and product.productStatus == 1}">上架</option>
-                <option value="0" th:selected="${product == null or product.productStatus == 0}">下架</option>
-              </select>
-            </div>
+							<div class="col-md-4">
+								<label class="form-label">庫存 <span class="text-danger">*</span></label>
+								<input type="number" name="stockQuantity" class="form-control"
+									min="0" step="1" required>
+							</div>
 
-            <!-- 圖片檔名 + 即時預覽 -->
-            <div class="col-md-8">
-              <label class="form-label">圖片檔名</label>
-              <input type="text" name="productPicture" id="pictureInput" class="form-control"
-                     th:value="${product != null ? product.productPicture : ''}"
-                     maxlength="255" placeholder="例如：clothes.png">
-              <div class="form-text">
-                放置位置：<code>static/frontend-template/assets/img/</code>（只需填檔名即可）
-              </div>
-            </div>
-          </div>
-        </div>
+							<div class="col-md-4">
+								<label class="form-label">狀態</label> <select
+									name="productStatus" class="form-select">
+									<option value="1">上架</option>
+									<option value="0" selected>下架</option>
+								</select>
+							</div>
 
-        <div class="card-footer d-flex gap-2">
-          <button type="submit" class="btn btn-primary">新增</button>
-         
-          <a th:href="@{/admin/products}" class="btn btn-secondary">回列表</a>
-         
-          <a th:href="@{/admin/products/select}" class="btn btn-outline-secondary">回選擇頁</a>
+							<!-- 圖片區 -->
+							<div class="col-md-8">
+								<label class="form-label" for="pictureInput">圖片檔名</label> <input
+									type="text" id="pictureInput" name="productPicture"
+									class="form-control" placeholder="例如：products/clothes.png">
+								<div class="form-text">
+									圖片會由後端存到
+									<code>/uploads</code>
+									對應的實體目錄（
+									<code>file.upload-dir</code>
+									）。<br> 這裡只需填「檔名或相對路徑」，如：
+									<code>products/clothes.png</code>
+									。
+								</div>
 
-          <a th:href="@{/}" class="btn btn-outline-dark">回首頁</a>
-        </div>
-      </form>
+								<div class="mt-3">
+									<label class="form-label" for="imageFile">上傳圖片</label> <input
+										type="file" id="imageFile" name="imageFile"
+										class="form-control" accept="image/*"> <small
+										class="form-text text-muted">選擇後會即時預覽，並自動帶入檔名。</small>
+								</div>
+							</div>
 
-    </div>
-  </div>
+							<div class="col-md-4 d-flex align-items-end">
+								<img id="previewImage" data-mode="add"
+								     src="/frontend-template/assets/img/default.png"
+								     onerror="this.src='/frontend-template/assets/img/default.png'"
+								     class="img-fluid img-thumbnail w-100" alt="預覽圖片">
+							</div>
 
+						</div>
+					</div>
+
+					<div class="card-footer d-flex gap-2">
+						<button type="submit" class="btn btn-primary">新增</button>
+						<a th:href="@{/admin/products}" class="btn btn-secondary">回列表</a>
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+
+	<div id="empty-scripts" th:fragment="empty-scripts">
+  <script>
+  (() => {
+    console.log('[product] preview script loaded');
+    const file = document.getElementById('imageFile');
+    const nameInput = document.getElementById('pictureInput');
+    const preview = document.getElementById('previewImage');
+    let lastUrl = null;
+
+    if (!file || !preview) {
+      console.warn('[product] missing #imageFile or #previewImage');
+      return;
+    }
+
+    file.addEventListener('change', () => {
+      const f = file.files && file.files[0];
+      if (!f) {
+        if (lastUrl) { URL.revokeObjectURL(lastUrl); lastUrl = null; }
+        // 新增頁：還原預設圖；編輯頁：不動原圖（看你需求）
+        if (preview.dataset.mode === 'add') {
+          preview.onerror = null;
+          preview.src = '/frontend-template/assets/img/default.png';
+        }
+        return;
+      }
+      if (!/^image\//i.test(f.type)) {
+        alert('請選擇圖片檔案');
+        file.value = '';
+        return;
+      }
+      if (lastUrl) { URL.revokeObjectURL(lastUrl); lastUrl = null; }
+
+      const url = URL.createObjectURL(f);
+      lastUrl = url;
+
+      // 先取消 onerror，避免 default.png 介入
+      preview.onerror = null;
+      preview.src = url;
+      preview.onload = () => {
+        if (lastUrl) { URL.revokeObjectURL(lastUrl); lastUrl = null; }
+      };
+
+      // 自動帶檔名
+      if (nameInput) nameInput.value = f.name;
+    });
+  })();
+  </script>
 </div>
 </body>
 </html>

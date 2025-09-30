@@ -1,33 +1,19 @@
 package com.tibafit.controller.user;
 
-import java.util.Map;
-
+import com.tibafit.dto.user.*;
+import com.tibafit.exception.ResourceNotFoundException;
+import com.tibafit.model.user.User;
+import com.tibafit.service.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.tibafit.dto.user.ChangePasswordRequest;
-import com.tibafit.dto.user.LoginRequest;
-import com.tibafit.dto.user.PasswordResetRequest;
-import com.tibafit.dto.user.PerformResetRequest;
-import com.tibafit.dto.user.RegisterRequest;
-import com.tibafit.dto.user.UpdateProfileRequest;
-import com.tibafit.exception.ResourceNotFoundException;
-import com.tibafit.model.user.User;
-import com.tibafit.service.user.UserService;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -105,6 +91,18 @@ public class UserController {
 	public ResponseEntity<Map<String, String>> performPasswordReset(@RequestBody PerformResetRequest req) { // ★ 修正回傳類型
 		String message = userService.resetPasswordWithToken(req);
 		// ★ 修正回傳內容為 JSON
+		return ResponseEntity.ok(Map.of("message", message));
+	}
+
+	/**
+	 * 處理使用者訂閱電子報的請求
+	 * @param payload 包含 email 的請求內文
+	 * @return 回傳成功訊息
+	 */
+	@PostMapping("/subscribe")
+	public ResponseEntity<Map<String, String>> subscribeNewsletter(@RequestBody Map<String, String> payload) {
+		String email = payload.get("email");
+		String message = userService.subscribeNewsletter(email); // 我們等下會在 Service 中建立這個方法
 		return ResponseEntity.ok(Map.of("message", message));
 	}
 }
