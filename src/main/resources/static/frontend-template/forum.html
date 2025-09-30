@@ -8,7 +8,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 body { background:#f5f5f5; font-family:Arial,sans-serif; }
-/* 文章列表 */
+/* 文章列表 */ 
 .container { margin-top:20px; }
 .blog-post { background:#fff; border-radius:10px; padding:15px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); display:flex; flex-direction:column; gap:10px; transition:0.3s; }
 .blog-post:hover { transform:translateY(-3px); box-shadow:0 8px 18px rgba(0,0,0,0.15); }
@@ -132,7 +132,6 @@ document.addEventListener("DOMContentLoaded", function() {
     let pageSize = parseInt(pageSizeSelect.value);
     let currentKeyword = '';
     let currentType = null;
-    let currentUser = null;
 
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has('type')) currentType = urlParams.get('type');
@@ -143,101 +142,6 @@ document.addEventListener("DOMContentLoaded", function() {
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(this, args), wait);
         };
-    }
-
-    async function checkUserProfile() {
-        try {
-            const res = await fetch("/api/users/profile", { credentials: 'include' });
-            if(res.ok){
-                currentUser = await res.json();
-                userCard.style.display = 'block';
-            } else {
-                currentUser = null;
-                userCard.style.display = 'none';
-            }
-        } catch(err){
-            console.error("無法取得使用者資料:", err);
-            currentUser = null;
-            userCard.style.display = 'none';
-        }
-    }
-
-    async function loadSidebar() {
-        try {
-            const res = await fetch('/api/sidebar');
-            const sb = await res.json();
-            const defaultImages = ["/images/1.jpg","/images/2.jpg","/images/3.jpg","/images/4.jpg","/images/5.jpg"];
-            const randomImage = ()=> defaultImages[Math.floor(Math.random()*defaultImages.length)];
-
-            // 最新文章
-            recentPosts.innerHTML='';
-            sb.recentPosts.forEach(rp=>{
-                recentPosts.innerHTML+=`<li><img src="${rp.imageUrl||randomImage()}" alt="${rp.title}"><div class="info"><a href="article-detail.html?id=${rp.id}">${rp.title}</a><div class="meta">${rp.author} | ${rp.date}</div></div></li>`;
-            });
-
-            // 分類
-            categoryList.innerHTML='<li><a href="forum.html">全部文章</a></li>';
-            sb.categories.forEach(c=>categoryList.innerHTML+=`<li><a href="forum.html?type=${c.id}">${c.name}</a></li>`);
-
-            // 收藏文章
-            favoritesList.innerHTML='';
-            if(currentUser && currentUser.userId){
-                if(sb.latestFavorites && sb.latestFavorites.length>0){
-                    sb.latestFavorites.slice(0,5).forEach(fav=>{
-                        favoritesList.innerHTML+=`<li><img src="${fav.imageUrl||randomImage()}" alt="${fav.title}"><div class="info"><a href="article-detail.html?id=${fav.id}">${fav.title}</a><div class="meta">${fav.author} | ${fav.date}</div></div></li>`;
-                    });
-                    favoritesList.innerHTML+=`<a class="view-all-btn" href="mycollection.html">查看所有收藏</a>`;
-                } else {
-                    favoritesList.innerHTML='<li>尚無收藏文章</li>';
-                }
-            } else {
-                favoritesList.innerHTML='<li>請先登入查看收藏</li>';
-            }
-
-            // meta links
-            metaLinks.innerHTML='';
-            sb.metaLinks.forEach(m=>{
-                if (m.url === '/logout') {
-                    if(currentUser && currentUser.userId){
-                        metaLinks.innerHTML += `<li><button class="logoutBtn">${m.name}</button></li>`;
-                    }
-                } else {
-                    metaLinks.innerHTML += `<li><a href="${m.url}">${m.name}</a></li>`;
-                }
-            });
-
-            // 登出 JS
-            document.querySelectorAll('.logoutBtn').forEach(btn=>{
-                btn.addEventListener('click', async function(){
-                    const csrfToken = document.cookie.split('; ')
-                        .find(row => row.startsWith('XSRF-TOKEN='))
-                        ?.split('=')[1];
-                    if(!csrfToken){ 
-                        alert("無法取得 CSRF Token，請重新整理頁面"); 
-                        return; 
-                    }
-
-                    try{
-                        await fetch('/logout', {
-                            method:'POST',
-                            headers:{
-                                'Content-Type':'application/x-www-form-urlencoded',
-                                'X-CSRF-TOKEN': csrfToken
-                            },
-                            body: `_csrf=${csrfToken}`,
-                            credentials: 'same-origin'
-                        });
-                        window.location.href = '/frontend-template/index.html';
-                    } catch(err){
-                        console.error(err);
-                        alert("登出失敗");
-                    }
-                });
-            });
-
-        } catch(err){
-            console.error("載入側邊欄失敗:", err);
-        }
     }
 
     function loadPosts(page = 1, size = pageSize, keyword = currentKeyword, type = currentType) {
@@ -297,8 +201,75 @@ document.addEventListener("DOMContentLoaded", function() {
     keywordInput.addEventListener("keyup", function(e){ if(e.key==="Enter") loadPosts(1, pageSize, keywordInput.value, currentType); });
     keywordInput.addEventListener("input", debounce(e=>loadPosts(1, pageSize, e.target.value, currentType)));
 
-    // 先驗證使用者再載入側邊欄
-    checkUserProfile().then(loadSidebar);
+    // 側邊欄資料
+    fetch('/api/sidebar').then(res=>res.json()).then(sb=>{
+        const defaultImages = ["/images/1.jpg","/images/2.jpg","/images/3.jpg","/images/4.jpg","/images/5.jpg"];
+        const randomImage = ()=> defaultImages[Math.floor(Math.random()*defaultImages.length)];
+
+        recentPosts.innerHTML='';
+        sb.recentPosts.forEach(rp=>{
+            recentPosts.innerHTML+=`<li><img src="${rp.imageUrl||randomImage()}" alt="${rp.title}"><div class="info"><a href="article-detail.html?id=${rp.id}">${rp.title}</a><div class="meta">${rp.author} | ${rp.date}</div></div></li>`;
+        });
+
+        categoryList.innerHTML='<li><a href="forum.html">全部文章</a></li>';
+        sb.categories.forEach(c=>categoryList.innerHTML+=`<li><a href="forum.html?type=${c.id}">${c.name}</a></li>`);
+
+        favoritesList.innerHTML='';
+        if(sb.latestFavorites && sb.latestFavorites.length>0){
+            sb.latestFavorites.slice(0,5).forEach(fav=>{
+                favoritesList.innerHTML+=`<li><img src="${fav.imageUrl||randomImage()}" alt="${fav.title}"><div class="info"><a href="article-detail.html?id=${fav.id}">${fav.title}</a><div class="meta">${fav.author} | ${fav.date}</div></div></li>`;
+            });
+            favoritesList.innerHTML+=`<a class="view-all-btn" href="mycollection.html">查看所有收藏</a>`;
+        } else {
+            favoritesList.innerHTML='<li>尚無收藏文章</li>';
+        }
+
+        // meta links
+        metaLinks.innerHTML='';
+        sb.metaLinks.forEach(m=>{
+            if (m.url === '/logout') {
+                metaLinks.innerHTML += `<li><button class="logoutBtn">${m.name}</button></li>`;
+            } else {
+                metaLinks.innerHTML += `<li><a href="${m.url}">${m.name}</a></li>`;
+            }
+        });
+
+        // 使用者登入資訊
+        if(sb.currentUser && sb.currentUser.userId){
+            userCard.style.display = 'block';
+        }
+
+        // 登出 JS (fetch)
+        document.querySelectorAll('.logoutBtn').forEach(btn=>{
+            btn.addEventListener('click', async function(){
+                const csrfToken = document.cookie.split('; ')
+                    .find(row => row.startsWith('XSRF-TOKEN='))
+                    ?.split('=')[1];
+                if(!csrfToken){ 
+                    alert("無法取得 CSRF Token，請重新整理頁面"); 
+                    return; 
+                }
+
+                try{
+                    await fetch('/logout', {
+                        method:'POST',
+                        headers:{
+                            'Content-Type':'application/x-www-form-urlencoded',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: `_csrf=${csrfToken}`,
+                        credentials: 'same-origin'
+                    });
+                    window.location.href = '/frontend-template/index.html';
+                } catch(err){
+                    console.error(err);
+                    alert("登出失敗");
+                }
+            });
+        });
+
+    });
+
     loadPosts();
 });
 </script>
