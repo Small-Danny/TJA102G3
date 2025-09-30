@@ -36,9 +36,6 @@ public interface ProductRepository extends JpaRepository<ProductVO, Integer> {
            """)
     List<ProductVO> searchByKeywordOrderById(@Param("kw") String kw);
     
-    /* ========================= 變體 / 尺寸 =========================
-	    DB 用 snake_case，Java 投影介面用駝峰
-	 ================================================================= */
 	
 	 /** 列出同群組所有尺寸/規格（商品詳情頁用） */
 	 @Query(value = """

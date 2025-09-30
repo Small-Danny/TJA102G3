@@ -27,11 +27,11 @@
 <body>
 
 	<!-- header -->
-	<div th:replace="~{frontend/layout/header :: siteHeader}"></div>
+	<div id="header-placeholder"></div>
 
 	<!-- Banner -->
 	<section class="banner-style-one">
-		<div class="parallax" style="background-image: url(https://via.placeholder.com/1920x640);"></div>
+		<div class="parallax"></div>
 		<div class="container">
 			<div class="row">
 				<div class="banner-details">
@@ -145,15 +145,18 @@
 
 
 	<!-- JS -->
-	<script th:src="@{/frontend-template/assets/js/jquery.min.js}"></script>
-	<script th:src="@{/frontend-template/assets/js/bootstrap.min.js}"></script>
-	<script th:src="@{/frontend-template/assets/js/jquery.fancybox.min.js}"></script>
-	<script th:src="@{/frontend-template/assets/js/jquery.nice-select.js}"></script>
-	<script th:src="@{/frontend-template/assets/js/owl.carousel.min.js}"></script>
-	<script th:src="@{/frontend-template/assets/js/custom.js}"></script>
-	<script th:src="@{/frontend-template/assets/js/cart.js}"></script>
-	<script src="/frontend-template/assets/js/api.js"></script>
-	<script src="/frontend-template/assets/js/productlist.js" defer></script>
+  <script th:src="@{/frontend-template/assets/js/jquery.min.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/bootstrap.min.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/jquery.fancybox.min.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/jquery.nice-select.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/owl.carousel.min.js}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script th:src="@{/frontend-template/assets/js/loader.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/custom.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/api.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/cart.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/productlist.js}"></script>
+  <script th:src="@{/frontend-template/assets/js/productdetail.js}"></script>
 </body>
 
 </html>

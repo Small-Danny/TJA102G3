@@ -95,42 +95,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const productId = btn.dataset.id || btn.getAttribute('data-id');
     if (!productId) {
       console.error('找不到 Product ID！');
-      alert('無法加入購物車，缺少商品資訊。');
+      // 錯誤提示也改用 Swal
+      Swal.fire('錯誤', '無法加入購物車，缺少商品資訊。', 'error');
       return;
     }
 
-    // 先用 cart.js 的 addItemToCart（若已載入），否則退回 fetch API
-    const useCartJs = (typeof window.addItemToCart === 'function');
-
     try {
-      if (useCartJs) {
-        await new Promise((resolve, reject) => {
-          window.addItemToCart(productId, 1, {
-            onSuccess: resolve,
-            onError: reject
-          });
-        });
-      } else {
-        const res = await apiFetch('/api/cart/items', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId: Number(productId), qty: 1 })
-        });
-        if (!res.ok) throw new Error('加入購物車失敗');
-      }
-
-      // 成功後事件與提示（讓頁首購物車徽章能聽這個事件去更新）
-      document.dispatchEvent(new Event('cart:changed'));
-      alert('商品已成功加入購物車！');
-
-      // 如果你有函式可直接更新徽章，也可在這裡呼叫：
-      // if (typeof updateCartIconCount === 'function') updateCartIconCount();
+      // 呼叫 cart.js 中的核心函式
+      await addItemToCart(productId, 1);
+      
+      // 成功提示改用 Swal
+      Swal.fire({
+        icon: 'success',
+        title: '成功加入購物車！',
+        showConfirmButton: false,
+        timer: 1500 // 1.5秒後自動關閉
+      });
 
     } catch (err) {
-      console.error(err);
-      alert(useCartJs
-        ? '加入購物車失敗，請稍後再試。（cart.js onError）'
-        : '加入購物車失敗，請稍後再試。');
+      // 失敗提示也改用 Swal
+      Swal.fire({
+        icon: 'error',
+        title: '加入失敗',
+        text: err.message || '請稍後再試'
+      });
     }
   });
 });

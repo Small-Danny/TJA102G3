@@ -2603,7 +2603,7 @@ footer:before {
     width: 100%;
 }
 .mobile-nav.open {
-    transform: translateY(0);
+    transform: translateX(0);
 }
 .mobile-nav ul li a svg {
     width: 11px;
@@ -7579,3 +7579,14 @@ ul.image-gallery li:before,
   clip-path: inset(0 0 0 0);
   transition: 1.5s cubic-bezier(0.5, 0.5, 0, 1);
 } 
+/* 修正購物車燈箱預設為可見的 Bug */
+#cart-lightbox {
+  visibility: hidden; /* 預設為不可見 */
+  opacity: 0;         /* 預設為全透明 */
+  transition: opacity 0.3s ease, visibility 0.3s ease; /* 加上平滑的淡入淡出效果 */
+}
+
+#cart-lightbox.is-visible {
+  visibility: visible; /* 當 JS 加上 is-visible class 時，變為可見 */
+  opacity: 1;          /* 當 JS 加上 is-visible class 時，變為不透明 */
+}

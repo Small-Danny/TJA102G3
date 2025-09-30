@@ -1,5 +1,6 @@
 package com.tibafit.controller.product;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import com.tibafit.model.cart.ProductVO;
@@ -46,7 +47,8 @@ public class ProductPageController {
         // 蒐集同款所有變體，做成 size -> productId、size -> sku 的 map
         Map<String, Integer> sizeMap = new LinkedHashMap<>();
         Map<String, String> sizeSkuMap = new LinkedHashMap<>();
-
+        Map<String, Integer> sizePriceMap = new LinkedHashMap<>();
+        
         // 先把「同款」變體都整理進來
         List<ProductVO> variants = psvc.findSizeVariantsByCode(p.getProductCode());
         for (ProductVO v : variants) {
@@ -55,6 +57,7 @@ public class ProductPageController {
             String key = sz.trim().toUpperCase(); // key 用大寫作比對
             sizeMap.putIfAbsent(key, v.getProductId());
             sizeSkuMap.putIfAbsent(key, v.getProductCode());
+            sizePriceMap.putIfAbsent(key, v.getProductPrice());
         }
 
         // 確保「自己」也在 map（避免只有本體沒顯示）
@@ -63,12 +66,14 @@ public class ProductPageController {
             String key = selfSize.trim().toUpperCase();
             sizeMap.putIfAbsent(key, p.getProductId());
             sizeSkuMap.putIfAbsent(key, p.getProductCode());
+            sizePriceMap.putIfAbsent(key, p.getProductPrice());
         }
 
         // 若完全沒有尺寸 → 視為「均碼」
         if (sizeMap.isEmpty()) {
             sizeMap.put("均碼", p.getProductId());
             sizeSkuMap.put("均碼", p.getProductCode());
+            sizePriceMap.put("均碼", p.getProductPrice());
         }
 
         // 排序尺寸（S/M/L/XL 與 500ML/1L/250G/2KG 都 OK）
@@ -77,14 +82,19 @@ public class ProductPageController {
         // 依序重建 LinkedHashMap（保序）
         Map<String, Integer> sizeMapOrdered = new LinkedHashMap<>();
         Map<String, String>  sizeSkuOrdered = new LinkedHashMap<>();
+        Map<String, Integer> sizePriceOrdered = new LinkedHashMap<>();
+        
         for (String s : sizesSorted) {
             Integer pid = sizeMap.get(s);
             String  sku = sizeSkuMap.get(s);
+            
             if (pid != null) sizeMapOrdered.put(s, pid);
             if (sku != null) sizeSkuOrdered.put(s, sku);
+            if (sizePriceMap.containsKey(s)) sizePriceOrdered.put(s, sizePriceMap.get(s));
         }
         sizeMap = sizeMapOrdered;
         sizeSkuMap = sizeSkuOrdered;
+        sizePriceMap = sizePriceOrdered;
 
         // 決定目前尺寸（?size > 自身尺寸 > 第一個）
         String currentSize = resolveCurrentSizeWithFallback(p, sizeQry, sizeMap, fallbackUnit);
@@ -98,7 +108,9 @@ public class ProductPageController {
         model.addAttribute("sizeSkuMap", sizeSkuMap);   // th:attr data-sku 用
         model.addAttribute("currentSize", currentSize); // 用於 chip active 與提示
         model.addAttribute("currentSku", currentSku);   // 初始顯示的 SKU（會被前端 JS動態更新）
-
+        model.addAttribute("sizePriceMap", sizePriceMap); 
+        model.addAttribute("currentPrice", sizePriceMap.getOrDefault(currentSize, p.getProductPrice()));
+        
         return "frontend/pages/productdetail";
     }
 
