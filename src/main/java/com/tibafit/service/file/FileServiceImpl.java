@@ -1,17 +1,15 @@
 package com.tibafit.service.file;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
-
+import com.tibafit.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.tibafit.exception.ValidationException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -73,7 +71,7 @@ public class FileServiceImpl implements FileService {
 	    // 回傳的檔名應該包含子目錄，這樣在刪除時才找得到
 	    // 並且前端也可以正確載入圖片
 		System.out.println("檔案儲存的根目錄: " + baseUploadDir);
-	    return subDir + "/" + newFileName;
+		return "uploads/" + subDir + "/" + newFileName;
 	}
 
 	@Override

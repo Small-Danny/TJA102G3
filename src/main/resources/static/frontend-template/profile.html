@@ -261,14 +261,6 @@
 									type="button" role="tab">訂單管理</button>
 							</li>
 							<li class="nav-item" role="presentation">
-								<button class="nav-link" id="articles-tab" data-bs-toggle="tab"
-									data-bs-target="#articles" type="button" role="tab">我的文章</button>
-							</li>
-							<li class="nav-item" role="presentation">
-								<button class="nav-link" id="favorites-tab" data-bs-toggle="tab"
-									data-bs-target="#favorites" type="button" role="tab">我的收藏</button>
-							</li>
-							<li class="nav-item" role="presentation">
 								<button class="nav-link" id="points-tab" data-bs-toggle="tab" data-bs-target="#points"
 									type="button" role="tab">我的點數</button>
 							</li>
@@ -299,7 +291,7 @@
 											<input type="text" class="form-control" id="nickname" name="nickname"
 												placeholder="請輸入暱稱"
 												style="text-align: center; max-width: 250px; margin: 0 auto;">
-											<div class="nickname-hint">請輸入3-10個字的暱稱，將顯示在您的個人頁面</div>
+											<div class="nickname-hint">請輸入2-10個字的暱稱，將顯示在您的個人頁面</div>
 										</div>
 									</div>
 
@@ -481,15 +473,13 @@
 	<script src="/frontend-template/assets/js/custom.js"></script>
 	<script src="/frontend-template/assets/js/profile.js"></script>
 	<script>
-		// ★★★ 修正 1：將所有程式碼包裹在 DOMContentLoaded 事件中 ★★★
-		// 確保頁面所有元素都載入完成後，才執行我們的腳本
+		// ★★★ 修正點：將所有程式碼包裹在 DOMContentLoaded 事件中 ★★★
 		document.addEventListener('DOMContentLoaded', function () {
 
-			// 將所有變數和函數都放在這個監聽器內
-			let user = null; // 用來儲存從後端獲取的使用者資料
+			let user = null;
 
 			// =================================================================
-			// 變量宣告區
+			// 變數宣告區
 			// =================================================================
 			const avatarInput = document.getElementById('avatar');
 			const avatarPreview = document.getElementById('avatarPreview');
@@ -512,14 +502,10 @@
 			const pointsHistory = document.getElementById('pointsHistory');
 			const pointsToggleIcon = document.getElementById('pointsToggleIcon');
 			const orderSearch = document.getElementById('orderSearch');
-			const orderItems = document.querySelectorAll('.order-item');
-			const favoriteBtns = document.querySelectorAll('.favorite-btn');
-			const togglePasswordBtns = document.querySelectorAll('.toggle-password');
 			const uploadAvatarLink = document.querySelector('.avatar-upload .upload-icon');
 			const nicknameHint = document.querySelector('.nickname-hint');
+			const togglePasswordBtns = document.querySelectorAll('.toggle-password');
 
-			// ★★★ 修正 2：移除重複定義的 initializeProfilePage 函數 ★★★
-			// (已將重複的定義刪除，只保留下面這一個)
 
 			// =================================================================
 			// 核心啟動函數 (整個頁面的入口)
@@ -538,7 +524,6 @@
 					loadUserOrders();
 				} catch (error) {
 					console.error('初始化會員中心頁面失敗:', error.message);
-					// ★★★ 修改點：登入失敗時使用 Swal.fire ★★★
 					Swal.fire({
 						title: '未登入',
 						text: '您尚未登入或會話已過期，將跳轉至登入頁面',
@@ -550,68 +535,58 @@
 					});
 				}
 			}
+
 			async function loadUserOrders() {
 				const orderListContainer = document.querySelector('#orders .order-list');
 				try {
-					// 您的 API 端點是 /api/orders/my
-					// 假設 apiFetch 是您封裝好的 fetch 函數
 					const response = await fetch('/api/orders/my', { credentials: 'include' });
 					if (!response.ok) throw new Error('無法獲取訂單');
 
 					const orders = await response.json();
-
-					// 清空原本的靜態假資料
 					orderListContainer.innerHTML = '';
-
 					if (!orders || orders.length === 0) {
 						orderListContainer.innerHTML = '<p class="text-center text-muted">您目前沒有任何訂單記錄。</p>';
 						return;
 					}
 
 					orders.forEach(order => {
-						// ▼▼▼【核心修改點】▼▼▼
-						// 使用 map 產生每一個訂單明細的 HTML <li> 元素，然後用 join('') 組合成一個字串
 						const itemsHtml = order.items && order.items.length > 0
 							? `<ul class="list-group list-group-flush mt-2">
-                        ${order.items.map(item => `
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>商品：${item.productName || 'N/A'}</span>
-                                <div>
-                                    <span class="me-3">數量: ${item.quantity}</span>
-                                    <span>單價: $${item.buyPrice.toLocaleString()}</span>
-                                </div>
-                            </li>
-                        `).join('')}
-                   </ul>`
+                            ${order.items.map(item => `
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>商品：${item.productName || 'N/A'}</span>
+                                    <div>
+                                        <span class="me-3">數量: ${item.quantity}</span>
+                                        <span>單價: $${item.buyPrice.toLocaleString()}</span>
+                                    </div>
+                                </li>
+                            `).join('')}
+                           </ul>`
 							: '<p class="text-muted small mt-2">此訂單沒有明細資料。</p>';
 
-						// 組合完整的訂單 HTML，包含主檔資訊和剛產生的明細 HTML
 						const orderHtml = `
-                <div class="order-item mb-4 border p-3 rounded">
-                    <h5 class="mb-2">訂單編號：${order.orderCode}</h5>
-                    <p class="mb-1 text-secondary">
-                        日期：${new Date(order.orderDate).toLocaleDateString()} |
-                        金額：NT$ ${order.totalPrice.toLocaleString()} |
-                        狀態：${order.paymentStatus === 1 ? '<span class="text-success">已付款</span>' : '<span class="text-warning">未付款</span>'}
-                    </p>
-                    <h6>訂單內容：</h6>
-                    ${itemsHtml}
-                </div>
-            `;
-						// ▲▲▲【核心修改點】▲▲▲
-
+                        <div class="order-item mb-4 border p-3 rounded">
+                            <h5 class="mb-2">訂單編號：${order.orderCode}</h5>
+                            <p class="mb-1 text-secondary">
+                                日期：${new Date(order.orderDate).toLocaleDateString()} |
+                                金額：NT$ ${order.totalPrice.toLocaleString()} |
+                                狀態：${order.paymentStatus === 1 ? '<span class="text-success">已付款</span>' : '<span class="text-warning">未付款</span>'}
+                            </p>
+                            <h6>訂單內容：</h6>
+                            ${itemsHtml}
+                        </div>
+                    `;
 						orderListContainer.insertAdjacentHTML('beforeend', orderHtml);
 					});
-
 				} catch (error) {
 					console.error('載入訂單失敗:', error);
 					orderListContainer.innerHTML = '<p class="text-center text-danger">載入訂單時發生錯誤，請稍後再試。</p>';
 				}
 			}
+
 			// =================================================================
 			// 功能函數區
 			// =================================================================
-
 			function showError(elementId, message) {
 				const errorElement = document.getElementById(elementId);
 				if (errorElement) {
@@ -646,9 +621,11 @@
 				}
 
 				if (user.profilePicture) {
+					// ★★★ 修正點：確保圖片路徑正確，使用後端回傳的完整路徑 ★★★
 					avatarPreview.src = `/${user.profilePicture}?t=${new Date().getTime()}`;
 				} else {
-					avatarPreview.src = '/frontend-template/assets/images/default-avatar.png';
+					// ★★★ 修正點：使用統一的靜態路徑前綴 /static/ ★★★
+					avatarPreview.src = '/static/frontend-template/assets/images/default-avatar.png';
 				}
 				calculateBMI();
 			}
@@ -686,7 +663,7 @@
 				const phoneRegex = /^09\d{8}$/;
 				if (phoneValue && !phoneRegex.test(phoneValue)) { showError('phoneError', '請輸入有效的手機號碼（09開頭，共10位數）'); isValid = false; }
 				const nickname = nicknameInput.value.trim();
-				if (nickname && (nickname.length < 3 || nickname.length > 10)) {
+				if (nickname && (nickname.length < 2 || nickname.length > 10)) {
 					nicknameHint.textContent = '暱稱長度必須介於3-10個字之間';
 					nicknameHint.classList.add('show');
 					isValid = false;
@@ -711,35 +688,13 @@
 				return isValid;
 			}
 
-			function updateFavoriteBtn(btn, isFavorite) {
-				const icon = btn.querySelector('i');
-				const text = btn.querySelector('span');
-				if (isFavorite) {
-					btn.classList.add('active');
-					icon.classList.add('fa-solid');
-					icon.classList.remove('fa-regular');
-					if (text) text.textContent = '已收藏';
-				} else {
-					btn.classList.remove('active');
-					icon.classList.remove('fa-solid');
-					icon.classList.add('fa-regular');
-					if (text) text.textContent = '收藏';
-				}
-			}
-			// ▼▼▼ 步驟 2：在這裡新增這個輔助函數 ▼▼▼
-			/**
-			 * 即時更新 Header 中的使用者暱稱
-			 * @param {string} newName - 新的暱稱
-			 */
 			function updateHeaderNickname(newName) {
-				// #auth-links 是由 loader.js 產生的，我們找到裡面的第一個 a 連結
 				const userLink = document.querySelector('#auth-links a:first-child');
 				if (userLink) {
-					// 更新文字內容，保留 "會員中心" 和括號
 					userLink.textContent = `會員中心 (${newName})`;
 				}
 			}
-			// ▲▲▲ 新增結束 ▲▲▲
+
 			// =================================================================
 			// 事件綁定區
 			// =================================================================
@@ -771,30 +726,19 @@
 				}
 
 				if (orderSearch) {
-					// ▼▼▼【修改這裡】▼▼▼
 					orderSearch.addEventListener('input', function () {
 						const searchTerm = this.value.toLowerCase().trim();
-
-						// 在每次輸入時，都重新獲取當前頁面上所有的 .order-item 元素
 						const currentOrderItems = document.querySelectorAll('#orders .order-list .order-item');
-
 						currentOrderItems.forEach(item => {
-							// 使用 textContent 來獲取整個訂單卡片的所有文字內容進行比對
 							const itemText = item.textContent.toLowerCase();
 							if (itemText.includes(searchTerm)) {
-								item.style.display = 'block'; // 符合條件的顯示
+								item.style.display = 'block';
 							} else {
-								item.style.display = 'none';  // 不符合的隱藏
+								item.style.display = 'none';
 							}
 						});
 					});
 				}
-				favoriteBtns.forEach(btn => {
-					btn.addEventListener('click', function () {
-						const isActive = this.classList.contains('active');
-						updateFavoriteBtn(this, !isActive);
-					});
-				});
 
 				togglePasswordBtns.forEach(btn => {
 					btn.addEventListener('click', function () {
@@ -810,22 +754,26 @@
 				avatarInput.addEventListener('change', async function (event) {
 					const file = event.target.files[0];
 					if (!file) return;
+
 					const formData = new FormData();
 					formData.append('profilePicture', file);
+
 					try {
 						const csrfResponse = await fetch('/api/csrf-token', { credentials: 'include' });
 						const csrfData = await csrfResponse.json();
+
 						const response = await fetch(`/api/users/${user.userId}/profile-picture`, {
 							method: 'PUT',
 							headers: { [csrfData.headerName]: csrfData.token },
 							credentials: 'include',
 							body: formData
 						});
+
 						if (!response.ok) throw await response.json();
+
 						const responseData = await response.json();
 						user.profilePicture = responseData.newPicturePath;
 
-						// 成功彈窗
 						Swal.fire({
 							title: '更新成功！',
 							text: '頭像已成功更新。',
@@ -834,30 +782,61 @@
 						avatarPreview.src = `/${responseData.newPicturePath}?t=${new Date().getTime()}`;
 					} catch (error) {
 						console.error('頭像上傳失敗:', error);
-						// 失敗彈窗
+						populateUserData();
 						Swal.fire({
 							title: '更新失敗',
 							text: `頭像上傳失敗：${error.message || '請稍後再試'}`,
 							icon: 'error'
 						});
-						populateUserData();
 					}
 				});
 
 				profileForm.addEventListener('submit', async function (e) {
 					e.preventDefault();
 					if (!validateProfileForm()) return;
-					const csrfResponse = await fetch('/api/csrf-token', { credentials: 'include' });
-					const csrfData = await csrfResponse.json();
-					const updateData = {
-						name: document.getElementById('fullname').value,
-						phone: document.getElementById('phone').value,
-						gender: parseInt(document.getElementById('gender').value, 10),
-						heightCm: parseFloat(document.getElementById('height').value) || null,
-						weightKg: parseFloat(document.getElementById('weight').value) || null,
-						nickName: document.getElementById('nickname').value
-					};
+
+					const submitBtn = e.target.querySelector('button[type="submit"]');
+					submitBtn.disabled = true;
+					submitBtn.textContent = '儲存中...';
+
 					try {
+						const csrfResponse = await fetch('/api/csrf-token', { credentials: 'include' });
+						const csrfData = await csrfResponse.json();
+
+						// ★★★ 修正點一：確保所有欄位的值都被正確取得，特別是 nickname ★★★
+						const updateData = {
+							name: document.getElementById('fullname').value.trim(),
+							phone: document.getElementById('phone').value.trim(),
+							gender: parseInt(document.getElementById('gender').value, 10),
+							heightCm: parseFloat(document.getElementById('height').value) || null,
+							weightKg: parseFloat(document.getElementById('weight').value) || null,
+							nickName: document.getElementById('nickname').value.trim()
+						};
+
+						// ★★★ 修正點二：檢查是否所有欄位都與原始值相同，若相同則不發送請求 ★★★
+						// 替換原有的 hasChanged 檢查邏輯
+						const hasChanged = Object.keys(updateData).some(key => {
+							// 統一處理空值情況（undefined、null、空字串視為相同）
+							const oldValue = key === 'nickName' ? (user.nickName || '') : user[key];
+							const newValue = key === 'nickName' ? (updateData.nickName || '') : updateData[key];
+
+							// 數值型欄位額外處理（如身高體重可能為空）
+							if (['heightCm', 'weightKg'].includes(key)) {
+								return Number(oldValue) !== Number(newValue);
+							}
+
+							return oldValue !== newValue;
+						});
+
+						if (!hasChanged) {
+							Swal.fire({
+								title: '沒有變動',
+								text: '您沒有修改任何資料。',
+								icon: 'info'
+							});
+							return; // 不發送請求
+						}
+
 						const response = await fetch(`/api/users/${user.userId}`, {
 							method: 'PUT',
 							headers: {
@@ -867,42 +846,59 @@
 							credentials: 'include',
 							body: JSON.stringify(updateData)
 						});
-						if (!response.ok) throw await response.json();
 
-						// 成功彈窗
-						Swal.fire({
-							title: '更新成功！',
-							text: '會員資料已成功儲存。',
-							icon: 'success'
-						});
+						if (!response.ok) {
+							const errorData = await response.json();
+							throw errorData;
+						}
+
 						const updatedUser = await response.json();
 						user = updatedUser;
 						populateUserData();
 						updateHeaderNickname(updatedUser.nickName || updatedUser.name);
 						nicknameDisplayArea.style.display = 'block';
 						nicknameEditArea.style.display = 'none';
+
+						Swal.fire({
+							title: '更新成功！',
+							text: '會員資料已成功儲存。',
+							icon: 'success'
+						});
 					} catch (error) {
 						console.error('更新資料時出錯:', error);
-						// 失敗彈窗
-						Swal.fire({
-							title: '更新失敗',
-							text: `更新失敗：${error.message || '請稍後再試'}`,
-							icon: 'error'
-						});
+						if (error.field && error.message) {
+							showError(error.field + 'Error', error.message);
+						} else {
+							Swal.fire({
+								title: '更新失敗',
+								text: `更新失敗：${error.message || '請稍後再試'}`,
+								icon: 'error'
+							});
+						}
+					} finally {
+						submitBtn.disabled = false;
+						submitBtn.textContent = '儲存修改';
 					}
 				});
 
 				changePasswordForm.addEventListener('submit', async function (e) {
 					e.preventDefault();
 					if (!validatePasswordForm()) return;
-					const csrfResponse = await fetch('/api/csrf-token', { credentials: 'include' });
-					const csrfData = await csrfResponse.json();
-					const changePasswordData = {
-						currentPassword: document.getElementById('currentPassword').value,
-						newPassword: newPasswordInput.value,
-						confirmPassword: document.getElementById('confirmNewPassword').value
-					};
+
+					const submitBtn = e.target.querySelector('button[type="submit"]');
+					submitBtn.disabled = true;
+					submitBtn.textContent = '更改中...';
+
 					try {
+						const csrfResponse = await fetch('/api/csrf-token', { credentials: 'include' });
+						const csrfData = await csrfResponse.json();
+
+						const changePasswordData = {
+							currentPassword: document.getElementById('currentPassword').value,
+							newPassword: newPasswordInput.value,
+							confirmPassword: document.getElementById('confirmNewPassword').value
+						};
+
 						const response = await fetch(`/api/users/${user.userId}/password`, {
 							method: 'PUT',
 							headers: {
@@ -912,10 +908,10 @@
 							credentials: 'include',
 							body: JSON.stringify(changePasswordData)
 						});
-						if (!response.ok) throw await response.json();
-						const responseData = await response.json();
 
-						// 成功彈窗
+						if (!response.ok) throw await response.json();
+
+						const responseData = await response.json();
 						Swal.fire({
 							title: '更新成功！',
 							text: responseData.message || '密碼已成功更新，請重新登入。',
@@ -931,30 +927,20 @@
 						if (error.field && error.message) {
 							showError(error.field + 'Error', error.message);
 						} else {
-							// 失敗彈窗
 							Swal.fire({
 								title: '修改失敗',
 								text: `修改密碼失敗：${error.message || '請稍後重試'}`,
 								icon: 'error'
 							});
 						}
-					}
-				});
-
-				nicknameInput.addEventListener('input', function () {
-					const nickname = this.value.trim();
-					if (nickname && (nickname.length < 3 || nickname.length > 10)) {
-						nicknameHint.textContent = '暱稱長度必須介於3-10個字之間';
-						nicknameHint.classList.add('show');
-					} else {
-						nicknameHint.classList.remove('show');
+					} finally {
+						submitBtn.disabled = false;
+						submitBtn.textContent = '確認更改';
 					}
 				});
 			}
 
-			// ★★★ 修正 3：將啟動呼叫移至 DOMContentLoaded 的最末端，確保所有函數都已定義 ★★★
 			initializeProfilePage();
-
 		});
 	</script>
 </body>
