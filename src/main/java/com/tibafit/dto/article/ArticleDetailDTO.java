@@ -13,7 +13,7 @@ public class ArticleDetailDTO {
 	private String coverImageUrl;
 	private Article.ArticleAttribute articleAttribute;
 	private String forumTypeName;
-	private String userName;
+	private String name;
 	private Integer views;
 	private Timestamp updateTime;
 
@@ -66,11 +66,11 @@ public class ArticleDetailDTO {
 	}
 
 	public String getUserName() {
-		return userName;
+		return name;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUserName(String name) {
+		this.name = name;
 	}
 
 	public Integer getViews() {
@@ -90,7 +90,7 @@ public class ArticleDetailDTO {
 	}
 
 	public ArticleDetailDTO(Integer articleId, String title, String content, String coverImageUrl,
-			ArticleAttribute articleAttribute, String forumTypeName, String userName, Integer views,
+			ArticleAttribute articleAttribute, String forumTypeName, String name, Integer views,
 			Timestamp updateTime) {
 		super();
 		this.articleId = articleId;
@@ -99,7 +99,7 @@ public class ArticleDetailDTO {
 		this.coverImageUrl = coverImageUrl;
 		this.articleAttribute = articleAttribute;
 		this.forumTypeName = forumTypeName;
-		this.userName = userName;
+		this.name = name;
 		this.views = views;
 		this.updateTime = updateTime;
 	}
@@ -112,7 +112,7 @@ public class ArticleDetailDTO {
 	public String toString() {
 		return "ArticleDetailDTO [articleId=" + articleId + ", title=" + title + ", content=" + content
 				+ ", coverImageUrl=" + coverImageUrl + ", articleAttribute=" + articleAttribute + ", forumTypeName="
-				+ forumTypeName + ", userName=" + userName + ", views=" + views + ", updateTime=" + updateTime + "]";
+				+ forumTypeName + ", name=" + name + ", views=" + views + ", updateTime=" + updateTime + "]";
 	}
 
 	

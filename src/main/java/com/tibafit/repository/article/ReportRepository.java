@@ -1,5 +1,6 @@
 package com.tibafit.repository.article;
 
+import com.tibafit.dto.article.ReportStatusDTO;
 import com.tibafit.model.article.ArticleReport;
 import com.tibafit.model.article.ReportStatus;
 import com.tibafit.model.article.ReportType;
@@ -24,7 +25,10 @@ import java.util.List;
 public interface ReportRepository extends JpaRepository<ArticleReport, Integer> {
 
     /* =======================  ReportType  ======================= */
-
+	/** 根據 ID 查詢檢舉狀態 */
+    @Query("SELECT rs FROM ReportStatus rs WHERE rs.reportStatusId = :id")
+    ReportStatus findReportStatusById(@Param("id") Integer id);
+    
     /** 取得所有檢舉類型 */
     @Query("SELECT rt FROM ReportType rt")
     List<ReportType> findAllReportTypes();
@@ -32,18 +36,6 @@ public interface ReportRepository extends JpaRepository<ArticleReport, Integer> 
     /** 根據 ID 查詢檢舉類型 */
     @Query("SELECT rt FROM ReportType rt WHERE rt.reportTypeId = :id")
     ReportType findReportTypeById(@Param("id") Integer id);
-
-
-    /* =======================  ReportStatus  ======================= */
-//未使用
-    /** 取得所有檢舉狀態 */
-    @Query("SELECT rs FROM ReportStatus rs")
-    List<ReportStatus> findAllReportStatuses();
-//未使用
-    /** 根據 ID 查詢檢舉狀態 */
-    @Query("SELECT rs FROM ReportStatus rs WHERE rs.reportStatusId = :id")
-    ReportStatus findReportStatusById(@Param("id") Integer id);
-
 
     /* =======================  ArticleReport  ======================= */
 //未使用
