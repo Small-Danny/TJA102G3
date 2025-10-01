@@ -157,8 +157,9 @@ public class SecurityConfig {
      * 前台使用者的身份驗證管理器。
      * 它只包含我們自訂的 customUserAuthenticationProvider。
      */
-    @Bean
-    public AuthenticationManager userAuthenticationManager(@Qualifier("customUserAuthenticationProvider") AuthenticationProvider customUserAuthenticationProvider) {
+    @Bean("userAuthenticationManager")
+    public AuthenticationManager user
+    (@Qualifier("customUserAuthenticationProvider") AuthenticationProvider customUserAuthenticationProvider) {
         return new ProviderManager(customUserAuthenticationProvider);
     }
 

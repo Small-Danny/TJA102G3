@@ -98,9 +98,9 @@
 										th:src="@{/frontend-template/assets/img/{f}(f=${name})}"
 										th:alt="${p.productName}" loading="lazy" width="336" height="216" />
 								</figure>
-								<a class="theme-btn view-detail"
-								   th:href="@{/shop/product/{id}(id=${p.productId})}">
-								  See more detail <i class="fa-solid fa-arrow-right"></i>
+								<a class="theme-btn add-to-cart" href="javascript:void(0)"
+									th:attr="data-id=${p.productId}">
+									Add to Cart <i class="fa-solid fa-bag-shopping"></i>
 								</a>
 							</div>
 
@@ -142,10 +142,7 @@
 			</div>
 		</div>
 	</section>
-	
-	<!-- 頁腳 -->
   <div id="footer-placeholder"></div>
-
 
 	<!-- JS -->
   <script th:src="@{/frontend-template/assets/js/jquery.min.js}"></script>

@@ -7590,3 +7590,17 @@ ul.image-gallery li:before,
   visibility: visible; /* 當 JS 加上 is-visible class 時，變為可見 */
   opacity: 1;          /* 當 JS 加上 is-visible class 時，變為不透明 */
 }
+#my-about-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* 圖片之間的間距 */
+  margin: 0 auto; /* 水平置中，同時可以覆蓋掉預設的 margin */
+}
+
+/* 如果圖片本身還有問題，可以單獨對圖片做調整 */
+#my-about-image-container figure img {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+}

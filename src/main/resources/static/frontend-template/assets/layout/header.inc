@@ -16,7 +16,7 @@
                 <div class="nav-bar">
                   <ul>
                     <li><a href="/frontend-template/plan.html">運動計畫</a></li>
-                    <li class="menu-item-has-children"><a href="javascript:void(0)">數據圖表</a>
+                    <li class="menu-item-has-children"><a href="/dMain/fd/workoutPlan_main">數據圖表</a>
                       <ul class="sub-menu">
                         <li><a href="/analytics">數據圖表</a></li>
                         <li><a href="/frontend-template/tasks.html">我的任務</a></li>
