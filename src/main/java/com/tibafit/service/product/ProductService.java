@@ -27,10 +27,12 @@ public class ProductService {
 	}
 
 	public void add(ProductVO v) {
+		fillDefaults(v); 
 		repo.save(v);
 	}
 
 	public void update(ProductVO v) {
+		fillDefaults(v);
 		repo.save(v);
 	}
 
@@ -66,6 +68,35 @@ public class ProductService {
 		if (BASE_SIZES.contains(u))
 			return true;
 		return NUMERIC_SIZE.matcher(u).matches(); // 單位可省略後就能吃到 "500"
+	}
+	
+	 /* === 這段是新增的：統一補值與校正（避免 NULL / 負數） === */
+	private void fillDefaults(ProductVO v) {
+	    // reserved_stock / stock_quantity → NULL or 負數 → 0
+	    if (v.getReservedStock() == null || v.getReservedStock() < 0) v.setReservedStock(0);
+	    if (v.getStockQuantity() == null || v.getStockQuantity() < 0) v.setStockQuantity(0);
+
+	    // **新增：reserved ≤ stock**
+	    if (v.getReservedStock() > v.getStockQuantity()) {
+	        v.setReservedStock(v.getStockQuantity());
+	    }
+
+	    // product_status 預設上架 1（依專案規則）
+	    if (v.getProductStatus() == null) v.setProductStatus(1);
+
+	    // 價格為 null 或負數 → 0
+	    if (v.getProductPrice() == null || v.getProductPrice() < 0) {
+	        v.setProductPrice(0);
+	    }
+
+	    // 去除名稱/代碼空白
+	    if (v.getProductName() != null) v.setProductName(v.getProductName().trim());
+	    if (v.getProductCode() != null) v.setProductCode(v.getProductCode().trim());
+
+	    // 空字串圖片 → 設為 null，讓前端走預設圖
+	    if (v.getProductPicture() != null && v.getProductPicture().isBlank()) {
+	        v.setProductPicture(null);
+	    }
 	}
 
 	/**
@@ -361,6 +392,42 @@ public class ProductService {
 		s = NAME_TRAIL_LETTER.matcher(s).replaceAll("");
 		s = NAME_WS.matcher(s).replaceAll(" ").trim();
 		return s;
+	}
+	
+	/** 價格區間物件 */
+	public static final class PriceRange {
+	    public final Integer min;
+	    public final Integer max;
+	    public PriceRange(Integer min, Integer max) { this.min = min; this.max = max; }
+	}
+
+	/** 取得同款(不同尺寸)的價格區間（僅考慮上架商品）。若取不到，回 null。*/
+	public PriceRange priceRangeFor(ProductVO rep) {
+	    if (rep == null || rep.getProductCode() == null) return null;
+
+	    // 找出同款的所有尺寸變體（你已經有的邏輯）
+	    var variants = findSizeVariantsByCode(rep.getProductCode());
+	    if (variants == null || variants.isEmpty()) {
+	        // fallback：沒有尺寸變體，就用自己的價格
+	        Integer p = rep.getProductPrice();
+	        return (p == null) ? null : new PriceRange(p, p);
+	    }
+
+	    // 只計算「上架」且有價格的
+	    var prices = variants.stream()
+	            .filter(this::isOnShelf)
+	            .map(ProductVO::getProductPrice)
+	            .filter(Objects::nonNull)
+	            .toList();
+
+	    if (prices.isEmpty()) {
+	        Integer p = rep.getProductPrice();
+	        return (p == null) ? null : new PriceRange(p, p);
+	    }
+
+	    int min = prices.stream().min(Integer::compareTo).get();
+	    int max = prices.stream().max(Integer::compareTo).get();
+	    return new PriceRange(min, max);
 	}
 
 	/** 方便直接給 VO 呼叫 */

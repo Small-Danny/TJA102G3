@@ -38,12 +38,13 @@ public interface ProductRepository extends JpaRepository<ProductVO, Integer> {
 
     // 關鍵字搜尋（允許空字串 → 全部）
     @Query("""
-           SELECT p FROM ProductVO p
-           WHERE (:kw IS NULL OR :kw = '' OR
-                  LOWER(p.productName) LIKE LOWER(CONCAT('%', :kw, '%')) OR
-                  LOWER(p.productDescription) LIKE LOWER(CONCAT('%', :kw, '%')))
-           ORDER BY p.productId
-           """)
+    		   SELECT p FROM ProductVO p
+    		   WHERE (:kw IS NULL OR :kw = '' OR
+    		          LOWER(p.productName) LIKE LOWER(CONCAT('%', :kw, '%')) OR
+    		          LOWER(p.productCode) LIKE LOWER(CONCAT('%', :kw, '%')) OR
+    		          LOWER(p.productDescription) LIKE LOWER(CONCAT('%', :kw, '%')))
+    		   ORDER BY p.productId
+    		""")
     List<ProductVO> searchByKeywordOrderById(@Param("kw") String kw);
     
 	

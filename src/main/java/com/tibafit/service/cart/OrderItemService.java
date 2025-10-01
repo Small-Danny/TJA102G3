@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tibafit.dto.cart.OrderItemDTO;
 import com.tibafit.model.cart.OrderItemVO;
 import com.tibafit.model.cart.OrdersVO;
 import com.tibafit.model.cart.ProductVO;
@@ -110,5 +111,14 @@ public class OrderItemService {
 		order.getOrderItems().remove(it); // 觸發 orphanRemoval
 
 		return order;
+	}
+	
+	@Transactional(readOnly = true)
+	public List<OrderItemDTO> listDtoByOrder(Integer orderId) {
+	    // 先在交易內把 LAZY 物件轉成 DTO，再離開 Service
+	    return orderItemDAO.findByOrder_OrderId(orderId)
+	            .stream()
+	            .map(OrderItemDTO::from)
+	            .toList();
 	}
 }

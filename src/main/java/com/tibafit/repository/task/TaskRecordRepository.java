@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tibafit.model.task.TaskRecordStatusVO;
 import com.tibafit.model.task.TaskRecordVO;
 
 public interface TaskRecordRepository extends JpaRepository<TaskRecordVO, Integer> {
@@ -41,4 +42,31 @@ public interface TaskRecordRepository extends JpaRepository<TaskRecordVO, Intege
          @Param("userId") Integer userId,
          @Param("taskId") Integer taskId
      );
+     
+  // 讀：我的 TaskRecord（可帶 statusId 篩選）
+     @Query("""
+            SELECT tr
+              FROM TaskRecordVO tr
+             WHERE tr.user.userId = :userId
+               AND (:statusId IS NULL OR tr.taskRecordStatusVO.taskRecordStatus = :statusId)
+             ORDER BY tr.userStartTime DESC
+            """)
+     List<TaskRecordVO> findByUserAndOptionalStatus(@Param("userId") Integer userId,
+                                                    @Param("statusId") Integer statusId);
+
+     // 寫：只有“擁有者”才能把這筆設為完成（原子性更新）
+     @Modifying
+     @Transactional
+     @Query("""
+            UPDATE TaskRecordVO tr
+               SET tr.taskRecordStatusVO = :done,
+                   tr.userEndTime = :now
+             WHERE tr.taskRecordId = :id
+               AND tr.user.userId = :userId
+               AND (tr.taskRecordStatusVO.taskRecordStatus <> 1)
+            """)
+     int markCompleteIfOwner(@Param("id") Integer recordId,
+                             @Param("userId") Integer userId,
+                             @Param("done") TaskRecordStatusVO done,
+                             @Param("now") java.time.LocalDateTime now);
 }

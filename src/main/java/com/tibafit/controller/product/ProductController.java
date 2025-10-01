@@ -31,8 +31,10 @@ public class ProductController {
     }
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("list", svc.getAll());
+    public String list(@RequestParam(value = "q", required = false) String q, Model model) {
+        String kw = (q == null) ? null : q.trim();
+        model.addAttribute("list", (kw == null || kw.isEmpty()) ? svc.getAll() : svc.search(kw));
+        model.addAttribute("q", q); // 讓前端回填
         return "admin/listAllProduct";
     }
 
@@ -49,13 +51,6 @@ public class ProductController {
         model.addAttribute("productVO", product);
         model.addAttribute("product", product);
         return "admin/listOneProduct";
-    }
-
-    @GetMapping("/search")
-    public String search(@RequestParam(required = false) String q, Model model) {
-        model.addAttribute("list", svc.search(q));
-        model.addAttribute("q", q);
-        return "admin/listAllProduct";
     }
 
     @GetMapping("/add")
