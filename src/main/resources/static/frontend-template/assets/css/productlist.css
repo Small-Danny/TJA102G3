@@ -44,3 +44,73 @@
 	object-fit: cover;
 	display: block;
 }
+.size-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.size-chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 20px;
+  border: 1px solid #ddd;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.size-chip-on {
+  border-color: #222;
+  color: #222;
+  background: #fff;
+}
+
+.size-chip-off {
+  color: #9aa0a6;         /* 灰 */
+  border-color: #e0e0e0;
+  background: #f5f5f5;
+}
+/* 列表頁尺寸框：與內頁一致的外觀規格 */
+.size-options{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+
+.size-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:46px;         /* 與內頁視覺接近 */
+  height:38px;
+  padding:0 12px;
+  border:2px solid #e5e7eb; /* 初始灰邊 */
+  border-radius:8px;
+  font-weight:700;
+  letter-spacing:1px;
+  line-height:1;
+  transition:all .15s ease;
+  text-decoration:none;
+}
+
+/* 可售：紅色（hover 變紅底白字） */
+.size-btn.on{
+  border-color:#e31b23;
+  color:#e31b23;
+}
+.size-btn.on:hover{
+  background:#e31b23;
+  color:#fff;
+}
+
+/* 不可售：灰色且不可點 */
+.size-btn.off{
+  border-color:#cbd5e1;
+  color:#cbd5e1;
+  cursor:not-allowed;
+  pointer-events:none;     /* 直接不能點 */
+}
