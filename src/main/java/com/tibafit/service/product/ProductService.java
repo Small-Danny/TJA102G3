@@ -393,6 +393,42 @@ public class ProductService {
 		s = NAME_WS.matcher(s).replaceAll(" ").trim();
 		return s;
 	}
+	
+	/** 價格區間物件 */
+	public static final class PriceRange {
+	    public final Integer min;
+	    public final Integer max;
+	    public PriceRange(Integer min, Integer max) { this.min = min; this.max = max; }
+	}
+
+	/** 取得同款(不同尺寸)的價格區間（僅考慮上架商品）。若取不到，回 null。*/
+	public PriceRange priceRangeFor(ProductVO rep) {
+	    if (rep == null || rep.getProductCode() == null) return null;
+
+	    // 找出同款的所有尺寸變體（你已經有的邏輯）
+	    var variants = findSizeVariantsByCode(rep.getProductCode());
+	    if (variants == null || variants.isEmpty()) {
+	        // fallback：沒有尺寸變體，就用自己的價格
+	        Integer p = rep.getProductPrice();
+	        return (p == null) ? null : new PriceRange(p, p);
+	    }
+
+	    // 只計算「上架」且有價格的
+	    var prices = variants.stream()
+	            .filter(this::isOnShelf)
+	            .map(ProductVO::getProductPrice)
+	            .filter(Objects::nonNull)
+	            .toList();
+
+	    if (prices.isEmpty()) {
+	        Integer p = rep.getProductPrice();
+	        return (p == null) ? null : new PriceRange(p, p);
+	    }
+
+	    int min = prices.stream().min(Integer::compareTo).get();
+	    int max = prices.stream().max(Integer::compareTo).get();
+	    return new PriceRange(min, max);
+	}
 
 	/** 方便直接給 VO 呼叫 */
 	public String displayNameWithoutSize(ProductVO p) {

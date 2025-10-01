@@ -2,24 +2,23 @@
 <html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>商店｜產品列表</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>商店｜產品列表</title>
 
-	<!-- CSS -->
-	<link th:href="@{/frontend-template/assets/css/bootstrap.min.css}" rel="stylesheet" />
-	<link th:href="@{/frontend-template/assets/images/heading-icon.png}" rel="icon" type="image/x-icon" />
-	<link th:href="@{/frontend-template/assets/font/flaticon_mycollection.html}" rel="stylesheet" />
-	<link th:href="@{/frontend-template/assets/css/owl.carousel.min.css}" rel="stylesheet" />
-	<link th:href="@{/frontend-template/assets/css/owl.theme.default.min.css}" rel="stylesheet" />
-	<link th:href="@{/frontend-template/assets/css/jquery.fancybox.min.css}" rel="stylesheet" />
-	<link th:href="@{/frontend-template/assets/css/fontawesome.min.css}" rel="stylesheet" />
-	<link th:href="@{/frontend-template/assets/css/nice-select.css}" rel="stylesheet" />
-	<link th:href="@{/frontend-template/assets/css/style.css}" rel="stylesheet" />
-	<link th:href="@{/frontend-template/assets/css/responsive.css}" rel="stylesheet" />
-
-	<link rel="stylesheet" th:href="@{/frontend-template/assets/css/header.css}">
-	<link rel="stylesheet" th:href="@{/frontend-template/assets/css/productlist.css}">
+<!-- CSS -->
+<link th:href="@{/frontend-template/assets/css/bootstrap.min.css}" rel="stylesheet" />
+<link th:href="@{/frontend-template/assets/images/heading-icon.png}" rel="icon" type="image/x-icon" />
+<link th:href="@{/frontend-template/assets/font/flaticon_mycollection.html}" rel="stylesheet" />
+<link th:href="@{/frontend-template/assets/css/owl.carousel.min.css}" rel="stylesheet" />
+<link th:href="@{/frontend-template/assets/css/owl.theme.default.min.css}" rel="stylesheet" />
+<link th:href="@{/frontend-template/assets/css/jquery.fancybox.min.css}" rel="stylesheet" />
+<link th:href="@{/frontend-template/assets/css/fontawesome.min.css}" rel="stylesheet" />
+<link th:href="@{/frontend-template/assets/css/nice-select.css}" rel="stylesheet" />
+<link th:href="@{/frontend-template/assets/css/style.css}" rel="stylesheet" />
+<link th:href="@{/frontend-template/assets/css/responsive.css}" rel="stylesheet" />
+<link rel="stylesheet" th:href="@{/frontend-template/assets/css/header.css}">
+<link rel="stylesheet" th:href="@{/frontend-template/assets/css/productlist.css}">
 
 
 </head>
@@ -44,9 +43,9 @@
 			<div class="container">
 				<div class="row">
 					<ul>
-						<li><a th:href="@{/index.html}"><i class="fa-solid fa-house"></i>
-								<p>首頁</p>
-							</a></li>
+						<li><a th:href="@{/index.html}"><i
+								class="fa-solid fa-house"></i>
+								<p>首頁</p> </a></li>
 						<li class="current">
 							<p>商品列表</p>
 						</li>
@@ -67,9 +66,9 @@
 							<span th:text="${#lists.size(products)}">0</span> Products
 						</p>
 						<div class="gird-list d-flex-all">
-							<a class="d-flex-all list" href="javascript:void(0)"><i class="fa-solid fa-list"></i></a> <a
-								class="d-flex-all grid" href="javascript:void(0)"><i
-									class="fa-solid fa-table-list"></i></a>
+							<a class="d-flex-all list" href="javascript:void(0)"><i
+								class="fa-solid fa-list"></i></a> <a class="d-flex-all grid"
+								href="javascript:void(0)"><i class="fa-solid fa-table-list"></i></a>
 						</div>
 					</div>
 				</div>
@@ -78,10 +77,14 @@
 
 		<!-- 商品卡片區 -->
 		<div class="container">
-			<div class="row p-slider align-items-center justify-content-between grid" id="product-grid">
+			<div
+				class="row p-slider align-items-center justify-content-between grid"
+				id="product-grid">
 
 				<!-- 迴圈渲染商品 -->
-				<div class="col-lg-4 col-md-6 mb-4 product-item" th:each="p : ${products}" th:with="pic=${p.productPicture},
+				<div class="col-lg-4 col-md-6 mb-4 product-item"
+					th:each="p : ${products}"
+					th:with="pic=${p.productPicture},
 		                  name=${(pic == null or pic.isEmpty()) 
 		                    ? 'placeholder.png' 
 		                    : (pic.contains('/') ? pic.substring(pic.lastIndexOf('/') + 1) : pic)}">
@@ -90,41 +93,61 @@
 							<div class="btn-hover">
 								<figure>
 									<!-- http/https 完整網址 -->
-									<img th:if="${pic != null and #strings.startsWith(pic, 'http')}" th:src="${pic}"
-										th:alt="${p.productName}" loading="lazy" width="336" height="216" />
+									<img
+										th:if="${pic != null and #strings.startsWith(pic, 'http')}"
+										th:src="${pic}" th:alt="${p.productName}" loading="lazy"
+										width="336" height="216" />
 
 									<!-- 靜態目錄圖片 -->
-									<img th:if="${pic == null or !#strings.startsWith(pic, 'http')}"
+									<img
+										th:if="${pic == null or !#strings.startsWith(pic, 'http')}"
 										th:src="@{/frontend-template/assets/img/{f}(f=${name})}"
-										th:alt="${p.productName}" loading="lazy" width="336" height="216" />
+										th:alt="${p.productName}" loading="lazy" width="336"
+										height="216" />
 								</figure>
-								<a class="theme-btn add-to-cart" href="javascript:void(0)"
-									th:attr="data-id=${p.productId}">
-									Add to Cart <i class="fa-solid fa-bag-shopping"></i>
+								<a class="theme-btn"
+									th:href="@{/shop/product/{id}(id=${p.productId})}"> See
+									more Detail <i class="fa-solid fa-arrow-right"></i>
 								</a>
 							</div>
 
 							<div class="data">
-								<div class="ratings"><i class="fa-solid fa-star"></i><span>5.0</span></div>
+								<div class="ratings">
+									<i class="fa-solid fa-star"></i><span>5.0</span>
+								</div>
 								<h3>
 									<a th:text="${@productService.displayNameWithoutSize(p)}"
 										th:href="@{/shop/product/{id}(id=${p.productId})}">商品名稱</a>
 								</h3>
-								<div class="price-range">
-									<span>NT$ <span
-											th:text="${#numbers.formatInteger(p.productPrice, 3, 'COMMA')}">0</span></span>
+								<div class="price-range"
+									th:with="pr=${@productService.priceRangeFor(p)}">
+									<!-- 有區間物件 -->
+									<span th:if="${pr != null}"> <!-- min == max → 單一價 --> <span
+										th:if="${pr.min == pr.max}"> NT$ <span
+											th:text="${#numbers.formatInteger(pr.min, 3, 'COMMA')}">0</span>
+									</span> <!-- min != max → 區間價 --> <span th:if="${pr.min != pr.max}">
+											NT$ <span
+											th:text="${#numbers.formatInteger(pr.min, 3, 'COMMA')}">0</span>
+											- <span
+											th:text="${#numbers.formatInteger(pr.max, 3, 'COMMA')}">0</span>
+									</span>
+									</span>
+
+									<!-- 沒有區間資料，就退回顯示商品本身價格 -->
+									<span th:if="${pr == null}"> NT$ <span
+										th:text="${#numbers.formatInteger(p.productPrice, 3, 'COMMA')}">0</span>
+									</span>
 								</div>
 							</div>
 						</div>
 
-						<a class="theme-btn" th:href="@{/shop/product/{id}(id=${p.productId})}">
-							查看詳情 <i class="fa-solid fa-arrow-right"></i>
-						</a>
+
 					</div>
 				</div>
 
 				<!-- 若沒有商品時顯示 -->
-				<div class="col-12" id="empty-tip" th:if="${products == null or #lists.isEmpty(products)}">
+				<div class="col-12" id="empty-tip"
+					th:if="${products == null or #lists.isEmpty(products)}">
 					<div class="alert alert-light text-center">目前沒有商品</div>
 				</div>
 
@@ -142,21 +165,21 @@
 			</div>
 		</div>
 	</section>
-  <div id="footer-placeholder"></div>
+	<div id="footer-placeholder"></div>
 
 	<!-- JS -->
-  <script th:src="@{/frontend-template/assets/js/jquery.min.js}"></script>
-  <script th:src="@{/frontend-template/assets/js/bootstrap.min.js}"></script>
-  <script th:src="@{/frontend-template/assets/js/jquery.fancybox.min.js}"></script>
-  <script th:src="@{/frontend-template/assets/js/jquery.nice-select.js}"></script>
-  <script th:src="@{/frontend-template/assets/js/owl.carousel.min.js}"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script th:src="@{/frontend-template/assets/js/loader.js}"></script>
-  <script th:src="@{/frontend-template/assets/js/custom.js}"></script>
-  <script th:src="@{/frontend-template/assets/js/api.js}"></script>
-  <script th:src="@{/frontend-template/assets/js/cart.js}"></script>
-  <script th:src="@{/frontend-template/assets/js/productlist.js}"></script>
-  <script th:src="@{/frontend-template/assets/js/productdetail.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/jquery.min.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/bootstrap.min.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/jquery.fancybox.min.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/jquery.nice-select.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/owl.carousel.min.js}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script th:src="@{/frontend-template/assets/js/loader.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/custom.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/api.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/cart.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/productlist.js}"></script>
+	<script th:src="@{/frontend-template/assets/js/productdetail.js}"></script>
 </body>
 
 </html>
