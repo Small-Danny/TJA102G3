@@ -87,7 +87,7 @@ public class TaskVO {
     
     @Lob
     @Basic(fetch = FetchType.LAZY) // LAZY 可避免列表時把整張圖拉出來
-    @Column(name = "task_icon", nullable = false, columnDefinition = "BLOB")
+    @Column(name = "task_icon", columnDefinition = "BLOB")
     private byte[] taskIcon;
 
     @NotNull
