@@ -348,7 +348,10 @@ public class SecurityConfig {
                         // --- 靜態資源 (CSS, JS, 圖片等，必須開放) ---
                         .requestMatchers(
                                 "/frontend-template/**",
-                                "/adminlte/**"
+                                "/adminlte/**",
+                                "/images/**"
+
+
                         ).permitAll()
 
                         // --- 公開 API (無需登入即可呼叫) ---
