@@ -1,191 +1,285 @@
-// checkout.js (最終修正版 - 2.0)
+// /frontend-template/assets/js/checkout.js
+// 結帳頁：讀取 cartSummary（含使用點數）、渲染訂單、建立訂單、跳金流（只顯示紅字，不用 alert）
+
 document.addEventListener('DOMContentLoaded', async () => {
-    const form = document.getElementById('checkout-form');
-    if (!form) return;
+	const $ = (sel) => document.querySelector(sel);
 
-    const recipientName = document.getElementById('recipient_name');
-    const recipientPhone = document.getElementById('recipient_phone');
-    const recipientAddress = document.getElementById('recipient_address');
-    const orderItemsContainer = document.getElementById('order-items');
-    const totalAmountEl = document.getElementById('total-amount');
-    const usedPointsEl = document.getElementById('used-points');
-    const orderAmountEl = document.getElementById('order-amount');
-    const grandTotalEl = document.getElementById('grand-total');
-    const linePayBtn = document.getElementById('linePayBtn');
-    const creditCardBtn = document.getElementById('creditCardBtn');
+	const form = $('#checkout-form');
+	if (!form) return;
 
-    function showError(message) {
-        orderItemsContainer.innerHTML = `<div class="alert alert-danger">${message}</div>`;
-        if (linePayBtn) linePayBtn.disabled = true;
-        if (creditCardBtn) creditCardBtn.disabled = true;
-    }
+	const recipientName = $('#recipient_name');
+	const recipientPhone = $('#recipient_phone');
+	const recipientAddress = $('#recipient_address');
+	const orderItemsBox = $('#order-items');
 
-    // ★★★ 這是新增的核心函式 ★★★
-    // 在頁面載入時，主動從後端 API 獲取最新的購物車完整資訊
-    async function fetchAndRenderCheckoutPage() {
-        try {
-            console.log("checkout.js: 正在從 /api/cart/summary 獲取最新購物車資訊...");
-            const response = await apiFetch('/api/cart/summary');
+	const totalAmountEl = $('#total-amount');
+	const usedPointsEl = $('#used-points');
+	const orderAmountEl = $('#order-amount');
+	const grandTotalEl = $('#grand-total');
 
-            if (!response.ok) {
-                if (response.status === 401) {
-                    showError('您尚未登入，請先登入後再結帳。');
-                    return null;
-                }
-                throw new Error('無法獲取購物車資訊');
-            }
+	const linePayBtn = $('#linePayBtn');
+	const creditCardBtn = $('#creditCardBtn');
 
-            const summary = await response.json();
+	const money = (n) => `NT$${Number(n || 0).toLocaleString('zh-TW')}`;
 
-            if (!summary || !summary.items || summary.items.length === 0) {
-                showError('您的購物車是空的，無法進行結帳。');
-                return null;
-            }
+	// ====== 全域錯誤顯示（頁面上方紅框） ======
+	function showError(message) {
+		orderItemsBox.innerHTML = `<div class="alert alert-danger">${message}</div>`;
+	}
 
-            console.log("checkout.js: 成功獲取購物車資訊", summary);
+	// ====== 表單欄位錯誤（下方紅字 + 紅框） ======
+	const getErrorBox = (inputEl) => {
+		if (inputEl && inputEl.nextElementSibling && inputEl.nextElementSibling.classList.contains('error')) {
+			return inputEl.nextElementSibling;
+		}
+		return null;
+	};
 
-            sessionStorage.setItem('cartSummary', JSON.stringify(summary));
-            render(summary);
-            return summary;
+	const setFieldError = (inputEl, message) => {
+		const box = getErrorBox(inputEl);
+		if (box) box.textContent = message || '';
+		if (message) {
+			inputEl.classList.add('is-invalid');
+			inputEl.setAttribute('aria-invalid', 'true');
+		} else {
+			inputEl.classList.remove('is-invalid');
+			inputEl.removeAttribute('aria-invalid');
+		}
+	};
 
-        } catch (error) {
-            console.error('獲取結帳資訊失敗:', error);
-            showError(`載入購物車時發生錯誤: ${error.message}`);
-            return null;
-        }
-    }
+	const clearAllErrors = () => {
+		[recipientName, recipientPhone, recipientAddress].forEach((el) => setFieldError(el, ''));
+	};
 
-    function render(summary) {
-        orderItemsContainer.innerHTML = '';
-        summary.items.forEach(item => {
-            const itemHtml = `
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <img src="${item.productPicture || '/frontend-template/assets/img/images/default-product.png'}" alt="${item.productName}" class="img-fluid rounded" style="width: 60px;">
-                    <span class="flex-grow-1 mx-3">${item.productName}</span>
-                    <span>${item.quantity} x ${item.unitPrice.toLocaleString()}</span>
-                    <span class="font-weight-bold" style="width: 100px; text-align: right;">$${item.subtotal.toLocaleString()}</span>
-                </div>
-            `;
-            orderItemsContainer.insertAdjacentHTML('beforeend', itemHtml);
-        });
+	// 即時驗證（輸入/離焦時就更新）
+	[recipientName, recipientPhone, recipientAddress].forEach((el) => {
+		el.addEventListener('input', () => validateFields());
+		el.addEventListener('blur', () => validateFields());
+	});
 
-        totalAmountEl.textContent = summary.totalAmount.toLocaleString();
-        orderAmountEl.textContent = summary.totalAmount.toLocaleString();
-        grandTotalEl.textContent = summary.totalAmount.toLocaleString();
-    }
+	function validateFields() {
+		let ok = true;
+		clearAllErrors();
 
-    async function createOrder() {
-        // ★★★ 在函式開頭加上這段檢查 ★★★
-        if (recipientName.value.trim().length < 2) {
-            alert('收貨人姓名不得少於 2 個字');
-            return null; // 中斷執行
-        }
-        if (recipientAddress.value.trim().length < 6) {
-            alert('收貨人地址不得少於 6 個字');
-            return null; // 中斷執行
-        }
-        const summaryJson = sessionStorage.getItem('cartSummary');
-        if (!summaryJson) {
-            alert('購物車資訊遺失，請重試');
-            return null;
-        }
+		const name = recipientName.value.trim();
+		const namePattern = /[\p{L}\p{M}\s.\-]{2,10}/u; // 對應 input 的 pattern
+		if (name.length < 2 || !namePattern.test(name)) {
+			setFieldError(recipientName, '收貨人姓名需 2–10 字（中英文字，可含空白/.-）');
+			ok = false;
+		}
 
-        const summary = JSON.parse(summaryJson);
-        const orderData = {
-            recipientName: recipientName.value,
-            recipientPhone: recipientPhone.value,
-            recipientAddress: recipientAddress.value,
-            usedPoints: usedPointsEl.value ? parseInt(usedPointsEl.value, 10) : 0,
-            items: summary.items.map(item => ({
-                productId: item.productId,
-                quantity: item.quantity
-            }))
-        };
+		const phone = recipientPhone.value.trim();
+		const phonePattern = /^(09\d{8}|0\d{1,2}-?\d{7,8})$/;
+		if (!phonePattern.test(phone)) {
+			setFieldError(recipientPhone, '請輸入正確的手機或市話（09xxxxxxxx 或 0x-xxxxxxx）');
+			ok = false;
+		}
 
-        try {
-            const response = await apiFetch('/api/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData)
-            });
+		const addr = recipientAddress.value.trim();
+		if (addr.length < 6 || addr.length > 120) {
+			setFieldError(recipientAddress, '收貨人地址需 6–120 字');
+			ok = false;
+		}
 
-            if (!response.ok) {
-                if (response.status === 401) {
-                    alert('您需要登入才能結帳，將為您導向登入頁面。');
-                    window.location.href = `/frontend-template/login.html?redirect=${encodeURIComponent(window.location.href)}`;
-                    return null;
-                }
-                const errData = await response.json();
-                throw new Error(errData.message || '建立訂單失敗');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('建立訂單時發生錯誤:', error);
-            alert(`建立訂單時發生錯誤: ${error.message}`);
-            return null;
-        }
-    }
+		// 聚焦到第一個錯誤欄位（無彈窗）
+		if (!ok) {
+			const firstInvalid =
+				[recipientName, recipientPhone, recipientAddress].find((el) => el.classList.contains('is-invalid'));
+			firstInvalid?.focus();
+		}
+		return ok;
+	}
 
-    // ===== 主執行流程 =====
-    const summary = await fetchAndRenderCheckoutPage();
+	// ====== 資料取得 ======
+	async function getCheckoutSummary() {
+		try {
+			const saved = sessionStorage.getItem('cartSummary');
+			if (saved) {
+				const s = JSON.parse(saved);
+				if (s && Array.isArray(s.items) && typeof s.subtotal === 'number') {
+					if (typeof s.usedPoints !== 'number') s.usedPoints = 0;
+					return s;
+				}
+			}
+			const resp = await apiFetch('/api/cart/summary');
+			if (!resp.ok) throw new Error(`無法獲取購物車資訊（${resp.status}）`);
+			const data = await resp.json();
+			const summary = {
+				items: data.items || [],
+				subtotal: Number(data.totalAmount || 0),
+				usedPoints: 0
+			};
+			sessionStorage.setItem('cartSummary', JSON.stringify(summary));
+			return summary;
+		} catch (e) {
+			console.error(e);
+			showError('載入購物車時發生錯誤，請稍後再試');
+			return null;
+		}
+	}
 
-    if (summary) {
-        // 啟用按鈕
-        linePayBtn.disabled = false;
-        creditCardBtn.disabled = false;
+	// ====== 畫面渲染 ======
+	function render(summary) {
+		orderItemsBox.innerHTML = '';
+		(summary.items || []).forEach((item) => {
+			const imgSrc = item.productPicture
+				? `/frontend-template/assets/img/${item.productPicture}`
+				: '/frontend-template/assets/images/default-product.png';
 
-        // 【信用卡/ECPay 按鈕事件】
-        creditCardBtn.addEventListener('click', async (e) => {
-            creditCardBtn.disabled = true;
-            creditCardBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 處理中...';
+			const row = document.createElement('div');
+			row.className = 'd-flex justify-content-between align-items-center mb-3';
+			row.innerHTML = `
+        <img src="${imgSrc}" alt="${item.productName}" class="img-fluid rounded"
+             style="width:60px;height:60px;object-fit:cover"
+             onerror="this.src='/frontend-template/assets/images/default-product.png'">
+        <span class="flex-grow-1 mx-3">${item.productName}</span>
+        <span>${item.quantity} × ${money(item.unitPrice)}</span>
+        <span class="fw-bold" style="width:110px;text-align:right;">${money(item.subtotal)}</span>
+      `;
+			orderItemsBox.appendChild(row);
+		});
 
-            const order = await createOrder();
-            if (order && order.orderId) {
-                sessionStorage.removeItem('cartSummary');
-                window.location.href = `/payment/ecpay?orderId=${order.orderId}`;
-            } else {
-                creditCardBtn.disabled = false;
-                creditCardBtn.innerHTML = '信用卡 / ECPay';
-            }
-        });
+		const subtotal = Number(summary.subtotal || 0);
+		const usedPoints = Math.max(0, Number(summary.usedPoints || 0));
+		const orderAmt = Math.max(0, subtotal - usedPoints);
 
-        // 【LINE Pay 按鈕事件】
-        linePayBtn.addEventListener('click', async (e) => {
-            linePayBtn.disabled = true;
-            linePayBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 處理中...';
+		totalAmountEl.textContent = money(subtotal);
+		usedPointsEl.textContent = `-${money(usedPoints).replace('NT$', 'NT$')}`;
+		orderAmountEl.textContent = money(orderAmt);
+		grandTotalEl.textContent = money(orderAmt);
 
-            const order = await createOrder();
-            if (order && order.orderId) {
-                try {
-                    const response = await apiFetch('/api/line-pay/request', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ orderId: order.orderId })
-                    });
+		// 回寫，以便送單
+		sessionStorage.setItem('cartSummary', JSON.stringify({
+			items: summary.items,
+			subtotal,
+			usedPoints
+		}));
+	}
 
-                    if (!response.ok) throw new Error('無法取得 LINE Pay 付款連結');
+	// ====== 建立訂單 ======
+	async function createOrder() {
+		if (!validateFields()) return null;
 
-                    const data = await response.json();
-                    if (data.paymentUrl) {
-                        sessionStorage.removeItem('cartSummary');
-                        window.location.href = data.paymentUrl;
-                    } else {
-                        throw new Error('LINE Pay 回應中未包含付款連結');
-                    }
-                } catch (error) {
-                    alert('LINE Pay 處理失敗: ' + error.message);
-                    linePayBtn.disabled = false;
-                    linePayBtn.innerHTML = 'LINE Pay 付款';
-                }
-            } else {
-                linePayBtn.disabled = false;
-                linePayBtn.innerHTML = 'LINE Pay 付款';
-            }
-        });
-    } else {
-        // 購物車是空的，禁用按鈕
-        linePayBtn.disabled = true;
-        creditCardBtn.disabled = true;
-    }
-    // ★★★ 在這裡補上遺失的右大括號和分號 ★★★
+		const saved = sessionStorage.getItem('cartSummary');
+		if (!saved) {
+			showError('購物車資訊遺失，請回上一頁重新操作');
+			return null;
+		}
+		const summary = JSON.parse(saved);
+
+		const usedPoints = Math.max(0, Number(summary.usedPoints || 0));
+		const orderData = {
+			recipientName: recipientName.value.trim(),
+			recipientPhone: recipientPhone.value.trim(),
+			recipientAddress: recipientAddress.value.trim(),
+			usedPoints,
+			items: (summary.items || []).map(it => ({
+				productId: it.productId,
+				quantity: it.quantity
+			}))
+		};
+
+		try {
+			const resp = await apiFetch('/api/checkout', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(orderData)
+			});
+
+			if (!resp.ok) {
+				// 把後端的欄位錯誤映射到紅字（若有）
+				const txt = await resp.text().catch(() => '');
+				try {
+					const err = JSON.parse(txt);
+					if (err && err.errors) {
+						if (err.errors.recipientName) setFieldError(recipientName, err.errors.recipientName);
+						if (err.errors.recipientPhone) setFieldError(recipientPhone, err.errors.recipientPhone);
+						if (err.errors.recipientAddress) setFieldError(recipientAddress, err.errors.recipientAddress);
+					} else {
+						showError(err?.message || '建立訂單失敗，請稍後再試');
+					}
+				} catch {
+					showError('建立訂單失敗，請稍後再試');
+				}
+				return null;
+			}
+
+			clearAllErrors();
+			return await resp.json();
+		} catch (e) {
+			console.error(e);
+			showError('建立訂單時發生錯誤，請稍後再試');
+			return null;
+		}
+	}
+
+	// ====== 主流程 ======
+	const summary = await getCheckoutSummary();
+	if (!summary || !summary.items || summary.items.length === 0) {
+		showError('您的購物車是空的，無法進行結帳');
+		if (linePayBtn) linePayBtn.disabled = true;
+		if (creditCardBtn) creditCardBtn.disabled = true;
+		return;
+	}
+
+	render(summary);
+	linePayBtn.disabled = false;
+	creditCardBtn.disabled = false;
+
+	// ====== 信用卡 / ECPay ======
+	creditCardBtn.addEventListener('click', async () => {
+		creditCardBtn.disabled = true;
+		const oldHtml = creditCardBtn.innerHTML;
+		creditCardBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>&nbsp;處理中...';
+
+		const order = await createOrder();
+		if (order && order.orderId) {
+			sessionStorage.removeItem('cartSummary');
+			location.href = `/payment/ecpay?orderId=${order.orderId}`;
+		} else {
+			creditCardBtn.disabled = false;
+			creditCardBtn.innerHTML = oldHtml;
+		}
+	});
+
+	// ====== LINE Pay ======
+	linePayBtn.addEventListener('click', async () => {
+		linePayBtn.disabled = true;
+		const oldHtml = linePayBtn.innerHTML;
+		linePayBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>&nbsp;處理中...';
+
+		const order = await createOrder();
+		if (order && order.orderId) {
+			try {
+				const resp = await apiFetch('/api/line-pay/request', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ orderId: order.orderId })
+				});
+				if (!resp.ok) {
+					showError('無法取得 LINE Pay 付款連結，請稍後再試');
+					linePayBtn.disabled = false;
+					linePayBtn.innerHTML = oldHtml;
+					return;
+				}
+				const data = await resp.json();
+				if (data.paymentUrl) {
+					sessionStorage.removeItem('cartSummary');
+					location.href = data.paymentUrl;
+				} else {
+					showError('LINE Pay 回應中未包含付款連結');
+					linePayBtn.disabled = false;
+					linePayBtn.innerHTML = oldHtml;
+				}
+			} catch (e) {
+				console.error(e);
+				showError('LINE Pay 處理失敗，請稍後再試');
+				linePayBtn.disabled = false;
+				linePayBtn.innerHTML = oldHtml;
+			}
+		} else {
+			linePayBtn.disabled = false;
+			linePayBtn.innerHTML = oldHtml;
+		}
+	});
 });

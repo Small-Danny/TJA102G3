@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-TW" xmlns:th="http://www.thymeleaf.org"
-<<<<<<< Upstream, based on branch 'master' of https://github.com/Small-Danny/TJA102G3.git
-       th:replace="~{admin/layout :: layout(~{::title}, ~{::content}, ~{::#empty-scripts})}">
-=======
       th:replace="~{admin/layout :: layout(~{::title}, ~{::content}, ~{::#empty-scripts})}">
->>>>>>> 45750e6 update 圖片上傳相關
+
 <head>
   <title>所有商品</title>
 </head>
@@ -62,7 +59,8 @@
               <th>名稱(代碼)</th>
               <th>價格</th>
               <th>庫存</th>
-              <th style="width: 220px;"></th>
+              <th>狀態</th>
+              <th style="width: 280px;"></th>
             </tr>
             </thead>
             <tbody>
@@ -85,10 +83,26 @@
                 <div class="fw-semibold" th:text="${p.productName}">名稱</div>
                 <div class="text-muted small" th:text="${p.productCode}">P-001</div>
               </td>
-              <td>NT$<span th:text="${#numbers.formatDecimal(p.productPrice, 1, 'COMMA', 0, 'POINT')}">0</span></td>
-              <td><span th:text="${p.stockQuantity}">0</span> 件</td>
+
               <td>
-                <div class="d-flex gap-2">
+                NT$<span th:text="${#numbers.formatDecimal(p.productPrice, 1, 'COMMA', 0, 'POINT')}">0</span>
+              </td>
+
+              <td>
+                <span th:text="${p.stockQuantity}">0</span> 件
+              </td>
+
+              <!-- 狀態徽章 -->
+              <td>
+                <span th:if="${p.productStatus == 1}"
+                      class="badge bg-success">上架</span>
+                <span th:if="${p.productStatus != 1}"
+                      class="badge bg-secondary">下架</span>
+              </td>
+
+              <!-- 操作 -->
+              <td>
+                <div class="d-flex flex-wrap gap-2">
                   <!-- 查看 -->
                   <a class="btn btn-sm btn-outline-primary"
                      th:href="@{/admin/products/{id}(id=${p.productId})}">查看</a>
@@ -97,10 +111,25 @@
                   <a class="btn btn-sm btn-warning"
                      th:href="@{/admin/products/{id}/edit(id=${p.productId})}">編輯</a>
 
+                  <!-- 上/下架切換（POST） -->
+                  <form th:action="@{/admin/products/{id}/status(id=${p.productId})}"
+                        method="post" class="d-inline"
+                        th:onsubmit="'return confirm(\'確定要' + (${p.productStatus == 1} ? '下架' : '上架') + '嗎？\');'">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <!-- 切換為相反值 -->
+                    <input type="hidden" name="status" th:value="${p.productStatus == 1 ? 0 : 1}"/>
+                    <button type="submit"
+                            th:class="'btn btn-sm ' + (${p.productStatus == 1} ? 'btn-secondary' : 'btn-success')"
+                            th:text="${p.productStatus == 1 ? '下架' : '上架'}">
+                      下架
+                    </button>
+                  </form>
+
                   <!-- 刪除 -->
                   <form th:action="@{/admin/products/{id}/delete(id=${p.productId})}"
                         method="post" class="d-inline"
                         onsubmit="return confirm('確定要刪除嗎？');">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <button type="submit" class="btn btn-sm btn-danger">刪除</button>
                   </form>
                 </div>
@@ -108,7 +137,7 @@
             </tr>
 
             <tr th:if="${list == null or #lists.isEmpty(list)}">
-              <td colspan="7" class="text-center text-muted py-4">目前查不到商品資料。</td>
+              <td colspan="8" class="text-center text-muted py-4">目前查不到商品資料。</td>
             </tr>
             </tbody>
           </table>

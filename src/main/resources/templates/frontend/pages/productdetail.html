@@ -19,7 +19,6 @@
   <link th:href="@{/frontend-template/assets/css/responsive.css}" rel="stylesheet" />
   <link th:href="@{/frontend-template/assets/css/header.css}" rel="stylesheet" />
   <link th:href="@{/frontend-template/assets/css/productdetail.css}" rel="stylesheet" />
-
 </head>
 
 <body>
@@ -55,8 +54,7 @@
       </div>
     </div>
   </section>
-  <!-- 頁腳 -->
-  <div id="footer-placeholder"></div>
+
   <!-- 商品詳情 -->
   <section class="gap no-bottom product-detail light-bg-color">
     <div class="container">
@@ -67,11 +65,10 @@
           <div class="pd-gallery">
             <div class="pd-main-img">
               <img th:if="${product.productPicture != null and #strings.startsWith(product.productPicture,'http')}"
-                th:src="${product.productPicture}" th:alt="${product.productName}" />
-
+                   th:src="${product.productPicture}" th:alt="${product.productName}" />
               <img th:if="${product.productPicture == null or !#strings.startsWith(product.productPicture,'http')}"
-                th:src="@{/frontend-template/assets/img/{f}(f=${product.productPicture != null ? product.productPicture : 'placeholder.png'})}"
-                th:alt="${product.productName}" />
+                   th:src="@{/frontend-template/assets/img/{f}(f=${product.productPicture != null ? product.productPicture : 'placeholder.png'})}"
+                   th:alt="${product.productName}" />
             </div>
           </div>
         </div>
@@ -80,6 +77,7 @@
         <div class="col-lg-6">
           <div class="pd-data">
             <h2 th:text="${@productService.displayNameWithoutSize(product)}">商品名稱</h2>
+
             <!-- 價格 -->
             <ul class="pd-price">
               <li class="pd-sale-price">
@@ -88,7 +86,6 @@
               </li>
             </ul>
 
-
             <!-- 尺寸 -->
             <div class="pd-size">
               <div class="pd-label">選擇尺寸</div>
@@ -96,65 +93,80 @@
               <!-- 有尺寸可選 -->
               <div th:if="${sizes != null and !#lists.isEmpty(sizes)}">
                 <div class="size-group" id="sizeGroup" th:attr="data-product-id=${product.productId}">
-                  <div class="size-group" id="sizeGroup" th:attr="data-product-id=${product.productId}">
-                    <button type="button" th:each="s : ${sizes}" class="size-chip"
-                      th:text="${(#strings.equalsIgnoreCase(s,'1') or #strings.equalsIgnoreCase(s,'F') or #strings.equalsIgnoreCase(s,'FREE') or #strings.equalsIgnoreCase(s,'ONE') or #strings.equalsIgnoreCase(s,'ONE SIZE') or #strings.equalsIgnoreCase(s,'ONESIZE') or #strings.equalsIgnoreCase(s,'OS')) ? '均碼' : s}"
-                      th:classappend="${currentSize != null and (s.equalsIgnoreCase(currentSize) or (#strings.equalsIgnoreCase(currentSize,'1') and #strings.equalsIgnoreCase(s,'F')) or (#strings.equalsIgnoreCase(currentSize,'F') and #strings.equalsIgnoreCase(s,'1')))} ? ' active' : ''"
-                      th:data-size="${s}" th:attr="data-pid=${sizeMap.get(s)}, data-sku=${sizeSkuMap.get(s)}"
-                      th:attrappend=" data-price=${sizePriceMap != null ? sizePriceMap.get(s) : product.productPrice}">
-                    </button>
-                  </div>
-
-                  <!-- 庫存提示：加上 data-stock-url 指向後端 API -->
-                  <div id="stockHint" class="mt-2 small text-secondary" th:attr="data-stock-url=@{/shop/api/stock}"
-                    th:text="${(currentSize != null) 
-				                 ? ('載入 ' + (
-				                        #strings.equalsIgnoreCase(currentSize,'1') 
-				                     or #strings.equalsIgnoreCase(currentSize,'F')
-				                     or #strings.equalsIgnoreCase(currentSize,'FREE')
-				                     or #strings.equalsIgnoreCase(currentSize,'ONE')
-				                     or #strings.equalsIgnoreCase(currentSize,'ONE SIZE')
-				                     or #strings.equalsIgnoreCase(currentSize,'ONESIZE')
-				                     or #strings.equalsIgnoreCase(currentSize,'OS')
-				                   ? '均碼' : currentSize) + ' 庫存中…')
-				                 : '請選擇尺寸以查看庫存'}">
-                    請選擇尺寸以查看庫存
-                  </div>
-
-                  <!-- 隱藏欄位（有尺寸時） -->
-                  <input type="hidden" name="size" id="selectedSize" th:value="${currentSize}">
-                  <input type="hidden" name="variantProductId" id="variantProductId"
-                    th:value="${(currentSize != null and sizeToId != null and sizeToId.containsKey(currentSize)) ? sizeToId[currentSize] : ''}">
+                  <button type="button"
+                          th:each="s : ${sizes}"
+                          class="size-chip"
+                          th:text="${(#strings.equalsIgnoreCase(s,'1') or #strings.equalsIgnoreCase(s,'F') or #strings.equalsIgnoreCase(s,'FREE') or #strings.equalsIgnoreCase(s,'ONE') or #strings.equalsIgnoreCase(s,'ONE SIZE') or #strings.equalsIgnoreCase(s,'ONESIZE') or #strings.equalsIgnoreCase(s,'OS')) ? '均碼' : s}"
+                          th:data-size="${s}"
+                          th:attr="data-pid=${sizeMap.get(s)}, data-sku=${sizeSkuMap.get(s)}"
+                          th:attrappend=" data-price=${sizePriceMap != null ? sizePriceMap.get(s) : product.productPrice},
+                                          aria-disabled=${sizeMap.get(s) == null ? 'true' : 'false'}"
+                          th:classappend="${ 
+                            (
+                              (currentSize != null) and 
+                              (
+                                s.equalsIgnoreCase(currentSize) or
+                                (#strings.equalsIgnoreCase(currentSize,'1') and #strings.equalsIgnoreCase(s,'F')) or
+                                (#strings.equalsIgnoreCase(currentSize,'F') and #strings.equalsIgnoreCase(s,'1'))
+                              )
+                            ) ? ' active' : '' 
+                          } + ${
+                            (sizeMap.get(s) == null) ? ' disabled opacity-50' : ''
+                          }">
+                  </button>
                 </div>
 
-                <!-- 沒有尺寸（均碼） -->
-                <div th:if="${sizes == null or #lists.isEmpty(sizes)}">
-                  <div class="text-muted small">此商品為均碼</div>
-                  <div id="stockHint" class="mt-2 small text-secondary"
-                    th:text="'庫存：' + ${product.stockQuantity} + ' 件'">庫存：0 件</div>
-
-                  <input type="hidden" name="size" id="selectedSize" value="">
-                  <input type="hidden" name="variantProductId" id="variantProductId" th:value="${product.productId}">
+                <!-- 庫存提示（唯一的 stockHint） -->
+                <div id="stockHint"
+                     class="mt-2 small text-secondary"
+                     th:attr="data-stock-url=@{/shop/api/stock}"
+                     th:text="${(currentSize != null) 
+                               ? ('載入 ' + (
+                                    #strings.equalsIgnoreCase(currentSize,'1') 
+                                    or #strings.equalsIgnoreCase(currentSize,'F')
+                                    or #strings.equalsIgnoreCase(currentSize,'FREE')
+                                    or #strings.equalsIgnoreCase(currentSize,'ONE')
+                                    or #strings.equalsIgnoreCase(currentSize,'ONE SIZE')
+                                    or #strings.equalsIgnoreCase(currentSize,'ONESIZE')
+                                    or #strings.equalsIgnoreCase(currentSize,'OS')
+                                  ? '均碼' : currentSize) + ' 庫存中…')
+                               : '請選擇尺寸以查看庫存'}">
+                  請選擇尺寸以查看庫存
                 </div>
+
+                <!-- 隱藏欄位（有尺寸時） -->
+                <input type="hidden" name="size" id="selectedSize" th:value="${currentSize}">
+                <input type="hidden" name="variantProductId" id="variantProductId"
+                       th:value="${(currentSize != null and sizeToId != null and sizeToId.containsKey(currentSize)) ? sizeToId[currentSize] : ''}">
               </div>
 
-              <!-- 數量 -->
-              <div class="pd-quality">
-                <span>數量</span>
-                <input type="number" id="qty" name="number" value="1" min="1" />
+              <!-- 沒有尺寸（均碼） -->
+              <div th:if="${sizes == null or #lists.isEmpty(sizes)}">
+                <div class="text-muted small">此商品為均碼</div>
+                <div id="stockHint" class="mt-2 small text-secondary"
+                     th:text="'庫存：' + ${product.stockQuantity} + ' 件'">庫存：0 件</div>
+
+                <input type="hidden" name="size" id="selectedSize" value="">
+                <input type="hidden" name="variantProductId" id="variantProductId" th:value="${product.productId}">
               </div>
-
-              <!-- 加入購物車：讓 data-id 能被 JS 更新 -->
-              <a class="btn-cart" id="btnAddToCart" href="javascript:void(0)" th:attr="data-id=${product.productId}">
-                Add To Cart
-              </a>
-
-              <!-- SKU -->
-              <div class="pd-sku">
-                SKU: <span id="skuText" th:text="${currentSku}">EQ-C-S</span>
-              </div>
-
             </div>
+
+            <!-- 數量 -->
+            <div class="pd-quality">
+              <span>數量</span>
+              <input type="number" id="qty" name="number" value="1" min="1" />
+            </div>
+
+            <!-- 加入購物車：讓 data-id 能被 JS 更新 -->
+            <a class="btn-cart" id="btnAddToCart" href="javascript:void(0)">
+			  ADD TO CART
+			</a>
+
+            <!-- SKU -->
+            <div class="pd-sku">
+              SKU: <span id="skuText" th:text="${currentSku}">EQ-C-S</span>
+            </div>
+
           </div>
         </div>
       </div>
@@ -174,11 +186,13 @@
             健身房不只是運動的地方，它是您放鬆、社交和鍛鍊的場所。一些成功的健身設施擁有多種功能，
             為會員提供促進留存和銷售的體驗。
           </p>
-
-
         </div>
       </section>
+    </div>
   </section>
+
+  <!-- footer -->
+  <div id="footer-placeholder"></div>
 
   <!-- JS -->
   <script th:src="@{/frontend-template/assets/js/jquery.min.js}"></script>
@@ -193,5 +207,4 @@
   <script th:src="@{/frontend-template/assets/js/cart.js}"></script>
   <script th:src="@{/frontend-template/assets/js/productdetail.js}"></script>
 </body>
-
 </html>

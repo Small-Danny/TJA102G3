@@ -30,22 +30,22 @@ public class CartController {
 	private final CartService cartService;
 	private final ProductServices productServices;
 	private final UserRepository userRepository;
+
 	@Autowired
 	// ★★★ 修正 #1：建構子移除 CartIdService 的注入 ★★★
 	public CartController(CartService cartService, ProductServices productServices, UserRepository userRepository) {
 		this.cartService = cartService;
 		this.productServices = productServices;
-        this.userRepository = userRepository;
-    }
+		this.userRepository = userRepository;
+	}
 
 	// ★★★ 修正 #2：新增一個 private 方法來取代 CartIdService ★★★
 	/**
-	 * 獲取當前購物車的唯一識別碼。
-	 * - 如果使用者已登入，返回 user ID 的字串形式。
-	 * - 如果使用者是訪客，返回其 session ID。
+	 * 獲取當前購物車的唯一識別碼。 - 如果使用者已登入，返回 user ID 的字串形式。 - 如果使用者是訪客，返回其 session ID。
 	 */
 	private String getCartId(Authentication authentication, HttpSession session) {
-		if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+		if (authentication != null && authentication.isAuthenticated()
+				&& !"anonymousUser".equals(authentication.getPrincipal())) {
 			// 已登入：使用 email 去資料庫反查 userId，這才是最可靠的方式
 			String userEmail = authentication.getName();
 			User currentUser = userRepository.findByEmail(userEmail)
@@ -83,9 +83,11 @@ public class CartController {
 		for (var e : cart.entrySet()) {
 			Integer pid = Integer.valueOf(e.getKey().toString());
 			Integer qty = (Integer) e.getValue();
-			if (qty == null || qty <= 0) continue;
+			if (qty == null || qty <= 0)
+				continue;
 			ProductVO p = pmap.get(pid);
-			if (p == null) continue;
+			if (p == null)
+				continue;
 
 			int price = p.getProductPrice();
 			int sub = price * qty;
@@ -128,7 +130,8 @@ public class CartController {
 
 	// ✅ API-4: 移除單項商品
 	@DeleteMapping("/items")
-	public ResponseEntity<CartDTO> remove(@RequestParam Integer productId, Authentication authentication, HttpSession session) {
+	public ResponseEntity<CartDTO> remove(@RequestParam Integer productId, Authentication authentication,
+			HttpSession session) {
 		String cartId = getCartId(authentication, session);
 		cartService.removeItem(cartId, productId);
 		CartDTO dto = CartDTO.fromCartMap(cartService.getCart(cartId));

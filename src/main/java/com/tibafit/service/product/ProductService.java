@@ -103,12 +103,10 @@ public class ProductService {
 				double value = Double.parseDouble(m.group(1));
 				String unit = m.group(2); // 可能為 null
 
-				// 沒單位就用 fallbackUnit
 				String u = (unit != null) ? unit.toUpperCase()
 						: (fallbackUnit != null ? fallbackUnit.toUpperCase() : null);
 
 				if ("G".equals(u)) {
-					// G → (>=1000) 轉 KG
 					if (value >= 1000.0) {
 						double kg = value / 1000.0;
 						firstNumericSize = cleanNumber(kg) + "KG";
@@ -116,7 +114,6 @@ public class ProductService {
 						firstNumericSize = cleanNumber(value) + "G";
 					}
 				} else if ("ML".equals(u)) {
-					// ML → (>=1000) 轉 L
 					if (value >= 1000.0) {
 						double l = value / 1000.0;
 						firstNumericSize = cleanNumber(l) + "L";
@@ -124,10 +121,8 @@ public class ProductService {
 						firstNumericSize = cleanNumber(value) + "ML";
 					}
 				} else if (u != null) {
-					// 其它單位（L、KG…）原樣顯示
 					firstNumericSize = cleanNumber(value) + u;
 				} else {
-					// 完全無單位
 					firstNumericSize = cleanNumber(value);
 				}
 				break; // 數值優先，找到就用它
@@ -165,7 +160,6 @@ public class ProductService {
 			return Double.MAX_VALUE;
 		String s = sizeToken.trim().toUpperCase();
 
-		// 服飾字母尺碼
 		if (BASE_SIZES.contains(s)) {
 			return switch (s) {
 			case "S" -> 1;
@@ -175,13 +169,12 @@ public class ProductService {
 			};
 		}
 
-		// 數值尺寸（可能沒有單位）
 		var m = NUMERIC_SIZE.matcher(s);
 		if (m.matches()) {
 			double v = Double.parseDouble(m.group(1));
-			String unit = m.group(2); // 可能為 null
+			String unit = m.group(2);
 			if (unit == null)
-				return v; // 沒單位：直接用數值排序
+				return v;
 			return switch (unit.toUpperCase()) {
 			case "ML" -> v;
 			case "L" -> v * 1000.0;
@@ -289,47 +282,64 @@ public class ProductService {
 		return bd.toPlainString();
 	}
 
-	// 依「同款」群組（keyWithoutSize），挑一個代表 ProductVO（預設挑尺寸最小者）
+	// ====== A 方案：列表只顯示「上架」商品 ======
+
+	private boolean isOnShelf(ProductVO p) {
+		return p != null && Objects.equals(p.getProductStatus(), 1);
+	}
+
+	/**
+	 * 依「同款」群組（keyWithoutSize）挑一個代表 ProductVO。 代表只從「上架」變體中挑；若整組都下架 → 直接不出現在列表。
+	 * 代表挑選邏輯：尺寸權重較小者（S < M < L < XL；500ML < 1L…）。
+	 */
 	public List<ProductVO> collapseVariants(List<ProductVO> input) {
 		if (input == null || input.isEmpty())
 			return List.of();
 
-		// 用 LinkedHashMap 保留原列表順序的第一出現順序
-		Map<String, ProductVO> rep = new LinkedHashMap<>();
-
+		// 先依同款分組
+		Map<String, List<ProductVO>> groups = new LinkedHashMap<>();
 		for (ProductVO p : input) {
 			String code = p.getProductCode();
 			String key = keyWithoutSize(code);
 			if (key == null)
-				key = code; // 無法萃取就用自己
-
-			ProductVO existing = rep.get(key);
-			if (existing == null) {
-				rep.put(key, p);
-			} else {
-				// 代表挑選邏輯：比尺寸權重，較小者當代表（S < M < L < XL；500ML < 1L；1000G < 1.5KG）
-				double wNew = sizeWeight(sizeOf(p.getProductCode(), defaultUnitFor(p)));
-				double wOld = sizeWeight(sizeOf(existing.getProductCode(), defaultUnitFor(existing)));
-				if (wNew < wOld) {
-					rep.put(key, p);
-				}
-				// 若你想挑「最大尺寸」當代表，改成 if (wNew > wOld) rep.put(key, p);
-			}
+				key = code; // 取不到就用自己
+			groups.computeIfAbsent(key, k -> new ArrayList<>()).add(p);
 		}
-		return new ArrayList<>(rep.values());
+
+		List<ProductVO> result = new ArrayList<>();
+
+		for (List<ProductVO> group : groups.values()) {
+			// 只看上架的變體
+			List<ProductVO> ups = group.stream().filter(this::isOnShelf).collect(Collectors.toList());
+
+			if (ups.isEmpty()) {
+				// 這個同款全下架 → 不加入列表
+				continue;
+			}
+
+			// 從上架的變體挑一個代表（尺寸最小）
+			ProductVO rep = ups.stream()
+					.min(Comparator.comparingDouble(p -> sizeWeight(sizeOf(p.getProductCode(), defaultUnitFor(p)))))
+					.orElse(ups.get(0));
+
+			result.add(rep);
+		}
+
+		return result;
 	}
 
-	// 取得「全部商品」給列表頁
+	// 取得「全部商品」給列表頁（只顯示上架代表）
 	public List<ProductVO> getAllCollapsed() {
 		return collapseVariants(getAll());
 	}
 
-	// 搜尋結果
+	// 搜尋結果（只顯示上架代表）
 	public List<ProductVO> searchCollapsed(String keyword) {
 		return collapseVariants(search(keyword));
 	}
 
-	// 去除商品名稱中的「尺寸」字樣（不動資料庫，只影響顯示）
+	// ====== 顯示名稱去除尺寸（僅顯示用，不動 DB） ======
+
 	private static final Pattern NAME_SIZE_PAREN = Pattern
 			.compile("(?iu)[（(]\\s*(?:XS|S|M|L|XL|XXL|\\d+(?:\\.\\d+)?\\s*(?:ML|L|G|KG))\\s*[)）]");
 	private static final Pattern NAME_SIZE_LETTER_WITH_HAO = Pattern
@@ -345,20 +355,10 @@ public class ProductService {
 			return name;
 
 		String s = name;
-
-		// 1) 括號中的尺寸 (S) / （500ML）
 		s = NAME_SIZE_PAREN.matcher(s).replaceAll("");
-
-		// 2) 中文「S號 / XL號」
 		s = NAME_SIZE_LETTER_WITH_HAO.matcher(s).replaceAll("");
-
-		// 3) 數值＋單位（500ML / 1L / 250g / 2kg）
 		s = NAME_SIZE_NUMERIC_UNIT.matcher(s).replaceAll("");
-
-		// 4) 尾端或以 -/空白 接的尺寸（TibaFit 衣服 - XL、TibaFit 衣服 XL）
 		s = NAME_TRAIL_LETTER.matcher(s).replaceAll("");
-
-		// 5) 清掉多餘空白與首尾空白
 		s = NAME_WS.matcher(s).replaceAll(" ").trim();
 		return s;
 	}

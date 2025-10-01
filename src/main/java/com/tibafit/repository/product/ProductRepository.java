@@ -25,6 +25,16 @@ public interface ProductRepository extends JpaRepository<ProductVO, Integer> {
     // 找商品尺寸
     @Query("SELECT p FROM ProductVO p WHERE p.productCode LIKE CONCAT(:prefix, '%')")
     List<ProductVO> findByCodeStartingWith(@Param("prefix") String prefix);
+    
+    // 依同款代碼找上架中的變體（尺寸）
+    List<ProductVO> findByProductCodeAndProductStatusOrderByProductIdAsc(String productCode, int productStatus);
+
+    // 指定 productId 但限定要上架（庫存/詳情防呆）
+    Optional<ProductVO> findByProductIdAndProductStatus(Integer productId, int productStatus);
+
+    // 查庫存時也只允許上架的（若庫存存在於 ProductVO）
+    @Query("select p.stockQuantity from ProductVO p where p.productId = :pid and p.productStatus = 1")
+    Optional<Integer> findStockIfActive(@Param("pid") Integer pid);
 
     // 關鍵字搜尋（允許空字串 → 全部）
     @Query("""

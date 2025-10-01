@@ -27,20 +27,19 @@ public class OrdersService {
 	}
 
 	/**
-	 * 【修正後的查詢方法】
-	 * 根據使用者 ID 查詢其所有訂單，並轉換為 DTO 列表。
+	 * 【修正後的查詢方法】 根據使用者 ID 查詢其所有訂單，並轉換為 DTO 列表。
+	 * 
 	 * @param userId 使用者 ID
 	 * @return 該使用者的訂單 DTO 列表
 	 */
 	@Transactional(readOnly = true)
 	public List<OrdersDTO> findOrdersByUserId(Integer userId) {
-		// 1. The DAO now directly returns a List<OrdersVO>, so no Page object is involved.
-		List<OrdersVO> userOrders = ordersDAO.findByUserIdOrderByOrderDateDesc(userId);
+		// 1. The DAO now directly returns a List<OrdersVO>, so no Page object is
+		// involved.
+		List<OrdersVO> userOrders = ordersDAO.findByUserIdOrderByOrderDateAsc(userId);
 
 		// 2. The rest of the logic remains the same.
-		return userOrders.stream()
-				.map(OrdersDTO::from)
-				.collect(Collectors.toList());
+		return userOrders.stream().map(OrdersDTO::from).collect(Collectors.toList());
 	}
 
 	// =================================================================
@@ -54,17 +53,14 @@ public class OrdersService {
 	}
 
 	/**
-	 * 分頁查詢訂單 (後台用)
-	 * - 若帶 userId：回傳該使用者的訂單（時間新→舊）
-	 * - 否則：回全體訂單（同樣新→舊）
+	 * 分頁查詢訂單 (後台用) - 若帶 userId：回傳該使用者的訂單（時間新→舊） - 否則：回全體訂單（同樣新→舊）
 	 */
 	public Page<OrdersVO> list(Integer userId, int page, int size) {
-		Pageable pageable = PageRequest.of(Math.max(page, 0),
-				Math.max(size, 1),
-				Sort.by(Sort.Direction.DESC, "orderDate"));
+		Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1),
+				Sort.by(Sort.Direction.ASC, "orderId"));
 
 		if (userId != null) {
-			return ordersDAO.findByUserIdOrderByOrderDateDesc(userId, pageable);
+			return ordersDAO.findByUserIdOrderByOrderDateAsc(userId, pageable);
 		}
 		return ordersDAO.findAll(pageable);
 	}
@@ -75,9 +71,12 @@ public class OrdersService {
 	@Transactional
 	public OrdersVO updateRecipient(Integer id, String name, String phone, String address) {
 		OrdersVO o = get(id);
-		if (name != null) o.setRecipientName(name);
-		if (phone != null) o.setRecipientPhone(phone);
-		if (address != null) o.setRecipientAddress(address);
+		if (name != null)
+			o.setRecipientName(name);
+		if (phone != null)
+			o.setRecipientPhone(phone);
+		if (address != null)
+			o.setRecipientAddress(address);
 		return o;
 	}
 
@@ -85,16 +84,25 @@ public class OrdersService {
 	 * 更新訂單狀態 / 付款狀態
 	 */
 	@Transactional
-	public OrdersVO updateStatus(Integer id, Integer orderStatus, Integer paymentStatus) {
+	public OrdersDTO updateOrderStatus(Integer id, Integer orderStatus) {
+		OrdersVO o = get(id); // 還在同一個 Hibernate Session
+		if (orderStatus != null)
+			o.setOrderStatus(orderStatus);
+		return OrdersDTO.from(o); // 這裡轉 DTO，不會 Lazy 初始化失敗
+	}
+
+	@Transactional
+	public OrdersDTO updateStatus(Integer id, Integer orderStatus, Integer paymentStatus) {
 		OrdersVO o = get(id);
-		if (orderStatus != null) o.setOrderStatus(orderStatus);
+		if (orderStatus != null)
+			o.setOrderStatus(orderStatus);
 		if (paymentStatus != null) {
 			o.setPaymentStatus(paymentStatus);
 			if (paymentStatus == 1) {
 				o.setPaymentTime(LocalDateTime.now());
 			}
 		}
-		return o;
+		return OrdersDTO.from(o); // 同理，這裡就完成轉 DTO
 	}
 
 	/** 刪除訂單 */
@@ -105,4 +113,5 @@ public class OrdersService {
 		}
 		ordersDAO.deleteById(id);
 	}
+
 }
