@@ -1,7 +1,5 @@
 package com.tibafit.controller.admin;
 
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -100,9 +98,10 @@ public class OrdersAdminController {
 	/** 列出某訂單的所有明細（後台檢視用） */
 	@GetMapping("/{orderId}/items")
 	public java.util.List<OrderItemDTO> listItems(@PathVariable Integer orderId) {
-		// 把明細的 Entity 轉成乾淨的 DTO，避免直接曝露內部模型
-		return orderItemService.listByOrder(orderId).stream().map(OrderItemDTO::from).collect(Collectors.toList());
+	    // 讓 Service 在交易內完成 LAZY 初始化與轉 DTO
+	    return orderItemService.listDtoByOrder(orderId);
 	}
+
 
 	/** 修改某一筆明細的數量（依 itemId 指定） */
 	@PutMapping("/items/{itemId}")
