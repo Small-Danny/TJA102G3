@@ -326,7 +326,9 @@ public class SecurityConfig {
                                 "/frontend-template/index.html",
                                 "/frontend-template/login.html",
                                 "/frontend-template/register.html",
-                                "/frontend-template/header.html",
+                                "/frontend-template/reset-set-password.html",
+                                "/frontend-template/register-success.html",
+                                "/frontend-template/register-fail.html",
 
                                 // --- 購物流程頁面 (關鍵修改，確保未登入用戶也能瀏覽) ---
                                 "/frontend-template/cart.html",
@@ -360,8 +362,8 @@ public class SecurityConfig {
                                 "/api/users/register",
                                 "/api/users/login",
                                 "/api/users/send-code",
-                                "/api/users/profile",
                                 "/api/users/request-password-reset",
+                                "/api/users/reset-password-with-token",
                                 "/api/csrf-token",
 
                                 // 購物流程相關 API (關鍵修改，允許匿名用戶加到購物車)

@@ -69,7 +69,6 @@ public class PaymentController {
 		try {
 			// ★★★ 修正點：使用 markPaidByOrderCode() 方法 ★★★
 			OrdersVO updatedOrder = checkoutService.markPaidByOrderCode(orderCode); // 改用 orderCode
-
 			// 清空購物車
 			cartService.clear(updatedOrder.getUserId());
 
