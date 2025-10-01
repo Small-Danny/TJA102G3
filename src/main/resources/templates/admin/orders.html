@@ -411,7 +411,7 @@ tr.dirty-row {
       const html = (items || []).map(it => {
         const name  = escapeHtml(it.productName || it.product?.name || '');
         const qty   = Number(it.orderItemQuantity ?? it.quantity ?? 0);
-        const price = Number(it.unitPrice ?? it.price ?? 0);
+        const price = Number(it.unitPrice ?? it.buyPrice ?? it.price ?? 0);
         const sub   = qty * price;
         return `
           <tr>
