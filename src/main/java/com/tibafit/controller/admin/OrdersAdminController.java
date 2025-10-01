@@ -73,9 +73,12 @@ public class OrdersAdminController {
 	/** 更新狀態（orderStatus / paymentStatus） */
 	@PutMapping("/{id}/status")
 	public OrdersDTO updateStatus(@PathVariable Integer id, @RequestBody @Valid UpdateStatusDTO req) {
-		// 常見流程：付款成功後 paymentStatus=1，同步把 orderStatus 調整（如：處理中/已完成）
-		OrdersVO o = ordersService.updateStatus(id, req.getOrderStatus(), req.getPaymentStatus());
-		return OrdersDTO.from(o);
+		// 只更新出貨狀態
+		if (req.getPaymentStatus() == null) {
+			return ordersService.updateOrderStatus(id, req.getOrderStatus());
+		}
+		// 同時更新付款狀態
+		return ordersService.updateStatus(id, req.getOrderStatus(), req.getPaymentStatus());
 	}
 
 	/** 刪除整張訂單（注意：通常需受權限/業務規則限制） */

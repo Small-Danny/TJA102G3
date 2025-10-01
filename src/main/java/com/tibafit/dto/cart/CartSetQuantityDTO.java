@@ -14,19 +14,8 @@ public class CartSetQuantityDTO {
 	@NotNull
 	private Integer qty; // 新數量（約定：<= 0 代表刪除此商品）
 
-	@NotNull
-	private Integer userId; // 使用者 ID（⚠ 正式環境建議從後端會話取得，避免越權）
-
 	// ===== Getter / Setter（JavaBean 命名，便於 Spring/Jackson 綁定）=====
 
-	public Integer getUserId() {
-		return userId;
-	}
-
-	// ⚠ 修正原本的 setUsertId 筆誤為 setUserId；否則 Jackson 不會把 JSON 的 userId 綁到這個欄位
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
 
 	public Integer getProductId() {
 		return productId;

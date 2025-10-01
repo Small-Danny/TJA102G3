@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 
-//	orderId：要更新的訂單（若路徑已有 /{id}，建議移除此欄或於後端忽略 body 的 orderId，以免不一致）
 //	orderStatus：訂單狀態（可為 null＝不變更；建議統一常數/Enum）
 //	paymentStatus：付款狀態（可為 null＝不變更；當改為「已付款=1」時，後端通常要同步設定 paymentTime）
 //	paymentTime：付款時間（可由前端帶或後端自動 now()；注意 LocalDateTime 沒有時區資訊，建議後端統一處理）
@@ -18,9 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder // Lombok：builder()；若使用需注意欄位名一致
 public class UpdateStatusDTO {
 
-	@NotNull(message = "訂單ID必填")
-	private Integer orderId; // 目標訂單 ID
-								// ⚠ 若 API 路徑已有 /orders/{id}，此欄可能「重複」；建議改由 path 指定，DTO 不帶 orderId。
+	
 
 	/**
 	 * 訂單狀態（範例：0 新訂單、1 處理中/已付款、2 已出貨、3 完成、4 取消 …） 建議集中管理成常數或 Enum，避免魔術數字散落各處。
@@ -40,13 +37,6 @@ public class UpdateStatusDTO {
 
 	// ===== Getter / Setter（遵循 JavaBean 規範，便於 Spring/Jackson 綁定）=====
 
-	public Integer getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(Integer orderId) {
-		this.orderId = orderId;
-	}
 
 	public Integer getOrderStatus() {
 		return orderStatus;

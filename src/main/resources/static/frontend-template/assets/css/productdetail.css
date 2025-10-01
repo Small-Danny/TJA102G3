@@ -155,3 +155,12 @@
   letter-spacing:.05em;
   color:#666;
 }
+
+/* 尺寸無庫存或是下架時 不可選且變灰 */
+.size-chip[aria-disabled="true"],
+.size-chip.disabled {
+  pointer-events: none;
+  opacity: .5;
+  cursor: not-allowed;
+}
+

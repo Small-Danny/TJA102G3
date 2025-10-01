@@ -1,169 +1,139 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>訂單明細</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>訂單明細</title>
 
-	<!-- Bootstrap & Theme CSS -->
-	<link rel="stylesheet" href="/frontend-template/assets/css/bootstrap.min.css">
-	<link rel="icon" type="image/x-icon" href="/frontend-template/assets/images/heading-icon.png">
+<!-- Bootstrap & Theme CSS -->
+<link rel="stylesheet"
+	href="/frontend-template/assets/css/bootstrap.min.css">
+<link rel="icon" type="image/x-icon"
+	href="/frontend-template/assets/images/heading-icon.png">
+<link rel="stylesheet"
+	href="/frontend-template/assets/css/owl.carousel.min.css">
+<link rel="stylesheet"
+	href="/frontend-template/assets/css/owl.theme.default.min.css">
+<link rel="stylesheet"
+	href="/frontend-template/assets/css/jquery.fancybox.min.css">
+<link rel="stylesheet"
+	href="/frontend-template/assets/css/fontawesome.min.css">
+<link rel="stylesheet"
+	href="/frontend-template/assets/css/nice-select.css">
+<link rel="stylesheet" href="/frontend-template/assets/css/style.css">
+<link rel="stylesheet"
+	href="/frontend-template/assets/css/responsive.css">
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/header.css">
+<style> /* === 購物明細 === */
+#order-items .order-item {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	margin: 10px 0;
+}
 
-	<link rel="stylesheet" href="/frontend-template/assets/css/owl.carousel.min.css">
-	<link rel="stylesheet" href="/frontend-template/assets/css/owl.theme.default.min.css">
-	<link rel="stylesheet" href="/frontend-template/assets/css/jquery.fancybox.min.css">
-	<link rel="stylesheet" href="/frontend-template/assets/css/fontawesome.min.css">
-	<link rel="stylesheet" href="/frontend-template/assets/css/nice-select.css">
-	<link rel="stylesheet" href="/frontend-template/assets/css/style.css">
-	<link rel="stylesheet" href="/frontend-template/assets/css/responsive.css">
-	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+#order-items .order-item img {
+	width: 60px;
+	height: 60px;
+	object-fit: cover;
+	border-radius: 8px;
+}
 
-	<style>
-		/* === 通用樣式 (來自你夥伴的程式碼) === */
-		.social-item {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-		}
+#order-items .name {
+	font-weight: 600;
+}
 
-		.header-style-one .nav-bar {
-			display: flex;
-			align-items: center;
-			gap: 16px;
-			width: 100%;
-		}
+#order-items .price {
+	min-width: 100px;
+	text-align: right;
+}
 
-		.header-style-one .nav-bar>ul {
-			flex: 1 1 auto;
-			display: flex;
-			justify-content: center;
-			gap: 28px;
-			margin: 0;
-			padding: 0;
-			list-style: none;
-		}
+#total-amount, #used-points, #order-amount, #grand-total {
+	font-weight: 700;
+} /* === 黑框總金額 === */
+.cart-total-box {
+	background: #000;
+	color: #fff;
+	padding: 16px 20px;
+	border-radius: 8px;
+	margin-top: 20px;
+	width: 90%;
+	max-width: 400px;
+}
 
-		.header-style-one .nav-bar .extras {
-			flex: 0 0 auto;
-		}
+.cart-total-box .final ul, .cart-total-box .total ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
 
-		.credit-section {
-			display: none;
-		}
+.cart-total-box .final li, .cart-total-box .total li {
+	display: flex;
+	justify-content: space-between;
+	margin: 8px 0;
+}
 
-		/* === 頁面專屬樣式 === */
-		#order-items .order-item {
-			display: flex;
-			gap: 12px;
-			align-items: center;
-			margin: 10px 0;
-		}
+.cart-total-box .total {
+	background: #fff;
+	color: #000;
+	padding: 12px;
+	border-radius: 6px;
+	margin-top: 12px;
+	font-size: 18px;
+	font-weight: 700;
+} /* === 收件資訊輸入框 === */
+.billing input {
+	width: 100%;
+	margin-bottom: 30px;
+	padding: 10px;
+}
 
-		#order-items .order-item img {
-			width: 60px;
-			height: 60px;
-			object-fit: cover;
-			border-radius: 8px;
-		}
+.error {
+	color: red;
+	font-size: 14px;
+	margin-top: -8px;
+	margin-bottom: 10px;
+} /* === 付款按鈕區（右下角橫向） === */
+.payment-method {
+	display: flex;
+	justify-content: flex-end;
+	gap: 15px;
+	margin-top: 20px;
+}
 
-		#order-items .name {
-			font-weight: 600;
-		}
+.payment-method .checkout-btn {
+	flex: 1;
+	max-width: 220px;
+	padding: 12px 20px;
+	font-size: 16px;
+	font-weight: 500;
+	border-radius: 8px;
+	border: none;
+	color: #fff !important;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.3s ease;
+}
 
-		#order-items .price {
-			min-width: 100px;
-			text-align: right;
-		}
+#linePayBtn {
+	background-color: #00B900;
+}
 
-		#total-amount,
-		#used-points,
-		#order-amount,
-		#grand-total {
-			font-weight: 700;
-		}
+#linePayBtn:hover {
+	background-color: #009A00;
+}
 
-		/* ★★★ UI 修正的關鍵 CSS ★★★ */
-		/* 結帳區塊：總計（左） + 付款按鈕（右） */
-		.cart-t-payment-m {
-			display: grid;
-			grid-template-columns: 1fr auto;
-			/* 左側自動填滿，右側由內容決定寬度 */
-			gap: 24px;
-			align-items: end;
-			/* 讓左右兩欄底部對齊 */
-			margin-top: 30px;
-		}
+#creditCardBtn {
+	background-color: #0d6efd;
+}
 
-		/* 付款方式按鈕區塊 */
-		.payment-method {
-			display: flex;
-			flex-direction: column;
-			gap: 15px;
-			/* 按鈕之間的垂直間距 */
-			width: 220px;
-			/* 給按鈕一個固定的寬度 */
-		}
-
-		.payment-method .checkout-btn {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 100%;
-			padding: 12px 20px;
-			font-size: 16px;
-			font-weight: 500;
-			border-radius: 8px;
-			transition: all 0.3s ease;
-			border: none;
-			color: #fff !important;
-			/* 確保文字是白色 */
-		}
-
-		/* LINE Pay 按鈕樣式 */
-		#linePayBtn {
-			background-color: #00B900;
-			/* LINE 代表綠色 */
-		}
-
-		#linePayBtn:hover {
-			background-color: #009A00;
-		}
-
-		/* 信用卡按鈕樣式 */
-		#creditCardBtn {
-			background-color: #0d6efd;
-			/* Bootstrap 代表藍色 */
-		}
-
-		#creditCardBtn:hover {
-			background-color: #0b5ed7;
-		}
-
-		/* 手機斷點：改成上下堆疊 */
-		@media (max-width: 767px) {
-			.cart-t-payment-m {
-				grid-template-columns: 1fr;
-				/* 改為單欄 */
-				gap: 30px;
-			}
-
-			.payment-method {
-				width: 100%;
-				/* 手機版按鈕滿寬 */
-				flex-direction: row;
-				/* 可以考慮並排或維持垂直 */
-			}
-
-			.payment-method .checkout-btn {
-				flex: 1;
-				/* 讓兩個按鈕平分寬度 */
-			}
-		}
-	</style>
+#creditCardBtn:hover {
+	background-color: #0b5ed7;
+}
+</style>
 </head>
-
 <body>
 	<!-- Loader -->
 	<div class="preloader">
@@ -173,10 +143,8 @@
 			</div>
 		</div>
 	</div>
-
 	<!-- Header -->
 	<div id="header-placeholder"></div>
-
 	<!-- Banner -->
 	<section class="banner-style-one">
 		<div class="parallax"></div>
@@ -193,113 +161,112 @@
 				<div class="row">
 					<ul>
 						<li><a href="index.html"> <i class="fa-solid fa-house"></i>
-								<p>首頁</p>
-							</a></li>
+								<p>首頁</p></a></li>
 					</ul>
 				</div>
 			</div>
 		</div>
 	</section>
-
 	<!-- Checkout -->
 	<section class="gap checkout detail-page">
-		<form id="checkout-form" novalidate>
+		<form id="checkout-form">
 			<div class="container">
 				<div class="row">
-					<div class="col-lg-12">
-						<div class="row">
-							<!-- 左側：寄件資訊 -->
-							<div class="col-lg-8 col-md-12">
-								<div class="billing">
-									<h3>寄件資訊</h3>
-									<div class="row">
-										<div class="col-md-12">
-											<input id="recipient_name" name="recipient_name" type="text"
-												placeholder="收貨人姓名" required pattern="[\p{L}\p{M}\s\.\-]{2,10}"
-												title="請輸入 2–10 字（中文或英文）">
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-12">
-											<input id="recipient_phone" name="recipient_phone" type="tel"
-												placeholder="收貨人電話" required pattern="^(09\d{8}|0\d{1,2}-?\d{7,8})$"
-												title="手機 09xxxxxxxx 或市話 0x-xxxxxxx">
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-12">
-											<input id="recipient_address" name="recipient_address" type="text"
-												placeholder="收貨人地址" required minlength="6" maxlength="120">
-										</div>
-									</div>
-								</div>
-							</div>
-							<!-- 右側：購物明細 -->
-							<div class="col-lg-4 col-md-12">
-								<div id="order-summary">
-									<h3>購物明細</h3>
-									<div id="order-items">
-										<!-- 由 checkout.js 動態填入 -->
-									</div>
-								</div>
+					<!-- 左側：購物明細 -->
+					<div class="col-lg-6 col-md-12">
+						<div id="order-summary">
+							<h3>購物明細</h3>
+							<div id="order-items">
+								<!-- checkout.js 填入 -->
 							</div>
 						</div>
-
-						<!-- ★★★ HTML 結構修正 ★★★ -->
-						<div class="cart-t-payment-m">
-							<!-- 總計資訊 -->
-							<div class="cart-total-box">
-								<div class="final">
-									<ul>
-										<li><span>總金額:</span> <span id="total-amount">NT$0</span></li>
-										<li><span>使用點數:</span> <span id="used-points">-NT$0</span></li>
-										<li><span>訂單金額:</span> <span id="order-amount">NT$0</span></li>
-									</ul>
-								</div>
-								<div class="total">
-									<ul>
-										<li><span>合計:</span> <span id="grand-total">NT$0</span></li>
-									</ul>
-								</div>
+						<div class="cart-total-box">
+							<div class="final">
+								<ul>
+									<li><span>總金額:</span> <span id="total-amount">NT$0</span></li>
+									<li><span>使用點數:</span> <span id="used-points">-NT$0</span></li>
+									<li><span>訂單金額:</span> <span id="order-amount">NT$0</span></li>
+								</ul>
 							</div>
-							<!-- 付款按鈕 -->
-							<div class="payment-method">
-								<button type="button" class="theme-btn checkout-btn" id="linePayBtn">
-									<i class="fa-brands fa-line" style="font-size: 1.2em; margin-right: 8px;"></i>
-									<span>使用 LINE Pay 付款</span>
-								</button>
-								<button type="button" class="theme-btn checkout-btn" id="creditCardBtn">
-									<i class="fa-regular fa-credit-card" style="margin-right: 8px;"></i>
-									<span>使用信用卡付款</span>
-								</button>
+							<div class="total">
+								<ul>
+									<li><span>合計:</span> <span id="grand-total">NT$0</span></li>
+								</ul>
 							</div>
+						</div>
+					</div>
+					<!-- 右側：寄件資訊 -->
+					<div
+						class="col-lg-6 col-md-12 d-flex flex-column justify-content-between">
+						<div class="billing">
+							<h3>寄件資訊</h3>
+							<input id="recipient_name" name="recipientName" type="text"
+								placeholder="收貨人姓名" required pattern="[\p{L}\p{M}\s\.\-]{2,10}"
+								title="請輸入 2–10 字（中文或英文）">
+							<div class="error"></div>
+							<input id="recipient_phone" name="recipientPhone" type="tel"
+								placeholder="收貨人電話" required
+								pattern="^(09\d{8}|0\d{1,2}-?\d{7,8})$"
+								title="手機 09xxxxxxxx 或市話 0x-xxxxxxx">
+							<div class="error"></div>
+							<input id="recipient_address" name="recipientAddress" type="text"
+								placeholder="收貨人地址" required minlength="6" maxlength="120"
+								title="收貨人地址需 6–120 字">
+							<div class="error"></div>
+						</div>
+						<!-- 付款按鈕 -->
+						<div class="payment-method">
+							<button type="button" class="theme-btn checkout-btn"
+								id="linePayBtn">
+								<i class="fa-brands fa-line"
+									style="font-size: 1.2em; margin-right: 8px;"></i><span>使用
+									LINE Pay 付款</span>
+							</button>
+							<button type="button" class="theme-btn checkout-btn"
+								id="creditCardBtn">
+								<i class="fa-regular fa-credit-card" style="margin-right: 8px;"></i><span>使用信用卡付款</span>
+							</button>
 						</div>
 					</div>
 				</div>
 			</div>
 		</form>
 	</section>
-
-	<!-- Footer -->
+	<!-- Footer（簡版，依你原檔） -->
 	<div id="footer-placeholder"></div>
+	<div id="scroll-percentage">
+		<span id="scroll-percentage-value"></span>
+	</div>
 
-	<div id="scroll-percentage"><span id="scroll-percentage-value"></span></div>
-
-	<!-- JS Libraries -->
+	<!-- JS -->
+	<!-- JS（已去重、正確載入順序） -->
 	<script src="/frontend-template/assets/js/jquery.min.js"></script>
+	<script src="/frontend-template/assets/js/bootstrap.min.js"></script>
+
+	<!-- jQuery 外掛（依賴 jQuery） -->
 	<script src="/frontend-template/assets/js/jquery.waypoints.min.js"></script>
 	<script src="/frontend-template/assets/js/jquery.counterup.min.js"></script>
-	<script src="/frontend-template/assets/js/bootstrap.min.js"></script>
 	<script src="/frontend-template/assets/js/jquery.fancybox.min.js"></script>
 	<script src="/frontend-template/assets/js/jquery.nice-select.js"></script>
 	<script src="/frontend-template/assets/js/owl.carousel.min.js"></script>
+
+	<!-- 共用工具 -->
 	<script src="/frontend-template/assets/js/api.js"></script>
 	<script src="/frontend-template/assets/js/custom.js"></script>
 	<script src="/frontend-template/assets/js/loader.js"></script>
 
+	<!-- 本頁腳本 -->
 	<script src="/frontend-template/assets/js/checkout.js"></script>
-
 	<script src="/frontend-template/assets/js/load-header.js"></script>
-</body>
 
+	<!-- 頁面載入後關閉 preloader -->
+	<script>
+		window.addEventListener("load", function() {
+			var pre = document.querySelector(".preloader");
+			if (pre)
+				pre.style.display = "none";
+		});
+	</script>
+
+</body>
 </html>

@@ -30,44 +30,47 @@ public class CartService {
 	public Map<Object, Object> getCart(Integer userId) {
 		return getCart(String.valueOf(userId));
 	}
+
 	public void addItem(Integer userId, Integer productId, Integer quantity) {
 		addItem(String.valueOf(userId), productId, quantity);
 	}
 
 	public void setQuantity(Integer userId, Integer productId, Integer quantity) {
-		if (userId == null) return;
+		if (userId == null)
+			return;
 		setQuantity(String.valueOf(userId), productId, quantity); // 呼叫下面的新方法
 	}
 
 	public void removeItem(Integer userId, Integer productId) {
-		if (userId == null) return;
+		if (userId == null)
+			return;
 		removeItem(String.valueOf(userId), productId); // 呼叫下面的新方法
 	}
 
 	public void clear(Integer userId) {
-		if (userId == null) return;
+		if (userId == null)
+			return;
 		clear(String.valueOf(userId)); // 呼叫下面的新方法
 	}
 
-
 	// --- 新的、接收 String cartId 的核心方法 ---
 	public Map<Object, Object> getCart(String cartId) {
-		if (cartId == null || cartId.isBlank()) return Map.of();
+		if (cartId == null || cartId.isBlank())
+			return Map.of();
 		return redis.opsForHash().entries(key(cartId));
 	}
 
-
 	public void addItem(String cartId, Integer productId, Integer quantity) {
-		if (cartId == null || cartId.isBlank()) return;
+		if (cartId == null || cartId.isBlank())
+			return;
 		HashOperations<String, Object, Object> ops = redis.opsForHash();
 		ops.increment(key(cartId), String.valueOf(productId), quantity);
 		redis.expire(key(cartId), Duration.ofDays(30));
 	}
 
-
-
 	public void setQuantity(String cartId, Integer productId, Integer quantity) {
-		if (cartId == null || cartId.isBlank()) return;
+		if (cartId == null || cartId.isBlank())
+			return;
 		HashOperations<String, Object, Object> ops = redis.opsForHash();
 		String productField = String.valueOf(productId);
 		if (quantity == null || quantity <= 0) {
@@ -79,14 +82,17 @@ public class CartService {
 	}
 
 	public void removeItem(String cartId, Integer productId) {
-		if (cartId == null || cartId.isBlank()) return;
+		if (cartId == null || cartId.isBlank())
+			return;
 		redis.opsForHash().delete(key(cartId), String.valueOf(productId));
 	}
 
 	public void clear(String cartId) {
-		if (cartId == null || cartId.isBlank()) return;
+		if (cartId == null || cartId.isBlank())
+			return;
 		redis.delete(key(cartId));
 	}
+
 	/**
 	 * 【核心邏輯】合併訪客購物車到會員購物車
 	 */
