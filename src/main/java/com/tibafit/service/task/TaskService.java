@@ -51,4 +51,8 @@ public class TaskService {
     public List<TaskVO> getAll() {
         return repository.findAll();
     }
+    
+    public List<TaskVO> findAvailable(Integer userId) {
+        return repository.findNeverJoined(userId);
+      }
 }

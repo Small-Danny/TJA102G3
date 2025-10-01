@@ -20,4 +20,6 @@ public interface TaskRecordService {
 
     /** 取全部 */
     List<TaskRecordVO> getAll();
+    
+    List<TaskRecordVO> findByUserAndStatus(Integer userId, Integer statusId);
 }

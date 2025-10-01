@@ -59,4 +59,10 @@ public class TaskRecordServiceImpl implements TaskRecordService {
     public List<TaskRecordVO> getAll() {
         return taskRecordRepository.findAll();
     }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<TaskRecordVO> findByUserAndStatus(Integer userId, Integer statusId) {
+      return taskRecordRepository.findByUserAndOptionalStatus(userId, statusId);
+    }
 }

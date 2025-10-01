@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>任務中心 | FitHub</title>
+    <!-- 完全沿用模板的資產順序與樣式 -->
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="/frontend-template/assets/images/heading-icon.png">
+
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="/frontend-template/assets/css/jquery.fancybox.min.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/fontawesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/nice-select.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/responsive.css">
+    <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* ---- 運動風格（紅黑主題）for 任務分頁 ---- */
+        :root {
+            --sport-red: #e11d2e;
+            /* 主紅 */
+            --sport-red-dark: #c8102e;
+            --sport-black: #111;
+            /* 主黑 */
+        }
+
+        .task-tabs {
+            gap: .5rem;
+            flex-wrap: wrap;
+        }
+
+        .task-tabs .nav-link {
+            position: relative;
+            border: 2px solid var(--sport-black);
+            color: var(--sport-black);
+            background: #fff;
+            font-weight: 800;
+            letter-spacing: .02em;
+            text-transform: none;
+            border-radius: 999px;
+            padding: .65rem 1.15rem;
+            transition: .18s ease;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, .15);
+        }
+
+        .task-tabs .nav-link:hover {
+            background: var(--sport-black);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, .15);
+        }
+
+        /* active 狀態：紅底白字，帶些陰影 */
+        .task-tabs .nav-link.active {
+            background: linear-gradient(135deg, var(--sport-red), var(--sport-red-dark));
+            color: #fff !important;
+            border-color: var(--sport-red-dark);
+            box-shadow: 0 8px 18px rgba(225, 17, 30, .35);
+            transform: translateY(-1px);
+        }
+
+        /* 小型裝置下讓 pill 更好點 */
+        @media (max-width: 576px) {
+            .task-tabs .nav-link {
+                padding: .55rem .9rem;
+                font-weight: 700;
+            }
+        }
+
+        /* ---- 原頁面輕量樣式（保留） ---- */
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .section-head img {
+            width: 18px;
+            height: 18px;
+        }
+
+        .task-card {
+            background: #fff;
+            border-radius: .75rem;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, .06);
+        }
+
+        .task-table {
+            width: 100%;
+        }
+
+        .task-table th,
+        .task-table td {
+            padding: .75rem;
+        }
+
+        .task-table tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .points {
+            font-weight: 700;
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .task-table thead {
+                display: none;
+            }
+
+            .task-table tbody tr {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: .25rem .75rem;
+                padding: .5rem 0;
+            }
+
+            .task-table td {
+                padding: .25rem 0;
+            }
+
+            .task-table td[data-th]::before {
+                content: attr(data-th) "：";
+                font-weight: 600;
+                margin-right: .25rem;
+                color: #6c757d;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Style One Start -->
+    <div id="header-placeholder"></div>
+    <!-- Header Style One End -->
+
+    <!-- Banner Style One Start -->
+    <section class="banner-style-one">
+        <div class="parallax" style="background-image: url(https://via.placeholder.com/1920x640);"></div>
+        <div class="container">
+            <div class="row">
+                <div class="banner-details">
+                    <h2 data-translate-key="our_blog_one" data-translate-value="Our Blog One">任務中心</h2>
+                    <p data-translate-key="our_values_and_vaulted_us_to_the_top_of_our_indust"
+                        data-translate-value="our values and vaulted us to the top of our industry.">我們的價值觀讓我們躍升至行業頂端。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Banner Style One End -->
+
+    <!-- 內頁標題區（沿用模板常見區塊寫法） -->
+    <section class="gap">
+        <div class="container">
+            <!-- 分頁：紅黑運動風格 -->
+            <ul class="nav nav-pills justify-content-center task-tabs mb-4" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tab-current" data-bs-toggle="pill"
+                        data-bs-target="#panel-current" type="button" role="tab">現有任務</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-available" data-bs-toggle="pill" data-bs-target="#panel-available"
+                        type="button" role="tab">接取任務</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-completed" data-bs-toggle="pill" data-bs-target="#panel-completed"
+                        type="button" role="tab">已完成任務</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- 現有任務 -->
+                <div class="tab-pane fade show active" id="panel-current" role="tabpanel" aria-labelledby="tab-current">
+                    <div class="task-card p-3 p-md-4">
+                        <div class="table-responsive">
+                            <table class="task-table" id="table-current"></table>
+                        </div>
+                    </div>
+                </div>
+                <!-- 可接任務 -->
+                <div class="tab-pane fade" id="panel-available" role="tabpanel" aria-labelledby="tab-available">
+                    <div class="task-card p-3 p-md-4">
+                        <div class="table-responsive">
+                            <table class="task-table" id="table-available"></table>
+                        </div>
+                    </div>
+                </div>
+                <!-- 已完成任務 -->
+                <div class="tab-pane fade" id="panel-completed" role="tabpanel" aria-labelledby="tab-completed">
+                    <div class="task-card p-3 p-md-4">
+                        <div class="table-responsive">
+                            <table class="task-table" id="table-completed"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Style One Start -->
+    <div id="footer-placeholder"></div>
+    <!-- Footer Style One End -->
+
+    <!-- 依樣式順序附上模板腳本（若模板另有組合檔，請改成相同路徑） -->
+    <script src="assets/js/custom.js"></script>
+    <script src="/frontend-template/assets/js/api.js"></script>
+
+    <script>
+        // ====== API 基本設定（依你的環境調整） ======
+        const API_BASE = 'http://localhost:8080'; // 若與頁面同網域，可用 ''（空字串）代表同源
+        function join(base, path) {
+            return base.replace(/\/+$/, '') + '/' + path.replace(/^\/+/, '');
+        }
+
+        // 轉「本地時間」成 LocalDateTime（無時區）格式：yyyy-MM-dd'T'HH:mm:ss
+        function isoLocalNow() {
+            const d = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            const yyyy = d.getFullYear();
+            const MM = pad(d.getMonth() + 1);
+            const dd = pad(d.getDate());
+            const HH = pad(d.getHours());
+            const mm = pad(d.getMinutes());
+            const ss = pad(d.getSeconds());
+            return `${yyyy}-${MM}-${dd}T${HH}:${mm}:${ss}`;
+        }
+
+        // 呼叫後端建立一筆 TaskRecord（userId 固定 7）
+        // async function apiCreateTaskRecord(taskId, extra = {}) { /*TaskRecordApiController-Create*/
+        //     const url = join(API_BASE, '/api/taskrecords');
+        //     const body = {
+        //         userId: 7,                         // 固定先用 7（之後導入會員再改）
+        //         taskId: Number(taskId),            // 從列表的任務 id 帶入
+        //         userStartTime: isoLocalNow(),      // 建議給開始時間
+        //         statusId: 0                           // 如果你還想指定 statusId 等，可傳 {statusId:2}
+        //     };
+        //     const res = await fetch(url, {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        //         body: JSON.stringify(body)
+        //     });
+        //     // 失敗時丟出詳細錯誤（方便你在頁面上 alert）
+        //     if (!res.ok) {
+        //         const txt = await res.text().catch(() => '');
+        //         throw new Error(`POST ${url} -> HTTP ${res.status} ${res.statusText}\n${txt}`);
+        //     }
+        //     const ct = res.headers.get('content-type') || '';
+        //     return ct.includes('application/json') ? res.json() : null; // 預期回 TaskRecordDTO
+        // }
+
+        // 3) 建立一筆（接取任務）— 不要再送 userId，交給後端從 Session 取出
+        async function apiCreateTaskRecord(taskId) {
+            const body = { taskId: Number(taskId) }; // 不帶 userId
+            const res = await apiFetch(`/api/taskrecords`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) throw new Error(await res.text());
+            return res.headers.get('content-type')?.includes('json') ? res.json() : null;
+        }
+
+        // 取 TaskRecord 列表（可用 query 組條件）
+        // async function apiListTaskRecords(query = {}) { /*TaskRecordApiController-Read*/
+        //     const q = new URLSearchParams(query).toString();
+        //     const url = join(API_BASE, '/api/taskrecords' + (q ? `?${q}` : ''));
+        //     const res = await fetch(url, { headers: { 'Accept': 'application/json' }, cache: 'no-store' });
+        //     const txt = await res.text().catch(() => '');
+        //     if (!res.ok) throw new Error(`GET ${url} -> HTTP ${res.status} ${res.statusText}\n${txt}`);
+        //     const ct = res.headers.get('content-type') || '';
+        //     const json = ct.includes('application/json') ? JSON.parse(txt) : [];
+        //     // 兼容分頁/非分頁
+        //     return Array.isArray(json) ? json : (json.content ?? []);
+        // }
+
+        // 2) 取 TaskRecord 列表（僅 status 篩選；user 由後端從 Session 判定）
+        async function apiListTaskRecords(query = {}) {
+            const q = new URLSearchParams(query).toString();
+            const url = `/api/taskrecords${q ? `?${q}` : ''}`;      // 用相對路徑同源，Cookie 會自動帶上
+            const res = await apiFetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
+            const txt = await res.text().catch(() => '');
+            if (!res.ok) throw new Error(`GET ${url} -> ${res.status}\n${txt}`);
+            return txt ? JSON.parse(txt) : [];
+        }
+
+        // 取「可接任務」清單（預設 not-active；若要“從未接取過”改 mode='never'）
+        async function apiListAvailable() {
+            const res = await apiFetch(`/api/tasks/available`, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
+            });
+            const txt = await res.text().catch(() => '');
+            if (!res.ok) throw new Error(`GET /api/tasks/available -> ${res.status}\n${txt}`);
+            return txt ? JSON.parse(txt) : [];
+        }
+
+
+        // 取單一任務詳情（用於補 task_name/points/unit 等）
+        // async function apiGetTask(taskId) { /*TaskApiController*/
+        //     const url = join(API_BASE, `/api/v1/tasks/${taskId}`);
+        //     const res = await fetch(url, { headers: { 'Accept': 'application/json' }, cache: 'no-store' });
+        //     if (!res.ok) throw new Error(`GET ${url} -> HTTP ${res.status}`);
+        //     return res.json();
+        // }
+
+        // async function apiCompleteTaskRecord(recordId) { /*TaskRecordCompleteApi*/
+        //     const url = join(API_BASE, `/api/taskrecords/${recordId}/complete`);
+        //     const res = await fetch(url, { method: 'PATCH', headers: { 'Accept': 'application/json' } });
+        //     const txt = await res.text().catch(() => '');
+        //     if (!res.ok) throw new Error(`PATCH ${url} -> HTTP ${res.status} ${res.statusText}\n${txt}`);
+        //     const ct = res.headers.get('content-type') || '';
+        //     return ct.includes('application/json') ? JSON.parse(txt) : null; // 有些版會回 204，就回 null
+        // }
+
+        // 4) 標記完成（單筆）
+        async function apiCompleteTaskRecord(recordId) {
+            const res = await apiFetch(`/api/taskrecords/${recordId}/complete`, { method: 'PATCH' });
+            if (!res.ok) throw new Error(await res.text());
+        }
+
+        // 把 TaskRecord 陣列用 taskId 批次補上任務資訊（先用 DTO 值，缺才用任務 API）
+        async function enrichRecordsWithTasks(records) {
+            const uniqueTaskIds = [...new Set(records.map(r => r.taskId))];
+            const taskMap = new Map();
+            // await Promise.all(uniqueTaskIds.map(async (tid) => {
+            //     try { taskMap.set(String(tid), await apiGetTask(tid)); } catch { /* 取不到就略過 */ }
+            // }));
+
+            const pick = (...vals) => {
+                for (const v of vals) if (v !== undefined && v !== null && v !== '') return v;
+                return null;
+            };
+
+            return records.map(r => {
+                const t = taskMap.get(String(r.taskId)) || {};
+                const name = pick(r.taskName, r.task_name, t.taskName, t.task_name, '');
+                const targetValue = pick(r.targetValue, r.target_value, t.targetValue, t.target_value, null);
+                const unit = pick(r.unit, t.unit, '');
+                const points = pick(r.points, t.points, 0);
+
+                return {
+                    // TaskRecord 本體
+                    recordId: String(r.taskRecordId ?? r.id ?? ''),
+                    taskId: String(r.taskId),
+                    userStartTime: r.userStartTime,
+                    userEndTime: r.userEndTime,
+                    statusId: r.statusId,
+                    statusName: r.statusName,
+
+                    // 任務資訊（同時放駝峰，renderCurrent 讀得到）
+                    taskName: name,
+                    targetValue: targetValue,
+                    unit: unit,
+                    points: points,
+
+                    // 圖示
+                    task_icon: join(API_BASE, `/tasks/${r.taskId}/icon`)
+                };
+            });
+        }
+
+
+    </script>
+
+
+    <script>
+        //===== 從 our-blog-1.html 動態注入 Header / Footer（加防呆，不存在就不處理） =====
+        // (async function injectLayout() {
+        //     try {
+        //         const res = await fetch('our-blog-1.html');
+        //         const html = await res.text();
+        //         const doc = new DOMParser().parseFromString(html, 'text/html');
+        //         const header = doc.querySelector('header.header-style-one');
+        //         const footer = doc.querySelector('footer.footer-style-one');
+        //         const headerPh = document.getElementById('header-placeholder');
+        //         const footerPh = document.getElementById('footer-placeholder');
+        //         if (header && headerPh) headerPh.replaceWith(header);
+        //         if (footer && footerPh) footerPh.replaceWith(footer);
+        //     } catch (err) { console.warn('無法載入模板 header/footer：', err); }
+        // })();
+
+
+        // ===== 狀態儲存：移除假資料後，仍需有 localStorage 讀寫與預設空結構 =====
+        const STORAGE_KEY = 'fithub.tasks.v2';
+        const todayStr = () => { const d = new Date(); return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`; };
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return { available: [], current: [], completed: [] };
+                const s = JSON.parse(raw);
+                const toArr = v => Array.isArray(v) ? v : [];
+                return { available: toArr(s.available), current: toArr(s.current), completed: toArr(s.completed) };
+            } catch {
+                return { available: [], current: [], completed: [] };
+            }
+        }
+
+        function saveState() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { }
+        }
+
+        let state = loadState();
+
+        //===== 渲染三個表格 =====
+        function renderCurrent() {
+            const safe = (v, d = '') => (v ?? d);                    // null/undefined → 預設值
+            const first = (...xs) => xs.find(v => v !== undefined && v !== null && v !== '') ?? '';
+
+            const rows = [];
+            rows.push(`<thead><tr>
+    <th>紀錄ID</th><th>任務名稱</th><th>任務目標值</th><th>單位</th>
+    <th>任務開始日</th><th>任務結束日</th><th>點數</th><th>任務圖騰</th><th></th>
+  </tr></thead><tbody>`);
+
+            /*state.current.forEach(m => {*/
+            const list = (state.current || []).filter(m =>
+                m?.statusId === 0 || m?.status === '進行中' // 帶保險：舊資料沒 statusId 時用文字判斷
+            );
+            list.forEach(m => {
+                const recordId = safe(m.recordId);
+                const taskId = safe(m.id ?? m.taskId);             // 你之前把 id 當 taskId 用
+                const name = first(m.taskName, m.task_name);
+                const targetVal = first(m.targetValue, m.target_value);
+                const unit = safe(m.unit);
+                const startAt = safe(m.start_time);
+                const endAt = safe(m.end_time);
+                const points = safe(m.points, 0);
+                const iconUrl = first(m.task_icon, `${API_BASE.replace(/\/+$/, '')}/tasks/${taskId}/icon`);
+                const statusText = first(m.status, m.statusName, (m.statusId === 0 ? '進行中' : ''));
+                const isOngoing = (statusText === '進行中') || (m.statusId === 0);
+
+                rows.push(`<tr>
+      <td data-th="紀錄ID">${recordId}</td>
+      <td data-th="任務名稱">${name}</td>
+      <td data-th="任務目標值">${targetVal ?? ''}</td>
+      <td data-th="單位">${unit}</td>
+      <td data-th="任務開始日">${startAt}</td>
+      <td data-th="任務結束日">${endAt}</td>
+      <td data-th="點數">${points}</td>
+      <td data-th="任務圖騰">
+        <img src="${iconUrl}" alt="任務圖示" width="160" onerror="this.src='fallback.png'">
+      </td>
+      <td data-th="操作">${isOngoing
+                        ? `<button class="btn btn-sm btn-outline-dark"
+                data-action="complete"
+                data-record-id="${recordId}"
+                data-task-id="${taskId}">標記完成</button>`
+                        : ''
+                    }</td>
+    </tr>`);
+            });
+
+            rows.push('</tbody>');
+            document.getElementById('table-current').innerHTML = rows.join('');
+        }
+
+
+        //         function renderAvailable() {
+        //             const rows = []
+        //             rows.push(`<thead><tr>
+        //         <th>任務名稱</th><th>任務目標值</th><th>單位</th><th>任務開始日</th><th>任務結束日</th><th>點數</th><th>任務圖騰</th><th></th>
+        //       </tr></thead><tbody>`)
+        //             state.available.forEach(m => {
+        //                 rows.push(`<tr>
+        //           <td data-th="任務名稱">${m.task_name}</td>
+        //           <td data-th="任務目標值">${m.target_value}</td>
+        //           <td data-th="任單位">${m.unit}</td>
+        //           <td data-th="任務開始日">${m.start_time || ''}</td>
+        //           <td data-th="任務結束日">${m.end_time || ''}</td>
+        //           <td data-th="點數">${m.points}</td>
+        //           <td data-th="任務圖騰">
+        //   <img src="http://localhost:8080/tasks/${m.id}/icon" alt="任務圖示" width="160" onerror="this.src='fallback.png'">
+        // </td>
+        //           <td data-th="操作"><button class="btn btn-sm btn-outline-dark" data-action="accept" data-id="${m.id}">接取任務</button></td>
+        //         </tr>`)
+        //             })
+        //             rows.push('</tbody>')
+        //             document.getElementById('table-available').innerHTML = rows.join('')
+        //         }
+
+        function renderAvailable() {
+            const rows = [];
+            rows.push(`<thead><tr>
+    <th>任務名稱</th><th>任務目標值</th><th>單位</th>
+    <th>點數</th><th>任務圖騰</th><th></th>
+  </tr></thead><tbody>`);
+
+            (state.available || []).forEach(m => {
+                const icon = m.task_icon ?? `${API_BASE.replace(/\/+$/, '')}/tasks/${m.id}/icon`;
+                rows.push(`<tr>
+      <td data-th="任務名稱">${m.taskName ?? ''}</td>
+      <td data-th="任務目標值">${m.targetValue ?? ''}</td>
+      <td data-th="單位">${m.unit ?? ''}</td>
+      <td data-th="點數">${m.points ?? 0}</td>
+      <td data-th="任務圖騰"><img src="http://localhost:8080/tasks/${m.id}/icon" alt="任務圖示" width="160" onerror="this.src='fallback.png'"></td>
+      <td data-th="操作">
+        <button class="btn btn-sm btn-outline-dark"
+                data-action="accept" data-task-id="${m.id}">接取任務</button>
+      </td>
+    </tr>`);
+            });
+
+            rows.push('</tbody>');
+            document.getElementById('table-available').innerHTML = rows.join('');
+        }
+
+
+        function renderCompleted() {
+            const rows = [];
+            rows.push(`<thead><tr>
+    <th>任務名稱</th><th>任務目標值</th><th>單位</th>
+    <th>任務開始日</th><th>任務結束日</th><th>點數</th><th>任務圖騰</th><th></th>
+  </tr></thead><tbody>`);
+
+            const list = (state.completed || []).filter(m =>
+                m?.statusId === 1 || m?.status === '已完成' || (m?.end_time && m.end_time !== '')
+            );
+
+            list.forEach(m => {
+                const icon = m.task_icon ?? `${API_BASE.replace(/\/+$/, '')}/tasks/${m.id}/icon`;
+                rows.push(`<tr>
+      <td data-th="任務名稱">${m.taskName ?? ''}</td>
+      <td data-th="任務目標值">${m.targetValue ?? ''}</td>
+      <td data-th="單位">${m.unit ?? ''}</td>
+      <td data-th="任務開始日">${m.start_time || ''}</td>
+      <td data-th="任務結束日">${m.end_time || ''}</td>
+      <td data-th="點數">${m.points ?? 0}</td>
+      <td data-th="任務圖騰"><img src="${icon}" alt="任務圖示" width="160" onerror="this.src='fallback.png'"></td>
+      <td></td>
+    </tr>`);
+            });
+
+            rows.push('</tbody>');
+            document.getElementById('table-completed').innerHTML = rows.join('');
+        }
+
+
+        function renderAll() { renderCurrent(); renderAvailable(); renderCompleted(); }
+
+        //===== 事件委派（接取／完成） =====
+        document.addEventListener('click', async (e) => {
+            const btn = e.target.closest('button[data-action]'); if (!btn) return;
+            const action = btn.getAttribute('data-action');
+
+            if (action === 'accept') {
+                const tid = btn.getAttribute('data-task-id');   // 讀正確的屬性
+                if (!tid) { alert('找不到任務 ID'); return; }
+
+                // UI：按鈕上鎖避免連點
+                const oldText = btn.textContent;
+                btn.disabled = true; btn.textContent = '接取中…';
+
+                try {
+                    // **關鍵：先打後端建立 TaskRecord（userId 固定 7）**
+                    // 如果要同時指定初始狀態，傳第二個參數：{ statusId: 2 }
+
+
+                    // 後端成功 → 才把這筆從 available 移到 current
+                    // state.available.splice(i, 1);
+                    // state.current.unshift({
+                    //     id: String(m.id),
+                    //     recordId: dto?.taskRecordId ?? '',
+                    //     // 統一用 camelCase，renderCurrent 也讀 camelCase
+                    //     taskName: m.task_name,          // ← 原本是 task_name，改成 taskName
+                    //     targetValue: m.target_value,    // ← 關鍵：從 snake_case 取值，存成 camelCase
+                    //     unit: m.unit,
+                    //     start_time: m.start_time || (dto?.userStartTime ?? todayStr()),
+                    //     end_time: m.end_time || '',
+                    //     points: m.points,
+                    //     task_icon: m.task_icon,
+                    //     status: '進行中'
+                    // });
+                    await apiCreateTaskRecord(Number(tid));  // 真的打後端新增 TaskRecord
+                    await reloadAll();                       // 成功後重撈三個表，畫面與後端同步
+
+
+                } catch (err) {
+                    // 失敗就提示，並維持原本列表不動
+                    alert('接取失敗：\n' + err.message);
+                    console.error(err);
+                } finally {
+                    btn.disabled = false; btn.textContent = oldText;
+                }
+            }
+
+            if (action === 'complete') {
+                // 取出這列的 taskId 與「taskRecord 的 id」
+                const rid = btn.getAttribute('data-record-id'); // ← renderCurrent 已經有塞
+                const tid = btn.getAttribute('data-task-id');   // 需要就留著
+
+                if (!rid) {
+                    alert('找不到 TaskRecord recordId，請重新整理後再試一次。');
+                    return;
+                }
+
+                const oldText = btn.textContent;
+                btn.disabled = true; btn.textContent = '標記中…';
+                try {
+                    await apiCompleteTaskRecord(rid);  // ★ 真正打後端把 statusId 設為 1
+                    await reloadAll();                 // 成功後重新撈：Current=0、Completed=1，全以後端為準
+                } catch (err) {
+                    alert('標記完成失敗：\n' + err.message);
+                    console.error(err);
+                } finally {
+                    btn.disabled = false; btn.textContent = oldText;
+                }
+            }
+
+
+        });
+
+
+        // ---- 以伺服器為準：每次載入都抓一次最新任務，並保留使用者 current/completed ----
+        function normalize(t) {
+            return {
+                id: String(t.taskId),
+                task_name: t.taskName,
+                target_value: t.targetValue,
+                unit: t.unit,
+                start_time: t.startTime,
+                end_time: t.endTime,
+                points: t.points
+            };
+        }
+
+        // 每次載入都打 API：用伺服器當來源重建 available，同時覆寫 current/completed 的顯示欄位（若伺服器更新過）
+        async function reloadAll() {
+            // 先保留使用者本地 completed（已完成仍沿用 localStorage）
+            state = loadState();
+            state.completed = state.completed || [];
+
+            try {
+                // const url = '/api/v1/tasks?_ts=' + Date.now(); // cache-busting
+                // const res = await fetch(url, { cache: 'no-store' });
+                // if (!res.ok) throw new Error('HTTP ' + res.status);
+                // const serverList = await res.json();
+
+                // const serverMap = new Map(serverList.map(t => [String(t.taskId), normalize(t)]));
+
+                const avail = await apiListAvailable(); // 或 'never'
+                state.available = avail.map(t => ({
+                    id: String(t.taskId ?? t.id),
+                    taskName: t.taskName ?? t.task_name ?? '',
+                    targetValue: t.targetValue ?? t.target_value ?? null,
+                    unit: t.unit ?? '',
+                    points: t.points ?? 0,
+                    // task_icon: t.task_icon ?? `${API_BASE.replace(/\/+$/, '')}/tasks/${t.taskId ?? t.id}/icon`
+                }));
+
+                // B) 現有任務（current）從 TaskRecord 撈：userId=7 且 statusId=0
+                const records = await apiListTaskRecords({ statusId: 0 });
+                const currentEnriched = await enrichRecordsWithTasks(records);
+
+                // 組成前端 state.current：維持你原本渲染的欄位命名
+                state.current = currentEnriched.map(r => ({
+                    id: r.taskId,                      // 你現有「資料列的 id」就是 taskId
+                    recordId: r.recordId,              // 之後「標記完成」要用
+                    user_id: r.userId ?? r.userVO?.userId ?? '',
+                    // task_name: r.task_name,
+                    taskName: r.taskName,
+                    targetValue: r.targetValue,
+                    unit: r.unit,
+                    start_time: r.userStartTime ?? '',
+                    end_time: r.userEndTime ?? '',
+                    points: r.points,
+                    task_icon: r.task_icon,
+                    statusId: r.statusId,
+                    status: r.statusName ?? (r.statusId === 0 ? '進行中' : '')
+                }));
+
+                // D) 已完成任務（completed）從 TaskRecord 撈：statusId=1
+                const completedRecords = await apiListTaskRecords({ statusId: 1 });
+                const completedEnriched = await enrichRecordsWithTasks(completedRecords);
+
+                state.completed = completedEnriched.map(r => ({
+                    id: r.taskId,                  // 與現有任務一致，前端用 taskId 當列 id
+                    recordId: r.recordId,
+                    taskName: r.taskName,
+                    targetValue: r.targetValue,
+                    unit: r.unit,
+                    start_time: r.userStartTime ?? '',
+                    end_time: r.userEndTime ?? '',
+                    points: r.points,
+                    task_icon: r.task_icon,
+                    statusId: r.statusId,
+                    status: r.statusName ?? '已完成'
+                }));
+
+
+                // C) 可接任務：= 後台任務清單 - (current ∪ completed) 的 taskId
+                // const taken = new Set([
+                //     ...(state.current || []).map(x => x.id),
+                //     ...(state.completed || []).map(x => x.id),
+                // ]);
+                // state.available = Array.from(serverMap.values()).filter(t => !taken.has(t.id));
+
+                // 取得「可接任務」清單（後端算好的）
+
+
+
+                saveState();
+            } catch (e) {
+                console.warn('載入資料失敗，使用本機資料：', e);
+                // 若後台掛了就用 localStorage 的舊資料
+            } finally {
+                renderAll();
+            }
+        }
+        reloadAll();
+
+        // ===== Fallback：若未載入 Bootstrap JS，一樣能切換 nav-pills =====
+        ; (() => {
+            const links = document.querySelectorAll('.task-tabs .nav-link')
+            if (!links.length) return
+            links.forEach(link => {
+                link.addEventListener('click', () => {
+                    const targetSel = link.getAttribute('data-bs-target')
+                    const target = targetSel ? document.querySelector(targetSel) : null
+                    document.querySelectorAll('.task-tabs .nav-link').forEach(b => b.classList.remove('active'))
+                    document.querySelectorAll('.tab-content .tab-pane').forEach(p => p.classList.remove('active', 'show'))
+                    link.classList.add('active')
+                    if (target) { target.classList.add('active', 'show') }
+                })
+            })
+        })()
+    </script>
+
+    <script src="assets/js/cart.js"></script>
+    <script>
+        // 載入你提供的 header HTML
+        fetch('header.txt?v=' + Date.now(), { cache: 'no-store' })
+            .then(r => r.text())
+            .then(html => { document.getElementById('header').innerHTML = html; });
+    </script>
+
+    <script src="/frontend-template/assets/js/jquery.min.js"></script>
+    <script src="/frontend-template/assets/js/bootstrap.min.js"></script>
+    <script src="/frontend-template/assets/js/owl.carousel.min.js"></script>
+    <script src="/frontend-template/assets/js/jquery.fancybox.min.js"></script>
+    <script src="/frontend-template/assets/js/jquery.nice-select.js"></script>
+    <script src="/frontend-template/assets/js/loader.js"></script>
+    <script src="/frontend-template/assets/js/custom.js"></script>
+
+    <script src="/frontend-template/assets/js/cart.js"></script>
+
+</body>
+
+</html>
