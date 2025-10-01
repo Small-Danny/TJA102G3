@@ -51,20 +51,28 @@
     </div>
 </header>
 
-<div id="cart-lightbox" class="cart-overlay clearfix">
-  <div class="white_content">
+<!-- Cart Lightbox -->
+<div id="cart-lightbox" class="cart-overlay clearfix" aria-hidden="true">
+  <div class="white_content" role="dialog" aria-labelledby="cart-title" aria-modal="true">
     <a href="javascript:;" class="lightbox-close cart-close" aria-label="關閉">✕</a>
+
     <div class="cart-popup">
-      <h3 class="cart-titlen">購物車</h3>
-      <div id="cart-items-container">
-        </div>
+      <h3 id="cart-title" class="cart-title">購物車</h3>
+
+      <!-- 可滾動的清單區 -->
+      <div id="cart-items-container" class="cart-scroll">
+        <!-- 由 JS 動態渲染 -->
+      </div>
+
+      <!-- 總計與按鈕 -->
       <div class="cart-btn">
         <div class="cart-total d-flex align-items-center justify-content-between">
-          <span>總計：</span><span>NT$ 0</span>
+          <span>總計：</span>
+          <span id="cart-total">NT$ 0</span>
         </div>
         <div class="cart-btns d-flex align-items-center justify-content-between mt-3">
-          <a class="btn btn-outline-secondary" href="/frontend-template/cart.html">查看購物車</a>
-          <a class="btn btn-primary" href="/frontend-template/cart_order.html">結帳</a>
+          <a class="btn btn-outline-theme" href="/frontend-template/cart.html">查看購物車</a>
+          <a class="btn btn-theme" href="/frontend-template/cart_order.html">結帳</a>
         </div>
       </div>
     </div>

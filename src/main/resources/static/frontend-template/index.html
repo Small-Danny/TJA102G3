@@ -1,450 +1,594 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-
 <head>
-  <!-- Meta 選項 -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Meta 選項 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- 標題 -->
-  <title>TibaFit首頁</title>
-  <!-- Bootstrap -->
+<title>TibaFit首頁</title>
 
-  <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/bootstrap.min.css">
-  <link rel="icon" type="image/x-icon" href="/frontend-template/assets/images/heading-icon.png">
+<!-- CSS -->
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/bootstrap.min.css">
+<link rel="icon" type="image/x-icon"
+	href="/frontend-template/assets/images/heading-icon.png">
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/owl.carousel.min.css">
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/owl.theme.default.min.css">
+<link rel="stylesheet"
+	href="/frontend-template/assets/css/jquery.fancybox.min.css">
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/fontawesome.min.css">
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/nice-select.css">
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/style.css">
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/responsive.css">
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/header.css">
 
-  <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.carousel.min.css">
-  <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.theme.default.min.css">
-  <link rel="stylesheet" href="/frontend-template/assets/css/jquery.fancybox.min.css">
-  <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/fontawesome.min.css">
-  <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/nice-select.css">
-  <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/style.css">
-  <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/responsive.css">
-  <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+/* 商品圖固定高度，等比縮放（沿用前面做法） */
+.project-style-one .product .btn-hover figure {
+	height: 320px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 12px;
+	overflow: hidden;
+	background: #fff;
+}
+
+.project-style-one .product .btn-hover figure img {
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+}
+
+@media ( max-width :991.98px) {
+	.project-style-one .product .btn-hover figure {
+		height: 260px;
+	}
+}
+
+@media ( max-width :575.98px) {
+	.project-style-one .product .btn-hover figure {
+		height: 200px;
+	}
+}
+
+/* 輪播左右外部按鈕 */
+.carousel-btn {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	border: 0;
+	width: 44px;
+	height: 44px;
+	border-radius: 9999px;
+	background: #fff;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	z-index: 3;
+}
+
+.carousel-prev {
+	left: -6px;
+}
+
+.carousel-next {
+	right: -6px;
+}
+
+.carousel-btn i {
+	font-size: 18px;
+}
+
+.carousel-btn:hover {
+	box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
+}
+
+/* Owl 預設點點稍微往下 */
+.product-carousel .owl-dots {
+	margin-top: 18px;
+}
+</style>
 </head>
+<body>
+	<div id="header-placeholder"></div>
 
-<body class="">
-  <div id="header-placeholder"></div>
-  <!-- 特色輪播一開始 -->
-  <section class="featured-slider-one">
-    <div class="containe container">
-      <div class="ro f-slider-one owl-carousel">
-        <div class="f-slider-layer">
-          <div class="f-slider-one-data">
-            <span>高效率</span>
-            <h1>紀錄每次進步</h1>
-            <p>您的專屬健身日誌</p>
-            <a href="/record" class="theme-btn">立即開始</a>
-          </div>
-          <svg width="261" height="235" viewBox="0 0 261 235" xmlns="http://www.w3.org/2000/svg">
+	<!-- 特色輪播一開始 -->
+	<section class="featured-slider-one">
+		<div class="container">
+			<!-- 修正 containe -> container -->
+			<div class="row f-slider-one owl-carousel">
+				<!-- 修正 ro -> row -->
+				<div class="f-slider-layer">
+					<div class="f-slider-one-data">
+						<span>高效率</span>
+						<h1>紀錄每次進步</h1>
+						<p>您的專屬健身日誌</p>
+						<a href="/record" class="theme-btn">立即開始</a>
+					</div>
+					<svg width="261" height="235" viewBox="0 0 261 235"
+						xmlns="http://www.w3.org/2000/svg">
             <path
-              d="M261 0L190.483 144.088H128.135L162.104 102.062L188.333 45.885H89.8666L70.0873 87.4818H117.815L0 235L49.0181 125.219H0L61.9176 0H261Z" />
+							d="M261 0L190.483 144.088H128.135L162.104 102.062L188.333 45.885H89.8666L70.0873 87.4818H117.815L0 235L49.0181 125.219H0L61.9176 0H261Z" />
           </svg>
-        </div>
-        <div class="f-slider-layer">
-          <div class="f-slider-one-data">
-            <span>任務驅動</span>
-            <h1>挑戰每日任務</h1>
-            <p>解鎖成就，保持動力</p>
-            <a href="/tasks" class="theme-btn">領取任務</a>
-          </div>
-          <svg width="261" height="235" viewBox="0 0 261 235" xmlns="http://www.w3.org/2000/svg">
+				</div>
+				<div class="f-slider-layer">
+					<div class="f-slider-one-data">
+						<span>任務驅動</span>
+						<h1>挑戰每日任務</h1>
+						<p>解鎖成就，保持動力</p>
+						<a href="/tasks" class="theme-btn">領取任務</a>
+					</div>
+					<svg width="261" height="235" viewBox="0 0 261 235"
+						xmlns="http://www.w3.org/2000/svg">
             <path
-              d="M261 0L190.483 144.088H128.135L162.104 102.062L188.333 45.885H89.8666L70.0873 87.4818H117.815L0 235L49.0181 125.219H0L61.9176 0H261Z" />
+							d="M261 0L190.483 144.088H128.135L162.104 102.062L188.333 45.885H89.8666L70.0873 87.4818H117.815L0 235L49.0181 125.219H0L61.9176 0H261Z" />
           </svg>
-        </div>
-        <div class="f-slider-layer">
-          <div class="f-slider-one-data">
-            <span>專業補給</span>
-            <h1>精選商城</h1>
-            <p>專業裝備與營養補給</p>
-            <a href="/shop/products" class="theme-btn">前往選購</a>
-          </div>
-          <svg width="261" height="235" viewBox="0 0 261 235" xmlns="http://www.w3.org/2000/svg">
+				</div>
+				<div class="f-slider-layer">
+					<div class="f-slider-one-data">
+						<span>專業補給</span>
+						<h1>精選商城</h1>
+						<p>專業裝備與營養補給</p>
+						<a href="/shop/products" class="theme-btn">前往選購</a>
+					</div>
+					<svg width="261" height="235" viewBox="0 0 261 235"
+						xmlns="http://www.w3.org/2000/svg">
             <path
-              d="M261 0L190.483 144.088H128.135L162.104 102.062L188.333 45.885H89.8666L70.0873 87.4818H117.815L0 235L49.0181 125.219H0L61.9176 0H261Z" />
+							d="M261 0L190.483 144.088H128.135L162.104 102.062L188.333 45.885H89.8666L70.0873 87.4818H117.815L0 235L49.0181 125.219H0L61.9176 0H261Z" />
           </svg>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- 特色輪播一結束 -->
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- 特色輪播一結束 -->
 
-  <!-- 服務樣式一開始 -->
-  <section class="gap service-style-one">
-    <div class="heading">
-      <figure>
-        <img src="/frontend-template/assets/images/heading-icon.png" alt="標題圖示">
-      </figure>
-      <span>數位健身體驗</span>
-      <h2>核心功能</h2>
-    </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-4 col-md-6">
-          <div class="service-data">
-            <i class="flaticon-tasks"></i>
-            <h3><a href="/tasks">任務挑戰系統</a></h3>
-            <p>每日簽到、完成指定運動任務，解鎖專屬成就，讓健身不再枯燥。</p>
-            <a class="icon" href="/tasks">
-              <i class="fa-solid fa-angles-right"></i>
-            </a>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="service-data">
-            <i class="flaticon-notebook"></i>
-            <h3><a href="/records">詳盡運動紀錄</a></h3>
-            <p>輕鬆紀錄重訓組數、跑步里程與各項數據，圖表化分析成長軌跡。</p>
-            <a class="icon" href="/records">
-              <i class="fa-solid fa-angles-right"></i>
-            </a>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="service-data mb-0">
-            <i class="flaticon-shopping-bag"></i>
-            <h3><a href="/shop/products">線上裝備商城</a></h3>
-            <p>從高蛋白、肌酸到專業護具，一站式購齊訓練所需裝備與營養品。</p>
-            <a class="icon" href="/shop/products">
-              <i class="fa-solid fa-angles-right"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- 服務樣式二結束 -->
+	<!-- 服務樣式一開始 -->
+	<section class="gap service-style-one">
+		<div class="heading">
+			<figure>
+				<img src="/frontend-template/assets/images/heading-icon.png"
+					alt="標題圖示">
+			</figure>
+			<span>數位健身體驗</span>
+			<h2>核心功能</h2>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-4 col-md-6">
+					<div class="service-data">
+						<i class="flaticon-tasks"></i>
+						<h3>
+							<a href="/tasks">任務挑戰系統</a>
+						</h3>
+						<p>每日簽到、完成指定運動任務，解鎖專屬成就，讓健身不再枯燥。</p>
+						<a class="icon" href="/tasks"><i
+							class="fa-solid fa-angles-right"></i></a>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6">
+					<div class="service-data">
+						<i class="flaticon-notebook"></i>
+						<h3>
+							<a href="/records">詳盡運動紀錄</a>
+						</h3>
+						<p>輕鬆紀錄重訓組數、跑步里程與各項數據，圖表化分析成長軌跡。</p>
+						<a class="icon" href="/records"><i
+							class="fa-solid fa-angles-right"></i></a>
+					</div>
+				</div>
+				<div class="col-lg-4 col-md-6">
+					<div class="service-data mb-0">
+						<i class="flaticon-shopping-bag"></i>
+						<h3>
+							<a href="/shop/products">線上裝備商城</a>
+						</h3>
+						<p>從高蛋白、肌酸到專業護具，一站式購齊訓練所需裝備與營養品。</p>
+						<a class="icon" href="/shop/products"><i
+							class="fa-solid fa-angles-right"></i></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- 服務樣式二結束 -->
 
-  <!-- 關於樣式一開始 -->
-  <section class="gap no-top about-style-one">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-6">
-          <div id="my-about-image-container" class="about-data-left">
-            <figure>
-              <img src="/frontend-template/assets/images/workout-record.svg" alt="運動紀錄示範">
-            </figure>
-            <figure>
-              <img src="/frontend-template/assets/images/sports-task-badge.svg" alt="任務挑戰示範">
-            </figure>
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="about-data-right">
-            <span>歡迎使用 TibaFit 數位平台</span>
-            <h2>用科技驅動你的健身目標</h2>
-            <div class="about-info">
-              <p>
-                無需依賴健身房或教練，TibaFit 幫你透過任務系統保持動力，用詳細紀錄追蹤每一步進步。不論是重訓、跑步還是居家運動，都能找到適合的挑戰與記錄方式，搭配商城裝備補給，讓健身更高效。
-              </p>
-              <figure>
-                <img class="light-icon" src="/frontend-template/assets/images/signature.png" alt="品牌標誌">
-                <img class="dark-icon" src="/frontend-template/assets/images/signature-1.png" alt="品牌標誌">
-              </figure>
-              <h3>TibaFit 團隊</h3>
-              <h4>你的數位健身夥伴</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- 關於樣式一結束 -->
+	<!-- 關於樣式一開始 -->
+	<section class="gap no-top about-style-one">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6">
+					<div id="my-about-image-container" class="about-data-left">
+						<figure>
+							<img src="/frontend-template/assets/images/workout-record.svg"
+								alt="運動紀錄示範">
+						</figure>
+						<figure>
+							<img src="/frontend-template/assets/images/sports-task-badge.svg"
+								alt="任務挑戰示範">
+						</figure>
+					</div>
+				</div>
+				<div class="col-lg-6">
+					<div class="about-data-right">
+						<span>歡迎使用 TibaFit 數位平台</span>
+						<h2>用科技驅動你的健身目標</h2>
+						<div class="about-info">
+							<p>無需依賴健身房或教練，TibaFit
+								幫你透過任務系統保持動力，用詳細紀錄追蹤每一步進步。不論是重訓、跑步還是居家運動，都能找到適合的挑戰與記錄方式，搭配商城裝備補給，讓健身更高效。</p>
+							<figure>
+								<img class="light-icon"
+									src="/frontend-template/assets/images/signature.png" alt="品牌標誌">
+								<img class="dark-icon"
+									src="/frontend-template/assets/images/signature-1.png"
+									alt="品牌標誌">
+							</figure>
+							<h3>TibaFit 團隊</h3>
+							<h4>你的數位健身夥伴</h4>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- 關於樣式一結束 -->
 
-  <!-- 計數器樣式一開始 -->
-  <section class="gap no-top counter-style-one">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-3 col-md-6 col-sm-12">
-          <div class="counter-data">
-            <div class="count">
-              <span class="counter">50</span>+
-            </div>
-            <h6>運動任務</h6>
-            <h4>多樣挑戰，適合各階段用戶</h4>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-12">
-          <div class="counter-data">
-            <div class="count">
-              <span class="counter">10</span>k+
-            </div>
-            <h6>活躍用戶</h6>
-            <h4>共同堅持，見證改變</h4>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-12">
-          <div class="counter-data">
-            <div class="count">
-              <span class="counter">20</span>+
-            </div>
-            <h6>運動類型</h6>
-            <h4>重訓、跑步等全面覆蓋</h4>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-12">
-          <div class="counter-data">
-            <div class="count">
-              <span class="counter">20</span>+
-            </div>
-            <h6>商城商品</h6>
-            <h4>專業裝備與營養補給</h4>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- 計數器樣式一結束 -->
+	<!-- 計數器樣式一開始 -->
+	<section class="gap no-top counter-style-one">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3 col-md-6 col-sm-12">
+					<div class="counter-data">
+						<div class="count">
+							<span class="counter">50</span>+
+						</div>
+						<h6>運動任務</h6>
+						<h4>多樣挑戰，適合各階段用戶</h4>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6 col-sm-12">
+					<div class="counter-data">
+						<div class="count">
+							<span class="counter">10</span>k+
+						</div>
+						<h6>活躍用戶</h6>
+						<h4>共同堅持，見證改變</h4>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6 col-sm-12">
+					<div class="counter-data">
+						<div class="count">
+							<span class="counter">20</span>+
+						</div>
+						<h6>運動類型</h6>
+						<h4>重訓、跑步等全面覆蓋</h4>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6 col-sm-12">
+					<div class="counter-data">
+						<div class="count">
+							<span class="counter">20</span>+
+						</div>
+						<h6>商城商品</h6>
+						<h4>專業裝備與營養補給</h4>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- 計數器樣式一結束 -->
 
-  <!-- 熱銷商品區開始 -->
-  <section class="gap project-style-one pb-0 light-bg-color">
-    <div class="heading">
-      <figure>
-        <img src="/frontend-template/assets/images/heading-icon.png" alt="標題圖示">
-      </figure>
-      <span>健身好幫手</span>
-      <h2>熱銷商品</h2>
-    </div>
-    <div class="row g-0">
-      <!-- 商品1 -->
-      <div class="col-lg-4">
-        <div class="product">
-          <div class="main-data">
-            <div class="btn-hover">
-              <figure>
-                <img src="/frontend-template/assets/img/whey.svg" alt="乳清蛋白">
-              </figure>
-              <a class="theme-btn add-to-cart" href="javascript:void(0)" data-id="1">
-                加入購物車 <i class="fa-solid fa-bag-shopping"></i>
-              </a>
-            </div>
-            <div class="data">
-              <h3><a href="/shop/product/16">專業乳清蛋白粉</a></h3>
-              <div class="price-range">
-                <span>NT$ <span>700</span></span>
-              </div>
-            </div>
-          </div>
-          <a class="theme-btn" href="/shop/product/16">
-            查看詳情 <i class="fa-solid fa-arrow-right"></i>
-          </a>
-        </div>
-      </div>
-      <!-- 商品2 -->
-      <div class="col-lg-4">
-        <div class="product">
-          <div class="main-data">
-            <div class="btn-hover">
-              <figure>
-                <img src="/frontend-template/assets/img/waist_belt.svg" alt="運動腰帶">
-              </figure>
-              <a class="theme-btn add-to-cart" href="javascript:void(0)" data-id="2">
-                加入購物車 <i class="fa-solid fa-bag-shopping"></i>
-              </a>
-            </div>
-            <div class="data">
-              <h3><a href="/shop/product/10">專業運動腰帶</a></h3>
-              <div class="price-range">
-                <span>NT$ <span>1200</span></span>
-              </div>
-            </div>
-          </div>
-          <a class="theme-btn" href="/shop/products">
-            查看詳情 <i class="fa-solid fa-arrow-right"></i>
-          </a>
-        </div>
-      </div>
-      <!-- 商品3 -->
-      <div class="col-lg-4">
-        <div class="product">
-          <div class="main-data">
-            <div class="btn-hover">
-              <figure>
-                <img src="/frontend-template/assets/img/knee_brace.svg" alt="護膝">
-              </figure>
-              <a class="theme-btn add-to-cart" href="javascript:void(0)" data-id="3">
-                加入購物車 <i class="fa-solid fa-bag-shopping"></i>
-              </a>
-            </div>
-            <div class="data">
-              <h3><a href="/shop/product/11">專業重訓護膝</a></h3>
-              <div class="price-range">
-                <span>NT$ <span>800</span></span>
-              </div>
-            </div>
-          </div>
-          <a class="theme-btn" href="/shop/product/11">
-            查看詳情 <i class="fa-solid fa-arrow-right"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- 熱銷商品區結束 -->
+	<!-- 熱銷商品區開始：可輪播 -->
+	<section class="gap project-style-one pb-0 light-bg-color">
+		<div class="heading">
+			<figure>
+				<img src="/frontend-template/assets/images/heading-icon.png"
+					alt="標題圖示">
+			</figure>
+			<span>健身好幫手</span>
+			<h2>熱銷商品</h2>
+		</div>
 
-  <!-- 使用者見證開始 -->
-  <section class="gap team-style-one">
-    <div class="heading-style-2">
-      <div class="container">
-        <div class="row align-items-center">
-          <div class="col-lg-6 col-md-8">
-            <div class="data">
-              <span>真實體驗分享</span>
-              <h2>使用者見證</h2>
-            </div>
-          </div>
-          <div class="col-lg-6 col-md-4">
-            <div class="team-slider-nav">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="team-slider owl-carousel">
-            <div class="team-data item">
-              <div class="team-info">
-                <h3>王先生</h3>
-                <p>上班族 / 健身新手</p>
-                <p class="user-quote">"每天的任務挑戰讓我養成運動習慣，數據記錄能清楚看到自己的進步，超有成就感！"</p>
-              </div>
-              <div class="team-image">
-              </div>
-            </div>
-            <div class="team-data item">
-              <div class="team-info">
-                <h3>李小姐</h3>
-                <p>跑者 / 持續訓練中</p>
-                <p class="user-quote">"跑步記錄功能超實用，還能領取里程挑戰任務，商城的營養品也很齊全，一站搞定訓練需求！"</p>
-              </div>
-              <div class="team-image">
-              </div>
-            </div>
-            <div class="team-data item">
-              <div class="team-info">
-                <h3>陳先生</h3>
-                <p>重訓愛好者</p>
-                <p class="user-quote">"終於找到能詳細記錄重訓組數和重量的工具，任務系統還會提醒我突破極限，搭配商城的護具，訓練更安心！"</p>
-              </div>
-              <div class="team-image">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
-  </section>
-  <!-- 使用者見證結束 -->
+		<div class="container position-relative">
 
-  <!-- 核心特色開始 -->
-  <section class="core-features">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="space">
-            <div class="heading-style-2">
-              <div class="container">
-                <div class="row">
-                  <div class="col-lg-12">
-                    <div class="data">
-                      <span>特色與優勢</span>
-                      <h2>為什麼選擇我們</h2>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="accordion" id="accordionExample">
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
-                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                    aria-expanded="true" aria-controls="collapseOne">
-                    <span class="num">01.</span> 數位健身夥伴
-                  </button>
-                </h2>
-                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-                  data-bs-parent="#accordionExample">
-                  <div class="accordion-body">
-                    <p>整合任務、記錄與商城的一站式平台，隨時隨地管理你的健身計劃。</p>
-                  </div>
-                </div>
-              </div>
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingTwo">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                    <span class="num">02.</span> 遊戲化任務系統
-                  </button>
-                </h2>
-                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                  data-bs-parent="#accordionExample">
-                  <div class="accordion-body">
-                    <p>透過解鎖成就和完成挑戰來維持運動熱情，讓堅持不再困難。</p>
-                  </div>
-                </div>
-              </div>
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingThree">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                    <span class="num">03.</span> 全方位數據追蹤
-                  </button>
-                </h2>
-                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
-                  data-bs-parent="#accordionExample">
-                  <div class="accordion-body">
-                    <p>從體重、體脂到臥推重量，視覺化你的每一項進步，科學調整訓練。</p>
-                  </div>
-                </div>
-              </div>
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingFour">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                    <span class="num">04.</span> 支援多種運動
-                  </button>
-                </h2>
-                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingThree"
-                  data-bs-parent="#accordionExample">
-                  <div class="accordion-body">
-                    <p>不僅支援重訓，也包含跑步、有氧等常見運動項目紀錄，全面覆蓋訓練需求。</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="shape">
-            <div class="video">
-              <figure>
-                <img src="/frontend-template/assets/images/core-feature-bg.svg" alt="TibaFit 核心特色">
-              </figure>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- 核心特色結束 -->
+			<!-- 產品輪播 -->
+			<div id="hot-products" class="owl-carousel product-carousel">
+				<!-- 商品1 -->
+				<div class="product item">
+					<div class="main-data">
+						<div class="btn-hover">
+							<figure>
+								<img src="/frontend-template/assets/img/whey.svg" alt="乳清蛋白">
+							</figure>
+							<a class="theme-btn add-to-cart" href="javascript:void(0)"
+								data-id="1"> 加入購物車 <i class="fa-solid fa-bag-shopping"></i>
+							</a>
+						</div>
+						<div class="data">
+							<h3>
+								<a href="/shop/product/16">專業乳清蛋白粉</a>
+							</h3>
+							<div class="price-range">
+								<span>NT$ <span>700</span></span>
+							</div>
+						</div>
+					</div>
+					<a class="theme-btn" href="/shop/product/16">查看詳情 <i
+						class="fa-solid fa-arrow-right"></i></a>
+				</div>
 
-  <div id="footer-placeholder"></div>
+				<!-- 商品2 -->
+				<div class="product item">
+					<div class="main-data">
+						<div class="btn-hover">
+							<figure>
+								<img src="/frontend-template/assets/img/waist_belt.svg"
+									alt="運動腰帶">
+							</figure>
+							<a class="theme-btn add-to-cart" href="javascript:void(0)"
+								data-id="2"> 加入購物車 <i class="fa-solid fa-bag-shopping"></i>
+							</a>
+						</div>
+						<div class="data">
+							<h3>
+								<a href="/shop/product/10">專業運動腰帶</a>
+							</h3>
+							<div class="price-range">
+								<span>NT$ <span>1200</span></span>
+							</div>
+						</div>
+					</div>
+					<a class="theme-btn" href="/shop/products">查看詳情 <i
+						class="fa-solid fa-arrow-right"></i></a>
+				</div>
 
-  <!-- JS 部分保持不變 -->
-  <script src="/frontend-template/assets/js/jquery.min.js"></script>
-  <script src="/frontend-template/assets/js/bootstrap.min.js"></script>
-  <script src="/frontend-template/assets/js/owl.carousel.min.js"></script>
-  <script src="/frontend-template/assets/js/jquery.fancybox.min.js"></script>
-  <script src="/frontend-template/assets/js/jquery.nice-select.js"></script>
-  <script src="/frontend-template/assets/js/loader.js"></script>
-  <script src="/frontend-template/assets/js/custom.js"></script>
-  <script src="/frontend-template/assets/js/api.js"></script>
-  <script src="/frontend-template/assets/js/cart.js"></script>
+				<!-- 商品3 -->
+				<div class="product item">
+					<div class="main-data">
+						<div class="btn-hover">
+							<figure>
+								<img src="/frontend-template/assets/img/knee_brace.svg" alt="護膝">
+							</figure>
+							<a class="theme-btn add-to-cart" href="javascript:void(0)"
+								data-id="3"> 加入購物車 <i class="fa-solid fa-bag-shopping"></i>
+							</a>
+						</div>
+						<div class="data">
+							<h3>
+								<a href="/shop/product/11">專業重訓護膝</a>
+							</h3>
+							<div class="price-range">
+								<span>NT$ <span>800</span></span>
+							</div>
+						</div>
+					</div>
+					<a class="theme-btn" href="/shop/product/11">查看詳情 <i
+						class="fa-solid fa-arrow-right"></i></a>
+				</div>
+
+				<!-- 之後要加商品就複製一個 .product item block 放進來即可 -->
+			</div>
+
+			<!-- 左右導航（外部按鈕） -->
+			<button class="carousel-btn carousel-prev"
+				data-target="#hot-products" aria-label="上一張">
+				<i class="fa-solid fa-angle-left"></i>
+			</button>
+			<button class="carousel-btn carousel-next"
+				data-target="#hot-products" aria-label="下一張">
+				<i class="fa-solid fa-angle-right"></i>
+			</button>
+
+		</div>
+	</section>
+	<!-- 熱銷商品區結束 -->
+
+	<!-- 使用者見證開始 -->
+	<section class="gap team-style-one">
+		<div class="heading-style-2">
+			<div class="container">
+				<div class="row align-items-center">
+					<div class="col-lg-6 col-md-8">
+						<div class="data">
+							<span>真實體驗分享</span>
+							<h2>使用者見證</h2>
+						</div>
+					</div>
+					<div class="col-lg-6 col-md-4">
+						<div class="team-slider-nav"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="team-slider owl-carousel">
+						<div class="team-data item">
+							<div class="team-info">
+								<h3>王先生</h3>
+								<p>上班族 / 健身新手</p>
+								<p class="user-quote">"每天的任務挑戰讓我養成運動習慣，數據記錄能清楚看到自己的進步，超有成就感！"</p>
+							</div>
+							<div class="team-image"></div>
+						</div>
+						<div class="team-data item">
+							<div class="team-info">
+								<h3>李小姐</h3>
+								<p>跑者 / 持續訓練中</p>
+								<p class="user-quote">"跑步記錄功能超實用，還能領取里程挑戰任務，商城的營養品也很齊全，一站搞定訓練需求！"</p>
+							</div>
+							<div class="team-image"></div>
+						</div>
+						<div class="team-data item">
+							<div class="team-info">
+								<h3>陳先生</h3>
+								<p>重訓愛好者</p>
+								<p class="user-quote">"終於找到能詳細記錄重訓組數和重量的工具，任務系統還會提醒我突破極限，搭配商城的護具，訓練更安心！"</p>
+							</div>
+							<div class="team-image"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- 使用者見證結束 -->
+
+	<!-- 核心特色開始 -->
+	<section class="core-features">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6">
+					<div class="space">
+						<div class="heading-style-2">
+							<div class="container">
+								<div class="row">
+									<div class="col-lg-12">
+										<div class="data">
+											<span>特色與優勢</span>
+											<h2>為什麼選擇我們</h2>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="accordion" id="accordionExample">
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="headingOne">
+									<button class="accordion-button" type="button"
+										data-bs-toggle="collapse" data-bs-target="#collapseOne"
+										aria-expanded="true" aria-controls="collapseOne">
+										<span class="num">01.</span> 數位健身夥伴
+									</button>
+								</h2>
+								<div id="collapseOne" class="accordion-collapse collapse show"
+									data-bs-parent="#accordionExample">
+									<div class="accordion-body">
+										<p>整合任務、記錄與商城的一站式平台，隨時隨地管理你的健身計劃。</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="headingTwo">
+									<button class="accordion-button collapsed" type="button"
+										data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+										aria-expanded="false" aria-controls="collapseTwo">
+										<span class="num">02.</span> 遊戲化任務系統
+									</button>
+								</h2>
+								<div id="collapseTwo" class="accordion-collapse collapse"
+									data-bs-parent="#accordionExample">
+									<div class="accordion-body">
+										<p>透過解鎖成就和完成挑戰來維持運動熱情，讓堅持不再困難。</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="headingThree">
+									<button class="accordion-button collapsed" type="button"
+										data-bs-toggle="collapse" data-bs-target="#collapseThree"
+										aria-expanded="false" aria-controls="collapseThree">
+										<span class="num">03.</span> 全方位數據追蹤
+									</button>
+								</h2>
+								<div id="collapseThree" class="accordion-collapse collapse"
+									data-bs-parent="#accordionExample">
+									<div class="accordion-body">
+										<p>從體重、體脂到臥推重量，視覺化你的每一項進步，科學調整訓練。</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="headingFour">
+									<button class="accordion-button collapsed" type="button"
+										data-bs-toggle="collapse" data-bs-target="#collapseFour"
+										aria-expanded="false" aria-controls="collapseFour">
+										<span class="num">04.</span> 支援多種運動
+									</button>
+								</h2>
+								<div id="collapseFour" class="accordion-collapse collapse"
+									data-bs-parent="#accordionExample">
+									<div class="accordion-body">
+										<p>不僅支援重訓，也包含跑步、有氧等常見運動項目紀錄，全面覆蓋訓練需求。</p>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+				<div class="col-lg-6">
+					<div class="shape">
+						<div class="video">
+							<figure>
+								<img src="/frontend-template/assets/images/core-feature-bg.svg"
+									alt="TibaFit 核心特色">
+							</figure>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</section>
+	<!-- 核心特色結束 -->
+
+	<div id="footer-placeholder"></div>
+
+	<!-- JS -->
+	<script src="/frontend-template/assets/js/jquery.min.js"></script>
+	<script src="/frontend-template/assets/js/bootstrap.min.js"></script>
+	<script src="/frontend-template/assets/js/owl.carousel.min.js"></script>
+	<script src="/frontend-template/assets/js/jquery.fancybox.min.js"></script>
+	<script src="/frontend-template/assets/js/jquery.nice-select.js"></script>
+	<script src="/frontend-template/assets/js/loader.js"></script>
+	<script src="/frontend-template/assets/js/custom.js"></script>
+	<script src="/frontend-template/assets/js/api.js"></script>
+	<script src="/frontend-template/assets/js/cart.js"></script>
+
+	<script>
+  (function(){
+    var $hot = $('#hot-products').owlCarousel({
+      loop: true,
+      margin: 24,
+      nav: false,
+      dots: true,
+      autoplay: false,
+      smartSpeed: 450,
+      responsive:{
+        0:   { items: 1 },
+        576: { items: 2 },
+        992: { items: 3 }
+      }
+    });
+
+    // 綁定外部左右按鈕
+    document.querySelector('.carousel-prev[data-target="#hot-products"]')
+      .addEventListener('click', function(){ $hot.trigger('prev.owl.carousel'); });
+    document.querySelector('.carousel-next[data-target="#hot-products"]')
+      .addEventListener('click', function(){ $hot.trigger('next.owl.carousel'); });
+  })();
+</script>
+
 </body>
-
 </html>
