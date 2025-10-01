@@ -348,7 +348,7 @@ public class SecurityConfig {
                         // --- 靜態資源 (CSS, JS, 圖片等，必須開放) ---
                         .requestMatchers(
                                 "/frontend-template/**",
-                                "/adminlte/**"
+                                "/adminlte/**",
                                 "/images/**"
 
                         ).permitAll()
