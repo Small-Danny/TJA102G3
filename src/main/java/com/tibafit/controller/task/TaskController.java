@@ -32,7 +32,7 @@ import com.tasktype.model.TaskTypeVO; // 或 DTO
 */
 
 @Controller
-@RequestMapping("/tasks")
+@RequestMapping("/admin/tasks")
 public class TaskController {
 
 	private final TaskService taskSvc;
@@ -43,6 +43,14 @@ public class TaskController {
 		this.taskSvc = taskSvc;
 		this.taskTypeSvc = taskTypeSvc;
 	}
+	
+    // ================== Task 頁面 ==================
+
+    // 對應：/templates/back-end/task/select_page.html
+    @GetMapping("/select_page")
+    public String select_page() {
+        return "admin/task/select_page";
+    }
 
 	/* ======== 新增頁 ======== */
 	@GetMapping("addTask")
@@ -52,45 +60,11 @@ public class TaskController {
 		model.addAttribute("taskVO", taskVO);
 		return "admin/task/addTask";
 	}
-
-	/* ======== 新增處理 ======== */
-//	@PostMapping("insert")
-//	public String insert(@Valid TaskVO taskVO, BindingResult result, ModelMap model,
-//			@RequestParam("taskIcon") MultipartFile[] parts) throws IOException {
-//
-//		// 你原本有移除檔案欄位錯誤的邏輯；這裡若有欄位要跳過驗證，可用 removeFieldError
-//		result = removeFieldError(taskVO, result, "taskIcon");
-//
-//		if (parts[0].isEmpty()) { // 使用者未選擇要上傳的圖片時
-//			model.addAttribute("errorMessage", "徽章圖: 請上傳徽章");
-//		} else {
-//			for (MultipartFile multipartFile : parts) {
-//				byte[] buf = multipartFile.getBytes();
-//				taskVO.setTaskIcon(buf);
-//			}
-//		}
-//		if (result.hasErrors() || parts[0].isEmpty()) {
-//			return "admin/emp/addTask";
-//		}
-//		// taskIcon 必填且為 URL（若在 entity 用 @NotBlank 已驗證，這段可省略或換為更精細的檢核）
-//		if (result.hasErrors()) {
-//			return "admin/task/addTask";
-//		}
-//
-//		taskSvc.addTask(taskVO);
-//
-//		// 列表資料 & 成功訊息
-//		model.addAttribute("success", "- (新增成功)");
-//		return "redirect:/tasks/listAllTask";
-//	}
-
-	/* ======== 前往修改頁 ======== */
-//	@PostMapping("getOne_For_Update")
-//	public String getOne_For_Update(@RequestParam("taskId") Integer taskId, ModelMap model) {
-//		TaskVO taskVO = taskSvc.getOneTask(taskId);
-//		model.addAttribute("taskVO", taskVO);
-//		return "admin/task/update_task_input";
-//	}
+	
+	@GetMapping("/listAllTask")
+    public String listAllTask() {
+        return "admin/task/listAllTask";
+    }
 	
 	/* ======== 新增處理 new======== */
 	@PostMapping("insert")
@@ -133,13 +107,13 @@ public class TaskController {
 
 	    // 若還有其他欄位驗證錯誤 → 回表單
 	    if (result.hasErrors()) {
-	        return "admin/task/addTask"; // 這裡順便把你原本的 emp 路徑修正為 task
+	        return "admin/tasks/addTask"; // 這裡順便把你原本的 emp 路徑修正為 task
 	    }
 
 	    taskSvc.addTask(taskVO);
 
 	    model.addAttribute("success", "- (新增成功)");
-	    return "redirect:/tasks/listAllTask";
+	    return "redirect:/admin/tasks/listAllTask";
 	}
 	
 	@PostMapping("/getOne_For_Update")

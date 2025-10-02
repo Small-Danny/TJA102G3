@@ -105,7 +105,7 @@
     <div class="text-center">
       <h2 class="m-0">所有任務資料 - listAllTask</h2>
       <div class="mt-1">
-        <a class="navbar-brand" th:href="@{/tasks/select_page}">
+        <a class="navbar-brand" th:href="@{/admin/tasks/select_page}">
           <img th:src="@{/images/back1.gif}" alt="返回" /> 回查詢頁
           <label th:text="${success}"></label>
         </a>
@@ -126,7 +126,7 @@
       <header class="card-header">
         <h3 class="card-title">任務列表</h3>
         <div class="toolbar">
-          <a class="btn" th:href="@{/tasks/select_page}">回查詢頁</a>
+          <a class="btn" th:href="@{/admin/tasks/select_page}">回查詢頁</a>
         </div>
       </header>
 
@@ -167,13 +167,13 @@
                   </td>
                   <td th:text="${taskVO.adminId}"></td>
                   <td>
-                    <form method="post" th:action="@{/tasks/getOne_For_Update}" style="margin:0">
+                    <form method="post" th:action="@{/admin/tasks/getOne_For_Update}" style="margin:0">
                       <input type="hidden" name="taskId" th:value="${taskVO.taskId}" />
                       <input type="submit" class="btn" value="修改" />
                     </form>
                   </td>
                   <td>
-                    <form method="post" th:action="@{/tasks/delete}" style="margin:0">
+                    <form method="post" th:action="@{/admin/tasks/delete}" style="margin:0">
                       <input type="hidden" name="taskId" th:value="${taskVO.taskId}" />
                       <input type="submit" class="btn" value="刪除" />
                     </form>
