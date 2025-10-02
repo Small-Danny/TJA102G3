@@ -2,6 +2,7 @@ package com.tibafit.repository.product;
 
 import com.tibafit.model.cart.ProductVO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -106,4 +107,9 @@ public interface ProductRepository extends JpaRepository<ProductVO, Integer> {
 	// 依 product_code 的「基底」找同款所有尺寸（例如 EQ-C- 開頭）
 	    @Query("select p from ProductVO p where p.productCode like concat(:base,'%')")
 	    List<ProductVO> findByProductCodeStartingWith(@Param("base") String base);
+	    
+	    /** 批次更新上/下架狀態 */
+	    @Modifying
+	    @Query("update ProductVO p set p.productStatus = :status where p.productId in :ids")
+	    int bulkUpdateStatus(@Param("ids") List<Integer> ids, @Param("status") int status);
 }

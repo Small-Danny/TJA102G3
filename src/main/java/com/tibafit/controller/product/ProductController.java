@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -194,6 +195,36 @@ public class ProductController {
         }
 
         return finalFileName;
+    }
+    
+    /** 批次：publish / unpublish / delete */
+    @PostMapping("/bulk")
+    public String bulk(
+            @RequestParam("action") String action,
+            @RequestParam(value = "ids", required = false) List<Integer> ids,
+            RedirectAttributes ra
+    ) {
+        if (ids == null || ids.isEmpty()) {
+            ra.addFlashAttribute("errorMsg", "請先勾選要處理的商品。");
+            return "redirect:/admin/products";
+        }
+
+        switch (action) {
+            case "publish" -> {
+                int n = svc.updateStatus(ids, 1);
+                ra.addFlashAttribute("successMsg", "已批次上架 " + n + " 筆。");
+            }
+            case "unpublish" -> {
+                int n = svc.updateStatus(ids, 0);
+                ra.addFlashAttribute("successMsg", "已批次下架 " + n + " 筆。");
+            }
+            case "delete" -> {
+                svc.deleteAll(ids);
+                ra.addFlashAttribute("successMsg", "已批次刪除 " + ids.size() + " 筆。");
+            }
+            default -> ra.addFlashAttribute("errorMsg", "未知的操作：" + action);
+        }
+        return "redirect:/admin/products";
     }
 
 }
