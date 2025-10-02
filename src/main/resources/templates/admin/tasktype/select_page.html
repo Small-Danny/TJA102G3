@@ -170,14 +170,14 @@
             <section class="card">
                 <header class="card-header">
                     <h3 class="card-title">資料查詢</h3>
-                    <a class="btn btn-secondary" th:href="@{/tasktype/add}">新增類別</a>
+                    <a class="btn btn-secondary" th:href="@{/admin/tasktype/add}">新增類別</a>
                 </header>
                 <div class="card-body">
                     <div class="errorblock" th:utext="${errorMessage}"></div>
 
                     <ul class="list-links">
                         <li>
-                            <a class="btn" th:href="@{/tasktype/listAll}">瀏覽所有類別</a>
+                            <a class="btn" th:href="@{/admin/tasktype/listAll}">瀏覽所有類別</a>
                             <span class="hint">（List all TaskTypes）</span>
                         </li>
                     </ul>
@@ -185,14 +185,14 @@
                     <div class="divider-soft"></div>
 
                     <!-- 以ID（輸入）查單筆 -->
-                    <form class="form-grid noselect" method="get" th:action="@{/tasktype/getOne}">
+                    <form class="form-grid noselect" method="get" th:action="@{/admin/tasktype/getOne}">
                         <label>輸入類別ID</label>
                         <input type="text" name="taskTypeId" th:value="${param.taskTypeId}" placeholder="例如：10" />
                         <button type="submit" class="btn">送出</button>
                     </form>
 
                     <!-- 以ID（下拉）查單筆 -->
-                    <form class="form-grid mt-3" method="get" th:action="@{/tasktype/getOne}">
+                    <form class="form-grid mt-3" method="get" th:action="@{/admin/tasktype/getOne}">
                         <label>選擇類別ID</label>
                         <select name="taskTypeId">
                             <option th:each="tt : ${taskTypeListData}" th:value="${tt.taskTypeId}"
@@ -202,7 +202,7 @@
                     </form>
 
                     <!-- 以名稱（下拉）查單筆 -->
-                    <form class="form-grid mt-3" method="get" th:action="@{/tasktype/getOne}">
+                    <form class="form-grid mt-3" method="get" th:action="@{/admin/tasktype/getOne}">
                         <label>選擇類別名稱</label>
                         <select name="taskTypeId">
                             <option th:each="tt : ${taskTypeListData}" th:value="${tt.taskTypeId}"
@@ -220,7 +220,7 @@
             <aside class="card" th:if="${taskTypeVO != null}">
                 <header class="card-header">
                     <h3 class="card-title">單筆類別預覽</h3>
-                    <a class="btn btn-secondary" th:href="@{/tasktype/select_page}">清除預覽</a>
+                    <a class="btn btn-secondary" th:href="@{/admin/tasktype/select_page}">清除預覽</a>
                 </header>
                 <div class="card-body">
                     <div th:insert="~{/back-end/tasktype/listOneTaskType :: listOneTaskType-div}"></div>
