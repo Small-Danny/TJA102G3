@@ -2,6 +2,10 @@ header.header-style-one.three:before {
      width: 86%;
  }
   @media(max-width: 1800px) {
+  	.header-style-one {
+	    position: relative !important;
+		background-color: black !important;
+	}
     .project-completed .proj-image figure:after {
         right: -47%;
     }
@@ -10,6 +14,10 @@ header.header-style-one.three:before {
     }
 }
 @media(max-width: 1700px) {
+	.header-style-one {
+	    position: relative !important;
+		background-color: black !important;
+	}
     .cart-popup {
         right: 20%;
     }
@@ -24,6 +32,10 @@ header.header-style-one.three:before {
     }
 }
 @media(max-width: 1600px) {
+	.header-style-one {
+	    position: relative !important;
+		background-color: black !important;
+	}
     .featured-slider-one .owl-item.active .f-slider-one-data h1 {
         font-size: 130px;
         line-height: 130px;
@@ -45,6 +57,10 @@ header.header-style-one.three:before {
      }
 }
 @media(max-width: 1500px) {
+	.header-style-one {
+	    position: relative !important;
+		background-color: black !important;
+	}
     .cart-popup {
         right: 15%;
     }
@@ -100,6 +116,10 @@ header.header-style-one.three:before {
     }
 }
 @media(max-width: 1400px) {
+	.header-style-one {
+	    position: relative !important;
+		background-color: black !important;
+	}
     .gap {
         padding: 100px 0;
         position: relative;
@@ -499,6 +519,10 @@ header.header-style-one.three:before {
     }
 }
 @media(max-width: 1366px) {
+	.header-style-one {
+	    position: relative !important;
+		background-color: black !important;
+	}
     img#theme-icon{
         margin-left: 40px;
     } 
