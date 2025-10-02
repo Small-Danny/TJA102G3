@@ -109,7 +109,7 @@
         <div class="text-center">
             <h2 class="m-0">TaskRecord 單筆 - listOneTaskRecord</h2>
             <div class="mt-1">
-                <a class="navbar-brand" th:href="@{/taskrecord/select_page}"><img th:src="@{/images/back1.gif}"
+                <a class="navbar-brand" th:href="@{/admin/taskrecord/select_page}"><img th:src="@{/images/back1.gif}"
                         alt="返回"> 回查詢頁</a>
             </div>
         </div>
@@ -119,7 +119,7 @@
         <section class="card mt-3">
             <header class="card-header">
                 <h3 class="card-title">查詢結果</h3>
-                <a class="btn btn-secondary" th:href="@{/taskrecord/select_page}">返回</a>
+                <a class="btn btn-secondary" th:href="@{/admin/taskrecord/select_page}">返回</a>
             </header>
             <div class="card-body">
                 <div class="details">
@@ -128,7 +128,7 @@
                     <div class="label">任務ID</div>
                     <div th:text="${taskRecordVO.taskVO.taskId}"></div>
                     <div class="label">會員ID</div>
-                    <div th:text="${taskRecordVO.userVO.userId}"></div>
+                    <div th:text="${taskRecordVO.user.userId}"></div>
                     <div class="label">狀態</div>
                     <div th:text="${taskRecordVO.taskRecordStatusVO.statusName}"></div>
                     <div class="label">開始時間</div>
@@ -142,11 +142,11 @@
                 </div>
             </div>
             <footer class="card-footer">
-                <form th:action="@{/taskrecord/getOne_For_Update}" method="get" style="display:inline">
+                <form th:action="@{/admin/taskrecord/getOne_For_Update}" method="get" style="display:inline">
                     <input type="hidden" name="taskRecordId" th:value="${taskRecordVO.taskRecordId}" />
                     <button type="submit" class="btn">修改</button>
                 </form>
-                <form th:action="@{/taskrecord/delete}" method="post" style="display:inline;margin-left:.5rem">
+                <form th:action="@{/admin/taskrecord/delete}" method="post" style="display:inline;margin-left:.5rem">
                     <input type="hidden" name="taskRecordId" th:value="${taskRecordVO.taskRecordId}" />
                     <button type="submit" class="btn btn-secondary">刪除</button>
                 </form>

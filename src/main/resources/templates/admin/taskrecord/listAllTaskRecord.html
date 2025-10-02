@@ -151,7 +151,7 @@
         <div class="text-center">
             <h2 class="m-0">TaskRecord 列表 - listAllTaskRecord</h2>
             <div class="mt-1">
-                <a class="navbar-brand" th:href="@{/taskrecord/select_page}"><img th:src="@{/images/back1.gif}"
+                <a class="navbar-brand" th:href="@{/admin/taskrecord/select_page}"><img th:src="@{/images/back1.gif}"
                         alt="返回"> 回查詢頁</a>
             </div>
         </div>
@@ -167,7 +167,7 @@
         <section class="card mb-4">
             <header class="card-header">
                 <h3 class="card-title">紀錄列表</h3>
-                <a class="btn" th:href="@{/taskrecord/add}">新增紀錄</a>
+                <a class="btn" th:href="@{/admin/taskrecord/add}">新增紀錄</a>
             </header>
             <div class="card-body">
                 <div class="table-responsive">
@@ -191,7 +191,7 @@
                                     <td th:text="${st.count}"></td>
                                     <td th:text="${rec.taskRecordId}"></td>
                                     <td th:text="${rec.taskVO.taskId}"></td>
-                                    <td th:text="${rec.userVO.userId}"></td>
+                                    <td th:text="${rec.user.userId}"></td>
                                     <td
                                         th:text="${rec.userStartTime == null ? '-' : #temporals.format(rec.userStartTime, 'yyyy-MM-dd HH:mm')}">
                                     </td>
@@ -203,14 +203,14 @@
                                         th:text="${rec.taskRecordStatusVO == null ? '-' : rec.taskRecordStatusVO.statusName}">
                                     </td>
                                     <td>
-                                        <form method="get" th:action="@{/taskrecord/getOne_For_Update}"
+                                        <form method="get" th:action="@{/admin/taskrecord/getOne_For_Update}"
                                             style="margin:0">
                                             <input type="hidden" name="taskRecordId" th:value="${rec.taskRecordId}" />
                                             <input type="submit" class="btn" value="修改" />
                                         </form>
                                     </td>
                                     <td>
-                                        <form method="post" th:action="@{/taskrecord/delete}" style="margin:0">
+                                        <form method="post" th:action="@{/admin/taskrecord/delete}" style="margin:0">
                                             <input type="hidden" name="taskRecordId" th:value="${rec.taskRecordId}" />
                                             <input type="submit" class="btn" value="刪除" />
                                         </form>
