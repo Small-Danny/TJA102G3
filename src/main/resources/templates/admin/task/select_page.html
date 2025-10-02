@@ -194,7 +194,7 @@
           <div class="divider-soft"></div>
 
           <!-- 以任務ID（輸入）查單筆 -->
-          <form class="form-grid noselect" method="post" th:action="@{getOne_For_Display}">
+          <form class="form-grid noselect" method="post" th:action="@{/admin/tasks/getOne_For_Display}">
             <label>輸入任務ID</label>
             <input type="text" name="taskId" th:value="${param.taskId}" placeholder="例如：1" />
             <button type="submit" class="btn">送出</button>

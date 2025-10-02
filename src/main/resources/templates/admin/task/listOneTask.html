@@ -41,7 +41,7 @@
     <div class="text-center">
       <h2 class="m-0">任務個人資料 - listOneTask</h2>
       <div class="mt-1">
-        <a class="navbar-brand" th:href="@{/tasks/select_page}"><img th:src="@{/images/back1.gif}" alt="返回">回查詢頁 <label th:text="${success}"></label></a>
+        <a class="navbar-brand" th:href="@{/admin/tasks/select_page}"><img th:src="@{/images/back1.gif}" alt="返回">回查詢頁 <label th:text="${success}"></label></a>
       </div>
     </div>
   </nav>
@@ -51,7 +51,7 @@
     <section class="card mt-3">
       <header class="card-header">
         <h3 class="card-title">查詢結果</h3>
-        <a class="btn btn-secondary" th:href="@{/tasks/select_page}">返回</a>
+        <a class="btn btn-secondary" th:href="@{/admin/tasks/select_page}">返回</a>
       </header>
       <div class="card-body">
         <div class="details-grid">
@@ -90,11 +90,11 @@
       </div>
       <footer class="card-footer">
         <div>
-          <form th:action="@{/tasks/getOne_For_Update}" method="post" style="display:inline">
+          <form th:action="@{/admin/tasks/getOne_For_Update}" method="post" style="display:inline">
             <input type="hidden" name="taskId" th:value="${taskVO.taskId}" />
             <button type="submit" class="btn">修改</button>
           </form>
-          <form th:action="@{/tasks/delete}" method="post" style="display:inline;margin-left:.5rem">
+          <form th:action="@{/admin/tasks/delete}" method="post" style="display:inline;margin-left:.5rem">
             <input type="hidden" name="taskId" th:value="${taskVO.taskId}" />
             <button type="submit" class="btn btn-secondary">刪除</button>
           </form>
@@ -104,48 +104,48 @@
   </main>
 
   <!-- 供 select_page 右側預覽區用的 fragment（相同視覺樣式） -->
-  <div th:fragment="listOneTask-div">
-    <section class="card">
-      <header class="card-header">
-        <h3 class="card-title">查詢結果</h3>
-      </header>
-      <div class="card-body">
-        <div class="details-grid">
-          <div class="label">任務ID</div>
-          <div class="value" th:text="${taskVO.taskId}"></div>
+<!--   <div th:fragment="listOneTask-div"> -->
+<!--     <section class="card"> -->
+<!--       <header class="card-header"> -->
+<!--         <h3 class="card-title">查詢結果</h3> -->
+<!--       </header> -->
+<!--       <div class="card-body"> -->
+<!--         <div class="details-grid"> -->
+<!--           <div class="label">任務ID</div> -->
+<!--           <div class="value" th:text="${taskVO.taskId}"></div> -->
 
-          <div class="label">任務名稱</div>
-          <div class="value" th:text="${taskVO.taskName}"></div>
+<!--           <div class="label">任務名稱</div> -->
+<!--           <div class="value" th:text="${taskVO.taskName}"></div> -->
 
-          <div class="label">任務類型</div>
-          <div class="value" th:text="${taskVO.taskTypeVO.taskTypeName}"></div>
+<!--           <div class="label">任務類型</div> -->
+<!--           <div class="value" th:text="${taskVO.taskTypeVO.taskTypeName}"></div> -->
 
-          <div class="label">目標值</div>
-          <div class="value" th:text="${taskVO.targetValue}"></div>
+<!--           <div class="label">目標值</div> -->
+<!--           <div class="value" th:text="${taskVO.targetValue}"></div> -->
 
-          <div class="label">單位</div>
-          <div class="value" th:text="${taskVO.unit}"></div>
+<!--           <div class="label">單位</div> -->
+<!--           <div class="value" th:text="${taskVO.unit}"></div> -->
 
-          <div class="label">開始日</div>
-          <div class="value" th:text="${#temporals.format(taskVO.startTime, 'yyyy-MM-dd')}"></div>
+<!--           <div class="label">開始日</div> -->
+<!--           <div class="value" th:text="${#temporals.format(taskVO.startTime, 'yyyy-MM-dd')}"></div> -->
 
-          <div class="label">結束日</div>
-          <div class="value" th:text="${#temporals.format(taskVO.endTime, 'yyyy-MM-dd')}"></div>
+<!--           <div class="label">結束日</div> -->
+<!--           <div class="value" th:text="${#temporals.format(taskVO.endTime, 'yyyy-MM-dd')}"></div> -->
 
-          <div class="label">點數</div>
-          <div class="value"><span class="badge" th:text="${taskVO.points}"></span></div>
+<!--           <div class="label">點數</div> -->
+<!--           <div class="value"><span class="badge" th:text="${taskVO.points}"></span></div> -->
 
-          <div class="label">建立人員ID</div>
-          <div class="value" th:text="${taskVO.adminId}"></div>
+<!--           <div class="label">建立人員ID</div> -->
+<!--           <div class="value" th:text="${taskVO.adminId}"></div> -->
 
-          <div class="label">照片</div>
-          <div class="value">
-            <img class="img-thumb" th:src="@{/tasks/DBGifReader} + '?taskId=' + ${taskVO.taskId}" alt="任務圖示">
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
+<!--           <div class="label">照片</div> -->
+<!--           <div class="value"> -->
+<!--             <img class="img-thumb" th:src="@{/tasks/DBGifReader} + '?taskId=' + ${taskVO.taskId}" alt="任務圖示"> -->
+<!--           </div> -->
+<!--         </div> -->
+<!--       </div> -->
+<!--     </section> -->
+<!--   </div> -->
 
   <script>
     // 依實際 navbar 高度動態設定 body 上方留白，避免被蓋住
