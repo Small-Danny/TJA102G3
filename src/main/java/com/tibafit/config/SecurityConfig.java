@@ -380,7 +380,8 @@ public class SecurityConfig {
                                 "/api/posts/**",
                                 "/api/sidebar",
                                 "/api/categories",
-                                "/api/report-types"
+                                "/api/report-types",
+                                "/api/ai/**"
                         ).permitAll()
                         .requestMatchers("/admin/login").permitAll()
                         // ----------------------------------------------------------------
@@ -444,7 +445,8 @@ public class SecurityConfig {
                                 "/api/line-pay/notification",
                                 "/api/posts/**",
                                 "/api/mycollection/**",
-                                "/api/myarticles/**"
+                                "/api/myarticles/**",
+                                "/api/ai/**"
                         )
                 )
 
