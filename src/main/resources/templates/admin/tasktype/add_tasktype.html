@@ -128,7 +128,7 @@
         <div class="text-center">
             <h2 class="m-0">類別資料新增 - add_tasktype</h2>
             <div class="mt-1">
-                <a class="navbar-brand" th:href="@{/tasktype/select_page}"><img th:src="@{/images/back1.gif}"
+                <a class="navbar-brand" th:href="@{/admin/tasktype/select_page}"><img th:src="@{/images/back1.gif}"
                         alt="返回">回查詢頁</a>
             </div>
         </div>
@@ -140,12 +140,12 @@
         <section class="card mb-4">
             <header class="card-header">
                 <h3 class="card-title">新增類別</h3>
-                <a class="btn btn-secondary" th:href="@{/tasktype/select_page}">回查詢頁</a>
+                <a class="btn btn-secondary" th:href="@{/admin/tasktype/select_page}">回查詢頁</a>
             </header>
 
             <div class="card-body">
                 <!-- Post 至 /tasktype/insert；綁定 taskTypeVO -->
-                <form th:action="@{/tasktype/insert}" method="post" th:object="${taskTypeVO}">
+                <form th:action="@{/admin/tasktype/insert}" method="post" th:object="${taskTypeVO}">
                     <div class="form-grid">
                         <label>類別名稱</label>
                         <div>

@@ -27,7 +27,7 @@ import com.tibafit.service.user.UserServiceImpl;
 import jakarta.validation.Valid;
 
 @Controller
-@RequestMapping("/taskrecord")
+@RequestMapping("/admin/taskrecord")
 public class TaskRecordController {
 
 	@Autowired

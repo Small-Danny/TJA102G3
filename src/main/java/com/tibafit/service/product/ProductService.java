@@ -3,6 +3,7 @@ package com.tibafit.service.product;
 import com.tibafit.model.cart.ProductVO;
 import com.tibafit.repository.product.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -686,4 +687,18 @@ public class ProductService {
 
 		return raw; // 其他維持原樣
 	}
+	
+	/** 批次刪除 */
+    @Transactional
+    public void deleteAll(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) return;
+        repo.deleteAllByIdInBatch(ids);
+    }
+
+    /** 批次更新上/下架：status=1 上架；status=0 下架 */
+    @Transactional
+    public int updateStatus(List<Integer> ids, int status) {
+        if (ids == null || ids.isEmpty()) return 0;
+        return repo.bulkUpdateStatus(ids, status);
+    }
 }

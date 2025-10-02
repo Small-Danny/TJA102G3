@@ -27,12 +27,13 @@
   <div class="app-content">
     <div class="container-fluid">
 
-      <div th:if="${successMsg}"
-           class="alert alert-success alert-dismissible fade show"
-           role="alert">
+      <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show" role="alert">
         <span th:text="${successMsg}">操作成功</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${errorMsg}">發生錯誤</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
 
       <div class="card">
@@ -45,15 +46,29 @@
                      placeholder="關鍵字（名稱/代碼）" th:value="${param.q}">
               <button type="submit" class="btn btn-primary">搜尋</button>
             </div>
-
             <a th:href="@{/admin/products/add}" class="btn btn-success">新增商品</a>
           </form>
         </div>
+
+        <!-- ===== 批次操作表單（獨立，不包住表格） ===== -->
+        <form th:action="@{/admin/products/bulk}" method="post" id="bulkForm" class="px-3 pt-3">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          <div class="d-flex flex-wrap gap-2 align-items-center">
+            <button type="submit" name="action" value="publish"   class="btn btn-success">批次上架</button>
+            <button type="submit" name="action" value="unpublish" class="btn btn-secondary">批次下架</button>
+            <button type="submit" name="action" value="delete"
+                    class="btn btn-danger"
+                    onclick="return confirm('確定要刪除勾選的商品嗎？此動作無法復原。');">批次刪除</button>
+            <span class="text-muted small ms-2">勾選後按上面按鈕即可</span>
+          </div>
+        </form>
+        <!-- ===== 批次表單結束 ===== -->
 
         <div class="card-body table-responsive p-0">
           <table class="table table-hover table-striped align-middle mb-0">
             <thead class="table-light">
             <tr>
+              <th style="width:48px;"> </th>
               <th>ID</th>
               <th class="text-center">圖片</th>
               <th>名稱(代碼)</th>
@@ -65,6 +80,11 @@
             </thead>
             <tbody>
             <tr th:each="p : ${list}">
+              <!-- 指定 form="bulkForm" 讓這顆 checkbox 送到上方的批次表單 -->
+              <td>
+                <input type="checkbox" name="ids" th:value="${p.productId}" form="bulkForm">
+              </td>
+
               <td th:text="${p.productId}">1</td>
 
               <!-- 圖片欄 -->
@@ -94,29 +114,23 @@
 
               <!-- 狀態徽章 -->
               <td>
-                <span th:if="${p.productStatus == 1}"
-                      class="badge bg-success">上架</span>
-                <span th:if="${p.productStatus != 1}"
-                      class="badge bg-secondary">下架</span>
+                <span th:if="${p.productStatus == 1}" class="badge bg-success">上架</span>
+                <span th:if="${p.productStatus != 1}" class="badge bg-secondary">下架</span>
               </td>
 
-              <!-- 操作 -->
+              <!-- 單筆操作（獨立的小表單，與批次表單不再互相巢狀） -->
               <td>
                 <div class="d-flex flex-wrap gap-2">
-                  <!-- 查看 -->
                   <a class="btn btn-sm btn-outline-primary"
                      th:href="@{/admin/products/{id}(id=${p.productId})}">查看</a>
 
-                  <!-- 編輯 -->
                   <a class="btn btn-sm btn-warning"
                      th:href="@{/admin/products/{id}/edit(id=${p.productId})}">編輯</a>
 
-                  <!-- 上/下架切換（POST） -->
                   <form th:action="@{/admin/products/{id}/status(id=${p.productId})}"
                         method="post" class="d-inline"
                         th:onsubmit="'return confirm(\'確定要' + (${p.productStatus == 1} ? '下架' : '上架') + '嗎？\');'">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <!-- 切換為相反值 -->
                     <input type="hidden" name="status" th:value="${p.productStatus == 1 ? 0 : 1}"/>
                     <button type="submit"
                             th:class="'btn btn-sm ' + (${p.productStatus == 1} ? 'btn-secondary' : 'btn-success')"
@@ -125,7 +139,6 @@
                     </button>
                   </form>
 
-                  <!-- 刪除 -->
                   <form th:action="@{/admin/products/{id}/delete(id=${p.productId})}"
                         method="post" class="d-inline"
                         onsubmit="return confirm('確定要刪除嗎？');">

@@ -21,7 +21,7 @@ import com.tibafit.service.task.TaskTypeService;
 import jakarta.validation.Valid;
 
 @Controller
-@RequestMapping("/tasktype")
+@RequestMapping("/admin/tasktype")
 public class TaskTypeController {
 
     @Autowired

@@ -9,11 +9,13 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.tibafit.model.task.TaskTypeVO;
 import com.tibafit.model.task.TaskVO;
 import com.tibafit.service.task.TaskService;
 
@@ -26,7 +28,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 @Controller
 @Validated
-@RequestMapping("/tasks")
+@RequestMapping("/admin/tasks")
 public class TasknoController {
 
     @Autowired
@@ -58,8 +60,9 @@ public class TasknoController {
 
         // 3) 成功：放入單筆 taskVO，回 select_page 由 fragment 顯示
         model.addAttribute("taskVO", taskVO); // 給 listOneTask.html 片段/或 select_page 右側區塊使用
-        return "admin/task/select_page";
+        return "admin/task/listOneTask";
     }
+    
 
     // 驗證失敗的例外處理（沿用你原本的寫法，物件/路徑改為 Task 版）
     @ExceptionHandler(ConstraintViolationException.class)
