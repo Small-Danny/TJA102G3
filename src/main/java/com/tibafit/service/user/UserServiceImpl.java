@@ -8,6 +8,7 @@ import com.tibafit.service.cart.CartService;
 import com.tibafit.service.file.FileService;
 import com.tibafit.service.mail.MailService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +32,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -57,8 +55,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(UserRepository userRepository, StringRedisTemplate redisTemplate, MailService mailService,
                            FileService fileService, PasswordEncoder passwordEncoder, ReCaptchaService reCaptchaService,
-                           RememberMeServices rememberMeServices,
                            @Qualifier("userAuthenticationManager") AuthenticationManager userAuthenticationManager,
+                           @Qualifier("userRememberMeServices")RememberMeServices rememberMeServices,
+                           @Qualifier("userSecurityContextRepository") SecurityContextRepository securityContextRepository,
                            CartService cartService) {
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
@@ -68,7 +67,7 @@ public class UserServiceImpl implements UserService {
         this.reCaptchaService = reCaptchaService;
         this.rememberMeServices = rememberMeServices;
         this.userAuthenticationManager = userAuthenticationManager;
-        this.securityContextRepository = new HttpSessionSecurityContextRepository();
+        this.securityContextRepository = securityContextRepository;
         this.cartService = cartService;
 
     }
@@ -206,12 +205,46 @@ public class UserServiceImpl implements UserService {
                     .orElseThrow(() -> new RuntimeException("登入成功但找不到使用者資料"));
 
             // ▼▼▼【最終修正點：手動觸發 RememberMe 服務】▼▼▼
-            // 這是因為我們的自訂登入流程不會自動觸發 RememberMeAuthenticationFilter
-            // 所以我們必須在成功登入後，手動呼叫它。
-            // ▼▼▼【 偵錯日誌開始 】▼▼▼
-            if (loginRequest.isRememberMe()) {
-                rememberMeServices.loginSuccess(request, response, authentication);
 
+            if (loginRequest.isRememberMe()) {
+                // ▼▼▼【最終修正】▼▼▼
+                // 1. 建立一個 request 的"裝飾器"
+                HttpServletRequestWrapper wrapper = new HttpServletRequestWrapper(request) {
+                    private final Map<String, String[]> params;
+                    {
+                        // 2. 複製原始的所有參數
+                        params = new HashMap<>(request.getParameterMap());
+                        // 3. 強行塞入我們需要的 "remember-me" 參數
+                        params.put("user-remember-me", new String[]{"true"});
+                    }
+
+                    @Override
+                    public String getParameter(String name) {
+                        String[] values = this.params.get(name);
+                        if (values != null && values.length > 0) {
+                            return values[0];
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public Map<String, String[]> getParameterMap() {
+                        return this.params;
+                    }
+
+                    @Override
+                    public Enumeration<String> getParameterNames() {
+                        return Collections.enumeration(this.params.keySet());
+                    }
+
+                    @Override
+                    public String[] getParameterValues(String name) {
+                        return this.params.get(name);
+                    }
+                };
+
+                // 4. 將我們"加工"過的 wrapper 傳入，而不是原始的 request
+                rememberMeServices.loginSuccess(wrapper, response, authentication);
             }
 
             // 儲存安全上下文到 Session (這會更新 Session ID)

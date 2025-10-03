@@ -252,7 +252,7 @@
               <!-- 記住我與忘記密碼 -->
               <div class="remember">
                 <div class="first">
-                  <input type="checkbox" name="remember-me" id="checkbox">
+                  <input type="checkbox" name="user-remember-me" id="checkbox">
                   <label for="checkbox">記住我</label>
                 </div>
                 <div class="second">
@@ -437,7 +437,7 @@
             email: email,
             password: password,
             recaptchaToken: recaptchaToken,
-            rememberMe: document.getElementById('checkbox').checked
+            "user-remember-me": document.getElementById('checkbox').checked
           };
 
           // 發送登入請求
