@@ -39,7 +39,7 @@
 					th:text="${successMsg}">新增成功</div>
 
 				<!-- 表單 -->
-				<form th:action="@{/admin/products/add}" method="post"
+				<form th:action="@{/admin/products/add}" method="post" th:object="${productVO}"
 					enctype="multipart/form-data" class="card card-primary">
 					<div class="card-header">
 						<h3 class="card-title">請輸入商品資料</h3>
@@ -61,9 +61,16 @@
 							</div>
 
 							<div class="col-md-4">
-								<label class="form-label">商品分類（type）</label> <input
-									type="number" name="productType" class="form-control" min="0"
-									step="1" value="0">
+							  <label for="productType" class="form-label">商品分類（type）</label>
+							  <select id="productType" class="form-select" th:field="*{productType}" required>
+							    <option value="" disabled 
+							            th:selected="${#fields.hasErrors('productType')} ? false : *{productType} == null">
+							      請選擇分類
+							    </option>
+							    <option th:value="0">裝備類</option>
+							    <option th:value="1">容器類</option>
+							    <option th:value="2">蛋白粉類</option>
+							  </select>
 							</div>
 
 							<div class="col-12">

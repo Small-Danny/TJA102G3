@@ -41,7 +41,7 @@
 				<!-- 表單 -->
 				<form
 					th:action="@{/admin/products/{id}/edit(id=${product.productId})}"
-					method="post" enctype="multipart/form-data"
+					method="post" enctype="multipart/form-data" th:object="${productVO}"
 					class="card card-primary">
 
 					<div class="card-header">
@@ -67,9 +67,16 @@
 							</div>
 
 							<div class="col-md-4">
-								<label class="form-label">商品分類（type）</label> <input
-									type="number" name="productType" class="form-control"
-									th:value="${product.productType}" min="0" step="1">
+							  <label for="productType" class="form-label">商品分類（type）</label>
+							  <select id="productType" class="form-select" th:field="*{productType}" required>
+							    <option value="" disabled 
+							            th:selected="${#fields.hasErrors('productType')} ? false : *{productType} == null">
+							      請選擇分類
+							    </option>
+							    <option th:value="0">裝備類</option>
+							    <option th:value="1">容器類</option>
+							    <option th:value="2">蛋白粉類</option>
+							  </select>
 							</div>
 
 							<div class="col-12">
