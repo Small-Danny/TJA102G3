@@ -4,163 +4,408 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>發布文章/編輯文章</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/quill@1.3.6/dist/quill.snow.css" rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/quill@1.3.6/dist/quill.snow.css"
+	rel="stylesheet">
 <style>
-body { background:#f5f5f5; font-family:Arial,sans-serif; }
-.container { margin-top:20px; }
-.post-card { background:#fff; border-radius:10px; padding:20px; box-shadow:0 3px 8px rgba(0,0,0,0.1); }
-.post-card h3 { font-size:22px; font-weight:600; color:#c62828; margin-bottom:20px; border-left:4px solid #c62828; padding-left:8px; }
-.form-label { font-weight:500; color:#555; }
-.btn-submit { background:#c62828; color:#fff; border:none; padding:8px 18px; border-radius:5px; transition:0.3s; }
-.btn-submit:hover { background:#e53935; }
-.btn-cancel { background:#eee; color:#555; border:none; padding:8px 18px; border-radius:5px; transition:0.3s; }
-.btn-cancel:hover { background:#ddd; }
-#editor { height:400px; border:1px solid #ddd; border-radius:5px; }
-.is-invalid { border-color:#c62828 !important; }
-.invalid-feedback { font-size:13px; color:#c62828; display:none; }
-.d-flex { display: flex; gap: 15px; }
-#aiOptimizeBtn { margin-right: auto; } /* 將 AI 按鈕靠左，其他按鈕靠右 */
+body {
+	background: #f5f5f5;
+	font-family: Arial, sans-serif;
+}
+
+.container {
+	margin-top: 20px;
+}
+
+.post-card {
+	background: #fff;
+	border-radius: 10px;
+	padding: 20px;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post-card h3 {
+	font-size: 22px;
+	font-weight: 600;
+	color: #c62828;
+	margin-bottom: 20px;
+	border-left: 4px solid #c62828;
+	padding-left: 8px;
+}
+
+.form-label {
+	font-weight: 500;
+	color: #555;
+}
+
+.btn-submit {
+	background: #c62828;
+	color: #fff;
+	border: none;
+	padding: 8px 18px;
+	border-radius: 5px;
+	transition: 0.3s;
+}
+
+.btn-submit:hover {
+	background: #e53935;
+}
+
+.btn-cancel {
+	background: #eee;
+	color: #555;
+	border: none;
+	padding: 8px 18px;
+	border-radius: 5px;
+	transition: 0.3s;
+}
+
+.btn-cancel:hover {
+	background: #ddd;
+}
+
+#editor {
+	height: 400px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+}
+
+.is-invalid {
+	border-color: #c62828 !important;
+}
+
+.invalid-feedback {
+	font-size: 13px;
+	color: #c62828;
+	display: none;
+}
+
+.d-flex {
+	display: flex;
+	gap: 15px;
+}
+
+#aiOptimizeBtn {
+	margin-right: auto;
+} /* 將 AI 按鈕靠左，其他按鈕靠右 */
 
 /* AI 優化按鈕 */
-#aiOptimizeBtn { background:#ff9800; color:#fff; border:none; padding:6px 14px; border-radius:5px; margin-bottom:10px; transition:0.3s; }
-#aiOptimizeBtn:hover { background:#fb8c00; cursor:pointer; }
+#aiOptimizeBtn {
+	background: #ff9800;
+	color: #fff;
+	border: none;
+	padding: 6px 14px;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	transition: 0.3s;
+}
+
+#aiOptimizeBtn:hover {
+	background: #fb8c00;
+	cursor: pointer;
+}
 
 /* 側邊欄 */
-.sidebar { background:#fff; padding:15px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:20px; }
-.sidebar h3 { font-size:18px; margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:5px; color:#c62828; }
-.sidebar ul { list-style:none; padding:0; margin:0; }
-.sidebar ul li { display:flex; gap:10px; margin-bottom:12px; }
-.sidebar ul li img { width:50px; height:50px; object-fit:cover; border-radius:6px; }
-.sidebar ul li .info { flex:1; }
-#recent-posts ul li .info a,
-#category-list ul li a,
-#favorites-list ul li .info a { font-size:14px; font-weight:500; color:#555; text-decoration:none; transition:0.3s; }
-#recent-posts ul li .info a:hover,
-#category-list ul li a:hover,
-#favorites-list ul li .info a:hover { text-decoration:underline; color:#c62828; }
-#recent-posts ul li .meta,
-#favorites-list ul li .meta { font-size:12px; color:#666; }
+.sidebar {
+	background: #fff;
+	padding: 15px;
+	border-radius: 10px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+
+.sidebar h3 {
+	font-size: 18px;
+	margin-bottom: 12px;
+	border-bottom: 1px solid #eee;
+	padding-bottom: 5px;
+	color: #c62828;
+}
+
+.sidebar ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.sidebar ul li {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+
+.sidebar ul li img {
+	width: 50px;
+	height: 50px;
+	object-fit: cover;
+	border-radius: 6px;
+}
+
+.sidebar ul li .info {
+	flex: 1;
+}
+
+#recent-posts ul li .info a, #category-list ul li a, #favorites-list ul li .info a
+	{
+	font-size: 14px;
+	font-weight: 500;
+	color: #555;
+	text-decoration: none;
+	transition: 0.3s;
+}
+
+#recent-posts ul li .info a:hover, #category-list ul li a:hover,
+	#favorites-list ul li .info a:hover {
+	text-decoration: underline;
+	color: #c62828;
+}
+
+#recent-posts ul li .meta, #favorites-list ul li .meta {
+	font-size: 12px;
+	color: #666;
+}
 
 /* 收藏查看所有 */
-#favorites-list .view-all-btn { display:block; text-align:center; margin-top:10px; padding:6px 10px; background:#c62828; color:#fff; border-radius:5px; text-decoration:none; transition:0.3s; }
-#favorites-list .view-all-btn:hover { background:#e53935; }
+#favorites-list .view-all-btn {
+	display: block;
+	text-align: center;
+	margin-top: 10px;
+	padding: 6px 10px;
+	background: #c62828;
+	color: #fff;
+	border-radius: 5px;
+	text-decoration: none;
+	transition: 0.3s;
+}
+
+#favorites-list .view-all-btn:hover {
+	background: #e53935;
+}
 
 /* 會員功能卡片 */
-#user-card { display:none; background:#fff; padding:15px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:20px; }
-#user-card h3 { font-size:18px; font-weight:600; margin-bottom:15px; border-left:4px solid #c62828; padding-left:8px; color:#c62828; }
-.user-functions { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
-.func-item { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:18px 5px; border:1px solid #eee; border-radius:8px; background:#fafafa; color:#555; text-decoration:none; transition:all 0.25s ease; }
-.func-item i { font-size:24px; margin-bottom:6px; color:#c62828; }
-.func-item span { font-size:14px; }
-.func-item:hover { background:#c62828; color:#fff; }
-.func-item:hover i { color:#fff; }
+#user-card {
+	display: none;
+	background: #fff;
+	padding: 15px;
+	border-radius: 10px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+
+#user-card h3 {
+	font-size: 18px;
+	font-weight: 600;
+	margin-bottom: 15px;
+	border-left: 4px solid #c62828;
+	padding-left: 8px;
+	color: #c62828;
+}
+
+.user-functions {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 12px;
+}
+
+.func-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 18px 5px;
+	border: 1px solid #eee;
+	border-radius: 8px;
+	background: #fafafa;
+	color: #555;
+	text-decoration: none;
+	transition: all 0.25s ease;
+}
+
+.func-item i {
+	font-size: 24px;
+	margin-bottom: 6px;
+	color: #c62828;
+}
+
+.func-item span {
+	font-size: 14px;
+}
+
+.func-item:hover {
+	background: #c62828;
+	color: #fff;
+}
+
+.func-item:hover i {
+	color: #fff;
+}
 
 /* 上傳遮罩 */
 #uploadOverlay {
-    display: none;
-    position: fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background:rgba(255,255,255,0.7);
-    z-index:9999;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    flex-direction:row;
-    font-weight:bold;
-    font-size:1.2rem;
-    color:#c62828;
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 255, 255, 0.7);
+	z-index: 9999;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	flex-direction: row;
+	font-weight: bold;
+	font-size: 1.2rem;
+	color: #c62828;
 }
-.spinner-border { width:2rem; height:2rem; }
+
+.spinner-border {
+	width: 2rem;
+	height: 2rem;
+}
 
 /* 網站資訊卡片改成灰色文字，無圓角白底 */
 #meta-links ul li a, #meta-links ul li button {
-    font-size:14px;
-    font-weight:500;
-    color:#666;
-    text-decoration:none;
-    background:none;
-    border:none;
-    padding:0;
-    cursor:pointer;
+	font-size: 14px;
+	font-weight: 500;
+	color: #666;
+	text-decoration: none;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
 }
-#meta-links ul li a:hover, #meta-links ul li button:hover { color:#c62828; text-decoration:underline; }
 
+#meta-links ul li a:hover, #meta-links ul li button:hover {
+	color: #c62828;
+	text-decoration: underline;
+}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="row">
-    <!-- 主內容 -->
-    <div class="col-lg-8">
-      <div class="post-card">
-        <h3><i class="fa-regular fa-pen-to-square me-1"></i> 發布文章</h3>
+	<div class="container">
+		<div class="row">
+			<!-- 主內容 -->
+			<div class="col-lg-8">
+				<div class="post-card">
+					<h3>
+						<i class="fa-regular fa-pen-to-square me-1"></i> 發布文章
+					</h3>
 
-        <form id="postForm">
-          <div class="mb-3">
-            <label class="form-label">文章標題</label>
-            <input type="text" class="form-control" id="titleInput" placeholder="輸入文章標題">
-            <div class="invalid-feedback" id="titleError"></div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">封面圖片（選填，包含在總大小限制 10MB）</label>
-            <input type="file" class="form-control" id="coverInput" accept="image/*">
-            <div class="invalid-feedback" id="coverError"></div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">分類</label>
-            <select class="form-select" id="categorySelect">
-              <option value="">請選擇分類</option>
-            </select>
-            <div class="invalid-feedback" id="categoryError"></div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">文章內容</label>
-            <div id="editor"></div>
-            <div class="invalid-feedback" id="contentError"></div>
-          </div>
-          <div class="d-flex gap-3 mt-3">
-  <button type="button" id="aiOptimizeBtn"><i class="fa-solid fa-robot me-1"></i> AI 優化文案</button>
-  <button type="submit" class="btn-submit"><i class="fas fa-paper-plane me-1"></i> 送出文章</button>
-  <a href="/frontend-template/forum.html" class="btn-cancel">取消</a>
-</div>
+					<form id="postForm">
+						<div class="mb-3">
+							<label class="form-label">文章標題</label> <input type="text"
+								class="form-control" id="titleInput" placeholder="輸入文章標題">
+							<div class="invalid-feedback" id="titleError"></div>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">封面圖片（選填，包含在總大小限制 10MB）</label> <input
+								type="file" class="form-control" id="coverInput"
+								accept="image/*">
+							<div class="invalid-feedback" id="coverError"></div>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">分類</label> <select class="form-select"
+								id="categorySelect">
+								<option value="">請選擇分類</option>
+							</select>
+							<div class="invalid-feedback" id="categoryError"></div>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">文章內容</label>
+							<div id="editor"></div>
+							<div class="invalid-feedback" id="contentError"></div>
+						</div>
+						<div class="row mt-3">
+							<div class="col-md-6">
+								<!-- 10/3 -->
+								<div class="mb-3">
+									<label class="form-label">AI 模型</label> <select
+										id="modelSelect" class="form-select">
+										<option value="gpt-oss:120b-cloud">GPT OSS 120B Cloud</option>
+										<option value="gpt-oss:20b-cloud">GPT OSS 20B</option>
+										<option value="kimi-k2:1t-cloud">KIMI K2:1T</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<!-- 10/3 -->
+								<div class="mb-3">
+									<label class="form-label">文章活潑程度<span id="tempValue">0.7</span>)
+									</label> <input type="range" id="temperatureRange" class="form-range"
+										min="0" max="2" step="0.1" value="0.7">
+								</div>
+							</div>
+						</div>
+						<div class="d-flex gap-3 mt-3">
+							<button type="button" id="aiOptimizeBtn">
+								<i class="fa-solid fa-robot me-1"></i> AI 優化文案
+							</button>
+							<button type="submit" class="btn-submit">
+								<i class="fas fa-paper-plane me-1"></i> 送出文章
+							</button>
+							<a href="/frontend-template/forum.html" class="btn-cancel">取消</a>
+						</div>
+					</form>
+				</div>
+			</div>
 
-        </form>
-      </div>
-    </div>
+			<!-- 側邊欄保持不變 -->
+			<div class="col-lg-4">
+				<div id="user-card">
+					<h3>功能一覽</h3>
+					<div class="user-functions">
+						<a href="myarticles.html" class="func-item"><i
+							class="fa-regular fa-file-lines"></i><span>我的文章</span></a> <a
+							href="mycollection.html" class="func-item"><i
+							class="fa-regular fa-bookmark"></i><span>我的收藏</span></a> <a
+							href="profile.html" class="func-item"><i
+							class="fa-solid fa-user-gear"></i><span>會員中心</span></a> <a
+							href="post-article.html" class="func-item"><i
+							class="fa-regular fa-pen-to-square"></i><span>我要發文</span></a>
+					</div>
+				</div>
 
-    <!-- 側邊欄保持不變 -->
-    <div class="col-lg-4">
-      <div id="user-card">
-        <h3>功能一覽</h3>
-        <div class="user-functions">
-          <a href="myarticles.html" class="func-item"><i class="fa-regular fa-file-lines"></i><span>我的文章</span></a>
-          <a href="mycollection.html" class="func-item"><i class="fa-regular fa-bookmark"></i><span>我的收藏</span></a>
-          <a href="profile.html" class="func-item"><i class="fa-solid fa-user-gear"></i><span>會員中心</span></a>
-          <a href="post-article.html" class="func-item"><i class="fa-regular fa-pen-to-square"></i><span>我要發文</span></a>
-        </div>
-      </div>
+				<div class="sidebar" id="recent-posts">
+					<h3>最新文章</h3>
+					<ul></ul>
+				</div>
+				<div class="sidebar" id="category-list">
+					<h3>分類</h3>
+					<ul></ul>
+				</div>
+				<div class="sidebar" id="favorites-list">
+					<h3>我的收藏</h3>
+					<ul></ul>
+				</div>
+				<div class="sidebar" id="meta-links">
+					<h3>網站資訊</h3>
+					<ul></ul>
+				</div>
+			</div>
+		</div>
+	</div>
 
-      <div class="sidebar" id="recent-posts"><h3>最新文章</h3><ul></ul></div>
-      <div class="sidebar" id="category-list"><h3>分類</h3><ul></ul></div>
-      <div class="sidebar" id="favorites-list"><h3>我的收藏</h3><ul></ul></div>
-      <div class="sidebar" id="meta-links"><h3>網站資訊</h3><ul></ul></div>
-    </div>
-  </div>
-</div>
+	<!-- 上傳遮罩 -->
+	<div id="uploadOverlay">
+		<div class="spinner-border text-danger" role="status"></div>
+		<span>loading…</span>
+	</div>
 
-<!-- 上傳遮罩 -->
-<div id="uploadOverlay">
-    <div class="spinner-border text-danger" role="status"></div>
-    <span>loading…</span>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/quill@1.3.6/dist/quill.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/quill-image-drop-module@1.0.3/image-drop.min.js"></script>
-<script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/quill@1.3.6/dist/quill.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/quill-image-drop-module@1.0.3/image-drop.min.js"></script>
+	<script>
 document.addEventListener("DOMContentLoaded", function(){
     let currentUserId = null;
     const defaultImages = ["/images/1.jpg","/images/2.jpg","/images/3.jpg","/images/4.jpg","/images/5.jpg"];
@@ -261,21 +506,31 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
 
+    
     // ===== 新增 AI 優化功能 =====
+    	//10/3新增
+    	document.getElementById('temperatureRange').addEventListener('input', function(){
+    document.getElementById('tempValue').textContent = this.value;
+});
+    	//10/3新增
     document.getElementById('aiOptimizeBtn').addEventListener('click', async ()=>{
         const contentHTML = quill.root.innerHTML.trim();
         if(!contentHTML){
             alert('請先輸入文章內容');
             return;
         }
-
+      //10/3新增
+        const temperature = parseFloat(document.getElementById('temperatureRange').value);
+        const model = document.getElementById('modelSelect').value;
+      //10/3新增
         overlay.style.display='flex'; // 顯示 loading
 
         try{
             const response = await fetch('/api/ai/optimizeArticle',{
                 method:'POST',
                 headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({content: contentHTML})
+                body:JSON.stringify({content: contentHTML,temperature: temperature,
+                    model: model})
             });
             const data = await response.json();
             if(data.optimizedContent){
