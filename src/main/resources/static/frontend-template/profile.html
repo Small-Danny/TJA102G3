@@ -791,6 +791,7 @@
 					}
 				});
 
+				// ★★★ 關鍵修正：將 profileForm 的事件監聽器移入此函式內部 ★★★
 				profileForm.addEventListener('submit', async function (e) {
 					e.preventDefault();
 					if (!validateProfileForm()) return;
@@ -803,7 +804,6 @@
 						const csrfResponse = await fetch('/api/csrf-token', { credentials: 'include' });
 						const csrfData = await csrfResponse.json();
 
-						// ★★★ 修正點一：確保所有欄位的值都被正確取得，特別是 nickname ★★★
 						const updateData = {
 							name: document.getElementById('fullname').value.trim(),
 							phone: document.getElementById('phone').value.trim(),
@@ -813,18 +813,12 @@
 							nickName: document.getElementById('nickname').value.trim()
 						};
 
-						// ★★★ 修正點二：檢查是否所有欄位都與原始值相同，若相同則不發送請求 ★★★
-						// 替換原有的 hasChanged 檢查邏輯
 						const hasChanged = Object.keys(updateData).some(key => {
-							// 統一處理空值情況（undefined、null、空字串視為相同）
 							const oldValue = key === 'nickName' ? (user.nickName || '') : user[key];
 							const newValue = key === 'nickName' ? (updateData.nickName || '') : updateData[key];
-
-							// 數值型欄位額外處理（如身高體重可能為空）
 							if (['heightCm', 'weightKg'].includes(key)) {
 								return Number(oldValue) !== Number(newValue);
 							}
-
 							return oldValue !== newValue;
 						});
 
@@ -834,7 +828,7 @@
 								text: '您沒有修改任何資料。',
 								icon: 'info'
 							});
-							return; // 不發送請求
+							return;
 						}
 
 						const response = await fetch(`/api/users/${user.userId}`, {
@@ -881,6 +875,7 @@
 					}
 				});
 
+				// ★★★ 關鍵修正：將 changePasswordForm 的事件監聽器移入此函式內部 ★★★
 				changePasswordForm.addEventListener('submit', async function (e) {
 					e.preventDefault();
 					if (!validatePasswordForm()) return;
@@ -918,18 +913,33 @@
 							icon: 'success',
 							showConfirmButton: false,
 							timer: 2000
-						}).then(() => {
-							sessionStorage.removeItem('loggedInUser');
-							window.location.href = 'login.html';
+						}).then(async () => {
+							try {
+								const csrfResponse = await fetch('/api/csrf-token', { credentials: 'include' });
+								const csrfData = await csrfResponse.json();
+
+								await fetch('/api/users/logout', {
+									method: 'POST',
+									headers: { [csrfData.headerName]: csrfData.token },
+									credentials: 'include'
+								});
+								console.log('已成功呼叫後端登出');
+							} catch (logoutError) {
+								console.error('呼叫登出 API 時發生錯誤:', logoutError);
+							} finally {
+								sessionStorage.removeItem('loggedInUser');
+								window.location.href = '/frontend-template/login.html';
+							}
 						});
+
 					} catch (error) {
-						console.error('修改密碼失敗:', error);
+						console.error('更改密碼時出錯:', error);
 						if (error.field && error.message) {
 							showError(error.field + 'Error', error.message);
 						} else {
 							Swal.fire({
-								title: '修改失敗',
-								text: `修改密碼失敗：${error.message || '請稍後重試'}`,
+								title: '更改失敗',
+								text: `更改失敗：${error.message || '請稍後再試'}`,
 								icon: 'error'
 							});
 						}
@@ -938,9 +948,10 @@
 						submitBtn.textContent = '確認更改';
 					}
 				});
-			}
 
+			} 
 			initializeProfilePage();
+
 		});
 	</script>
 </body>

@@ -391,7 +391,8 @@ public class SecurityConfig {
                         .ignoringRequestMatchers( // 忽略金流和部分API的CSRF檢查
                                 "/ecpay/callback", "/payment/ecpay", "/payment/ecpay/return",
                                 "/api/line-pay/confirm", "/api/line-pay/callback", "/api/line-pay/notification",
-                                "/api/posts/**", "/api/mycollection/**", "/api/myarticles/**","/api/cart/**"
+                                "/api/posts/**", "/api/mycollection/**", "/api/myarticles/**","/api/cart/**",
+                                "/api/ai/**"
                         )
                 )
                 .headers(headers -> headers // 設定安全標頭
