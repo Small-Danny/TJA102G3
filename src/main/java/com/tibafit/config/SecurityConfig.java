@@ -446,7 +446,8 @@ public class SecurityConfig {
                                 "/api/posts/**",
                                 "/api/mycollection/**",
                                 "/api/myarticles/**",
-                                "/api/ai/**"
+                                "/api/ai/**",
+                                "/api/cart/**"
                         )
                 )
 
