@@ -22,7 +22,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,8 +56,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(UserRepository userRepository, StringRedisTemplate redisTemplate, MailService mailService,
                            FileService fileService, PasswordEncoder passwordEncoder, ReCaptchaService reCaptchaService,
-                           RememberMeServices rememberMeServices,
-                           @Qualifier("userAuthenticationManager") AuthenticationManager userAuthenticationManager,
+                           @Qualifier("userAuthenticationManager") AuthenticationManager userAuthenticationManager,RememberMeServices rememberMeServices,
+                           @Qualifier("userSecurityContextRepository") SecurityContextRepository securityContextRepository,
                            CartService cartService) {
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
@@ -68,7 +67,7 @@ public class UserServiceImpl implements UserService {
         this.reCaptchaService = reCaptchaService;
         this.rememberMeServices = rememberMeServices;
         this.userAuthenticationManager = userAuthenticationManager;
-        this.securityContextRepository = new HttpSessionSecurityContextRepository();
+        this.securityContextRepository = securityContextRepository;
         this.cartService = cartService;
 
     }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -29,11 +30,12 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -174,6 +176,31 @@ public class SecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder); // 指定密碼加密器
         return authProvider;
     }
+    // =======================================================================================
+    // ▼▼▼ 【新增區塊】 IV. 安全上下文儲存庫 (Security Context Repositories) ▼▼▼
+    // =======================================================================================
+
+    /**
+     * 前台專用的「警衛室」。它會將登入資訊存到 Session 的 "SPRING_SECURITY_CONTEXT_USER" 屬性中。
+     */
+    @Bean
+    @Qualifier("userSecurityContextRepository")
+    public SecurityContextRepository userSecurityContextRepository() {
+        HttpSessionSecurityContextRepository repository = new HttpSessionSecurityContextRepository();
+        repository.setSpringSecurityContextKey("SPRING_SECURITY_CONTEXT_USER");
+        return repository;
+    }
+
+    /**
+     * 後台專用的「警衛室」。它會將登入資訊存到 Session 的 "SPRING_SECURITY_CONTEXT_ADMIN" 屬性中。
+     */
+    @Bean
+    @Qualifier("adminSecurityContextRepository")
+    public SecurityContextRepository adminSecurityContextRepository() {
+        HttpSessionSecurityContextRepository repository = new HttpSessionSecurityContextRepository();
+        repository.setSpringSecurityContextKey("SPRING_SECURITY_CONTEXT_ADMIN");
+        return repository;
+    }
 
 
     // =======================================================================================
@@ -186,29 +213,11 @@ public class SecurityConfig {
     @Bean("userRememberMeServices")
     public RememberMeServices userRememberMeServices() {
         TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(rememberMeKey, userDetailsService) {
-
-            // ▼▼▼ 【 關鍵的最終修正 】 ▼▼▼
-            // 覆寫這個方法，讓它永遠回傳 true。
-            // 因為我們是從 Service 手動調用 loginSuccess，我們自己已經確認過使用者想要「記住我」，
-            // 所以我們在這裡直接告訴 Spring Security 不用再去檢查 HTTP 請求參數了。
             @Override
             protected boolean rememberMeRequested(HttpServletRequest request, String parameter) {
                 return true;
             }
-            // ▲▲▲ 【 關鍵的最終修正 】 ▲▲▲
-
-            // 以下的日誌可以暫時保留，用來確認最終的執行情況
-            @Override
-            public void onLoginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication successfulAuthentication) {
-                super.onLoginSuccess(request, response, successfulAuthentication);
-            }
-
-            @Override
-            protected void setCookie(String[] tokens, int maxAge, HttpServletRequest request, HttpServletResponse response) {
-                super.setCookie(tokens, maxAge, request, response);
-            }
         };
-
         rememberMe.setTokenValiditySeconds(86400 * 14);
         return rememberMe;
     }
@@ -308,166 +317,120 @@ public class SecurityConfig {
     // 順序非常重要！
     //=======================================================================================
 
+    // =======================================================================================
+    // VII. 【【【 核心修改：拆分 SecurityFilterChain 為兩個獨立的 Bean 】】】
+    // =======================================================================================
+
+    /**
+     * 後台安全過濾器鏈 (Admin Security Filter Chain)
+     * - @Order(1)：優先級最高，Spring Security 會先檢查此鏈的規則。
+     * - securityMatcher("/admin/**")：明確指定此鏈只處理 /admin/ 開頭的請求。
+     */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, ReCaptchaAuthenticationFilter recaptchaAuthenticationFilter, AuthenticationEntryPoint delegatingAuthenticationEntryPoint) throws Exception {
+    @Order(1)
+    public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http,
+                                                        @Qualifier("adminSecurityContextRepository") SecurityContextRepository adminSecurityContextRepository) throws Exception {
         http
-                // 步驟 1: 註冊我們定義的兩種身份驗證提供者
-                .authenticationProvider(adminAuthenticationProvider())
-                .authenticationProvider(customUserAuthenticationProvider)
-
-                // 步驟 2: HTTP 請求授權規則 (Authorization Rules)
+                .securityMatcher("/admin/**") // ★ 關鍵1: 指定此鏈的作用域
+                .authenticationProvider(adminAuthenticationProvider()) // 指定後台驗證邏輯
                 .authorizeHttpRequests(authorize -> authorize
-                        // ----------------------------------------------------------------
-                        // 【規則 A: 公開訪問區 - 不需要登入】
-                        // ----------------------------------------------------------------
+                        .requestMatchers("/admin/login").permitAll() // 開放後台登入頁
+                        .anyRequest().hasRole("ADMIN") // 其他 /admin/ 路徑皆需 ADMIN 角色
+                )
+                .formLogin(form -> form // 使用 Spring Security 內建的表單登入
+                        .loginPage("/admin/login")
+                        .loginProcessingUrl("/admin/login")
+                        .defaultSuccessUrl("/admin/dashboard", true)
+                        .failureUrl("/admin/login?error=true")
+                )
+                .securityContext(context -> context
+                        .securityContextRepository(adminSecurityContextRepository) // ★ 關鍵2: 使用後台專用的 SecurityContextRepository
+                )
+                .logout(logout -> logout
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/admin/logout", "POST"))
+                        .logoutSuccessHandler(customLogoutSuccessHandler) // 使用您自訂的登出成功處理器
+                        .invalidateHttpSession(false) // ★ 關鍵3: 登出時【不】銷毀整個Session，只清除自己的認證
+                        .deleteCookies("JSESSIONID")
+                )
+                .rememberMe(remember -> remember
+                        .rememberMeServices(adminRememberMeServices()) // 使用後台專用的 "記住我" 服務
+                )
+                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())); // 啟用 CSRF 保護
+
+        return http.build();
+    }
+
+    /**
+     * 前台與API安全過濾器鏈 (User & API Security Filter Chain)
+     * - @Order(2)：優先級較低，只有不匹配 /admin/** 的請求才會進入此鏈。
+     * - securityMatcher("/**")：處理所有剩下的請求。
+     */
+    @Bean
+    @Order(2)
+    public SecurityFilterChain userSecurityFilterChain(HttpSecurity http,
+                                                       ReCaptchaAuthenticationFilter recaptchaAuthenticationFilter,
+                                                       AuthenticationEntryPoint delegatingAuthenticationEntryPoint,
+                                                       @Qualifier("userSecurityContextRepository") SecurityContextRepository userSecurityContextRepository) throws Exception {
+        http
+                .securityMatcher("/**") // ★ 關鍵1: 作用於所有其他請求
+                .authenticationProvider(customUserAuthenticationProvider) // 指定前台驗證邏輯
+                .authorizeHttpRequests(authorize -> authorize
+                        // --- 規則 A: 公開訪問區 ---
                         .requestMatchers(
-                                // --- 核心頁面 ---
-                                "/",
-                                "/frontend-template/index.html",
-                                "/frontend-template/login.html",
-                                "/frontend-template/register.html",
-                                "/frontend-template/reset-set-password.html",
-                                "/frontend-template/register-success.html",
-                                "/frontend-template/register-fail.html",
-
-                                // --- 購物流程頁面 (關鍵修改，確保未登入用戶也能瀏覽) ---
-                                "/frontend-template/cart.html",
-                                "/frontend-template/cart_order.html",
-                                "/frontend-template/pay_success.html", // 付款成功頁
-
-                                // --- 商品相關頁面 (關鍵修改) ---
-                                "/shop/products",      // 商品列表頁
-                                "/shop/product/**",     // 所有商品詳情頁
-
-                                // 文章區頁面
-                                "/frontend-template/forum.html",
-                                "/frontend-template/article-detail.html"
-//                                "/frontend-template/myarticles.html",
-//                                "/frontend-template/mycollection.html"
-//                                "/frontend-template/post-article.html"
+                                "/", "/frontend-template/index.html", "/frontend-template/login.html",
+                                "/frontend-template/register.html", "/frontend-template/reset-set-password.html",
+                                "/frontend-template/register-success.html", "/frontend-template/register-fail.html",
+                                "/frontend-template/cart.html", "/frontend-template/cart_order.html",
+                                "/frontend-template/pay_success.html", "/shop/products", "/shop/product/**",
+                                "/frontend-template/forum.html", "/frontend-template/article-detail.html"
                         ).permitAll()
-
-                        // --- 靜態資源 (CSS, JS, 圖片等，必須開放) ---
+                        // --- 靜態資源 ---
+                        .requestMatchers("/frontend-template/**", "/adminlte/**", "/images/**").permitAll()
+                        // --- 公開 API ---
                         .requestMatchers(
-                                "/frontend-template/**",
-                                "/adminlte/**",
-                                "/images/**"
-
-
+                                "/api/users/register", "/api/users/login", "/api/users/send-code",
+                                "/api/users/request-password-reset", "/api/users/reset-password-with-token",
+                                "/api/csrf-token", "/api/products/**", "/api/cart/**", "/shop/api/**",
+                                "/api/ecpay/callback", "/payment/ecpay/return", "/api/line-pay/confirm",
+                                "/api/posts/**", "/api/sidebar", "/api/categories", "/api/report-types"
                         ).permitAll()
-
-                        // --- 公開 API (無需登入即可呼叫) ---
-                        .requestMatchers(
-                                // 使用者註冊/登入相關
-                                "/api/users/register",
-                                "/api/users/login",
-                                "/api/users/send-code",
-                                "/api/users/request-password-reset",
-                                "/api/users/reset-password-with-token",
-                                "/api/csrf-token",
-
-                                // 購物流程相關 API (關鍵修改，允許匿名用戶加到購物車)
-                                "/api/products/**",      // 查詢商品資訊
-                                "/api/cart/**",          // 操作購物車
-                                "/shop/api/**",          // 查詢庫存
-
-                                // 金流 Callback API (必須公開，因為是金流方主動呼叫)
-                                "/api/ecpay/callback",       // 綠界 Server-to-Server
-                                "/payment/ecpay/return",     // 綠界 前端跳轉
-                                "/api/line-pay/confirm",    // LINE Pay Server-to-Server
-
-                                //公開文章區 API
-                                "/api/posts/**",
-                                "/api/sidebar",
-                                "/api/categories",
-                                "/api/report-types"
-                        ).permitAll()
-                        .requestMatchers("/admin/login").permitAll()
-                        // ----------------------------------------------------------------
-                        // 【規則 B: 管理員權限區 - 需要 ADMIN 角色】
-                        // ----------------------------------------------------------------
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                        // ----------------------------------------------------------------
-                        // 【規則 C: 其他所有請求 - 只要登入即可】
-                        // ----------------------------------------------------------------
+                        // --- 規則 B: 其他所有請求，只要登入即可 ---
                         .anyRequest().authenticated()
                 )
-
-                // 步驟 3: 設定後台的表單登入頁面
-                .formLogin(form -> form
-                        .loginPage("/admin/login") // 指定登入頁 URL
-                        .loginProcessingUrl("/admin/login") // 處理登入請求的 URL
-                        .defaultSuccessUrl("/admin/dashboard", true) // 登入成功後導向
-                        .failureUrl("/admin/login?error=true") // 登入失敗導向
-                )
-
-                // 步驟 4: 處理未認證的請求 (使用上面定義的智慧分流器)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(delegatingAuthenticationEntryPoint))
-
-                // 步驟 5: 啟用 "記住我" 功能 (使用上面定義的委派服務)
+                .securityContext(context -> context
+                        .securityContextRepository(userSecurityContextRepository) // ★ 關鍵2: 使用前台專用的 SecurityContextRepository
+                )
                 .rememberMe(remember -> remember
-                        .key(rememberMeKey)
-                        .rememberMeServices(delegatingRememberMeServices(userRememberMeServices(), adminRememberMeServices()))
+                        .rememberMeServices(userRememberMeServices()) // 使用前台專用的 "記住我" 服務
                 )
-
-                // 步驟 6: 登出設定
                 .logout(logout -> logout
-                        // 監聽前台和後台的登出路徑
-                        .logoutRequestMatcher(new OrRequestMatcher(
-                                new AntPathRequestMatcher("/api/users/logout", "POST"),
-                                new AntPathRequestMatcher("/admin/logout", "POST")
-                        ))
-                        // ★★★ 關鍵修正：使用你原本就寫好的 CustomLogoutSuccessHandler ★★★
-                        // 它能智慧地判斷要重新導向到前台還是後台
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/api/users/logout", "POST"))
                         .logoutSuccessHandler(customLogoutSuccessHandler)
-                        .invalidateHttpSession(true)
+                        .invalidateHttpSession(false) // ★ 關鍵3: 登出時同樣【不】銷毀整個Session
                         .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID", "remember-me", "XSRF-TOKEN") // 清理所有 cookie
-                        .permitAll()
+                        .deleteCookies("JSESSIONID", "remember-me", "XSRF-TOKEN")
                 )
-
-                // 步驟 7: 啟用 CORS (使用上面定義的 corsConfigurationSource)
-                .cors(withDefaults())
-
-                // 步驟 8: CSRF 保護設定
-                .csrf(csrf -> csrf
-                        // 將 CSRF token 存放在 cookie 中，讓前端 JS 可以讀取
+                .cors(withDefaults()) // 啟用 CORS
+                .csrf(csrf -> csrf // 設定 CSRF
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        // 【重要】金流 callback 必須排除在 CSRF 保護之外，因為它們不是由我們的前端發起
-                        .ignoringRequestMatchers(
-                                "/ecpay/callback",
-                                "/payment/ecpay",
-                                "/payment/ecpay/return",
-                                "/api/line-pay/confirm",// Line Pay 也需要排除
-                                "/api/line-pay/callback",
-                                "/api/line-pay/notification",
-                                "/api/posts/**",
-                                "/api/mycollection/**",
-                                "/api/myarticles/**"
+                        .ignoringRequestMatchers( // 忽略金流和部分API的CSRF檢查
+                                "/ecpay/callback", "/payment/ecpay", "/payment/ecpay/return",
+                                "/api/line-pay/confirm", "/api/line-pay/callback", "/api/line-pay/notification",
+                                "/api/posts/**", "/api/mycollection/**", "/api/myarticles/**"
                         )
                 )
-
-                // 步驟 9: 安全標頭 (Security Headers) 設定，特別是 CSP
-                .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin()) // 防止點擊劫持 (Clickjacking)
-                        // Content-Security-Policy (CSP) 是防止 XSS 攻擊的重要防線
-                        // 它限制了瀏覽器只能從我們信任的來源載入資源 (腳本、圖片、樣式等)
-                        // 這個設定非常繁瑣，需要不斷測試與調整
+                .headers(headers -> headers // 設定安全標頭
+                        .frameOptions(frame -> frame.sameOrigin())
                         .contentSecurityPolicy(csp -> csp.policyDirectives(
-                                "script-src 'self' " +
-                                        "https://payment-stage.ecpay.com.tw " + // 綠界支付
-                                        "https://www.google.com " +             // reCAPTCHA
-                                        "https://www.gstatic.com " +            // reCAPTCHA
-                                        "https://cdn.jsdelivr.net " + // ✨ [新增] 允許來自 jsdelivr CDN 的腳本
-                                        "'unsafe-inline'; " +                   // 允許 inline script (某些舊套件可能需要)
-                                        "frame-src 'self' https://www.google.com;"      // 允許 reCAPTCHA 的 iframe
-                                // 這裡可以繼續添加其他指令如 style-src, img-src 等
+                                "script-src 'self' https://payment-stage.ecpay.com.tw https://www.google.com " +
+                                        "https://www.gstatic.com https://cdn.jsdelivr.net 'unsafe-inline'; " +
+                                        "frame-src 'self' https://www.google.com;"
                         ))
                 )
-
-                // 步驟 10: 在標準的帳號密碼驗證前，先執行我們的 reCAPTCHA 驗證過濾器
-                .addFilterBefore(recaptchaAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(recaptchaAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // 加入 reCAPTCHA 過濾器
+                // 前台是透過 API 登入，所以要禁用內建的表單登入頁
+                .formLogin(form -> form.disable());
 
         return http.build();
     }
