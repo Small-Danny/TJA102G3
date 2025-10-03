@@ -33,15 +33,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-/* 商品圖固定高度，等比縮放（沿用前面做法） */
-.project-style-one .product .btn-hover figure {
-	height: 320px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 12px;
-	overflow: hidden;
-	background: #fff;
+#hot-products .add-to-cart { 
+  display: none !important; 
 }
 
 .project-style-one .product .btn-hover figure img {
@@ -62,6 +55,12 @@
 	.project-style-one .product .btn-hover figure {
 		height: 200px;
 	}
+}
+.about-data-left img {
+  border-radius: 16px;
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* 輪播左右外部按鈕 */
@@ -102,6 +101,54 @@
 .product-carousel .owl-dots {
 	margin-top: 18px;
 }
+
+/* ====== Hot Products 卡片：外觀 ====== */
+#hot-products .product {
+  border-radius: 16px;           
+  overflow: hidden;              
+  background: #fff;              
+  box-shadow: 0 8px 20px rgba(0,0,0,.06);
+}
+
+/* 讓卡片內邊距不造成白邊 */
+#hot-products .product .main-data,
+#hot-products .product .btn-hover {
+  padding: 0;
+  background: transparent;
+}
+
+/* ====== 圖片容器：裁切框 + 固定比例 ====== */
+#hot-products .product .btn-hover {
+  position: relative;
+}
+
+#hot-products .product .btn-hover figure {
+  margin: 0;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  display: block;
+  background: transparent;
+  border-radius: 0;
+}
+
+/* 圖片滿版且可放大 */
+#hot-products .product .btn-hover figure > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1);           
+  transition: transform .5s ease;
+}
+
+#hot-products .product:hover .btn-hover figure > img {
+  transform: scale(1.05);
+}
+
+
+
+
 </style>
 </head>
 <body>
@@ -214,11 +261,11 @@
 				<div class="col-lg-6">
 					<div id="my-about-image-container" class="about-data-left">
 						<figure>
-							<img src="/frontend-template/assets/images/workout-record.svg"
+							<img src="/frontend-template/assets/images/workout-record.png"
 								alt="運動紀錄示範">
 						</figure>
 						<figure>
-							<img src="/frontend-template/assets/images/sports-task-badge.svg"
+							<img src="/frontend-template/assets/images/sports-task-badge.png"
 								alt="任務挑戰示範">
 						</figure>
 					</div>
@@ -323,7 +370,7 @@
 								<a href="/shop/product/16">專業乳清蛋白粉</a>
 							</h3>
 							<div class="price-range">
-								<span>NT$ <span>700</span></span>
+								<span>NT$ <span>700~1400</span></span>
 							</div>
 						</div>
 					</div>
@@ -352,7 +399,7 @@
 							</div>
 						</div>
 					</div>
-					<a class="theme-btn" href="/shop/products">查看詳情 <i
+					<a class="theme-btn" href="/shop/product/10">查看詳情 <i
 						class="fa-solid fa-arrow-right"></i></a>
 				</div>
 
@@ -380,7 +427,7 @@
 						class="fa-solid fa-arrow-right"></i></a>
 				</div>
 
-				<!-- 之後要加商品就複製一個 .product item block 放進來即可 -->
+
 			</div>
 
 			<!-- 左右導航（外部按鈕） -->

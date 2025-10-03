@@ -151,14 +151,14 @@
                 <header class="card-header">
                     <h3 class="title">資料查詢</h3>
                     <div>
-                        <a class="btn" th:href="@{/taskrecord/add}">新增紀錄</a>
-                        <a class="btn btn-secondary" th:href="@{/taskrecord/listAll}">瀏覽全部</a>
+                        <a class="btn" th:href="@{/admin/taskrecord/add}">新增紀錄</a>
+                        <a class="btn btn-secondary" th:href="@{/admin/taskrecord/listAll}">瀏覽全部</a>
                     </div>
                 </header>
                 <div class="card-body">
                     <div class="errorblock" th:utext="${errorMessage}"></div>
 
-                    <form class="form-grid" method="get" th:action="@{/taskrecord/getOne}">
+                    <form class="form-grid" method="get" th:action="@{/admin/taskrecord/getOne}">
                         <label>輸入紀錄ID</label>
                         <input type="text" name="taskRecordId" placeholder="例如：5" th:value="${param.taskRecordId}" />
                         <button type="submit" class="btn">查詢</button>
@@ -166,7 +166,7 @@
 
                     <div class="divider"></div>
 
-                    <form class="form-grid" method="get" th:action="@{/taskrecord/getOne}">
+                    <form class="form-grid" method="get" th:action="@{/admin/taskrecord/getOne}">
                         <label>選擇紀錄ID</label>
                         <select name="taskRecordId">
                             <option th:each="rec : ${taskRecordListData}" th:value="${rec.taskRecordId}"
@@ -175,9 +175,9 @@
                         <button type="submit" class="btn">查詢</button>
                     </form>
                 </div>
-                <footer class="card-footer">
-                    <span class="hint">提示：右側會顯示最近一次查詢的單筆結果。</span>
-                </footer>
+<!--                 <footer class="card-footer"> -->
+<!--                     <span class="hint">提示：右側會顯示最近一次查詢的單筆結果。</span> -->
+<!--                 </footer> -->
             </section>
 
             <!-- 右：單筆預覽（片段） -->

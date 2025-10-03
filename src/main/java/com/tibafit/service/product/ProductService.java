@@ -1,13 +1,13 @@
 package com.tibafit.service.product;
 
 import com.tibafit.model.cart.ProductVO;
-import org.springframework.stereotype.Service;
-
 import com.tibafit.repository.product.ProductRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.regex.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,21 +19,45 @@ public class ProductService {
 
 	// 允許「純數字」或「數字+單位」，單位可省略；大小寫皆可
 	private static final Pattern NUMERIC_SIZE = Pattern.compile("(?i)^\\s*(\\d+(?:\\.\\d+)?)(?:\\s*(ML|L|G|KG))?\\s*$");
-
 	private static final Pattern PURE_NUMBER = Pattern.compile("^\\s*(\\d+(?:\\.\\d+)?)\\s*$");
+
+	private String safeTrim(String pcode) {
+		return pcode == null ? null : pcode.trim();
+	}
 
 	public ProductService(ProductRepository repo) {
 		this.repo = repo;
 	}
 
-	public void add(ProductVO v) {
-		fillDefaults(v); 
-		repo.save(v);
+	// -------------------- CRUD --------------------
+
+	public void add(ProductVO p) {
+		String code = safeTrim(p.getProductCode());
+		if (code == null || code.isEmpty())
+			throw new IllegalArgumentException("商品代碼不可為空");
+		p.setProductCode(code);
+
+		if (repo.existsByProductCode(code))
+			throw new org.springframework.dao.DuplicateKeyException("商品代碼已存在: " + code);
+		fillDefaults(p);
+		repo.save(p);
 	}
 
-	public void update(ProductVO v) {
-		fillDefaults(v);
-		repo.save(v);
+	public void update(ProductVO p) {
+		if (p.getProductId() == null)
+            throw new IllegalArgumentException("更新需要 productId");
+		
+		 ProductVO origin = repo.findById(p.getProductId())
+	                .orElseThrow(() -> new NoSuchElementException("找不到商品"));
+		 
+		 String code = safeTrim(p.getProductCode());
+	        if (code == null || code.isEmpty())
+	            throw new IllegalArgumentException("商品代碼不可為空");
+	        if (repo.existsByProductCodeAndProductIdNot(code, p.getProductId()))
+	            throw new org.springframework.dao.DuplicateKeyException("商品代碼已存在: " + code);		
+	        
+		fillDefaults(p);
+		repo.save(p);
 	}
 
 	public void delete(Integer id) {
@@ -60,6 +84,43 @@ public class ProductService {
 		return repo.searchByKeywordOrderById(keyword);
 	}
 
+	// -------------------- 新增：統一補值與校正 --------------------
+
+	private void fillDefaults(ProductVO v) {
+		// reserved_stock / stock_quantity → NULL or 負數 → 0
+		if (v.getReservedStock() == null || v.getReservedStock() < 0)
+			v.setReservedStock(0);
+		if (v.getStockQuantity() == null || v.getStockQuantity() < 0)
+			v.setStockQuantity(0);
+
+		// reserved ≤ stock
+		if (v.getReservedStock() > v.getStockQuantity()) {
+			v.setReservedStock(v.getStockQuantity());
+		}
+
+		// product_status 預設上架 1（依專案規則）
+		if (v.getProductStatus() == null)
+			v.setProductStatus(1);
+
+		// 價格為 null 或負數 → 0（ProductVO 的 price 為 Integer）
+		if (v.getProductPrice() == null || v.getProductPrice() < 0) {
+			v.setProductPrice(0);
+		}
+
+		// 去除名稱/代碼空白
+		if (v.getProductName() != null)
+			v.setProductName(v.getProductName().trim());
+		if (v.getProductCode() != null)
+			v.setProductCode(v.getProductCode().trim());
+
+		// 空字串圖片 → 設為 null，讓前端走預設圖
+		if (v.getProductPicture() != null && v.getProductPicture().isBlank()) {
+			v.setProductPicture(null);
+		}
+	}
+
+	// -------------------- 尺寸解析/工具 --------------------
+
 	/* 判斷一個 token 是否為尺寸 */
 	private boolean isSizeToken(String t) {
 		if (t == null)
@@ -69,39 +130,8 @@ public class ProductService {
 			return true;
 		return NUMERIC_SIZE.matcher(u).matches(); // 單位可省略後就能吃到 "500"
 	}
-	
-	 /* === 這段是新增的：統一補值與校正（避免 NULL / 負數） === */
-	private void fillDefaults(ProductVO v) {
-	    // reserved_stock / stock_quantity → NULL or 負數 → 0
-	    if (v.getReservedStock() == null || v.getReservedStock() < 0) v.setReservedStock(0);
-	    if (v.getStockQuantity() == null || v.getStockQuantity() < 0) v.setStockQuantity(0);
 
-	    // **新增：reserved ≤ stock**
-	    if (v.getReservedStock() > v.getStockQuantity()) {
-	        v.setReservedStock(v.getStockQuantity());
-	    }
-
-	    // product_status 預設上架 1（依專案規則）
-	    if (v.getProductStatus() == null) v.setProductStatus(1);
-
-	    // 價格為 null 或負數 → 0
-	    if (v.getProductPrice() == null || v.getProductPrice() < 0) {
-	        v.setProductPrice(0);
-	    }
-
-	    // 去除名稱/代碼空白
-	    if (v.getProductName() != null) v.setProductName(v.getProductName().trim());
-	    if (v.getProductCode() != null) v.setProductCode(v.getProductCode().trim());
-
-	    // 空字串圖片 → 設為 null，讓前端走預設圖
-	    if (v.getProductPicture() != null && v.getProductPicture().isBlank()) {
-	        v.setProductPicture(null);
-	    }
-	}
-
-	/**
-	 * 依商品型別決定「沒有單位的數字」時要補的預設單位 0=衣服裝備 -> 不補 1=容器 -> ML 2=蛋白粉 -> G
-	 */
+	/** 依商品型別決定「沒有單位的數字」時要補的預設單位 0=衣服裝備 -> 不補 1=容器 -> ML 2=蛋白粉 -> G */
 	public String defaultUnitFor(ProductVO p) {
 		if (p == null)
 			return null;
@@ -214,6 +244,8 @@ public class ProductService {
 			default -> v;
 			};
 		}
+
+		// 「均碼」等不識別的字樣會排到最後（也符合需求）
 		return Double.MAX_VALUE;
 	}
 
@@ -307,16 +339,25 @@ public class ProductService {
 		return sizeToId.keySet().iterator().next();
 	}
 
-	// 將1000g 改成 1kg
+	// 將1000g 改成 1kg（去除多餘 0）
 	private static String cleanNumber(double v) {
 		BigDecimal bd = BigDecimal.valueOf(v).stripTrailingZeros();
 		return bd.toPlainString();
 	}
 
-	// ====== A 方案：列表只顯示「上架」商品 ======
+	// -------------------- 列表只顯示「上架」代表 --------------------
 
 	private boolean isOnShelf(ProductVO p) {
 		return p != null && Objects.equals(p.getProductStatus(), 1);
+	}
+
+	/** 是否可售 = 上架 且 庫存>0 */
+	private boolean isSellable(ProductVO v) {
+		if (v == null)
+			return false;
+		boolean up = Objects.equals(v.getProductStatus(), 1);
+		int stock = Optional.ofNullable(v.getStockQuantity()).orElse(0);
+		return up && stock > 0;
 	}
 
 	/**
@@ -342,11 +383,8 @@ public class ProductService {
 		for (List<ProductVO> group : groups.values()) {
 			// 只看上架的變體
 			List<ProductVO> ups = group.stream().filter(this::isOnShelf).collect(Collectors.toList());
-
-			if (ups.isEmpty()) {
-				// 這個同款全下架 → 不加入列表
-				continue;
-			}
+			if (ups.isEmpty())
+				continue; // 全下架 → 排除
 
 			// 從上架的變體挑一個代表（尺寸最小）
 			ProductVO rep = ups.stream()
@@ -359,17 +397,17 @@ public class ProductService {
 		return result;
 	}
 
-	// 取得「全部商品」給列表頁（只顯示上架代表）
+	/** 取得「全部商品」給列表頁（只顯示上架代表） */
 	public List<ProductVO> getAllCollapsed() {
 		return collapseVariants(getAll());
 	}
 
-	// 搜尋結果（只顯示上架代表）
+	/** 搜尋結果（只顯示上架代表） */
 	public List<ProductVO> searchCollapsed(String keyword) {
 		return collapseVariants(search(keyword));
 	}
 
-	// ====== 顯示名稱去除尺寸（僅顯示用，不動 DB） ======
+	// -------------------- 顯示名稱去除尺寸（僅顯示用，不動 DB） --------------------
 
 	private static final Pattern NAME_SIZE_PAREN = Pattern
 			.compile("(?iu)[（(]\\s*(?:XS|S|M|L|XL|XXL|\\d+(?:\\.\\d+)?\\s*(?:ML|L|G|KG))\\s*[)）]");
@@ -393,47 +431,299 @@ public class ProductService {
 		s = NAME_WS.matcher(s).replaceAll(" ").trim();
 		return s;
 	}
-	
-	/** 價格區間物件 */
-	public static final class PriceRange {
-	    public final Integer min;
-	    public final Integer max;
-	    public PriceRange(Integer min, Integer max) { this.min = min; this.max = max; }
-	}
-
-	/** 取得同款(不同尺寸)的價格區間（僅考慮上架商品）。若取不到，回 null。*/
-	public PriceRange priceRangeFor(ProductVO rep) {
-	    if (rep == null || rep.getProductCode() == null) return null;
-
-	    // 找出同款的所有尺寸變體（你已經有的邏輯）
-	    var variants = findSizeVariantsByCode(rep.getProductCode());
-	    if (variants == null || variants.isEmpty()) {
-	        // fallback：沒有尺寸變體，就用自己的價格
-	        Integer p = rep.getProductPrice();
-	        return (p == null) ? null : new PriceRange(p, p);
-	    }
-
-	    // 只計算「上架」且有價格的
-	    var prices = variants.stream()
-	            .filter(this::isOnShelf)
-	            .map(ProductVO::getProductPrice)
-	            .filter(Objects::nonNull)
-	            .toList();
-
-	    if (prices.isEmpty()) {
-	        Integer p = rep.getProductPrice();
-	        return (p == null) ? null : new PriceRange(p, p);
-	    }
-
-	    int min = prices.stream().min(Integer::compareTo).get();
-	    int max = prices.stream().max(Integer::compareTo).get();
-	    return new PriceRange(min, max);
-	}
 
 	/** 方便直接給 VO 呼叫 */
 	public String displayNameWithoutSize(ProductVO p) {
 		if (p == null)
 			return "";
 		return nameWithoutSize(p.getProductName());
+	}
+
+	// -------------------- 價格區間（列表顯示 min/max） --------------------
+
+	/** 價格區間物件 */
+	public static final class PriceRange {
+		public final Integer min;
+		public final Integer max;
+
+		public PriceRange(Integer min, Integer max) {
+			this.min = min;
+			this.max = max;
+		}
+	}
+
+	/** 取得同款(不同尺寸)的價格區間（僅考慮上架商品）。若取不到，回 null。 */
+	public PriceRange priceRangeFor(ProductVO rep) {
+		if (rep == null || rep.getProductCode() == null)
+			return null;
+
+		var variants = findSizeVariantsByCode(rep.getProductCode());
+		if (variants == null || variants.isEmpty()) {
+			Integer p = rep.getProductPrice();
+			return (p == null) ? null : new PriceRange(p, p);
+		}
+
+		var prices = variants.stream().filter(this::isOnShelf).map(ProductVO::getProductPrice).filter(Objects::nonNull)
+				.toList();
+
+		if (prices.isEmpty()) {
+			Integer p = rep.getProductPrice();
+			return (p == null) ? null : new PriceRange(p, p);
+		}
+
+		int min = prices.stream().min(Integer::compareTo).get();
+		int max = prices.stream().max(Integer::compareTo).get();
+		return new PriceRange(min, max);
+	}
+
+	// -------------------- 共用變體模型（詳情/列表可共用） --------------------
+
+	public static class VariantModel {
+		private final List<String> sizesSorted; // 排序後的尺寸
+		private final Map<String, Integer> sizeMap; // size -> productId（下架=null）
+		private final Map<String, String> sizeSkuMap; // size -> productCode
+		private final Map<String, Integer> sizePriceMap; // size -> price
+		private final Map<String, Boolean> sizeAvailableMap; // size -> 可售(上架且庫存>0)
+		private final String currentSize;
+		private final String currentSku;
+		private final Integer currentPrice;
+
+		public VariantModel(List<String> sizesSorted, Map<String, Integer> sizeMap, Map<String, String> sizeSkuMap,
+				Map<String, Integer> sizePriceMap, Map<String, Boolean> sizeAvailableMap, String currentSize,
+				String currentSku, Integer currentPrice) {
+			this.sizesSorted = sizesSorted;
+			this.sizeMap = sizeMap;
+			this.sizeSkuMap = sizeSkuMap;
+			this.sizePriceMap = sizePriceMap;
+			this.sizeAvailableMap = sizeAvailableMap;
+			this.currentSize = currentSize;
+			this.currentSku = currentSku;
+			this.currentPrice = currentPrice;
+		}
+
+		public List<String> getSizesSorted() {
+			return sizesSorted;
+		}
+
+		public Map<String, Integer> getSizeMap() {
+			return sizeMap;
+		}
+
+		public Map<String, String> getSizeSkuMap() {
+			return sizeSkuMap;
+		}
+
+		public Map<String, Integer> getSizePriceMap() {
+			return sizePriceMap;
+		}
+
+		public Map<String, Boolean> getSizeAvailableMap() {
+			return sizeAvailableMap;
+		}
+
+		public String getCurrentSize() {
+			return currentSize;
+		}
+
+		public String getCurrentSku() {
+			return currentSku;
+		}
+
+		public Integer getCurrentPrice() {
+			return currentPrice;
+		}
+	}
+
+	/** 共用建模：把同款的尺寸/價格/上架/庫存/目前尺寸 全部整理好 */
+	public VariantModel buildVariantModel(ProductVO product, String sizeQry) {
+		if (product == null) {
+			return new VariantModel(List.of(), Map.of(), Map.of(), Map.of(), Map.of(), "均碼", null, 0);
+		}
+
+		String fallbackUnit = defaultUnitFor(product);
+		List<ProductVO> variants = findSizeVariantsByCode(product.getProductCode());
+
+		Map<String, Integer> sizeMap = new LinkedHashMap<>();
+		Map<String, String> sizeSkuMap = new LinkedHashMap<>();
+		Map<String, Integer> sizePriceMap = new LinkedHashMap<>();
+		Map<String, Boolean> sizeAvailableMap = new LinkedHashMap<>();
+
+		// 收集變體
+		for (ProductVO v : variants) {
+			String sz = sizeOf(v.getProductCode(), defaultUnitFor(v));
+			if (sz == null)
+				continue;
+			String key = sz.trim().toUpperCase();
+
+			sizeSkuMap.putIfAbsent(key, v.getProductCode());
+			sizePriceMap.putIfAbsent(key, Optional.ofNullable(v.getProductPrice()).orElse(0));
+
+			boolean up = Objects.equals(v.getProductStatus(), 1);
+			sizeMap.putIfAbsent(key, up ? v.getProductId() : null);
+			sizeAvailableMap.putIfAbsent(key, isSellable(v));
+		}
+
+		// 自己也補進來（避免漏）
+		String selfSize = sizeOf(product.getProductCode(), fallbackUnit);
+		if (selfSize != null) {
+			String key = selfSize.trim().toUpperCase();
+			sizeSkuMap.putIfAbsent(key, product.getProductCode());
+			sizePriceMap.putIfAbsent(key, Optional.ofNullable(product.getProductPrice()).orElse(0));
+			sizeMap.putIfAbsent(key, isOnShelf(product) ? product.getProductId() : null);
+			sizeAvailableMap.putIfAbsent(key, isSellable(product));
+		}
+
+		// 完全沒有尺寸 → 視為「均碼」
+		if (sizeMap.isEmpty()) {
+			sizeSkuMap.put("均碼", product.getProductCode());
+			sizePriceMap.put("均碼", Optional.ofNullable(product.getProductPrice()).orElse(0));
+			sizeMap.put("均碼", isOnShelf(product) ? product.getProductId() : null);
+			sizeAvailableMap.put("均碼", isSellable(product));
+		}
+
+		// 排序（沿用既有 sortSizes 規則）
+		List<String> sizesSorted = sortSizes(sizeMap.keySet());
+
+		// 目前尺寸（優先：?size 上架 → 自身上架 → 第一個上架 → 第一個）
+		String currentSize = null;
+		if (sizeQry != null && !sizeQry.isBlank()) {
+			String q = sizeQry.trim().toUpperCase();
+			if (sizeMap.containsKey(q) && sizeMap.get(q) != null)
+				currentSize = q;
+		}
+		if (currentSize == null && selfSize != null) {
+			String key = selfSize.trim().toUpperCase();
+			if (sizeMap.containsKey(key) && sizeMap.get(key) != null)
+				currentSize = key;
+		}
+		if (currentSize == null) {
+			for (String s : sizesSorted) {
+				if (sizeMap.get(s) != null) {
+					currentSize = s;
+					break;
+				}
+			}
+		}
+		if (currentSize == null)
+			currentSize = sizesSorted.get(0);
+
+		String currentSku = sizeSkuMap.getOrDefault(currentSize, product.getProductCode());
+		Integer currentPrice = sizePriceMap.getOrDefault(currentSize,
+				Optional.ofNullable(product.getProductPrice()).orElse(0));
+
+		return new VariantModel(sizesSorted, sizeMap, sizeSkuMap, sizePriceMap, sizeAvailableMap, currentSize,
+				currentSku, currentPrice);
+	}
+
+	// -------------------- 列表用尺寸徽章 --------------------
+
+	/** 列表顯示用的尺寸徽章資料 */
+	public static final class SizeChip {
+		private final String label; // S / M / 500ML / 1KG / 均碼
+		private final boolean available; // 上架且庫存>0
+		private final Integer productId; // 對應變體ID（下架時為 null）
+
+		public SizeChip(String label, boolean available, Integer productId) {
+			this.label = label;
+			this.available = available;
+			this.productId = productId;
+		}
+
+		public String getLabel() {
+			return label;
+		}
+
+		public boolean isAvailable() {
+			return available;
+		}
+
+		public Integer getProductId() {
+			return productId;
+		}
+	}
+
+	/** 取得同款尺寸清單，並標註是否可購（上架且庫存>0）；依尺寸大小排序 */
+	public List<SizeChip> sizeChipsForList(ProductVO rep) {
+		if (rep == null || rep.getProductCode() == null)
+			return List.of();
+
+		// 找到同款的所有有尺寸的變體
+		List<ProductVO> variants = findSizeVariantsByCode(rep.getProductCode());
+		if (variants == null || variants.isEmpty()) {
+			// 該款沒有其它尺寸：若自己有尺寸也顯示一下
+			String selfSize = sizeOf(rep.getProductCode(), defaultUnitFor(rep));
+			if (selfSize == null) {
+				// 完全無尺寸 -> 均碼
+				boolean ok0 = isOnShelf(rep) && Optional.ofNullable(rep.getStockQuantity()).orElse(0) > 0;
+				return List.of(new SizeChip("均碼", ok0, isOnShelf(rep) ? rep.getProductId() : null));
+			}
+			boolean ok = isOnShelf(rep) && Optional.ofNullable(rep.getStockQuantity()).orElse(0) > 0;
+			String label = displaySizeLabel(selfSize, rep);
+			return List.of(new SizeChip(label, ok, isOnShelf(rep) ? rep.getProductId() : null));
+		}
+
+		// 轉成 SizeChip
+		List<SizeChip> chips = new ArrayList<>();
+		for (ProductVO p : variants) {
+			String sz = sizeOf(p.getProductCode(), defaultUnitFor(p));
+			if (sz == null)
+				continue;
+			boolean ok = isOnShelf(p) && Optional.ofNullable(p.getStockQuantity()).orElse(0) > 0;
+			String label = displaySizeLabel(sz, p); // ★ 這裡套轉換
+			chips.add(new SizeChip(label, ok, isOnShelf(p) ? p.getProductId() : null));
+		}
+
+		// 去重 + 依尺寸大小排序（同尺寸多個只取第一個）
+		Map<String, SizeChip> dedup = new LinkedHashMap<>();
+		chips.stream().sorted(
+				Comparator.comparingDouble((SizeChip c) -> sizeWeight(c.getLabel())).thenComparing(SizeChip::getLabel))
+				.forEach(c -> dedup.putIfAbsent(c.getLabel(), c));
+
+		// 若最後空了（極端情況），補一顆均碼
+		if (dedup.isEmpty()) {
+			boolean ok0 = isOnShelf(rep) && Optional.ofNullable(rep.getStockQuantity()).orElse(0) > 0;
+			dedup.put("均碼", new SizeChip("均碼", ok0, isOnShelf(rep) ? rep.getProductId() : null));
+		}
+
+		return new ArrayList<>(dedup.values());
+	}
+
+	private String displaySizeLabel(String raw, ProductVO ctx) {
+		if (raw == null)
+			return null;
+		String s = raw.trim().toUpperCase();
+
+		// 直接等價於均碼的關鍵字
+		if (s.equals("F") || s.equals("FREE") || s.equals("OS") || s.equals("ONE") || s.equals("ONE SIZE")
+				|| s.equals("均碼")) {
+			return "均碼";
+		}
+
+		// 若是純數字 1，且該商品類型預設單位為 null（例如衣物），多半代表「均碼」
+		// （避免把 1ML / 1KG 之類誤判，這裡僅在 fallback 單位為 null 時套用）
+		if (PURE_NUMBER.matcher(s).matches() && s.equals("1")) {
+			String fallback = defaultUnitFor(ctx);
+			if (fallback == null && !BASE_SIZES.contains(s)) {
+				return "均碼";
+			}
+		}
+
+		return raw; // 其他維持原樣
+	}
+
+	/** 批次刪除 */
+	@Transactional
+	public void deleteAll(List<Integer> ids) {
+		if (ids == null || ids.isEmpty())
+			return;
+		repo.deleteAllByIdInBatch(ids);
+	}
+
+	/** 批次更新上/下架：status=1 上架；status=0 下架 */
+	@Transactional
+	public int updateStatus(List<Integer> ids, int status) {
+		if (ids == null || ids.isEmpty())
+			return 0;
+		return repo.bulkUpdateStatus(ids, status);
 	}
 }

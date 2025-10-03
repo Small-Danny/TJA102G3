@@ -126,7 +126,7 @@
         <div class="text-center">
             <h2 class="m-0">TaskRecord 修改 - update_taskrecord_input</h2>
             <div class="mt-1">
-                <a class="navbar-brand" th:href="@{/taskrecord/select_page}"><img th:src="@{/images/back1.gif}"
+                <a class="navbar-brand" th:href="@{/admin/taskrecord/select_page}"><img th:src="@{/images/back1.gif}"
                         alt="返回"> 回查詢頁</a>
             </div>
         </div>
@@ -136,16 +136,16 @@
         <section class="card mt-3">
             <header class="card-header">
                 <h3 class="title">修改紀錄</h3>
-                <a class="btn btn-secondary" th:href="@{/taskrecord/select_page}">返回</a>
+                <a class="btn btn-secondary" th:href="@{/admin/taskrecord/select_page}">返回</a>
             </header>
 
             <div class="card-body">
-                <form th:action="@{/taskrecord/update}" method="post" th:object="${taskRecordVO}">
+                <form th:action="@{/admin/taskrecord/update}" method="post" th:object="${taskRecordVO}">
                     <label>紀錄ID</label>
                     <div><input th:field="*{taskRecordId}" class="readonly" readonly /></div>
 
                     <label>會員ID</label>
-                    <div><input th:field="*{userVO.userId}" class="readonly" readonly /></div>
+                    <div><input th:field="*{user.userId}" class="readonly" readonly /></div>
 
                     <label>任務</label>
                     <div>

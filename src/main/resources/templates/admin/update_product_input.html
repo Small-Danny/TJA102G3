@@ -40,9 +40,9 @@
 
 				<!-- 表單 -->
 				<form
-					th:action="@{/admin/products/{id}/edit(id=${product.productId})}"
+					th:action="@{/admin/products/{id}/edit(id=${productVO.productId})}"
 					method="post" enctype="multipart/form-data"
-					class="card card-primary">
+					th:object="${productVO}" class="card card-primary">
 
 					<div class="card-header">
 						<h3 class="card-title">修改商品資料</h3>
@@ -52,60 +52,70 @@
 						<div class="row g-3">
 
 							<input type="hidden" name="productId"
-								th:value="${product.productId}" />
+								th:value="${productVO.productId}" />
 
 							<div class="col-md-4">
 								<label class="form-label">商品代碼 <span class="text-danger">*</span></label>
 								<input type="text" name="productCode" class="form-control"
-									th:value="${product.productCode}" required maxlength="64">
+									th:value="${productVO.productCode}" required maxlength="64">
+								<small class="text-danger"
+									th:if="${#fields.hasErrors('productCode')}"
+									th:errors="*{productCode}">代碼錯誤</small>
 							</div>
 
 							<div class="col-md-4">
 								<label class="form-label">商品名稱 <span class="text-danger">*</span></label>
 								<input type="text" name="productName" class="form-control"
-									th:value="${product.productName}" required maxlength="255">
+									th:value="${productVO.productName}" required maxlength="255">
 							</div>
 
 							<div class="col-md-4">
-								<label class="form-label">商品分類（type）</label> <input
-									type="number" name="productType" class="form-control"
-									th:value="${product.productType}" min="0" step="1">
+								<label for="productType" class="form-label">商品分類（type）</label> <select
+									id="productType" class="form-select" th:field="*{productType}"
+									required>
+									<option value="" disabled
+										th:selected="${#fields.hasErrors('productType')} ? false : *{productType} == null">
+										請選擇分類</option>
+									<option th:value="0">裝備類</option>
+									<option th:value="1">容器類</option>
+									<option th:value="2">蛋白粉類</option>
+								</select>
 							</div>
 
 							<div class="col-12">
 								<label class="form-label">商品描述</label>
 								<textarea name="productDescription" class="form-control"
 									rows="3" maxlength="255"
-									th:text="${product.productDescription}"></textarea>
+									th:text="${productVO.productDescription}"></textarea>
 							</div>
 
 							<div class="col-md-4">
 								<label class="form-label">價格 <span class="text-danger">*</span></label>
 								<input type="number" name="productPrice" class="form-control"
-									th:value="${product.productPrice}" min="0" step="1" required>
+									th:value="${productVO.productPrice}" min="0" step="1" required>
 							</div>
 
 							<div class="col-md-4">
 								<label class="form-label">庫存 <span class="text-danger">*</span></label>
 								<input type="number" name="stockQuantity" class="form-control"
-									th:value="${product.stockQuantity}" min="0" step="1" required>
+									th:value="${productVO.stockQuantity}" min="0" step="1" required>
 							</div>
 
 							<div class="col-md-4">
 								<label class="form-label">狀態</label> <select
 									name="productStatus" class="form-select">
-									<option value="1" th:selected="${product.productStatus == 1}">上架</option>
-									<option value="0" th:selected="${product.productStatus == 0}">下架</option>
+									<option value="1" th:selected="${productVO.productStatus == 1}">上架</option>
+									<option value="0" th:selected="${productVO.productStatus == 0}">下架</option>
 								</select>
 							</div>
 
 							<!-- 圖片區：檔名 + 上傳 + 預覽 -->
 							<div class="col-md-8">
-								<label class="form-label" for="pictureInput">圖片檔名</label> 
-								<input type="text" id="pictureInput" name="productPicture"
-								       class="form-control" th:value="${product.productPicture}"
-								       th:attr="data-original-name=${product.productPicture}"
-								       placeholder="例如：products/clothes.png">
+								<label class="form-label" for="pictureInput">圖片檔名</label> <input
+									type="text" id="pictureInput" name="productPicture"
+									class="form-control" th:value="${productVO.productPicture}"
+									th:attr="data-original-name=${productVO.productPicture}"
+									placeholder="例如：products/clothes.png">
 								<div class="form-text">
 									圖片由後端存到
 									<code>/uploads</code>
@@ -126,12 +136,12 @@
 
 							<div class="col-md-4 d-flex align-items-end">
 								<img id="previewImage" data-mode="edit"
-								     th:src="${product != null and product.productPicture != null} ?
-								              @{/uploads/{f}(f=${product.productPicture})} :
-								              @{/frontend-template/assets/img/default.png}"
-								     th:attr="data-original-src=${product != null and product.productPicture != null} ?
-								              @{/uploads/{f}(f=${product.productPicture})} :
-								              @{/frontend-template/assets/img/default.png}"
+								     th:src="*{productPicture} != null ?
+								               @{/uploads/{f}(f=*{productPicture})} :
+								               @{/frontend-template/assets/img/default.png}"
+								     th:attr="data-original-src=*{productPicture} != null ?
+								               @{/uploads/{f}(f=*{productPicture})} :
+								               @{/frontend-template/assets/img/default.png}"
 								     onerror="this.src='/frontend-template/assets/img/default.png'"
 								     class="img-fluid img-thumbnail w-100" alt="預覽圖片">
 							</div>
@@ -150,7 +160,7 @@
 	</div>
 
 	<div id="empty-scripts" th:fragment="empty-scripts">
-  <script>
+		<script>
   (() => {
 	  console.log('[product] preview script loaded');
 	  const file = document.getElementById('imageFile');
@@ -202,6 +212,6 @@
 	  });
 	})();
   </script>
-</div>
+	</div>
 </body>
 </html>
