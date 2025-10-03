@@ -81,13 +81,34 @@
   }
 
   function renderSummary(summaryWrap, totalEl, labels, values, unit, total){
+    // 正規化成 {label, val}，把 NaN 視為 0
+    const entries = (labels || []).map((d, i) => ({
+      label: d,
+      val: Number(values?.[i] ?? 0) || 0
+    }));
+
+    // 一律過濾掉數值為 0 的項目
+    const shown = entries.filter(e => e.val > 0);
+
+    // 渲染右側清單
     if (summaryWrap) {
-      const html = labels.map((d,i) =>
-        `<li class="d-flex justify-content-between"><span>${fmtLabel(d)}</span><span>${values[i] ?? 0} ${unit}</span></li>`
-      ).join('');
-      summaryWrap.innerHTML = html;
+      if (!shown.length) {
+        summaryWrap.innerHTML = `<li class="text-muted py-2">目前沒有資料哦~</li>`;
+      } else {
+        summaryWrap.innerHTML = shown.map(e =>
+          `<li class="d-flex justify-content-between">
+             <span>${fmtLabel(e.label)}</span>
+             <span>${e.val} ${unit}</span>
+           </li>`
+        ).join('');
+      }
     }
-    if (totalEl) totalEl.textContent = `${total ?? (values?.reduce((a,b)=>a+(+b||0),0))} ${unit}`;
+
+    // 總計仍使用後端 total（或回退為原 values 總和）
+    if (totalEl) {
+      const sum = total ?? (values?.reduce((a,b)=> a + (+b || 0), 0));
+      totalEl.textContent = `${sum} ${unit}`;
+    }
   }
 
   // ============ 載入資料 ============
