@@ -112,4 +112,10 @@ public interface ProductRepository extends JpaRepository<ProductVO, Integer> {
 	    @Modifying
 	    @Query("update ProductVO p set p.productStatus = :status where p.productId in :ids")
 	    int bulkUpdateStatus(@Param("ids") List<Integer> ids, @Param("status") int status);
+	    
+	    //防止新增商品時ProductCode相同的查詢
+	    boolean existsByProductCode(String productCode);
+	    
+	    boolean existsByProductCodeAndProductIdNot(String productCode, Integer productId);
+	    
 }

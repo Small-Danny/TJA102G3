@@ -2,9 +2,13 @@ package com.tibafit.controller.product;
 
 import com.tibafit.model.cart.ProductVO;
 import com.tibafit.service.product.ProductService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -54,7 +58,7 @@ public class ProductController {
         return "admin/listOneProduct";
     }
 
-    @GetMapping("/add")
+    @GetMapping("/add")	
     public String addForm(Model model) {
         model.addAttribute("productVO", new ProductVO());
         return "admin/add_product";
@@ -63,22 +67,28 @@ public class ProductController {
     /** 新增商品（支援上傳 imageFile） */
     @PostMapping("/add")
     public String insert(
-            ProductVO form,
+            @Valid @ModelAttribute("productVO") ProductVO form,
+            BindingResult br,
             @RequestParam(name = "imageFile", required = false) MultipartFile imageFile,
-            RedirectAttributes ra
+            RedirectAttributes ra,
+            Model model
     ) {
+        if (br.hasErrors()) return "admin/add_product";
+
         try {
             String savedFileName = saveImageIfPresent(imageFile);
             if (savedFileName != null) {
-                // 只存檔名到資料庫
                 form.setProductPicture(savedFileName);
             }
             svc.add(form);
             ra.addFlashAttribute("successMsg", "新增成功");
             return "redirect:/admin/products";
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            br.rejectValue("productCode", "dup", "商品代碼已存在，請更換");
+            return "admin/add_product";
         } catch (IOException e) {
-            ra.addFlashAttribute("errorMsg", "圖片上傳失敗：" + e.getMessage());
-            return "redirect:/admin/products/add";
+            model.addAttribute("errorMsg", "圖片上傳失敗：" + e.getMessage());
+            return "admin/add_product";
         }
     }
 
@@ -95,10 +105,14 @@ public class ProductController {
     @PostMapping("/{id}/edit")
     public String update(
             @PathVariable Integer id,
-            ProductVO form,
+            @Valid @ModelAttribute("productVO") ProductVO form,
+            BindingResult br,
             @RequestParam(name = "imageFile", required = false) MultipartFile imageFile,
-            RedirectAttributes ra
+            RedirectAttributes ra,
+            Model model
     ) {
+        if (br.hasErrors()) return "admin/update_product_input";
+
         form.setProductId(id);
         try {
             String savedFileName = saveImageIfPresent(imageFile);
@@ -108,9 +122,12 @@ public class ProductController {
             svc.update(form);
             ra.addFlashAttribute("successMsg", "修改成功");
             return "redirect:/admin/products/" + id;
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            br.rejectValue("productCode", "dup", "商品代碼已存在，請更換");
+            return "admin/update_product_input";
         } catch (IOException e) {
-            ra.addFlashAttribute("errorMsg", "圖片上傳失敗：" + e.getMessage());
-            return "redirect:/admin/products/" + id + "/edit";
+            model.addAttribute("errorMsg", "圖片上傳失敗：" + e.getMessage());
+            return "admin/update_product_input";
         }
     }
 

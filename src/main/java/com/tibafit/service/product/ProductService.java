@@ -21,20 +21,43 @@ public class ProductService {
 	private static final Pattern NUMERIC_SIZE = Pattern.compile("(?i)^\\s*(\\d+(?:\\.\\d+)?)(?:\\s*(ML|L|G|KG))?\\s*$");
 	private static final Pattern PURE_NUMBER = Pattern.compile("^\\s*(\\d+(?:\\.\\d+)?)\\s*$");
 
+	private String safeTrim(String pcode) {
+		return pcode == null ? null : pcode.trim();
+	}
+
 	public ProductService(ProductRepository repo) {
 		this.repo = repo;
 	}
 
 	// -------------------- CRUD --------------------
 
-	public void add(ProductVO v) {
-		fillDefaults(v);
-		repo.save(v);
+	public void add(ProductVO p) {
+		String code = safeTrim(p.getProductCode());
+		if (code == null || code.isEmpty())
+			throw new IllegalArgumentException("商品代碼不可為空");
+		p.setProductCode(code);
+
+		if (repo.existsByProductCode(code))
+			throw new org.springframework.dao.DuplicateKeyException("商品代碼已存在: " + code);
+		fillDefaults(p);
+		repo.save(p);
 	}
 
-	public void update(ProductVO v) {
-		fillDefaults(v);
-		repo.save(v);
+	public void update(ProductVO p) {
+		if (p.getProductId() == null)
+            throw new IllegalArgumentException("更新需要 productId");
+		
+		 ProductVO origin = repo.findById(p.getProductId())
+	                .orElseThrow(() -> new NoSuchElementException("找不到商品"));
+		 
+		 String code = safeTrim(p.getProductCode());
+	        if (code == null || code.isEmpty())
+	            throw new IllegalArgumentException("商品代碼不可為空");
+	        if (repo.existsByProductCodeAndProductIdNot(code, p.getProductId()))
+	            throw new org.springframework.dao.DuplicateKeyException("商品代碼已存在: " + code);		
+	        
+		fillDefaults(p);
+		repo.save(p);
 	}
 
 	public void delete(Integer id) {
@@ -687,18 +710,20 @@ public class ProductService {
 
 		return raw; // 其他維持原樣
 	}
-	
-	/** 批次刪除 */
-    @Transactional
-    public void deleteAll(List<Integer> ids) {
-        if (ids == null || ids.isEmpty()) return;
-        repo.deleteAllByIdInBatch(ids);
-    }
 
-    /** 批次更新上/下架：status=1 上架；status=0 下架 */
-    @Transactional
-    public int updateStatus(List<Integer> ids, int status) {
-        if (ids == null || ids.isEmpty()) return 0;
-        return repo.bulkUpdateStatus(ids, status);
-    }
+	/** 批次刪除 */
+	@Transactional
+	public void deleteAll(List<Integer> ids) {
+		if (ids == null || ids.isEmpty())
+			return;
+		repo.deleteAllByIdInBatch(ids);
+	}
+
+	/** 批次更新上/下架：status=1 上架；status=0 下架 */
+	@Transactional
+	public int updateStatus(List<Integer> ids, int status) {
+		if (ids == null || ids.isEmpty())
+			return 0;
+		return repo.bulkUpdateStatus(ids, status);
+	}
 }
