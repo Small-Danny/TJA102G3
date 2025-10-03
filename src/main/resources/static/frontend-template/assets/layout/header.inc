@@ -133,18 +133,36 @@
   const cartTotalEl   = document.getElementById('cart-total');
   const cartCountEl   = document.getElementById('cart-count');
 
-  /* ========= CSRF 取用 ========= */
+  /* ========= CSRF 取用（新增 Cookie 備援） ========= */
   let CSRF = { headerName: null, token: null };
+
+  function readCookie(name) {
+    return document.cookie
+      .split(';')
+      .map(s => s.trim())
+      .find(s => s.startsWith(name + '='))?.split('=')[1];
+  }
+
   async function ensureCsrf() {
     if (CSRF.token && CSRF.headerName) return CSRF;
+
+    // 1) 先從 Cookie 取（CookieCsrfTokenRepository 預設 XSRF-TOKEN）
+    const cookieToken = readCookie('XSRF-TOKEN');
+    if (cookieToken) {
+      CSRF = { headerName: 'X-XSRF-TOKEN', token: decodeURIComponent(cookieToken) };
+      return CSRF;
+    }
+
+    // 2) 再嘗試你現有的 API
     try {
       const res = await fetch('/api/csrf-token', { credentials: 'same-origin' });
-      if (!res.ok) return CSRF; // 若未開 CSRF，就跳過
-      const data = await res.json();
-      CSRF = {
-        headerName: data.headerName || 'X-CSRF-TOKEN',
-        token: data.token || ''
-      };
+      if (res.ok) {
+        const data = await res.json();
+        CSRF = {
+          headerName: data.headerName || 'X-CSRF-TOKEN',
+          token: data.token || ''
+        };
+      }
     } catch (_) {}
     return CSRF;
   }
@@ -156,13 +174,12 @@
   /* ========= 載入購物車摘要 ========= */
   async function loadCart() {
     try {
-      const res = await fetch('/api/cart/summary', { credentials: 'same-origin' });
+      const res = await fetch('/api/cart/summary', { credentials: 'same-origin', cache: 'no-store' });
       if (!res.ok) throw 0;
       const data = await res.json();
-      // 期望：{ items:[{productId,productName,productPicture,unitPrice,quantity,itemTotal}], totalAmount, cartCount }
-      renderCart(data || { items: [], totalAmount: 0, cartCount: 0 });
+      renderCart(data || { items: [], totalAmount: 0, totalQuantity: 0 });
     } catch {
-      renderCart({ items: [], totalAmount: 0, cartCount: 0 });
+      renderCart({ items: [], totalAmount: 0, totalQuantity: 0 });
     }
   }
 
@@ -176,7 +193,6 @@
       const price = Number(it.unitPrice ?? it.price ?? 0);
       const sub   = qty * price;
 
-      // 圖片路徑（你專案圖片在 /frontend-template/assets/img/）
       const picUrl = it.productPicture
         ? `/frontend-template/assets/img/${encodeURIComponent(it.productPicture)}`
         : '/frontend-template/assets/images/line_qrcode_placeholder.svg';
@@ -189,8 +205,6 @@
             <div class="text-muted" style="font-size:.9rem">${qty} x NT$ ${fmt(price)}</div>
           </div>
           <div class="mini-cart-price">NT$ ${fmt(sub)}</div>
-
-          <!-- 新增：刪除按鈕 -->
           <button class="mini-cart-remove" title="移除" aria-label="移除" data-product-id="${pid}">&times;</button>
         </div>
       `;
@@ -199,42 +213,34 @@
     const total = Number(model.totalAmount ?? 0);
     cartTotalEl.textContent = `NT$ ${fmt(total)}`;
 
-    const count = Number(model.cartCount ?? items.reduce((s, it)=>s + Number(it.quantity||0), 0));
+    // 使用後端提供的 totalQuantity 優先，其次自己加總
+    const count = Number(model.totalQuantity ?? items.reduce((s, it)=>s + Number(it.quantity||0), 0));
     cartCountEl.textContent = count > 0 ? count : '';
   }
 
-  /* ========= 刪除商品 ========= */
+  /* ========= 刪除商品（改成 ?productId=...） ========= */
   async function removeItem(productId) {
     await ensureCsrf();
 
-    // 1) 優先使用 RESTful DELETE
-    try {
-      const res = await fetch(`/api/cart/items/${encodeURIComponent(productId)}`, {
-        method: 'DELETE',
-        headers: withCsrf({ 'Accept': 'application/json' }),
-        credentials: 'same-origin'
-      });
-      if (res.ok) return;
-    } catch (_) {}
-
-    // 2) 若 DELETE 失敗，再嘗試備案 POST /api/cart/remove
-    const res2 = await fetch('/api/cart/remove', {
-      method: 'POST',
-      headers: withCsrf({ 'Content-Type': 'application/json', 'Accept': 'application/json' }),
-      credentials: 'same-origin',
-      body: JSON.stringify({ productId })
+    const url = `/api/cart/items?productId=${encodeURIComponent(Number(productId))}`;
+    const res = await fetch(url, {
+      method: 'DELETE',
+      headers: withCsrf({ 'Accept': 'application/json' }),
+      credentials: 'same-origin'
     });
-    if (!res2.ok) throw new Error(`移除失敗 (${res2.status})`);
+
+    if (!(res.ok || res.status === 204)) {
+      const msg = await res.text().catch(()=>'');
+      throw new Error(`移除失敗：${res.status} ${msg}`);
+    }
   }
 
   /* ========= 事件 ========= */
-  // 開啟購物車時，刷新內容
   openCartBtn?.addEventListener('click', async () => {
     await loadCart();
     openOverlay();
   });
 
-  // 委派：點擊刪除
   cartListWrap.addEventListener('click', async (evt) => {
     const btn = evt.target.closest('.mini-cart-remove');
     if (!btn) return;
@@ -244,15 +250,15 @@
     btn.disabled = true;
     try {
       await removeItem(pid);
-      await loadCart(); // 重新載入
+      await loadCart();
     } catch (e) {
       alert('移除商品失敗，請稍後再試');
+      console.error(e);
     } finally {
       btn.disabled = false;
     }
   });
 
-  // 關閉燈箱（右上角叉叉 / 點半透明區 / ESC）
   cartCloseBtn?.addEventListener('click', closeOverlay);
   cartOverlay?.addEventListener('click', (e) => {
     if (e.target === cartOverlay) closeOverlay();
@@ -270,12 +276,11 @@
     cartOverlay?.classList.remove('open');
   }
 
-  // 頁面載入時先把右上角數量徽章同步一次（不強制打開燈箱）
+  // 初次同步徽章
   loadCart();
 
   // 小工具
   function fmt(n){ return (Math.round(Number(n||0)*100)/100).toLocaleString() }
   function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-
 })();
 </script>
