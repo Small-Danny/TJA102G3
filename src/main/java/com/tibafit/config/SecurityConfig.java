@@ -3,14 +3,12 @@ package com.tibafit.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tibafit.config.filter.ReCaptchaAuthenticationFilter;
 import com.tibafit.service.user.AdminDetailsService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,7 +18,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -36,6 +33,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -212,13 +210,11 @@ public class SecurityConfig {
 
     @Bean("userRememberMeServices")
     public RememberMeServices userRememberMeServices() {
-        TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(rememberMeKey, userDetailsService) {
-            @Override
-            protected boolean rememberMeRequested(HttpServletRequest request, String parameter) {
-                return true;
-            }
-        };
+
+        TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(rememberMeKey, userDetailsService);
         rememberMe.setTokenValiditySeconds(86400 * 14);
+        rememberMe.setCookieName("user-remember-me-cookie");
+        rememberMe.setParameter("user-remember-me");
         return rememberMe;
     }
 
@@ -226,43 +222,9 @@ public class SecurityConfig {
     public RememberMeServices adminRememberMeServices() {
         TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(rememberMeKey, adminDetailsService);
         rememberMe.setTokenValiditySeconds(86400 * 14); // cookie 有效期 14 天
+        rememberMe.setCookieName("admin-remember-me-cookie");
+        rememberMe.setParameter("admin-remember-me");
         return rememberMe;
-    }
-
-    /**
-     * 同樣使用「委派模式」，根據請求路徑判斷要使用哪個 RememberMeServices。
-     * - /admin/** 的請求會觸發 adminRememberMeServices。
-     * - 其他請求則觸發 userRememberMeServices。
-     */
-    @Bean
-    @Primary
-    public RememberMeServices delegatingRememberMeServices(@Qualifier("userRememberMeServices") RememberMeServices userRememberMeServices, @Qualifier("adminRememberMeServices") RememberMeServices adminRememberMeServices) {
-        // 這是一個 (Anonymous Class) 的寫法，用來動態切換兩種服務
-        return new RememberMeServices() {
-            @Override
-            public Authentication autoLogin(HttpServletRequest request, HttpServletResponse response) {
-                String uri = request.getRequestURI();
-                if (uri.startsWith("/admin/")) {
-                    return adminRememberMeServices.autoLogin(request, response);
-                } else {
-                    return userRememberMeServices.autoLogin(request, response);
-                }
-            }
-
-            @Override
-            public void loginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
-                if (request.getRequestURI().startsWith("/admin/")) {
-                    adminRememberMeServices.loginSuccess(request, response, auth);
-                } else {
-                    userRememberMeServices.loginSuccess(request, response, auth);
-                }
-            }
-
-            @Override
-            public void loginFail(HttpServletRequest request, HttpServletResponse response) {
-                // loginFail 通常不需要做特別處理
-            }
-        };
     }
 
 
@@ -329,12 +291,19 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http,
-                                                        @Qualifier("adminSecurityContextRepository") SecurityContextRepository adminSecurityContextRepository) throws Exception {
+                                                      @Qualifier("adminSecurityContextRepository") SecurityContextRepository adminSecurityContextRepository,
+                                                      // ▼▼▼ 注入主要的委派服務 ▼▼▼
+                                                        @Qualifier("adminRememberMeServices") RememberMeServices adminRememberMeServices) throws Exception {
         http
-                .securityMatcher("/admin/**") // ★ 關鍵1: 指定此鏈的作用域
+                .securityMatcher(new OrRequestMatcher(
+                        new AntPathRequestMatcher("/admin/**"),
+                        new AntPathRequestMatcher("/adminlte/**") ,// 讓後台過濾器也處理 adminlte 的請求
+                        new AntPathRequestMatcher("/uploads/**")
+                ))
                 .authenticationProvider(adminAuthenticationProvider()) // 指定後台驗證邏輯
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/admin/login").permitAll() // 開放後台登入頁
+                        .requestMatchers("/adminlte/**", "/uploads/**").permitAll()
+                        .requestMatchers("/admin/login").permitAll()  // 開放後台登入頁
                         .anyRequest().hasRole("ADMIN") // 其他 /admin/ 路徑皆需 ADMIN 角色
                 )
                 .formLogin(form -> form // 使用 Spring Security 內建的表單登入
@@ -348,14 +317,16 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/admin/logout", "POST"))
-                        .logoutSuccessHandler(customLogoutSuccessHandler) // 使用您自訂的登出成功處理器
+                        .logoutSuccessUrl("/admin/login?logout") // 使用您自訂的登出成功處理器
                         .invalidateHttpSession(false) // ★ 關鍵3: 登出時【不】銷毀整個Session，只清除自己的認證
-                        .deleteCookies("JSESSIONID")
+                        .deleteCookies("admin-remember-me", "XSRF-TOKEN")
                 )
                 .rememberMe(remember -> remember
-                        .rememberMeServices(adminRememberMeServices()) // 使用後台專用的 "記住我" 服務
+                        .rememberMeServices(adminRememberMeServices) // 使用後台專用的 "記住我" 服務
                 )
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())); // 啟用 CSRF 保護
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                );
 
         return http.build();
     }
@@ -370,7 +341,9 @@ public class SecurityConfig {
     public SecurityFilterChain userSecurityFilterChain(HttpSecurity http,
                                                        ReCaptchaAuthenticationFilter recaptchaAuthenticationFilter,
                                                        AuthenticationEntryPoint delegatingAuthenticationEntryPoint,
-                                                       @Qualifier("userSecurityContextRepository") SecurityContextRepository userSecurityContextRepository) throws Exception {
+                                                       @Qualifier("userSecurityContextRepository") SecurityContextRepository userSecurityContextRepository,
+                                                       // ▼▼▼ 注入主要的委派服務 ▼▼▼
+                                                       @Qualifier("userRememberMeServices") RememberMeServices userRememberMeServices) throws Exception {
         http
                 .securityMatcher("/**") // ★ 關鍵1: 作用於所有其他請求
                 .authenticationProvider(customUserAuthenticationProvider) // 指定前台驗證邏輯
@@ -385,7 +358,7 @@ public class SecurityConfig {
                                 "/frontend-template/forum.html", "/frontend-template/article-detail.html"
                         ).permitAll()
                         // --- 靜態資源 ---
-                        .requestMatchers("/frontend-template/**", "/adminlte/**", "/images/**").permitAll()
+                        .requestMatchers("/frontend-template/**","/images/**").permitAll()
                         // --- 公開 API ---
                         .requestMatchers(
                                 "/api/users/register", "/api/users/login", "/api/users/send-code",
@@ -393,6 +366,7 @@ public class SecurityConfig {
                                 "/api/csrf-token", "/api/products/**", "/api/cart/**", "/shop/api/**",
                                 "/api/ecpay/callback", "/payment/ecpay/return", "/api/line-pay/confirm",
                                 "/api/posts/**", "/api/sidebar", "/api/categories", "/api/report-types"
+                                ,"/api/ai/**"
                         ).permitAll()
                         // --- 規則 B: 其他所有請求，只要登入即可 ---
                         .anyRequest().authenticated()
@@ -402,14 +376,14 @@ public class SecurityConfig {
                         .securityContextRepository(userSecurityContextRepository) // ★ 關鍵2: 使用前台專用的 SecurityContextRepository
                 )
                 .rememberMe(remember -> remember
-                        .rememberMeServices(userRememberMeServices()) // 使用前台專用的 "記住我" 服務
+                        .rememberMeServices(userRememberMeServices  ) // 使用前台專用的 "記住我" 服務
                 )
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/api/users/logout", "POST"))
                         .logoutSuccessHandler(customLogoutSuccessHandler)
                         .invalidateHttpSession(false) // ★ 關鍵3: 登出時同樣【不】銷毀整個Session
                         .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID", "remember-me", "XSRF-TOKEN")
+                        .deleteCookies( "user-remember-me", "XSRF-TOKEN")
                 )
                 .cors(withDefaults()) // 啟用 CORS
                 .csrf(csrf -> csrf // 設定 CSRF
@@ -417,7 +391,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers( // 忽略金流和部分API的CSRF檢查
                                 "/ecpay/callback", "/payment/ecpay", "/payment/ecpay/return",
                                 "/api/line-pay/confirm", "/api/line-pay/callback", "/api/line-pay/notification",
-                                "/api/posts/**", "/api/mycollection/**", "/api/myarticles/**"
+                                "/api/posts/**", "/api/mycollection/**", "/api/myarticles/**","/api/cart/**"
                         )
                 )
                 .headers(headers -> headers // 設定安全標頭
