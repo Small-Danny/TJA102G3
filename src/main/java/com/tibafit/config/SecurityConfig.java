@@ -49,17 +49,17 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * =======================================================================================
  * [核心安全組態] SecurityConfig.java
  * =======================================================================================
- *
+ * <p>
  * 各位團隊成員請注意：
  * 這份檔案是整個應用程式的【安全中樞】，定義了所有關於使用者認證(Authentication)、
  * 授權(Authorization)、CSRF保護、CORS設定、以及各種安全性的細節。
- *
+ * <p>
  * 任何對此檔案的修改都可能影響到：
  * 1. 使用者登入、登出流程
  * 2. 頁面與API的存取權限
  * 3. 跨站請求偽造(CSRF)的防護
  * 4. 金流串接的穩定性
- *
+ * <p>
  * 這份設定經過多次迭代與調整，才達到目前能同時處理「前台使用者」、「後台管理員」及
  * 「API請求」三種不同情境的穩定狀態。請在修改前務必了解每個區塊的功能。
  *
@@ -291,18 +291,25 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http,
-                                                      @Qualifier("adminSecurityContextRepository") SecurityContextRepository adminSecurityContextRepository,
-                                                      // ▼▼▼ 注入主要的委派服務 ▼▼▼
+                                                        @Qualifier("adminSecurityContextRepository") SecurityContextRepository adminSecurityContextRepository,
+                                                        // ▼▼▼ 注入主要的委派服務 ▼▼▼
                                                         @Qualifier("adminRememberMeServices") RememberMeServices adminRememberMeServices) throws Exception {
         http
                 .securityMatcher(new OrRequestMatcher(
                         new AntPathRequestMatcher("/admin/**"),
-                        new AntPathRequestMatcher("/adminlte/**") ,// 讓後台過濾器也處理 adminlte 的請求
-                        new AntPathRequestMatcher("/uploads/**")
+                        new AntPathRequestMatcher("/adminlte/**"),// 讓後台過濾器也處理 adminlte 的請求
+                        new AntPathRequestMatcher("/uploads/**"),
+                        new AntPathRequestMatcher("/plugins/**"), // 任務
+                        new AntPathRequestMatcher("/images/**"),
+                        new AntPathRequestMatcher("/webjars/**"),
+                        new AntPathRequestMatcher("/css/**"),
+                        new AntPathRequestMatcher("/js/**"),
+                        new AntPathRequestMatcher("/tasks/**")
                 ))
                 .authenticationProvider(adminAuthenticationProvider()) // 指定後台驗證邏輯
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/adminlte/**", "/uploads/**").permitAll()
+                        .requestMatchers("/adminlte/**", "/uploads/**", "/plugins/**", "/images/**", "/webjars/**"
+                                , "/css/**", "/js/**", "/tasks/**").permitAll()
                         .requestMatchers("/admin/login").permitAll()  // 開放後台登入頁
                         .anyRequest().hasRole("ADMIN") // 其他 /admin/ 路徑皆需 ADMIN 角色
                 )
@@ -358,7 +365,7 @@ public class SecurityConfig {
                                 "/frontend-template/forum.html", "/frontend-template/article-detail.html"
                         ).permitAll()
                         // --- 靜態資源 ---
-                        .requestMatchers("/frontend-template/**","/images/**").permitAll()
+                        .requestMatchers("/frontend-template/**", "/images/**").permitAll()
                         // --- 公開 API ---
                         .requestMatchers(
                                 "/api/users/register", "/api/users/login", "/api/users/send-code",
@@ -366,7 +373,7 @@ public class SecurityConfig {
                                 "/api/csrf-token", "/api/products/**", "/api/cart/**", "/shop/api/**",
                                 "/api/ecpay/callback", "/payment/ecpay/return", "/api/line-pay/confirm",
                                 "/api/posts/**", "/api/sidebar", "/api/categories", "/api/report-types"
-                                ,"/api/ai/**"
+                                , "/api/ai/**"
                         ).permitAll()
                         // --- 規則 B: 其他所有請求，只要登入即可 ---
                         .anyRequest().authenticated()
@@ -376,14 +383,14 @@ public class SecurityConfig {
                         .securityContextRepository(userSecurityContextRepository) // ★ 關鍵2: 使用前台專用的 SecurityContextRepository
                 )
                 .rememberMe(remember -> remember
-                        .rememberMeServices(userRememberMeServices  ) // 使用前台專用的 "記住我" 服務
+                        .rememberMeServices(userRememberMeServices) // 使用前台專用的 "記住我" 服務
                 )
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/api/users/logout", "POST"))
                         .logoutSuccessHandler(customLogoutSuccessHandler)
                         .invalidateHttpSession(false) // ★ 關鍵3: 登出時同樣【不】銷毀整個Session
                         .clearAuthentication(true)
-                        .deleteCookies( "user-remember-me", "XSRF-TOKEN")
+                        .deleteCookies("user-remember-me", "XSRF-TOKEN")
                 )
                 .cors(withDefaults()) // 啟用 CORS
                 .csrf(csrf -> csrf // 設定 CSRF
@@ -391,7 +398,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers( // 忽略金流和部分API的CSRF檢查
                                 "/ecpay/callback", "/payment/ecpay", "/payment/ecpay/return",
                                 "/api/line-pay/confirm", "/api/line-pay/callback", "/api/line-pay/notification",
-                                "/api/posts/**", "/api/mycollection/**", "/api/myarticles/**","/api/cart/**",
+                                "/api/posts/**", "/api/mycollection/**", "/api/myarticles/**", "/api/cart/**",
                                 "/api/ai/**"
                         )
                 )
