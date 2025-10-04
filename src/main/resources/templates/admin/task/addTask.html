@@ -1,173 +1,285 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant"
+  th:replace="~{admin/layout :: layout(~{::title}, ~{::#pageContent}, ~{::#pageScripts})}">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>任務資料新增 - addTask (Simple0 風格)</title>
+
   <head th:insert="~{/admin/task/included-fragment}"></head>
 
   <style>
-    :root { --card-bg:#fff; --card-border:#dee2e6; --muted:#6c757d; --soft:#f8f9fa; }
-    body { padding-top:72px; }
-    .container-narrow { max-width: 900px; margin: 0 auto; padding: 0 12px; }
+    :root {
+      --card-bg: #fff;
+      --card-border: #dee2e6;
+      --muted: #6c757d;
+      --soft: #f8f9fa;
+    }
+
+    body {
+      padding-top: 72px;
+    }
+
+    .container-narrow {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 12px;
+    }
 
     /* 卡片外觀（貼近 simple0） */
-    .card { background: var(--card-bg); border:1px solid var(--card-border); border-radius:.5rem; box-shadow:0 1px 2px rgba(0,0,0,.04); }
-    .card-header { padding:.75rem 1rem; border-bottom:1px solid var(--card-border); display:flex; align-items:center; justify-content:space-between; }
-    .card-title { margin:0; font-size:1.1rem; font-weight:600; }
-    .card-body { padding:1rem; }
-    .card-footer { padding:.75rem 1rem; border-top:1px solid var(--card-border); background:var(--soft); }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: .5rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+    }
+
+    .card-header {
+      padding: .75rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 1rem;
+    }
+
+    .card-footer {
+      padding: .75rem 1rem;
+      border-top: 1px solid var(--card-border);
+      background: var(--soft);
+    }
 
     /* 表單：兩欄佈局，小螢幕改一欄 */
-    .form-grid { display:grid; grid-template-columns: 180px 1fr; gap:.5rem .75rem; align-items:center; }
-    @media (max-width: 768px){ .form-grid { grid-template-columns: 1fr; } .form-grid label { margin-top:.25rem; } }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: .5rem .75rem;
+      align-items: center;
+    }
 
-    .form-grid label { font-weight:600; }
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid label {
+        margin-top: .25rem;
+      }
+    }
+
+    .form-grid label {
+      font-weight: 600;
+    }
+
     .form-grid input[type=text],
     .form-grid input[type=password],
     .form-grid input[type=url],
     .form-grid input[type=number],
     .form-grid input[type=date],
     .form-grid select,
-    .form-grid textarea { width:100%; padding:.375rem .5rem; border:1px solid #e9ecef; border-radius:.375rem; }
+    .form-grid textarea {
+      width: 100%;
+      padding: .375rem .5rem;
+      border: 1px solid #e9ecef;
+      border-radius: .375rem;
+    }
 
-    .hint { color:var(--muted); font-size:.9rem; }
-    .error { color:#dc3545; font-size:.85rem; }
+    .hint {
+      color: var(--muted);
+      font-size: .9rem;
+    }
 
-    .btn { display:inline-block; padding:.375rem .75rem; border:1px solid #198754; color:#198754; background:#fff; border-radius:.375rem; text-decoration:none; font-size:.9rem; cursor:pointer; }
-    .btn:hover { background:#198754; color:#fff; }
-    .btn-secondary { border-color:#6c757d; color:#6c757d; }
-    .btn-secondary:hover { background:#6c757d; color:#fff; }
+    .error {
+      color: #dc3545;
+      font-size: .85rem;
+    }
 
-    .img-preview { display:block; border-radius:.375rem; border:1px solid #e9ecef; }
-    .row-line { height:1px; background:#eef1f4; margin:.25rem 0 .75rem 0; grid-column:1 / -1; }
+    .btn {
+      display: inline-block;
+      padding: .375rem .75rem;
+      border: 1px solid #198754;
+      color: #198754;
+      background: #fff;
+      border-radius: .375rem;
+      text-decoration: none;
+      font-size: .9rem;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #198754;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      border-color: #6c757d;
+      color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background: #6c757d;
+      color: #fff;
+    }
+
+    .img-preview {
+      display: block;
+      border-radius: .375rem;
+      border: 1px solid #e9ecef;
+    }
+
+    .row-line {
+      height: 1px;
+      background: #eef1f4;
+      margin: .25rem 0 .75rem 0;
+      grid-column: 1 / -1;
+    }
   </style>
 </head>
+
 <body>
   <!-- Navbar：延續 bg-success 與回查詢頁連結 -->
   <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
     <div class="text-center">
       <h2 class="m-0">任務資料新增 - addTask</h2>
       <div class="mt-1">
-        <a class="navbar-brand" th:href="@{/admin/tasks/select_page}"><img th:src="@{/images/back1.gif}" alt="返回">回查詢頁</a>
+        <a class="navbar-brand" th:href="@{/admin/tasks/select_page}"><img th:src="@{/images/back1.gif}"
+            alt="返回">回查詢頁</a>
       </div>
     </div>
   </nav>
+  <div id="pageContent">
+    <main class="container-narrow">
+      <p class="hint mt-3 mb-2 text-center"><b>所有欄位皆為必填欄位</b></p>
 
-  <main class="container-narrow">
-    <p class="hint mt-3 mb-2 text-center"><b>所有欄位皆為必填欄位</b></p>
+      <section class="card mb-4">
+        <header class="card-header">
+          <h3 class="card-title">新增任務</h3>
+          <a class="btn btn-secondary" th:href="@{/admin/tasks/select_page}">回查詢頁</a>
+        </header>
 
-    <section class="card mb-4">
-      <header class="card-header">
-        <h3 class="card-title">新增任務</h3>
-        <a class="btn btn-secondary" th:href="@{/admin/tasks/select_page}">回查詢頁</a>
-      </header>
+        <div class="card-body">
+          <!-- 若你的 Controller 實際路徑不同，請把 @{insert} 改成對應路徑 -->
+          <form th:action="@{insert}" method="post" enctype="multipart/form-data" th:object="${taskVO}">
+            <div class="form-grid">
+              <!-- 任務名稱 -->
+              <label>任務名稱</label>
+              <div>
+                <input type="text" th:field="*{taskName}" onclick="hideContent('taskName.errors');" />
+                <span th:if="${#fields.hasErrors('taskName')}" th:errors="*{taskName}" class="error"
+                  id="taskName.errors"></span>
+              </div>
 
-      <div class="card-body">
-        <!-- 若你的 Controller 實際路徑不同，請把 @{insert} 改成對應路徑 -->
-        <form th:action="@{insert}" method="post" enctype="multipart/form-data" th:object="${taskVO}">
-          <div class="form-grid">
-            <!-- 任務名稱 -->
-            <label>任務名稱</label>
-            <div>
-              <input type="text" th:field="*{taskName}" onclick="hideContent('taskName.errors');" />
-              <span th:if="${#fields.hasErrors('taskName')}" th:errors="*{taskName}" class="error" id="taskName.errors"></span>
+              <!-- 任務類型 -->
+              <label>任務類型</label>
+              <div>
+                <select th:field="*{taskTypeVO.taskTypeId}">
+                  <option th:each="taskTypeVO : ${taskTypeListData}" th:value="${taskTypeVO.taskTypeId}"
+                    th:text="${taskTypeVO.taskTypeName}"></option>
+                </select>
+              </div>
+
+              <div class="row-line"></div>
+
+              <!-- 目標值 -->
+              <label>目標值</label>
+              <div>
+                <input type="number" th:field="*{targetValue}" onclick="hideContent('targetValue.errors');" />
+                <span th:if="${#fields.hasErrors('targetValue')}" th:errors="*{targetValue}" class="error"
+                  id="targetValue.errors"></span>
+              </div>
+
+              <!-- 單位 -->
+              <label>單位</label>
+              <div>
+                <input type="text" th:field="*{unit}" onclick="hideContent('unit.errors');" />
+                <span th:if="${#fields.hasErrors('unit')}" th:errors="*{unit}" class="error" id="unit.errors"></span>
+              </div>
+
+              <!-- 開始日 -->
+              <label>開始日</label>
+              <div>
+                <input type="date" th:field="*{startTime}" onclick="hideContent('startTime.errors');" />
+                <span th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}" class="error"
+                  id="startTime.errors"></span>
+              </div>
+
+              <!-- 結束日 -->
+              <label>結束日</label>
+              <div>
+                <input type="date" th:field="*{endTime}" onclick="hideContent('endTime.errors');" />
+                <span th:if="${#fields.hasErrors('endTime')}" th:errors="*{endTime}" class="error"
+                  id="endTime.errors"></span>
+              </div>
+
+              <!-- 點數 -->
+              <label>點數</label>
+              <div>
+                <input type="number" th:field="*{points}" min="0" max="127" onclick="hideContent('points.errors');" />
+                <span th:if="${#fields.hasErrors('points')}" th:errors="*{points}" class="error"
+                  id="points.errors"></span>
+              </div>
+
+              <!-- 任務圖騰（檔案上傳 + 預覽） -->
+              <label>任務圖騰</label>
+              <div>
+                <input type="file" th:field="*{taskIcon}" id="taskIcon" accept="image/*" />
+                <div id="blob_holder" class="mt-1"></div>
+                <div class="hint">支援檔案：PNG / JPEG / GIF。</div>
+                <span class="error" th:utext="${errorMessage}" id="taskIcon.errors"></span>
+              </div>
+
+              <!-- 建立人員ID -->
+              <label>建立人員ID</label>
+              <div>
+                <input type="number" th:field="*{adminId}" onclick="hideContent('adminId.errors');" />
+                <span th:if="${#fields.hasErrors('adminId')}" th:errors="*{adminId}" class="error"
+                  id="adminId.errors"></span>
+              </div>
             </div>
 
-            <!-- 任務類型 -->
-            <label>任務類型</label>
-            <div>
-              <select th:field="*{taskTypeVO.taskTypeId}">
-                <option th:each="taskTypeVO : ${taskTypeListData}" th:value="${taskTypeVO.taskTypeId}" th:text="${taskTypeVO.taskTypeName}"></option>
-              </select>
+            <div class="text-end mt-3">
+              <button type="submit" class="btn" id="submit">送出新增</button>
             </div>
+          </form>
+        </div>
 
-            <div class="row-line"></div>
-
-            <!-- 目標值 -->
-            <label>目標值</label>
-            <div>
-              <input type="number" th:field="*{targetValue}" onclick="hideContent('targetValue.errors');" />
-              <span th:if="${#fields.hasErrors('targetValue')}" th:errors="*{targetValue}" class="error" id="targetValue.errors"></span>
-            </div>
-
-            <!-- 單位 -->
-            <label>單位</label>
-            <div>
-              <input type="text" th:field="*{unit}" onclick="hideContent('unit.errors');" />
-              <span th:if="${#fields.hasErrors('unit')}" th:errors="*{unit}" class="error" id="unit.errors"></span>
-            </div>
-
-            <!-- 開始日 -->
-            <label>開始日</label>
-            <div>
-              <input type="date" th:field="*{startTime}" onclick="hideContent('startTime.errors');" />
-              <span th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}" class="error" id="startTime.errors"></span>
-            </div>
-
-            <!-- 結束日 -->
-            <label>結束日</label>
-            <div>
-              <input type="date" th:field="*{endTime}" onclick="hideContent('endTime.errors');" />
-              <span th:if="${#fields.hasErrors('endTime')}" th:errors="*{endTime}" class="error" id="endTime.errors"></span>
-            </div>
-
-            <!-- 點數 -->
-            <label>點數</label>
-            <div>
-              <input type="number" th:field="*{points}" min="0" max="127" onclick="hideContent('points.errors');" />
-              <span th:if="${#fields.hasErrors('points')}" th:errors="*{points}" class="error" id="points.errors"></span>
-            </div>
-
-            <!-- 任務圖騰（檔案上傳 + 預覽） -->
-            <label>任務圖騰</label>
-            <div>
-              <input type="file" th:field="*{taskIcon}" id="taskIcon" accept="image/*" />
-              <div id="blob_holder" class="mt-1"></div>
-              <div class="hint">支援檔案：PNG / JPEG / GIF。</div>
-              <span class="error" th:utext="${errorMessage}" id="taskIcon.errors"></span>
-            </div>
-
-            <!-- 建立人員ID -->
-            <label>建立人員ID</label>
-            <div>
-              <input type="number" th:field="*{adminId}" onclick="hideContent('adminId.errors');" />
-              <span th:if="${#fields.hasErrors('adminId')}" th:errors="*{adminId}" class="error" id="adminId.errors"></span>
-            </div>
-          </div>
-
-          <div class="text-end mt-3">
-            <button type="submit" class="btn" id="submit">送出新增</button>
-          </div>
-        </form>
-      </div>
-
-      <footer class="card-footer">
+        <!-- <footer class="card-footer">
         <span class="hint">提示：本頁採 Thymeleaf <code>th:field</code> 綁定與 <code>multipart/form-data</code> 上傳。</span>
-      </footer>
-    </section>
-  </main>
+      </footer> -->
+      </section>
+    </main>
+  </div>
 
   <script>
     // 清除提示
-    function hideContent(d){ var el=document.getElementById(d); if(el) el.style.display='none'; }
+    function hideContent(d) { var el = document.getElementById(d); if (el) el.style.display = 'none'; }
 
     // 立即預覽選取的圖片
-    document.addEventListener('DOMContentLoaded', function(){
+    document.addEventListener('DOMContentLoaded', function () {
       var fileInput = document.getElementById('taskIcon');
       var holder = document.getElementById('blob_holder');
-      if(!fileInput || !holder) return;
-      var accepted = { 'image/png':true, 'image/jpeg':true, 'image/gif':true };
-      fileInput.addEventListener('change', function(){
+      if (!fileInput || !holder) return;
+      var accepted = { 'image/png': true, 'image/jpeg': true, 'image/gif': true };
+      fileInput.addEventListener('change', function () {
         var file = this.files && this.files[0];
-        if(!file) return;
-        if(!accepted[file.type]) {
+        if (!file) return;
+        if (!accepted[file.type]) {
           holder.innerHTML = "<div style='text-align:left'>● 上傳ContentType限制: <b><span style='color:#dc3545'>image/png、image/jpeg、image/gif</span></b></div>";
           document.getElementById('submit').disabled = true;
           return;
         }
         var reader = new FileReader();
-        reader.onload = function(e){
+        reader.onload = function (e) {
           var img = new Image();
           img.width = 120; img.height = 120; img.className = 'img-preview';
           img.src = e.target.result;
@@ -180,4 +292,5 @@
     });
   </script>
 </body>
+
 </html>
