@@ -212,8 +212,8 @@
 
     <script>
         // ====== API 基本設定（依你的環境調整） ======
-        // const API_BASE = 'http://localhost:8080'; // 若與頁面同網域，可用 ''（空字串）代表同源
-        const API_BASE = (typeof window !== 'undefined' && window.API_BASE) ? window.API_BASE : '';
+        const API_BASE = 'http://tibafit.ddns.net/'; // 若與頁面同網域，可用 ''（空字串）代表同源
+        // const API_BASE = (typeof window !== 'undefined' && window.API_BASE) ? window.API_BASE : '';
         function join(base, path) {
             return base.replace(/\/+$/, '') + '/' + path.replace(/^\/+/, '');
         }
