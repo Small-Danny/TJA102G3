@@ -278,9 +278,9 @@ header.header-style-one.three:before {
         width: 90px;
         height: 90px;
     }
-    .form-control {
-        height: 56px;
-    }
+/*     .form-control { */
+/*         height: 56px; */
+/*     } */
     textarea {
         height: 120px;
     }

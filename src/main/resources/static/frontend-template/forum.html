@@ -1,122 +1,439 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>文章列表</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<!-- <link -->
+<!-- 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" -->
+<!-- 	rel="stylesheet"> -->
+<!-- <link -->
+<!-- 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" -->
+<!-- 	rel="stylesheet"> -->
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/style.css">
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/responsive.css">
+<link rel="stylesheet" type="text/css"
+	href="/frontend-template/assets/css/header.css">
+
+
 <style>
-body { background:#f5f5f5; font-family:Arial,sans-serif; }
-/* 文章列表 */ 
-.container { margin-top:20px; }
-.blog-post { background:#fff; border-radius:10px; padding:15px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); display:flex; flex-direction:column; gap:10px; transition:0.3s; }
-.blog-post:hover { transform:translateY(-3px); box-shadow:0 8px 18px rgba(0,0,0,0.15); }
-.blog-image { width:100%; height:200px; background-size:cover; background-position:center; border-radius:8px; }
-.blog-category { font-size:13px; color:#c62828; font-weight:600; margin-bottom:4px; }
-.blog-title { font-size:20px; font-weight:bold; margin:0; color:#555; }
-.blog-title a { text-decoration:none; color:#555; transition:0.3s; }
-.blog-title a:hover { text-decoration:underline; color:#c62828; }
-.blog-meta { font-size:12px; color:#666; margin-bottom:5px; }
-.blog-actions { display:flex; gap:10px; flex-wrap:wrap; }
-.action-btn { display:inline-flex; align-items:center; justify-content:center; padding:6px 12px; border:1px solid #ddd; border-radius:5px; background:#fff; cursor:pointer; transition:0.3s; font-size:14px; text-decoration:none; color:#c62828; }
-.action-btn:hover { background:#c62828; color:#fff; border-color:#c62828; }
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+
+body {
+	background: #f5f5f5;
+	font-family: Arial, sans-serif;
+}
+/* 文章列表 */
+.container {
+	margin-top: 20px;
+}
+
+.blog-post {
+	background: #fff;
+	border-radius: 10px;
+	padding: 15px;
+	margin-bottom: 20px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	transition: 0.3s;
+}
+
+.blog-post:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+.blog-image {
+	width: 100%;
+	height: 200px;
+	background-size: cover;
+	background-position: center;
+	border-radius: 8px;
+}
+
+.blog-category {
+	font-size: 13px;
+	color: #c62828;
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.blog-title {
+	font-size: 20px;
+	font-weight: bold;
+	margin: 0;
+	color: #555;
+}
+
+.blog-title a {
+	text-decoration: none;
+	color: #555;
+	transition: 0.3s;
+}
+
+
+.blog-title a:hover {
+	text-decoration: underline;
+	color: #c62828;
+}
+
+.blog-meta {
+	font-size: 12px;
+	color: #666;
+	margin-bottom: 5px;
+}
+
+.blog-actions {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.action-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 6px 12px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	background: #fff;
+	cursor: pointer;
+	transition: 0.3s;
+	font-size: 14px;
+	text-decoration: none;
+	color: #c62828;
+}
+
+.action-btn:hover {
+	background: #c62828;
+	color: #fff;
+	border-color: #c62828;
+}
 /* 搜尋欄 */
-#searchBar { display:flex; gap:5px; margin-bottom:15px; }
-#searchBar input { flex:1; padding:6px 12px; border-radius:30px; border:1px solid #ccc; outline:none; font-size:14px; }
-#searchBar button { padding:6px 15px; border:none; border-radius:30px; background:#c62828; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.3s; }
-#searchBar button:hover { background:#e53935; }
+#searchBar {
+	display: flex;
+	gap: 5px;
+	margin-bottom: 15px;
+}
+
+#searchBar input {
+	flex: 1;
+	padding: 6px 12px;
+	border-radius: 30px;
+	border: 1px solid #ccc;
+	outline: none;
+	font-size: 14px;
+}
+
+#searchBar button {
+	padding: 6px 15px;
+	border: none;
+	border-radius: 30px;
+	background: #c62828;
+	color: #fff;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: 0.3s;
+}
+
+#searchBar button:hover {
+	background: #e53935;
+}
 /* 分頁 */
-.pagination-container { display:flex; justify-content:space-between; align-items:center; margin-top:15px; flex-wrap:wrap; }
-.pagination { display:flex; gap:5px; list-style:none; padding:0; margin:0; flex-wrap:wrap; }
-.pagination li { border:1px solid #ddd; border-radius:5px; }
-.pagination li a { display:block; padding:4px 8px; text-decoration:none; color:#c62828; font-size:13px; }
-.pagination li.active a { background:#c62828; color:#fff; border-color:#c62828; }
-.pagination li.disabled a { color:#aaa; cursor:default; }
-.pagination li a:hover { background:#c62828; color:#fff; border-color:#c62828; }
-.page-size-select select { font-size:11px; padding:1px 3px; border-radius:3px; height:22px; }
+.pagination-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 15px;
+	flex-wrap: wrap;
+}
+
+.pagination {
+	display: flex;
+	gap: 5px;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	flex-wrap: wrap;
+}
+
+.pagination li {
+	border: 1px solid #ddd;
+	border-radius: 5px;
+}
+
+.pagination li a {
+	display: block;
+	padding: 4px 8px;
+	text-decoration: none;
+	color: #c62828;
+	font-size: 13px;
+}
+
+.pagination li.active a {
+	background: #c62828;
+	color: #fff;
+	border-color: #c62828;
+}
+
+.pagination li.disabled a {
+	color: #aaa;
+	cursor: default;
+}
+
+.pagination li a:hover {
+	background: #c62828;
+	color: #fff;
+	border-color: #c62828;
+}
+
+.page-size-select select {
+	font-size: 11px;
+	padding: 1px 3px;
+	border-radius: 3px;
+	height: 22px;
+}
 /* 側邊欄卡片 */
-.sidebar { background:#fff; padding:15px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:20px; transition:0.3s; }
-.sidebar:hover { transform:translateY(-2px); box-shadow:0 8px 16px rgba(0,0,0,0.12); }
-.sidebar h3 { font-size:18px; margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:5px; color:#c62828; }
-.sidebar ul { list-style:none; padding:0; margin:0; }
-.sidebar ul li { display:flex; gap:10px; margin-bottom:12px; }
-.sidebar ul li img { width:50px; height:50px; object-fit:cover; border-radius:6px; }
-.sidebar ul li .info { flex:1; }
-#recent-posts ul li .info a,
-#category-list ul li a,
-#favorites-list ul li .info a,
-#meta-links ul li a,
-#meta-links ul li button { font-size:14px; font-weight:500; color:#555; text-decoration:none; transition:0.3s; cursor:pointer; background:none; border:none; padding:0; }
-#recent-posts ul li .info a:hover,
-#category-list ul li a:hover,
-#favorites-list ul li .info a:hover,
-#meta-links ul li a:hover,
-#meta-links ul li button:hover { text-decoration:underline; color:#c62828; }
+.sidebar {
+	background: #fff;
+	padding: 15px;
+	border-radius: 10px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+	transition: 0.3s;
+}
+
+.sidebar:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.sidebar h3 {
+	font-size: 18px;
+	margin-bottom: 12px;
+	border-bottom: 1px solid #eee;
+	padding-bottom: 5px;
+	color: #c62828;
+}
+
+.sidebar ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.sidebar ul li {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+
+.sidebar ul li img {
+	width: 50px;
+	height: 50px;
+	object-fit: cover;
+	border-radius: 6px;
+}
+
+.sidebar ul li .info {
+	flex: 1;
+}
+
+#recent-posts ul li .info a, #category-list ul li a, #favorites-list ul li .info a,
+	#meta-links ul li a, #meta-links ul li button {
+	font-size: 14px;
+	font-weight: 500;
+	color: #555;
+	text-decoration: none;
+	transition: 0.3s;
+	cursor: pointer;
+	background: none;
+	border: none;
+	padding: 0;
+}
+
+#recent-posts ul li .info a:hover, #category-list ul li a:hover,
+	#favorites-list ul li .info a:hover, #meta-links ul li a:hover,
+	#meta-links ul li button:hover {
+	text-decoration: underline;
+	color: #c62828;
+}
 /* 側邊欄作者/日期改小字 */
-#recent-posts ul li .meta,
-#favorites-list ul li .meta {
-    font-size:12px;
-    color:#666;
-    margin-top:4px;
+#recent-posts ul li .meta, #favorites-list ul li .meta {
+	font-size: 12px;
+	color: #666;
+	margin-top: 4px;
 }
 /* 收藏查看所有 */
-#favorites-list .view-all-btn { display:block; text-align:center; margin-top:10px; padding:6px 10px; background:#c62828; color:#fff; border-radius:5px; text-decoration:none; transition:0.3s; }
-#favorites-list .view-all-btn:hover { background:#e53935; }
+#favorites-list .view-all-btn {
+	display: block;
+	text-align: center;
+	margin-top: 10px;
+	padding: 6px 10px;
+	background: #c62828;
+	color: #fff;
+	border-radius: 5px;
+	text-decoration: none;
+	transition: 0.3s;
+}
+
+#favorites-list .view-all-btn:hover {
+	background: #e53935;
+}
 /* 會員功能卡片 */
-#user-card { display:none; background:#fff; padding:15px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:20px; }
-#user-card h3 { font-size:18px; font-weight:600; margin-bottom:15px; border-left:4px solid #c62828; padding-left:8px; color:#c62828; }
-.user-functions { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
-.func-item { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:18px 5px; border:1px solid #eee; border-radius:8px; background:#fafafa; color:#555; text-decoration:none; transition:all 0.25s ease; }
-.func-item i { font-size:24px; margin-bottom:6px; color:#c62828; }
-.func-item span { font-size:14px; }
-.func-item:hover { background:#c62828; color:#fff; }
-.func-item:hover i { color:#fff; }
+#user-card {
+	display: none;
+	background: #fff;
+	padding: 15px;
+	border-radius: 10px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+
+#user-card h3 {
+	font-size: 18px;
+	font-weight: 600;
+	margin-bottom: 15px;
+	border-left: 4px solid #c62828;
+	padding-left: 8px;
+	color: #c62828;
+}
+
+.user-functions {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 12px;
+}
+
+.func-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 18px 5px;
+	border: 1px solid #eee;
+	border-radius: 8px;
+	background: #fafafa;
+	color: #555;
+	text-decoration: none;
+	transition: all 0.25s ease;
+}
+
+.func-item i {
+	font-size: 24px;
+	margin-bottom: 6px;
+	color: #c62828;
+}
+
+.func-item span {
+	font-size: 14px;
+}
+
+.func-item:hover {
+	background: #c62828;
+	color: #fff;
+}
+
+.func-item:hover i {
+	color: #fff;
+}
 </style>
 </head>
+
+
 <body>
-<div class="container">
-  <div class="row">
-    <div class="col-lg-8">
-      <div id="searchBar">
-        <input type="text" id="keywordInput" placeholder="搜尋文章...">
-        <button id="searchBtn"><i class="fas fa-search"></i></button>
-      </div>
-      <div id="post-list"></div>
-      <div class="pagination-container">
-        <ul class="pagination" id="pagination"></ul>
-        <div class="page-size-select">
-          <select id="pageSizeSelect">
-            <option value="3">3</option>
-            <option value="7" selected>7</option>
-            <option value="10">10</option>
-          </select>
-        </div>
-      </div>
-    </div>
+	<div id="header-placeholder"></div>
+	<section class="banner-style-one">
+		<div class="parallax"></div>
+		<div class="container">
+			<div class="row">
+				<div class="banner-details">
+					<h2>討論版</h2>
+					<p>歡迎回來！管理您的個人資料與服務</p>
+				</div>
+			</div>
+		</div>
+	</section>
+	<div class="container">
 
-    <div class="col-lg-4">
-      <!-- 使用者功能 -->
-      <div id="user-card">
-        <h3>功能一覽</h3>
-        <div class="user-functions">
-          <a href="myarticles.html" class="func-item"><i class="fa-regular fa-file-lines"></i><span>我的文章</span></a>
-          <a href="mycollection.html" class="func-item"><i class="fa-regular fa-bookmark"></i><span>我的收藏</span></a>
-          <a href="profile.html" class="func-item"><i class="fa-solid fa-user-gear"></i><span>會員中心</span></a>
-          <a href="post-article.html" class="func-item"><i class="fa-regular fa-pen-to-square"></i><span>我要發文</span></a>
-        </div>
-      </div>
+		<div class="row">
+			<div class="col-lg-8">
+				<div id="searchBar">
+					<input type="text" id="keywordInput" placeholder="搜尋文章...">
+					<button id="searchBtn">
+						<i class="fas fa-search"></i>
+					</button>
+				</div>
+				<div id="post-list"></div>
+				<div class="pagination-container">
+					<ul class="pagination" id="pagination"></ul>
+					<div class="page-size-select">
+						<select id="pageSizeSelect">
+							<option value="3">3</option>
+							<option value="7" selected>7</option>
+							<option value="10">10</option>
+						</select>
+					</div>
+				</div>
+			</div>
 
-      <!-- 其他側邊欄 -->
-      <div class="sidebar" id="recent-posts"><h3>最新文章</h3><ul></ul></div>
-      <div class="sidebar" id="category-list"><h3>分類</h3><ul></ul></div>
-      <div class="sidebar" id="favorites-list"><h3>我的收藏</h3><ul></ul></div>
-      <div class="sidebar" id="meta-links"><h3>網站資訊</h3><ul></ul></div>
-    </div>
-  </div>
-</div>
+			<div class="col-lg-4">
+				<!-- 使用者功能 -->
+				<div id="user-card">
+					<h3>功能一覽</h3>
+					<div class="user-functions">
+						<a href="myarticles.html" class="func-item"><i
+							class="fa-regular fa-file-lines"></i><span>我的文章</span></a> <a
+							href="mycollection.html" class="func-item"><i
+							class="fa-regular fa-bookmark"></i><span>我的收藏</span></a> <a
+							href="profile.html" class="func-item"><i
+							class="fa-solid fa-user-gear"></i><span>會員中心</span></a> <a
+							href="post-article.html" class="func-item"><i
+							class="fa-regular fa-pen-to-square"></i><span>我要發文</span></a>
+					</div>
+				</div>
 
-<script>
+				<!-- 其他側邊欄 -->
+				<div class="sidebar" id="recent-posts">
+					<h3>最新文章</h3>
+					<ul></ul>
+				</div>
+				<div class="sidebar" id="category-list">
+					<h3>分類</h3>
+					<ul></ul>
+				</div>
+				<div class="sidebar" id="favorites-list">
+					<h3>我的收藏</h3>
+					<ul></ul>
+				</div>
+				<div class="sidebar" id="meta-links">
+					<h3>網站資訊</h3>
+					<ul></ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+	
 document.addEventListener("DOMContentLoaded", function() {
     const postList = document.getElementById("post-list");
     const recentPosts = document.querySelector("#recent-posts ul");
@@ -239,40 +556,58 @@ document.addEventListener("DOMContentLoaded", function() {
             userCard.style.display = 'block';
         }
 
-        // 登出 JS (fetch)
-        document.querySelectorAll('.logoutBtn').forEach(btn=>{
-            btn.addEventListener('click', async function(){
-                const csrfToken = document.cookie.split('; ')
-                    .find(row => row.startsWith('XSRF-TOKEN='))
-                    ?.split('=')[1];
-                if(!csrfToken){ 
-                    alert("無法取得 CSRF Token，請重新整理頁面"); 
-                    return; 
-                }
+//         // 登出 JS (fetch)
+//         document.querySelectorAll('.logoutBtn').forEach(btn=>{
+//             btn.addEventListener('click', async function(){
+//                 const csrfToken = document.cookie.split('; ')
+//                     .find(row => row.startsWith('XSRF-TOKEN='))
+//                     ?.split('=')[1];
+//                 if(!csrfToken){ 
+//                     alert("無法取得 CSRF Token，請重新整理頁面"); 
+//                     return; 
+//                 }
 
-                try{
-                    await fetch('/logout', {
-                        method:'POST',
-                        headers:{
-                            'Content-Type':'application/x-www-form-urlencoded',
-                            'X-CSRF-TOKEN': csrfToken
-                        },
-                        body: `_csrf=${csrfToken}`,
-                        credentials: 'same-origin'
-                    });
-                    window.location.href = '/frontend-template/index.html';
-                } catch(err){
-                    console.error(err);
-                    alert("登出失敗");
-                }
-            });
-        });
+//                 try{
+//                     await fetch('/logout', {
+//                         method:'POST',
+//                         headers:{
+//                             'Content-Type':'application/x-www-form-urlencoded',
+//                             'X-CSRF-TOKEN': csrfToken
+//                         },
+//                         body: `_csrf=${csrfToken}`,
+//                         credentials: 'same-origin'
+//                     });
+//                     window.location.href = '/frontend-template/index.html';
+//                 } catch(err){
+//                     console.error(err);
+//                     alert("登出失敗");
+//                 }
+//             });
+//         });
 
     });
 
     loadPosts();
 });
+
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!--  頁尾 -->
+	<div id="footer-placeholder"></div>
+	<!-- ======================= 唯一修改點：會員中心腳本 ======================= -->
+	<script src="/frontend-template/assets/js/jquery.min.js"></script>
+	<script src="/frontend-template/assets/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="/frontend-template/assets/js/api.js"></script>
+	<script src="/frontend-template/assets/js/loader.js"></script>
+	<script src="/frontend-template/assets/js/custom.js"></script>
+<!-- 	會擋頁面
+	<script src="/frontend-template/assets/js/profile.js"></script>
 </body>
+
+<!-- 	<script -->
+<!-- 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> -->
+
+
+
 </html>
