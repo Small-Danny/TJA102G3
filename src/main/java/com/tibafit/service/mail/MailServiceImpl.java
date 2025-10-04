@@ -23,6 +23,7 @@ public class MailServiceImpl implements MailService {
 
 			// 填上收件人、主旨、內容
 			// (寄件人會自動使用我們在 application.properties 裡設定的 username
+			message.setFrom("TibaFit 服務中心 <ASO098107@gm.ntcu.edu.tw>");
 			message.setTo(to);
 			message.setSubject(subject);
 			message.setText(messageText);

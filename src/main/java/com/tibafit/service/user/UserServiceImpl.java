@@ -424,7 +424,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         // 發送郵件,之後要改正是網址
-        String resetUrl = "http://localhost:8080/frontend-template/reset-set-password.html?token=" + token;
+        String resetUrl = "http://tibafit.ddns.net/frontend-template/reset-set-password.html?token=" + token;
 
         String subject = "TibaFit 密碼重設申請信";
         String messageText = "您好！\n\n我們收到了您的密碼重設請求。\n\n" + "請點擊以下連結以設定您的新密碼，此連結將在15分鐘後失效：\n" + resetUrl + "\n\n"

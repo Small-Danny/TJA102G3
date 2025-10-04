@@ -105,8 +105,8 @@ public class LinePayService {
         pkg.setProducts(products);
 
         LinePayRequest.RedirectUrls urls = new LinePayRequest.RedirectUrls();
-        urls.setConfirmUrl("http://localhost:8080/frontend-template/pay_success.html");
-        urls.setCancelUrl("http://localhost:8080/frontend-template/pay_fail.html");
+        urls.setConfirmUrl("http://tibafit.ddns.net/frontend-template/pay_success.html");
+        urls.setCancelUrl("http://tibafit.ddns.net/frontend-template/pay_fail.html");
         LinePayRequest request = new LinePayRequest();
         request.setAmount(finalAmount);
         request.setCurrency("TWD");
