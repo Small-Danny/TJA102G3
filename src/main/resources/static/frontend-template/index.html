@@ -1,156 +1,145 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
-<!-- Meta 選項 -->
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Meta 選項 -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>TibaFit首頁</title>
+	<title>TibaFit首頁</title>
 
-<!-- CSS -->
-<link rel="stylesheet" type="text/css"
-	href="/frontend-template/assets/css/bootstrap.min.css">
-<link rel="icon" type="image/x-icon"
-	href="/frontend-template/assets/images/heading-icon.png">
-<link rel="stylesheet" type="text/css"
-	href="/frontend-template/assets/css/owl.carousel.min.css">
-<link rel="stylesheet" type="text/css"
-	href="/frontend-template/assets/css/owl.theme.default.min.css">
-<link rel="stylesheet"
-	href="/frontend-template/assets/css/jquery.fancybox.min.css">
-<link rel="stylesheet" type="text/css"
-	href="/frontend-template/assets/css/fontawesome.min.css">
-<link rel="stylesheet" type="text/css"
-	href="/frontend-template/assets/css/nice-select.css">
-<link rel="stylesheet" type="text/css"
-	href="/frontend-template/assets/css/style.css">
-<link rel="stylesheet" type="text/css"
-	href="/frontend-template/assets/css/responsive.css">
-<link rel="stylesheet" type="text/css"
-	href="/frontend-template/assets/css/header.css">
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/bootstrap.min.css">
+	<link rel="icon" type="image/x-icon" href="/frontend-template/assets/images/heading-icon.png">
+	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.carousel.min.css">
+	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/owl.theme.default.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/fontawesome.min.css">
+	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/nice-select.css">
+	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/style.css">
+	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/responsive.css">
+	<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
 
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<style>
-#hot-products .add-to-cart { 
-  display: none !important; 
-}
+	<style>
+		#hot-products .add-to-cart {
+			display: none !important;
+		}
 
-.project-style-one .product .btn-hover figure img {
-	max-width: 100%;
-	max-height: 100%;
-	width: auto;
-	height: auto;
-	object-fit: contain;
-}
+		.project-style-one .product .btn-hover figure img {
+			max-width: 100%;
+			max-height: 100%;
+			width: auto;
+			height: auto;
+			object-fit: contain;
+		}
 
-@media ( max-width :991.98px) {
-	.project-style-one .product .btn-hover figure {
-		height: 260px;
-	}
-}
+		@media (max-width :991.98px) {
+			.project-style-one .product .btn-hover figure {
+				height: 260px;
+			}
+		}
 
-@media ( max-width :575.98px) {
-	.project-style-one .product .btn-hover figure {
-		height: 200px;
-	}
-}
-.about-data-left img {
-  border-radius: 16px;
-  display: block;
-  width: 100%;
-  height: auto;
-}
+		@media (max-width :575.98px) {
+			.project-style-one .product .btn-hover figure {
+				height: 200px;
+			}
+		}
 
-/* 輪播左右外部按鈕 */
-.carousel-btn {
-	position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
-	border: 0;
-	width: 44px;
-	height: 44px;
-	border-radius: 9999px;
-	background: #fff;
-	box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	z-index: 3;
-}
+		.about-data-left img {
+			border-radius: 16px;
+			display: block;
+			width: 100%;
+			height: auto;
+		}
 
-.carousel-prev {
-	left: -6px;
-}
+		/* 輪播左右外部按鈕 */
+		.carousel-btn {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			border: 0;
+			width: 44px;
+			height: 44px;
+			border-radius: 9999px;
+			background: #fff;
+			box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			z-index: 3;
+		}
 
-.carousel-next {
-	right: -6px;
-}
+		.carousel-prev {
+			left: -6px;
+		}
 
-.carousel-btn i {
-	font-size: 18px;
-}
+		.carousel-next {
+			right: -6px;
+		}
 
-.carousel-btn:hover {
-	box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
-}
+		.carousel-btn i {
+			font-size: 18px;
+		}
 
-/* Owl 預設點點稍微往下 */
-.product-carousel .owl-dots {
-	margin-top: 18px;
-}
+		.carousel-btn:hover {
+			box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
+		}
 
-/* ====== Hot Products 卡片：外觀 ====== */
-#hot-products .product {
-  border-radius: 16px;           
-  overflow: hidden;              
-  background: #fff;              
-  box-shadow: 0 8px 20px rgba(0,0,0,.06);
-}
+		/* Owl 預設點點稍微往下 */
+		.product-carousel .owl-dots {
+			margin-top: 18px;
+		}
 
-/* 讓卡片內邊距不造成白邊 */
-#hot-products .product .main-data,
-#hot-products .product .btn-hover {
-  padding: 0;
-  background: transparent;
-}
+		/* ====== Hot Products 卡片：外觀 ====== */
+		#hot-products .product {
+			border-radius: 16px;
+			overflow: hidden;
+			background: #fff;
+			box-shadow: 0 8px 20px rgba(0, 0, 0, .06);
+		}
 
-/* ====== 圖片容器：裁切框 + 固定比例 ====== */
-#hot-products .product .btn-hover {
-  position: relative;
-}
+		/* 讓卡片內邊距不造成白邊 */
+		#hot-products .product .main-data,
+		#hot-products .product .btn-hover {
+			padding: 0;
+			background: transparent;
+		}
 
-#hot-products .product .btn-hover figure {
-  margin: 0;
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  display: block;
-  background: transparent;
-  border-radius: 0;
-}
+		/* ====== 圖片容器：裁切框 + 固定比例 ====== */
+		#hot-products .product .btn-hover {
+			position: relative;
+		}
 
-/* 圖片滿版且可放大 */
-#hot-products .product .btn-hover figure > img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transform: scale(1);           
-  transition: transform .5s ease;
-}
+		#hot-products .product .btn-hover figure {
+			margin: 0;
+			width: 100%;
+			aspect-ratio: 4 / 5;
+			overflow: hidden;
+			display: block;
+			background: transparent;
+			border-radius: 0;
+		}
 
-#hot-products .product:hover .btn-hover figure > img {
-  transform: scale(1.05);
-}
+		/* 圖片滿版且可放大 */
+		#hot-products .product .btn-hover figure>img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			display: block;
+			transform: scale(1);
+			transition: transform .5s ease;
+		}
 
-
-
-
-</style>
+		#hot-products .product:hover .btn-hover figure>img {
+			transform: scale(1.05);
+		}
+	</style>
 </head>
+
 <body>
 	<div id="header-placeholder"></div>
 
@@ -167,11 +156,10 @@
 						<p>您的專屬健身日誌</p>
 						<a href="/record" class="theme-btn">立即開始</a>
 					</div>
-					<svg width="261" height="235" viewBox="0 0 261 235"
-						xmlns="http://www.w3.org/2000/svg">
-            <path
+					<svg width="261" height="235" viewBox="0 0 261 235" xmlns="http://www.w3.org/2000/svg">
+						<path
 							d="M261 0L190.483 144.088H128.135L162.104 102.062L188.333 45.885H89.8666L70.0873 87.4818H117.815L0 235L49.0181 125.219H0L61.9176 0H261Z" />
-          </svg>
+					</svg>
 				</div>
 				<div class="f-slider-layer">
 					<div class="f-slider-one-data">
@@ -180,11 +168,10 @@
 						<p>解鎖成就，保持動力</p>
 						<a href="/tasks" class="theme-btn">領取任務</a>
 					</div>
-					<svg width="261" height="235" viewBox="0 0 261 235"
-						xmlns="http://www.w3.org/2000/svg">
-            <path
+					<svg width="261" height="235" viewBox="0 0 261 235" xmlns="http://www.w3.org/2000/svg">
+						<path
 							d="M261 0L190.483 144.088H128.135L162.104 102.062L188.333 45.885H89.8666L70.0873 87.4818H117.815L0 235L49.0181 125.219H0L61.9176 0H261Z" />
-          </svg>
+					</svg>
 				</div>
 				<div class="f-slider-layer">
 					<div class="f-slider-one-data">
@@ -193,11 +180,10 @@
 						<p>專業裝備與營養補給</p>
 						<a href="/shop/products" class="theme-btn">前往選購</a>
 					</div>
-					<svg width="261" height="235" viewBox="0 0 261 235"
-						xmlns="http://www.w3.org/2000/svg">
-            <path
+					<svg width="261" height="235" viewBox="0 0 261 235" xmlns="http://www.w3.org/2000/svg">
+						<path
 							d="M261 0L190.483 144.088H128.135L162.104 102.062L188.333 45.885H89.8666L70.0873 87.4818H117.815L0 235L49.0181 125.219H0L61.9176 0H261Z" />
-          </svg>
+					</svg>
 				</div>
 			</div>
 		</div>
@@ -208,8 +194,7 @@
 	<section class="gap service-style-one">
 		<div class="heading">
 			<figure>
-				<img src="/frontend-template/assets/images/heading-icon.png"
-					alt="標題圖示">
+				<img src="/frontend-template/assets/images/heading-icon.png" alt="標題圖示">
 			</figure>
 			<span>數位健身體驗</span>
 			<h2>核心功能</h2>
@@ -223,8 +208,7 @@
 							<a href="/tasks">任務挑戰系統</a>
 						</h3>
 						<p>每日簽到、完成指定運動任務，解鎖專屬成就，讓健身不再枯燥。</p>
-						<a class="icon" href="/tasks"><i
-							class="fa-solid fa-angles-right"></i></a>
+						<a class="icon" href="/tasks"><i class="fa-solid fa-angles-right"></i></a>
 					</div>
 				</div>
 				<div class="col-lg-4 col-md-6">
@@ -234,8 +218,7 @@
 							<a href="/records">詳盡運動紀錄</a>
 						</h3>
 						<p>輕鬆紀錄重訓組數、跑步里程與各項數據，圖表化分析成長軌跡。</p>
-						<a class="icon" href="/records"><i
-							class="fa-solid fa-angles-right"></i></a>
+						<a class="icon" href="/records"><i class="fa-solid fa-angles-right"></i></a>
 					</div>
 				</div>
 				<div class="col-lg-4 col-md-6">
@@ -245,8 +228,7 @@
 							<a href="/shop/products">線上裝備商城</a>
 						</h3>
 						<p>從高蛋白、肌酸到專業護具，一站式購齊訓練所需裝備與營養品。</p>
-						<a class="icon" href="/shop/products"><i
-							class="fa-solid fa-angles-right"></i></a>
+						<a class="icon" href="/shop/products"><i class="fa-solid fa-angles-right"></i></a>
 					</div>
 				</div>
 			</div>
@@ -261,12 +243,10 @@
 				<div class="col-lg-6">
 					<div id="my-about-image-container" class="about-data-left">
 						<figure>
-							<img src="/frontend-template/assets/images/workout-record.png"
-								alt="運動紀錄示範">
+							<img src="/frontend-template/assets/images/workout-record.png" alt="運動紀錄示範">
 						</figure>
 						<figure>
-							<img src="/frontend-template/assets/images/sports-task-badge.png"
-								alt="任務挑戰示範">
+							<img src="/frontend-template/assets/images/sports-task-badge.png" alt="任務挑戰示範">
 						</figure>
 					</div>
 				</div>
@@ -278,10 +258,8 @@
 							<p>無需依賴健身房或教練，TibaFit
 								幫你透過任務系統保持動力，用詳細紀錄追蹤每一步進步。不論是重訓、跑步還是居家運動，都能找到適合的挑戰與記錄方式，搭配商城裝備補給，讓健身更高效。</p>
 							<figure>
-								<img class="light-icon"
-									src="/frontend-template/assets/images/signature.png" alt="品牌標誌">
-								<img class="dark-icon"
-									src="/frontend-template/assets/images/signature-1.png"
+								<img class="light-icon" src="/frontend-template/assets/images/signature.png" alt="品牌標誌">
+								<img class="dark-icon" src="/frontend-template/assets/images/signature-1.png"
 									alt="品牌標誌">
 							</figure>
 							<h3>TibaFit 團隊</h3>
@@ -343,8 +321,7 @@
 	<section class="gap project-style-one pb-0 light-bg-color">
 		<div class="heading">
 			<figure>
-				<img src="/frontend-template/assets/images/heading-icon.png"
-					alt="標題圖示">
+				<img src="/frontend-template/assets/images/heading-icon.png" alt="標題圖示">
 			</figure>
 			<span>健身好幫手</span>
 			<h2>熱銷商品</h2>
@@ -361,8 +338,8 @@
 							<figure>
 								<img src="/frontend-template/assets/img/whey.svg" alt="乳清蛋白">
 							</figure>
-							<a class="theme-btn add-to-cart" href="javascript:void(0)"
-								data-id="1"> 加入購物車 <i class="fa-solid fa-bag-shopping"></i>
+							<a class="theme-btn add-to-cart" href="javascript:void(0)" data-id="1"> 加入購物車 <i
+									class="fa-solid fa-bag-shopping"></i>
 							</a>
 						</div>
 						<div class="data">
@@ -374,8 +351,7 @@
 							</div>
 						</div>
 					</div>
-					<a class="theme-btn" href="/shop/product/16">查看詳情 <i
-						class="fa-solid fa-arrow-right"></i></a>
+					<a class="theme-btn" href="/shop/product/16">查看詳情 <i class="fa-solid fa-arrow-right"></i></a>
 				</div>
 
 				<!-- 商品2 -->
@@ -383,11 +359,10 @@
 					<div class="main-data">
 						<div class="btn-hover">
 							<figure>
-								<img src="/frontend-template/assets/img/waist_belt.svg"
-									alt="運動腰帶">
+								<img src="/frontend-template/assets/img/waist_belt.svg" alt="運動腰帶">
 							</figure>
-							<a class="theme-btn add-to-cart" href="javascript:void(0)"
-								data-id="2"> 加入購物車 <i class="fa-solid fa-bag-shopping"></i>
+							<a class="theme-btn add-to-cart" href="javascript:void(0)" data-id="2"> 加入購物車 <i
+									class="fa-solid fa-bag-shopping"></i>
 							</a>
 						</div>
 						<div class="data">
@@ -399,8 +374,7 @@
 							</div>
 						</div>
 					</div>
-					<a class="theme-btn" href="/shop/product/10">查看詳情 <i
-						class="fa-solid fa-arrow-right"></i></a>
+					<a class="theme-btn" href="/shop/product/10">查看詳情 <i class="fa-solid fa-arrow-right"></i></a>
 				</div>
 
 				<!-- 商品3 -->
@@ -410,8 +384,8 @@
 							<figure>
 								<img src="/frontend-template/assets/img/knee_brace.svg" alt="護膝">
 							</figure>
-							<a class="theme-btn add-to-cart" href="javascript:void(0)"
-								data-id="3"> 加入購物車 <i class="fa-solid fa-bag-shopping"></i>
+							<a class="theme-btn add-to-cart" href="javascript:void(0)" data-id="3"> 加入購物車 <i
+									class="fa-solid fa-bag-shopping"></i>
 							</a>
 						</div>
 						<div class="data">
@@ -423,20 +397,17 @@
 							</div>
 						</div>
 					</div>
-					<a class="theme-btn" href="/shop/product/11">查看詳情 <i
-						class="fa-solid fa-arrow-right"></i></a>
+					<a class="theme-btn" href="/shop/product/11">查看詳情 <i class="fa-solid fa-arrow-right"></i></a>
 				</div>
 
 
 			</div>
 
 			<!-- 左右導航（外部按鈕） -->
-			<button class="carousel-btn carousel-prev"
-				data-target="#hot-products" aria-label="上一張">
+			<button class="carousel-btn carousel-prev" data-target="#hot-products" aria-label="上一張">
 				<i class="fa-solid fa-angle-left"></i>
 			</button>
-			<button class="carousel-btn carousel-next"
-				data-target="#hot-products" aria-label="下一張">
+			<button class="carousel-btn carousel-next" data-target="#hot-products" aria-label="下一張">
 				<i class="fa-solid fa-angle-right"></i>
 			</button>
 
@@ -518,9 +489,8 @@
 						<div class="accordion" id="accordionExample">
 							<div class="accordion-item">
 								<h2 class="accordion-header" id="headingOne">
-									<button class="accordion-button" type="button"
-										data-bs-toggle="collapse" data-bs-target="#collapseOne"
-										aria-expanded="true" aria-controls="collapseOne">
+									<button class="accordion-button" type="button" data-bs-toggle="collapse"
+										data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
 										<span class="num">01.</span> 數位健身夥伴
 									</button>
 								</h2>
@@ -534,9 +504,8 @@
 
 							<div class="accordion-item">
 								<h2 class="accordion-header" id="headingTwo">
-									<button class="accordion-button collapsed" type="button"
-										data-bs-toggle="collapse" data-bs-target="#collapseTwo"
-										aria-expanded="false" aria-controls="collapseTwo">
+									<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+										data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
 										<span class="num">02.</span> 遊戲化任務系統
 									</button>
 								</h2>
@@ -550,9 +519,9 @@
 
 							<div class="accordion-item">
 								<h2 class="accordion-header" id="headingThree">
-									<button class="accordion-button collapsed" type="button"
-										data-bs-toggle="collapse" data-bs-target="#collapseThree"
-										aria-expanded="false" aria-controls="collapseThree">
+									<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+										data-bs-target="#collapseThree" aria-expanded="false"
+										aria-controls="collapseThree">
 										<span class="num">03.</span> 全方位數據追蹤
 									</button>
 								</h2>
@@ -566,9 +535,9 @@
 
 							<div class="accordion-item">
 								<h2 class="accordion-header" id="headingFour">
-									<button class="accordion-button collapsed" type="button"
-										data-bs-toggle="collapse" data-bs-target="#collapseFour"
-										aria-expanded="false" aria-controls="collapseFour">
+									<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+										data-bs-target="#collapseFour" aria-expanded="false"
+										aria-controls="collapseFour">
 										<span class="num">04.</span> 支援多種運動
 									</button>
 								</h2>
@@ -588,8 +557,7 @@
 					<div class="shape">
 						<div class="video">
 							<figure>
-								<img src="/frontend-template/assets/images/core-feature-bg.svg"
-									alt="TibaFit 核心特色">
+								<img src="/frontend-template/assets/images/core-feature-bg.svg" alt="TibaFit 核心特色">
 							</figure>
 						</div>
 					</div>
@@ -614,27 +582,28 @@
 	<script src="/frontend-template/assets/js/cart.js"></script>
 
 	<script>
-  (function(){
-    var $hot = $('#hot-products').owlCarousel({
-      loop: true,
-      margin: 24,
-      nav: false,
-      dots: true,
-      autoplay: false,
-      smartSpeed: 450,
-      responsive:{
-        0:   { items: 1 },
-        576: { items: 2 },
-        992: { items: 3 }
-      }
-    });
+		(function () {
+			var $hot = $('#hot-products').owlCarousel({
+				loop: true,
+				margin: 24,
+				nav: false,
+				dots: true,
+				autoplay: false,
+				smartSpeed: 450,
+				responsive: {
+					0: { items: 1 },
+					576: { items: 2 },
+					992: { items: 3 }
+				}
+			});
 
-    // 綁定外部左右按鈕
-    document.querySelector('.carousel-prev[data-target="#hot-products"]')
-      .addEventListener('click', function(){ $hot.trigger('prev.owl.carousel'); });
-    document.querySelector('.carousel-next[data-target="#hot-products"]')
-      .addEventListener('click', function(){ $hot.trigger('next.owl.carousel'); });
-  })();
-</script>
+			// 綁定外部左右按鈕
+			document.querySelector('.carousel-prev[data-target="#hot-products"]')
+				.addEventListener('click', function () { $hot.trigger('prev.owl.carousel'); });
+			document.querySelector('.carousel-next[data-target="#hot-products"]')
+				.addEventListener('click', function () { $hot.trigger('next.owl.carousel'); });
+		})();
+	</script>
 </body>
+
 </html>
