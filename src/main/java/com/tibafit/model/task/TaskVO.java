@@ -19,6 +19,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -49,7 +50,7 @@ public class TaskVO {
     private TaskTypeVO taskTypeVO;
 
 
-    @NotNull
+    @NotBlank
     @Size(max = 100)
     @Column(name = "task_name", length = 100, nullable = false)
     private String taskName;
@@ -59,7 +60,7 @@ public class TaskVO {
     @Column(name = "target_value", nullable = false)
     private Integer targetValue;
 
-    @NotNull
+    @NotBlank
     @Size(max = 20)
     @Column(name = "unit", length = 20, nullable = false)
     private String unit;
