@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant"
+    th:replace="~{admin/layout :: layout(~{::title}, ~{::#pageContent}, ~{::#pageScripts})}">
 
 <head>
     <meta charset="UTF-8" />
@@ -114,45 +115,47 @@
             </div>
         </div>
     </nav>
-
-    <main class="container-narrow">
-        <section class="card mt-3">
-            <header class="card-header">
-                <h3 class="card-title">查詢結果</h3>
-                <a class="btn btn-secondary" th:href="@{/admin/taskrecord/select_page}">返回</a>
-            </header>
-            <div class="card-body">
-                <div class="details">
-                    <div class="label">紀錄ID</div>
-                    <div th:text="${taskRecordVO.taskRecordId}"></div>
-                    <div class="label">任務ID</div>
-                    <div th:text="${taskRecordVO.taskVO.taskId}"></div>
-                    <div class="label">會員ID</div>
-                    <div th:text="${taskRecordVO.user.userId}"></div>
-                    <div class="label">狀態</div>
-                    <div th:text="${taskRecordVO.taskRecordStatusVO.statusName}"></div>
-                    <div class="label">開始時間</div>
-                    <div
-                        th:text="${taskRecordVO.userStartTime == null ? '-' : #temporals.format(taskRecordVO.userStartTime, 'yyyy-MM-dd HH:mm')}">
-                    </div>
-                    <div class="label">結束時間</div>
-                    <div
-                        th:text="${taskRecordVO.userEndTime == null ? '-' : #temporals.format(taskRecordVO.userEndTime, 'yyyy-MM-dd HH:mm')}">
+    <div id="pageContent">
+        <main class="container-narrow">
+            <section class="card mt-3">
+                <header class="card-header">
+                    <h3 class="card-title">查詢結果</h3>
+                    <a class="btn btn-secondary" th:href="@{/admin/taskrecord/select_page}">返回</a>
+                </header>
+                <div class="card-body">
+                    <div class="details">
+                        <div class="label">紀錄ID</div>
+                        <div th:text="${taskRecordVO.taskRecordId}"></div>
+                        <div class="label">任務ID</div>
+                        <div th:text="${taskRecordVO.taskVO.taskId}"></div>
+                        <div class="label">會員ID</div>
+                        <div th:text="${taskRecordVO.user.userId}"></div>
+                        <div class="label">狀態</div>
+                        <div th:text="${taskRecordVO.taskRecordStatusVO.statusName}"></div>
+                        <div class="label">開始時間</div>
+                        <div
+                            th:text="${taskRecordVO.userStartTime == null ? '-' : #temporals.format(taskRecordVO.userStartTime, 'yyyy-MM-dd HH:mm')}">
+                        </div>
+                        <div class="label">結束時間</div>
+                        <div
+                            th:text="${taskRecordVO.userEndTime == null ? '-' : #temporals.format(taskRecordVO.userEndTime, 'yyyy-MM-dd HH:mm')}">
+                        </div>
                     </div>
                 </div>
-            </div>
-            <footer class="card-footer">
-                <form th:action="@{/admin/taskrecord/getOne_For_Update}" method="get" style="display:inline">
-                    <input type="hidden" name="taskRecordId" th:value="${taskRecordVO.taskRecordId}" />
-                    <button type="submit" class="btn">修改</button>
-                </form>
-                <form th:action="@{/admin/taskrecord/delete}" method="post" style="display:inline;margin-left:.5rem">
-                    <input type="hidden" name="taskRecordId" th:value="${taskRecordVO.taskRecordId}" />
-                    <button type="submit" class="btn btn-secondary">刪除</button>
-                </form>
-            </footer>
-        </section>
-    </main>
+                <footer class="card-footer">
+                    <form th:action="@{/admin/taskrecord/getOne_For_Update}" method="get" style="display:inline">
+                        <input type="hidden" name="taskRecordId" th:value="${taskRecordVO.taskRecordId}" />
+                        <button type="submit" class="btn">修改</button>
+                    </form>
+                    <form th:action="@{/admin/taskrecord/delete}" method="post"
+                        style="display:inline;margin-left:.5rem">
+                        <input type="hidden" name="taskRecordId" th:value="${taskRecordVO.taskRecordId}" />
+                        <button type="submit" class="btn btn-secondary">刪除</button>
+                    </form>
+                </footer>
+            </section>
+        </main>
+    </div>
 
     <!-- 右側預覽片段 -->
     <!-- <div th:fragment="listOneTaskRecord-frag">
