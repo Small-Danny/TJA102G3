@@ -236,6 +236,7 @@ $(function () {
       updateCartInfo();     // 再更新購物車
       updateNewsletterBox();
     }
+	
   }
 
   main();
