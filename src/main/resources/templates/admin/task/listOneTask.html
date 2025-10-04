@@ -1,47 +1,145 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>任務個人資料 - listOneTask (Simple0 風格)</title>
+
   <head th:insert="~{/admin/task/included-fragment}"></head>
 
   <style>
-    :root { --card-bg:#fff; --card-border:#dee2e6; --muted:#6c757d; --soft:#f8f9fa; --nav-h:72px; }
-    body { padding-top: var(--nav-h); }
-    [id] { scroll-margin-top: var(--nav-h); }
+    :root {
+      --card-bg: #fff;
+      --card-border: #dee2e6;
+      --muted: #6c757d;
+      --soft: #f8f9fa;
+      --nav-h: 72px;
+    }
 
-    .container-narrow { max-width: 900px; margin: 0 auto; padding: 0 12px; }
+    body {
+      padding-top: var(--nav-h);
+    }
+
+    [id] {
+      scroll-margin-top: var(--nav-h);
+    }
+
+    .container-narrow {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 12px;
+    }
 
     /* Simple0 卡片樣式 */
-    .card { background: var(--card-bg); border:1px solid var(--card-border); border-radius:.5rem; box-shadow:0 1px 2px rgba(0,0,0,.04); }
-    .card-header { padding:.75rem 1rem; border-bottom:1px solid var(--card-border); display:flex; align-items:center; justify-content:space-between; }
-    .card-title { margin:0; font-size:1.1rem; font-weight:600; }
-    .card-body { padding:1rem; }
-    .card-footer { padding:.75rem 1rem; border-top:1px solid var(--card-border); background:var(--soft); }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: .5rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+    }
+
+    .card-header {
+      padding: .75rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 1rem;
+    }
+
+    .card-footer {
+      padding: .75rem 1rem;
+      border-top: 1px solid var(--card-border);
+      background: var(--soft);
+    }
 
     /* 詳細資料：兩欄對齊 */
-    .details-grid { display:grid; grid-template-columns: 160px 1fr; gap:.5rem .75rem; align-items:center; }
-    @media (max-width: 768px){ .details-grid { grid-template-columns: 1fr; } }
-    .details-grid .label { font-weight:700; color:#333; }
-    .details-grid .value { color:#111; }
+    .details-grid {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: .5rem .75rem;
+      align-items: center;
+    }
 
-    .badge { display:inline-block; padding:.25rem .5rem; border-radius:.375rem; font-size:.75rem; background:#e7f1ff; }
-    .img-thumb { display:block; width:140px; height:140px; object-fit:cover; border-radius:.5rem; border:1px solid #e9ecef; }
+    @media (max-width: 768px) {
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
-    .btn { display:inline-block; padding:.375rem .75rem; border:1px solid #198754; color:#198754; background:#fff; border-radius:.375rem; text-decoration:none; font-size:.9rem; cursor:pointer; }
-    .btn:hover { background:#198754; color:#fff; }
-    .btn-secondary { border-color:#6c757d; color:#6c757d; }
-    .btn-secondary:hover { background:#6c757d; color:#fff; }
+    .details-grid .label {
+      font-weight: 700;
+      color: #333;
+    }
+
+    .details-grid .value {
+      color: #111;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: .25rem .5rem;
+      border-radius: .375rem;
+      font-size: .75rem;
+      background: #e7f1ff;
+    }
+
+    .img-thumb {
+      display: block;
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: .5rem;
+      border: 1px solid #e9ecef;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: .375rem .75rem;
+      border: 1px solid #198754;
+      color: #198754;
+      background: #fff;
+      border-radius: .375rem;
+      text-decoration: none;
+      font-size: .9rem;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #198754;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      border-color: #6c757d;
+      color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background: #6c757d;
+      color: #fff;
+    }
   </style>
 </head>
+
 <body>
   <!-- 導覽列：延續 bg-success 與返回連結 -->
   <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
     <div class="text-center">
       <h2 class="m-0">任務個人資料 - listOneTask</h2>
       <div class="mt-1">
-        <a class="navbar-brand" th:href="@{/admin/tasks/select_page}"><img th:src="@{/images/back1.gif}" alt="返回">回查詢頁 <label th:text="${success}"></label></a>
+        <a class="navbar-brand" th:href="@{/admin/tasks/select_page}"><img th:src="@{/images/back1.gif}" alt="返回">回查詢頁
+          <label th:text="${success}"></label></a>
       </div>
     </div>
   </nav>
@@ -104,48 +202,48 @@
   </main>
 
   <!-- 供 select_page 右側預覽區用的 fragment（相同視覺樣式） -->
-<!--   <div th:fragment="listOneTask-div"> -->
-<!--     <section class="card"> -->
-<!--       <header class="card-header"> -->
-<!--         <h3 class="card-title">查詢結果</h3> -->
-<!--       </header> -->
-<!--       <div class="card-body"> -->
-<!--         <div class="details-grid"> -->
-<!--           <div class="label">任務ID</div> -->
-<!--           <div class="value" th:text="${taskVO.taskId}"></div> -->
+  <!--   <div th:fragment="listOneTask-div"> -->
+  <!--     <section class="card"> -->
+  <!--       <header class="card-header"> -->
+  <!--         <h3 class="card-title">查詢結果</h3> -->
+  <!--       </header> -->
+  <!--       <div class="card-body"> -->
+  <!--         <div class="details-grid"> -->
+  <!--           <div class="label">任務ID</div> -->
+  <!--           <div class="value" th:text="${taskVO.taskId}"></div> -->
 
-<!--           <div class="label">任務名稱</div> -->
-<!--           <div class="value" th:text="${taskVO.taskName}"></div> -->
+  <!--           <div class="label">任務名稱</div> -->
+  <!--           <div class="value" th:text="${taskVO.taskName}"></div> -->
 
-<!--           <div class="label">任務類型</div> -->
-<!--           <div class="value" th:text="${taskVO.taskTypeVO.taskTypeName}"></div> -->
+  <!--           <div class="label">任務類型</div> -->
+  <!--           <div class="value" th:text="${taskVO.taskTypeVO.taskTypeName}"></div> -->
 
-<!--           <div class="label">目標值</div> -->
-<!--           <div class="value" th:text="${taskVO.targetValue}"></div> -->
+  <!--           <div class="label">目標值</div> -->
+  <!--           <div class="value" th:text="${taskVO.targetValue}"></div> -->
 
-<!--           <div class="label">單位</div> -->
-<!--           <div class="value" th:text="${taskVO.unit}"></div> -->
+  <!--           <div class="label">單位</div> -->
+  <!--           <div class="value" th:text="${taskVO.unit}"></div> -->
 
-<!--           <div class="label">開始日</div> -->
-<!--           <div class="value" th:text="${#temporals.format(taskVO.startTime, 'yyyy-MM-dd')}"></div> -->
+  <!--           <div class="label">開始日</div> -->
+  <!--           <div class="value" th:text="${#temporals.format(taskVO.startTime, 'yyyy-MM-dd')}"></div> -->
 
-<!--           <div class="label">結束日</div> -->
-<!--           <div class="value" th:text="${#temporals.format(taskVO.endTime, 'yyyy-MM-dd')}"></div> -->
+  <!--           <div class="label">結束日</div> -->
+  <!--           <div class="value" th:text="${#temporals.format(taskVO.endTime, 'yyyy-MM-dd')}"></div> -->
 
-<!--           <div class="label">點數</div> -->
-<!--           <div class="value"><span class="badge" th:text="${taskVO.points}"></span></div> -->
+  <!--           <div class="label">點數</div> -->
+  <!--           <div class="value"><span class="badge" th:text="${taskVO.points}"></span></div> -->
 
-<!--           <div class="label">建立人員ID</div> -->
-<!--           <div class="value" th:text="${taskVO.adminId}"></div> -->
+  <!--           <div class="label">建立人員ID</div> -->
+  <!--           <div class="value" th:text="${taskVO.adminId}"></div> -->
 
-<!--           <div class="label">照片</div> -->
-<!--           <div class="value"> -->
-<!--             <img class="img-thumb" th:src="@{/tasks/DBGifReader} + '?taskId=' + ${taskVO.taskId}" alt="任務圖示"> -->
-<!--           </div> -->
-<!--         </div> -->
-<!--       </div> -->
-<!--     </section> -->
-<!--   </div> -->
+  <!--           <div class="label">照片</div> -->
+  <!--           <div class="value"> -->
+  <!--             <img class="img-thumb" th:src="@{/tasks/DBGifReader} + '?taskId=' + ${taskVO.taskId}" alt="任務圖示"> -->
+  <!--           </div> -->
+  <!--         </div> -->
+  <!--       </div> -->
+  <!--     </section> -->
+  <!--   </div> -->
 
   <script>
     // 依實際 navbar 高度動態設定 body 上方留白，避免被蓋住
@@ -160,4 +258,5 @@
     })();
   </script>
 </body>
+
 </html>

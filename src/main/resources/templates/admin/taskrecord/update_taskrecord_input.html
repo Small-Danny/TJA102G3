@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant"
+    th:replace="~{admin/layout :: layout(~{::title}, ~{::#pageContent}, ~{::#pageScripts})}">
 
 <head>
     <meta charset="UTF-8" />
@@ -131,76 +132,77 @@
             </div>
         </div>
     </nav>
+    <div id="pageContent">
+        <main class="container-narrow">
+            <section class="card mt-3">
+                <header class="card-header">
+                    <h3 class="title">修改紀錄</h3>
+                    <a class="btn btn-secondary" th:href="@{/admin/taskrecord/select_page}">返回</a>
+                </header>
 
-    <main class="container-narrow">
-        <section class="card mt-3">
-            <header class="card-header">
-                <h3 class="title">修改紀錄</h3>
-                <a class="btn btn-secondary" th:href="@{/admin/taskrecord/select_page}">返回</a>
-            </header>
+                <div class="card-body">
+                    <form th:action="@{/admin/taskrecord/update}" method="post" th:object="${taskRecordVO}">
+                        <label>紀錄ID</label>
+                        <div><input th:field="*{taskRecordId}" class="readonly" readonly /></div>
 
-            <div class="card-body">
-                <form th:action="@{/admin/taskrecord/update}" method="post" th:object="${taskRecordVO}">
-                    <label>紀錄ID</label>
-                    <div><input th:field="*{taskRecordId}" class="readonly" readonly /></div>
+                        <label>會員ID</label>
+                        <div><input th:field="*{user.userId}" class="readonly" readonly /></div>
 
-                    <label>會員ID</label>
-                    <div><input th:field="*{user.userId}" class="readonly" readonly /></div>
+                        <label>任務</label>
+                        <div>
+                            <select th:field="*{taskVO.taskId}">
+                                <option th:each="t : ${taskListData}" th:value="${t.taskId}"
+                                    th:text="${t.taskId + ' - ' + t.taskName}"></option>
+                            </select>
+                            <span th:if="${#fields.hasErrors('taskVO.taskId')}" th:errors="*{taskVO.taskId}"
+                                class="error" id="taskVO.taskId.errors"></span>
+                        </div>
 
-                    <label>任務</label>
-                    <div>
-                        <select th:field="*{taskVO.taskId}">
-                            <option th:each="t : ${taskListData}" th:value="${t.taskId}"
-                                th:text="${t.taskId + ' - ' + t.taskName}"></option>
-                        </select>
-                        <span th:if="${#fields.hasErrors('taskVO.taskId')}" th:errors="*{taskVO.taskId}" class="error"
-                            id="taskVO.taskId.errors"></span>
-                    </div>
+                        <!-- 開始時間 -->
+                        <label>開始時間</label>
+                        <div>
+                            <!-- 綁 VO 的 LocalDateTime：getUserStartTime()/setUserStartTime(...) -->
+                            <input type="datetime-local" th:field="*{userStartTime}" />
+                            <span th:if="${#fields.hasErrors('userStartTime')}" th:errors="*{userStartTime}"
+                                class="error"></span>
+                        </div>
 
-                    <!-- 開始時間 -->
-                    <label>開始時間</label>
-                    <div>
-                        <!-- 綁 VO 的 LocalDateTime：getUserStartTime()/setUserStartTime(...) -->
-                        <input type="datetime-local" th:field="*{userStartTime}" />
-                        <span th:if="${#fields.hasErrors('userStartTime')}" th:errors="*{userStartTime}"
-                            class="error"></span>
-                    </div>
+                        <!-- 結束時間 -->
+                        <label>結束時間</label>
+                        <div>
+                            <!-- 綁 VO 的 LocalDateTime：getUserEndTime()/setUserEndTime(...) -->
+                            <input type="datetime-local" th:field="*{userEndTime}" />
+                            <span th:if="${#fields.hasErrors('userEndTime')}" th:errors="*{userEndTime}"
+                                class="error"></span>
+                        </div>
 
-                    <!-- 結束時間 -->
-                    <label>結束時間</label>
-                    <div>
-                        <!-- 綁 VO 的 LocalDateTime：getUserEndTime()/setUserEndTime(...) -->
-                        <input type="datetime-local" th:field="*{userEndTime}" />
-                        <span th:if="${#fields.hasErrors('userEndTime')}" th:errors="*{userEndTime}"
-                            class="error"></span>
-                    </div>
-
-                    <label>狀態</label>
-                    <div>
-                        <select th:field="*{taskRecordStatusVO.taskRecordStatus}">
-                            <option value="" disabled selected>請選擇狀態</option>
-                            <option th:each="s : ${taskRecordStatusListData}" th:value="${s.taskRecordStatus}"
-                                th:text="${s.statusName}">
-                            </option>
-                        </select>
-                        <span th:if="${#fields.hasErrors('taskRecordStatusVO.taskRecordStatus')}"
-                            th:errors="*{taskRecordStatusVO.taskRecordStatus}" class="error"
-                            id="taskRecordStatusVO.taskRecordStatus.errors"></span>
-                    </div>
+                        <label>狀態</label>
+                        <div>
+                            <select th:field="*{taskRecordStatusVO.taskRecordStatus}">
+                                <option value="" disabled selected>請選擇狀態</option>
+                                <option th:each="s : ${taskRecordStatusListData}" th:value="${s.taskRecordStatus}"
+                                    th:text="${s.statusName}">
+                                </option>
+                            </select>
+                            <span th:if="${#fields.hasErrors('taskRecordStatusVO.taskRecordStatus')}"
+                                th:errors="*{taskRecordStatusVO.taskRecordStatus}" class="error"
+                                id="taskRecordStatusVO.taskRecordStatus.errors"></span>
+                        </div>
 
 
 
-                    <div class="text-end mt-3">
-                        <button type="submit" class="btn">送出修改</button>
-                    </div>
-                </form>
-            </div>
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn">送出修改</button>
+                        </div>
+                    </form>
+                </div>
 
-<!--             <footer class="card-footer"> -->
-<!--                 <span class="hint">提示：若你的欄位不同，請將上方 <code>th:field</code> 名稱改為你的 VO 欄位。</span> -->
-<!--             </footer> -->
-        </section>
-    </main>
+                <!--             <footer class="card-footer"> -->
+                <!--                 <span class="hint">提示：若你的欄位不同，請將上方 <code>th:field</code> 名稱改為你的 VO 欄位。</span> -->
+                <!--             </footer> -->
+            </section>
+        </main>
+    </div>
 </body>
 
 </html>
