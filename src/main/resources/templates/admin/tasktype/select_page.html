@@ -1,22 +1,18 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant"
+    th:replace="~{admin/layout :: layout(~{::title}, ~{::#pageContent}, ~{::#pageScripts})}">
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>類別資料管理 - select_page (Simple0)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>類別資料管理</title>
 
-    <head th:insert="~{/admin/tasktype/included-fragment}"></head>
     <style>
         :root {
             --card-bg: #fff;
             --card-border: #dee2e6;
             --muted: #6c757d;
             --soft: #f8f9fa;
-        }
-
-        body {
-            padding-top: 72px;
         }
 
         .container-wide {
@@ -33,17 +29,16 @@
         }
 
         .card-header {
-            padding: .75rem 1rem;
-            border-bottom: 1px solid var(--card-border);
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            min-height: 48px;
         }
 
         .card-title {
             margin: 0;
-            font-size: 1.1rem;
-            font-weight: 600;
+            line-height: 1;
+            display: flex;
+            align-items: center;
         }
 
         .card-body {
@@ -154,22 +149,14 @@
     </style>
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
-        <div class="text-center">
-            <h2 class="m-0">類別資料管理 - select_page</h2>
-            <div class="mt-1">
-                <a class="navbar-brand" th:href="@{/}"><img th:src="@{/images/back1.gif}" alt="返回">回 index</a>
-            </div>
-        </div>
-    </nav>
-
+<!-- 內容容器：會被 layout.html 的 <div th:replace="${content}"> 放入 <main class="app-main"> -->
+<div id="pageContent">
     <main class="container-wide">
         <div class="grid-main mt-3">
             <!-- 左：查詢/導航 -->
             <section class="card">
                 <header class="card-header">
-                    <h3 class="card-title">資料查詢</h3>
+                    <h3 class="card-title">資料查詢　　　　　　　　</h3>
                     <a class="btn btn-secondary" th:href="@{/admin/tasktype/add}">新增類別</a>
                 </header>
                 <div class="card-body">
@@ -211,13 +198,10 @@
                         <button type="submit" class="btn">送出</button>
                     </form>
                 </div>
-<!--                 <footer class="card-footer"> -->
-<!--                     <span class="hint">提示：此頁提供三種查詢方式，並可直接前往「新增類別」或「瀏覽全部」。</span> -->
-<!--                 </footer> -->
             </section>
 
             <!-- 右：單筆預覽（片段） -->
-            <aside class="card" th:if="${taskTypeVO != null}">
+            <!-- <aside class="card" th:if="${taskTypeVO != null}">
                 <header class="card-header">
                     <h3 class="card-title">單筆類別預覽</h3>
                     <a class="btn btn-secondary" th:href="@{/admin/tasktype/select_page}">清除預覽</a>
@@ -225,9 +209,14 @@
                 <div class="card-body">
                     <div th:insert="~{/back-end/tasktype/listOneTaskType :: listOneTaskType-div}"></div>
                 </div>
-            </aside>
+            </aside> -->
         </div>
     </main>
-</body>
+</div>
+
+<!-- 這頁才需要的腳本（可留空；會被 layout.html 以 <th:block th:replace="${pageScripts}"> 插入） -->
+<th:block id="pageScripts">
+    <!-- <script th:src="@{/js/tasktype-select-page.js}"></script> -->
+</th:block>
 
 </html>
