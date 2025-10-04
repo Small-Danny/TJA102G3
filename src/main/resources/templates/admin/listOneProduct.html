@@ -74,6 +74,16 @@
 
             <dt class="col-sm-3">描述</dt>
             <dd class="col-sm-9" th:text="${productVO?.productDescription}">—</dd>
+            
+            <dt class="col-sm-3">商品類別</dt>
+			  <dd class="col-sm-9" th:switch="${product.productType}">
+			      <span th:case="0">裝備類</span>
+			      <span th:case="1">容器類</span>
+			      <span th:case="2">蛋白粉類</span>
+			      <span th:case="*">未知</span>
+			  </dd>
+			  
+			</tr>
           </dl>
         </div>
 

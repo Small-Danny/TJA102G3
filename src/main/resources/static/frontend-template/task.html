@@ -227,31 +227,8 @@
             const HH = pad(d.getHours());
             const mm = pad(d.getMinutes());
             const ss = pad(d.getSeconds());
-            return `${yyyy}-${MM}-${dd}T${HH}:${mm}:${ss}`;
+            return `${yyyy}-${MM}-${dd} ${HH}:${mm}`;
         }
-
-        // 呼叫後端建立一筆 TaskRecord（userId 固定 7）
-        // async function apiCreateTaskRecord(taskId, extra = {}) { /*TaskRecordApiController-Create*/
-        //     const url = join(API_BASE, '/api/taskrecords');
-        //     const body = {
-        //         userId: 7,                         // 固定先用 7（之後導入會員再改）
-        //         taskId: Number(taskId),            // 從列表的任務 id 帶入
-        //         userStartTime: isoLocalNow(),      // 建議給開始時間
-        //         statusId: 0                           // 如果你還想指定 statusId 等，可傳 {statusId:2}
-        //     };
-        //     const res = await fetch(url, {
-        //         method: 'POST',
-        //         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        //         body: JSON.stringify(body)
-        //     });
-        //     // 失敗時丟出詳細錯誤（方便你在頁面上 alert）
-        //     if (!res.ok) {
-        //         const txt = await res.text().catch(() => '');
-        //         throw new Error(`POST ${url} -> HTTP ${res.status} ${res.statusText}\n${txt}`);
-        //     }
-        //     const ct = res.headers.get('content-type') || '';
-        //     return ct.includes('application/json') ? res.json() : null; // 預期回 TaskRecordDTO
-        // }
 
         // 3) 建立一筆（接取任務）— 不要再送 userId，交給後端從 Session 取出
         async function apiCreateTaskRecord(taskId) {
@@ -264,19 +241,6 @@
             if (!res.ok) throw new Error(await res.text());
             return res.headers.get('content-type')?.includes('json') ? res.json() : null;
         }
-
-        // 取 TaskRecord 列表（可用 query 組條件）
-        // async function apiListTaskRecords(query = {}) { /*TaskRecordApiController-Read*/
-        //     const q = new URLSearchParams(query).toString();
-        //     const url = join(API_BASE, '/api/taskrecords' + (q ? `?${q}` : ''));
-        //     const res = await fetch(url, { headers: { 'Accept': 'application/json' }, cache: 'no-store' });
-        //     const txt = await res.text().catch(() => '');
-        //     if (!res.ok) throw new Error(`GET ${url} -> HTTP ${res.status} ${res.statusText}\n${txt}`);
-        //     const ct = res.headers.get('content-type') || '';
-        //     const json = ct.includes('application/json') ? JSON.parse(txt) : [];
-        //     // 兼容分頁/非分頁
-        //     return Array.isArray(json) ? json : (json.content ?? []);
-        // }
 
         // 2) 取 TaskRecord 列表（僅 status 篩選；user 由後端從 Session 判定）
         async function apiListTaskRecords(query = {}) {
@@ -299,24 +263,6 @@
             return txt ? JSON.parse(txt) : [];
         }
 
-
-        // 取單一任務詳情（用於補 task_name/points/unit 等）
-        // async function apiGetTask(taskId) { /*TaskApiController*/
-        //     const url = join(API_BASE, `/api/v1/tasks/${taskId}`);
-        //     const res = await fetch(url, { headers: { 'Accept': 'application/json' }, cache: 'no-store' });
-        //     if (!res.ok) throw new Error(`GET ${url} -> HTTP ${res.status}`);
-        //     return res.json();
-        // }
-
-        // async function apiCompleteTaskRecord(recordId) { /*TaskRecordCompleteApi*/
-        //     const url = join(API_BASE, `/api/taskrecords/${recordId}/complete`);
-        //     const res = await fetch(url, { method: 'PATCH', headers: { 'Accept': 'application/json' } });
-        //     const txt = await res.text().catch(() => '');
-        //     if (!res.ok) throw new Error(`PATCH ${url} -> HTTP ${res.status} ${res.statusText}\n${txt}`);
-        //     const ct = res.headers.get('content-type') || '';
-        //     return ct.includes('application/json') ? JSON.parse(txt) : null; // 有些版會回 204，就回 null
-        // }
-
         // 4) 標記完成（單筆）
         async function apiCompleteTaskRecord(recordId) {
             const res = await apiFetch(`/api/taskrecords/${recordId}/complete`, { method: 'PATCH' });
@@ -327,9 +273,6 @@
         async function enrichRecordsWithTasks(records) {
             const uniqueTaskIds = [...new Set(records.map(r => r.taskId))];
             const taskMap = new Map();
-            // await Promise.all(uniqueTaskIds.map(async (tid) => {
-            //     try { taskMap.set(String(tid), await apiGetTask(tid)); } catch { /* 取不到就略過 */ }
-            // }));
 
             const pick = (...vals) => {
                 for (const v of vals) if (v !== undefined && v !== null && v !== '') return v;
@@ -364,25 +307,29 @@
             });
         }
 
+        // 只取年/月/日（YYYY/MM/DD）
+        function toYMD(v) {
+            if (!v) return '';
+            const s = String(v);
+            // 先嘗試直接抓 yyyy-mm-dd / yyyy/mm/dd
+            const m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+            const pad2 = n => String(n).padStart(2, '0');
+            if (m) return `${m[1]}/${pad2(m[2])}/${pad2(m[3])}`;
+
+            // 其他格式（含 ISO 或毫秒數）就丟給 Date 嘗試解析
+            const d = new Date(s);
+            if (!isNaN(d)) return `${d.getFullYear()}/${pad2(d.getMonth() + 1)}/${pad2(d.getDate())}`;
+
+            // 解析不了就原樣回傳
+            return s;
+        }
+
+
 
     </script>
 
 
     <script>
-        //===== 從 our-blog-1.html 動態注入 Header / Footer（加防呆，不存在就不處理） =====
-        // (async function injectLayout() {
-        //     try {
-        //         const res = await fetch('our-blog-1.html');
-        //         const html = await res.text();
-        //         const doc = new DOMParser().parseFromString(html, 'text/html');
-        //         const header = doc.querySelector('header.header-style-one');
-        //         const footer = doc.querySelector('footer.footer-style-one');
-        //         const headerPh = document.getElementById('header-placeholder');
-        //         const footerPh = document.getElementById('footer-placeholder');
-        //         if (header && headerPh) headerPh.replaceWith(header);
-        //         if (footer && footerPh) footerPh.replaceWith(footer);
-        //     } catch (err) { console.warn('無法載入模板 header/footer：', err); }
-        // })();
 
 
         // ===== 狀態儲存：移除假資料後，仍需有 localStorage 讀寫與預設空結構 =====
@@ -414,8 +361,8 @@
 
             const rows = [];
             rows.push(`<thead><tr>
-    <th>紀錄ID</th><th>任務名稱</th><th>任務目標值</th><th>單位</th>
-    <th>任務開始日</th><th>任務結束日</th><th>點數</th><th>任務圖騰</th><th></th>
+    <th>任務名稱</th><th>任務目標值</th><th>單位</th>
+    <th>任務開始日</th><th>點數</th><th>任務圖騰</th><th></th>
   </tr></thead><tbody>`);
 
             /*state.current.forEach(m => {*/
@@ -428,7 +375,7 @@
                 const name = first(m.taskName, m.task_name);
                 const targetVal = first(m.targetValue, m.target_value);
                 const unit = safe(m.unit);
-                const startAt = safe(m.start_time);
+                const startAt = toYMD(safe(m.start_time));
                 const endAt = safe(m.end_time);
                 const points = safe(m.points, 0);
                 const iconUrl = first(m.task_icon, `${API_BASE.replace(/\/+$/, '')}/tasks/${taskId}/icon`);
@@ -436,12 +383,10 @@
                 const isOngoing = (statusText === '進行中') || (m.statusId === 0);
 
                 rows.push(`<tr>
-      <td data-th="紀錄ID">${recordId}</td>
       <td data-th="任務名稱">${name}</td>
       <td data-th="任務目標值">${targetVal ?? ''}</td>
       <td data-th="單位">${unit}</td>
       <td data-th="任務開始日">${startAt}</td>
-      <td data-th="任務結束日">${endAt}</td>
       <td data-th="點數">${points}</td>
       <td data-th="任務圖騰">
         <img src="${iconUrl}" alt="任務圖示" width="160" onerror="this.src='fallback.png'">
@@ -460,29 +405,6 @@
             document.getElementById('table-current').innerHTML = rows.join('');
         }
 
-
-        //         function renderAvailable() {
-        //             const rows = []
-        //             rows.push(`<thead><tr>
-        //         <th>任務名稱</th><th>任務目標值</th><th>單位</th><th>任務開始日</th><th>任務結束日</th><th>點數</th><th>任務圖騰</th><th></th>
-        //       </tr></thead><tbody>`)
-        //             state.available.forEach(m => {
-        //                 rows.push(`<tr>
-        //           <td data-th="任務名稱">${m.task_name}</td>
-        //           <td data-th="任務目標值">${m.target_value}</td>
-        //           <td data-th="任單位">${m.unit}</td>
-        //           <td data-th="任務開始日">${m.start_time || ''}</td>
-        //           <td data-th="任務結束日">${m.end_time || ''}</td>
-        //           <td data-th="點數">${m.points}</td>
-        //           <td data-th="任務圖騰">
-        //   <img src="http://localhost:8080/tasks/${m.id}/icon" alt="任務圖示" width="160" onerror="this.src='fallback.png'">
-        // </td>
-        //           <td data-th="操作"><button class="btn btn-sm btn-outline-dark" data-action="accept" data-id="${m.id}">接取任務</button></td>
-        //         </tr>`)
-        //             })
-        //             rows.push('</tbody>')
-        //             document.getElementById('table-available').innerHTML = rows.join('')
-        //         }
 
         function renderAvailable() {
             const rows = [];
@@ -528,8 +450,8 @@
       <td data-th="任務名稱">${m.taskName ?? ''}</td>
       <td data-th="任務目標值">${m.targetValue ?? ''}</td>
       <td data-th="單位">${m.unit ?? ''}</td>
-      <td data-th="任務開始日">${m.start_time || ''}</td>
-      <td data-th="任務結束日">${m.end_time || ''}</td>
+      <td data-th="任務開始日">${toYMD(m.start_time) || ''}</td>
+      <td data-th="任務結束日">${toYMD(m.end_time) || ''}</td>
       <td data-th="點數">${m.points ?? 0}</td>
       <td data-th="任務圖騰"><img src="${icon}" alt="任務圖示" width="160" onerror="this.src='fallback.png'"></td>
       <td></td>
@@ -557,25 +479,7 @@
                 btn.disabled = true; btn.textContent = '接取中…';
 
                 try {
-                    // **關鍵：先打後端建立 TaskRecord（userId 固定 7）**
-                    // 如果要同時指定初始狀態，傳第二個參數：{ statusId: 2 }
 
-
-                    // 後端成功 → 才把這筆從 available 移到 current
-                    // state.available.splice(i, 1);
-                    // state.current.unshift({
-                    //     id: String(m.id),
-                    //     recordId: dto?.taskRecordId ?? '',
-                    //     // 統一用 camelCase，renderCurrent 也讀 camelCase
-                    //     taskName: m.task_name,          // ← 原本是 task_name，改成 taskName
-                    //     targetValue: m.target_value,    // ← 關鍵：從 snake_case 取值，存成 camelCase
-                    //     unit: m.unit,
-                    //     start_time: m.start_time || (dto?.userStartTime ?? todayStr()),
-                    //     end_time: m.end_time || '',
-                    //     points: m.points,
-                    //     task_icon: m.task_icon,
-                    //     status: '進行中'
-                    // });
                     await apiCreateTaskRecord(Number(tid));  // 真的打後端新增 TaskRecord
                     await reloadAll();                       // 成功後重撈三個表，畫面與後端同步
 
@@ -636,12 +540,6 @@
             state.completed = state.completed || [];
 
             try {
-                // const url = '/api/v1/tasks?_ts=' + Date.now(); // cache-busting
-                // const res = await fetch(url, { cache: 'no-store' });
-                // if (!res.ok) throw new Error('HTTP ' + res.status);
-                // const serverList = await res.json();
-
-                // const serverMap = new Map(serverList.map(t => [String(t.taskId), normalize(t)]));
 
                 const avail = await apiListAvailable(); // 或 'never'
                 state.available = avail.map(t => ({
@@ -650,7 +548,6 @@
                     targetValue: t.targetValue ?? t.target_value ?? null,
                     unit: t.unit ?? '',
                     points: t.points ?? 0,
-                    // task_icon: t.task_icon ?? `${API_BASE.replace(/\/+$/, '')}/tasks/${t.taskId ?? t.id}/icon`
                 }));
 
                 // B) 現有任務（current）從 TaskRecord 撈：userId=7 且 statusId=0
@@ -662,7 +559,6 @@
                     id: r.taskId,                      // 你現有「資料列的 id」就是 taskId
                     recordId: r.recordId,              // 之後「標記完成」要用
                     user_id: r.userId ?? r.userVO?.userId ?? '',
-                    // task_name: r.task_name,
                     taskName: r.taskName,
                     targetValue: r.targetValue,
                     unit: r.unit,
@@ -691,18 +587,6 @@
                     statusId: r.statusId,
                     status: r.statusName ?? '已完成'
                 }));
-
-
-                // C) 可接任務：= 後台任務清單 - (current ∪ completed) 的 taskId
-                // const taken = new Set([
-                //     ...(state.current || []).map(x => x.id),
-                //     ...(state.completed || []).map(x => x.id),
-                // ]);
-                // state.available = Array.from(serverMap.values()).filter(t => !taken.has(t.id));
-
-                // 取得「可接任務」清單（後端算好的）
-
-
 
                 saveState();
             } catch (e) {
@@ -746,7 +630,6 @@
     <script src="/frontend-template/assets/js/jquery.nice-select.js"></script>
     <script src="/frontend-template/assets/js/loader.js"></script>
     <script src="/frontend-template/assets/js/custom.js"></script>
-
     <script src="/frontend-template/assets/js/cart.js"></script>
 
 </body>

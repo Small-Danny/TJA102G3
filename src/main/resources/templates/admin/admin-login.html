@@ -48,33 +48,21 @@
             color: #495057;
         }
 
-        /* 密碼切換按鈕樣式 */
-        .password-wrapper {
-            position: relative;
-        }
-
         .toggle-password {
-            position: absolute;
-            right: 40px;
-            top: 50%;
-            transform: translateY(-50%);
+            /* 移除所有 position, right, top, transform, width, height, z-index */
             cursor: pointer;
             color: #6c757d;
-            background: transparent;
+            background: none; /* 使用 none 確保完全透明 */
             border: none;
-            width: 40px;
-            height: 100%;
-            display: flex;
+            padding: 0; /* 移除內邊距，讓它更緊湊 */
+            margin: 0;  /* 移除外邊距 */
+            display: inline-flex; /* 讓圖示在按鈕內居中 */
             align-items: center;
             justify-content: center;
         }
-
-        .toggle-password:hover {
-            color: #343a40;
-        }
-
-        .password-wrapper .form-control {
-            padding-right: 80px !important;
+        .toggle-password:focus {
+            outline: none; /* 移除點擊時的藍色外框 */
+            box-shadow: none;
         }
 
         /* 驗證碼樣式 */
@@ -153,18 +141,16 @@
                 </div>
 
                 <!-- 密碼輸入框 -->
-                <div class="input-group mb-3 password-wrapper">
-                    <input type="password" class="form-control" 
-                           placeholder="請輸入密碼" 
-                           name="password" 
-                           id="password" 
-                           required>
+                <div class="input-group mb-3"> <input type="password" class="form-control"
+                                                      placeholder="請輸入密碼"
+                                                      name="password"
+                                                      id="password"
+                                                      required>
                     <div class="input-group-text">
-                        <span class="bi bi-lock-fill"></span>
-                    </div>
-                    <button type="button" class="toggle-password" id="togglePassword">
-                        <i class="bi bi-eye-slash"></i>
-                    </button>
+                        <button type="button" class="toggle-password" id="togglePassword">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                        <span class="bi bi-lock-fill ms-2"></span> </div>
                 </div>
 
                 <!-- 驗證碼 -->
@@ -176,7 +162,7 @@
                 <div class="row remember-me-container">
                     <div class="col-8">
                         <div class="icheck-primary">
-                            <input type="checkbox" id="remember" name="remember-me" checked>
+                            <input type="checkbox" id="remember" name="admin-remember-me" checked>
                             <label for="remember">
                                 記住我 (14天內免登入)
                             </label>

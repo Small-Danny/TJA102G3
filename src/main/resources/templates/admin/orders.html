@@ -1,12 +1,14 @@
 <!doctype html>
 <html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 <head>
+<meta charset="utf-8" />
 <title>訂單管理</title>
-<!-- CSRF（你的 SecurityConfig 使用 CookieCsrfTokenRepository） -->
+
+<!-- CSRF（CookieCsrfTokenRepository 對應） -->
 <meta name="_csrf" th:content="${_csrf.token}" />
 <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 
-<!-- 需要 Bootstrap 5 的 CSS & JS（若你的 layout 已引入可移除這兩行） -->
+<!-- Bootstrap 5 -->
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -37,6 +39,7 @@
 	width: 250px;
 }
 
+/* 分頁 */
 .pagination {
 	display: flex;
 	justify-content: center;
@@ -85,15 +88,25 @@
 }
 
 .action-col {
-	width: 160px;
-} /* 加寬讓兩顆按鈕排得下 */
+	width: 210px;
+	white-space: nowrap;
+} /* 防掉行 */
+
+/* 作法 A：同一個 td 內用 inline-flex 保證兩顆按鈕同列不換行 */
+.actions {
+	display: inline-flex;
+	align-items: center;
+	gap: .5rem;
+	flex-wrap: nowrap;
+}
+
+/* 尚未儲存的列背景提示 */
 tr.dirty-row {
 	background: #fff7e6;
-} /* 尚未儲存高亮 */
+}
 </style>
 </head>
 <body>
-	<!-- ✅ 若你有共用 layout，可保留；若沒有，可把外層 div 拿掉 -->
 	<div
 		th:replace="~{admin/layout :: layout(~{::title}, ~{::section}, ~{::#pageScripts})}">
 		<title>訂單管理</title>
@@ -115,7 +128,8 @@ tr.dirty-row {
 					</div>
 
 					<!-- 訂單表格 -->
-					<table id="orderTable" class="table table-bordered table-striped">
+					<table id="orderTable"
+						class="table table-bordered table-striped align-middle">
 						<thead>
 							<tr>
 								<th>訂單編號</th>
@@ -129,19 +143,20 @@ tr.dirty-row {
 							</tr>
 						</thead>
 						<tbody>
-							<!-- ✅ Thymeleaf 渲染訂單 -->
+							<!-- 以 Thymeleaf 渲染每筆訂單 -->
 							<tr th:each="order : ${orders}">
 								<td th:text="${order.orderId}"></td>
 								<td
 									th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
 								<td th:text="${order.userId}"></td>
 								<td th:text="${order.recipientName}"></td>
+
 								<td><span th:attr="data-payment=${order.paymentStatus}"
 									th:text="${order.paymentStatus == 1 ? '已付款' : '未付款'}"
 									th:classappend="${order.paymentStatus == 1} ? 'badge bg-success' : 'badge bg-secondary'"></span>
 								</td>
 
-								<!-- 出貨狀態下拉 -->
+								<!-- 出貨狀態 -->
 								<td class="status-col"><select
 									class="form-select form-select-sm status-select"
 									th:attr="data-order-id=${order.orderId}"
@@ -155,12 +170,16 @@ tr.dirty-row {
 
 								<td class="amount-col" th:text="|$${order.totalPrice}|"></td>
 
-								<!-- 操作：左「商品明細」、右「儲存」 -->
+								<!-- 作法 A：按鈕塞同一個 flex 容器，保證同列 -->
 								<td class="action-col">
-									<!-- JS 會自動在這裡 prepend 一顆「商品明細」按鈕 -->
-									<button type="button"
-										class="btn btn-sm btn-outline-primary save-status-btn"
-										th:attr="data-order-id=${order.orderId}">儲存</button>
+									<div class="actions">
+										<button type="button"
+											class="btn btn-sm btn-outline-secondary js-show-items"
+											th:attr="data-order-id=${order.orderId}">商品明細</button>
+										<button type="button"
+											class="btn btn-sm btn-outline-primary save-status-btn"
+											th:attr="data-order-id=${order.orderId}">儲存</button>
+									</div>
 								</td>
 							</tr>
 						</tbody>
@@ -215,19 +234,38 @@ tr.dirty-row {
 
 	<!-- 頁面腳本 -->
 	<script>
-    /* ===== 列表搜尋 / 分頁 / 匯出 ===== */
+    /* ====== 分頁 / 搜尋（支援數字搜尋金額與訂單編號） ====== */
     const rowsPerPage = 10;
     let currentPage = 1;
 
     function renderTable() {
-      const filter = document.getElementById("searchInput").value.trim().toLowerCase();
+      const filterRaw = document.getElementById("searchInput").value.trim();
+      const filter = filterRaw.toLowerCase();
       const rows = document.querySelectorAll("#orderTable tbody tr");
 
       const filteredRows = Array.from(rows).filter(row => {
         if (filter === "") return true;
-        const orderIdText = row.querySelector("td:nth-child(1)")?.innerText?.toLowerCase() || '';
-        const text = row.innerText.toLowerCase();
-        if (!isNaN(filter)) return orderIdText === filter; else return text.includes(filter);
+
+        // 全列文字
+        const fullText = row.innerText.toLowerCase();
+
+        // 供數字搜尋金額：移除 $ 與 , 與多餘空白
+        const normalizedText = fullText
+          .replace(/\$/g, '')
+          .replace(/,/g, '')
+          .replace(/\s+/g, ' ');
+
+        // 第一欄：訂單編號（精準比對）
+        const orderIdText = (row.querySelector("td:nth-child(1)")?.innerText || '')
+          .trim()
+          .toLowerCase();
+
+        // 如果輸入的是數字字串：允許「訂單編號精準」或「任何欄位包含該數字（去格式後）」
+        if (!isNaN(filter) && filter !== "") {
+          return orderIdText === filter || normalizedText.includes(filter);
+        }
+        // 一般文字搜尋
+        return normalizedText.includes(filter);
       });
 
       const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
@@ -235,7 +273,9 @@ tr.dirty-row {
 
       rows.forEach(r => r.style.display = "none");
       filteredRows.forEach((row, i) => {
-        if (i >= (currentPage - 1) * rowsPerPage && i < currentPage * rowsPerPage) row.style.display = "";
+        if (i >= (currentPage - 1) * rowsPerPage && i < currentPage * rowsPerPage) {
+          row.style.display = "";
+        }
       });
 
       renderPagination(totalPages);
@@ -253,15 +293,14 @@ tr.dirty-row {
         btn.disabled = disabled;
         if (active) btn.classList.add("active");
         btn.addEventListener("click", onClick);
-        li.appendChild(btn); pagination.appendChild(li);
+        li.appendChild(btn);
+        pagination.appendChild(li);
       };
 
       addBtn("«", currentPage === 1, () => { if (currentPage>1){ currentPage--; renderTable(); } });
-
       for (let i=1;i<=totalPages;i++) {
         addBtn(String(i), false, () => { currentPage = i; renderTable(); }, i===currentPage);
       }
-
       addBtn("»", currentPage === totalPages, () => { if (currentPage<totalPages){ currentPage++; renderTable(); } });
     }
 
@@ -288,10 +327,7 @@ tr.dirty-row {
       if (e.key === "Enter") { currentPage = 1; renderTable(); }
     });
 
-    // 初始渲染
-    window.onload = renderTable;
-
-    /* ===== 出貨狀態：標記變更 + 儲存呼叫 API ===== */
+    /* ====== 出貨狀態：變更標記 + 儲存 ====== */
     const CSRF_TOKEN  = document.querySelector('meta[name="_csrf"]')?.content;
     const CSRF_HEADER = document.querySelector('meta[name="_csrf_header"]')?.content;
 
@@ -310,7 +346,6 @@ tr.dirty-row {
           const selectEl = row.querySelector('.status-select');
           const orderId  = selectEl.dataset.orderId;
           const newVal   = parseInt(selectEl.value, 10);
-
           if (!row.classList.contains('dirty-row')) return;
 
           const headers = { 'Content-Type': 'application/json' };
@@ -345,57 +380,28 @@ tr.dirty-row {
       });
     }
 
-    /* ===== 商品明細：為每列加入按鈕 + 事件綁定 ===== */
-    // 全域快取，避免同一張訂單重複打 API
+    /* ====== 商品明細：讀取並顯示（計算合計正確） ====== */
     const orderItemsCache = new Map();
 
-    function addItemsButtonsToRows() {
-      const table = document.querySelector('#orderTable');   // ✅ 修正正確的 ID
-      if (!table) return;
+    document.body.addEventListener('click', async (evt) => {
+      const btn = evt.target.closest('.js-show-items');
+      if (!btn) return;
 
-      const rows = table.querySelectorAll('tbody tr');
-      rows.forEach(tr => {
-        const opTd = tr.querySelector('td:last-child');
-        if (!opTd) return;
-        // 取得訂單編號：取第一欄文字
-        const orderId = (tr.querySelector('td')?.textContent || '').trim();
-        if (!orderId) return;
-
-        // 避免重複插入
-        if (opTd.querySelector('.js-show-items')) return;
-
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-sm btn-outline-secondary me-2 js-show-items';
-        btn.dataset.orderId = orderId;
-        btn.textContent = '商品明細';
-        opTd.prepend(btn);  // 放在「儲存」左邊
-      });
-    }
-
-    function bindItemsButtonClick() {
-      document.body.addEventListener('click', async (evt) => {
-        const btn = evt.target.closest('.js-show-items');
-        if (!btn) return;
-
-        const orderId = btn.dataset.orderId;
-        try {
-          const items = await getOrderItems(orderId);
-          openItemsModal(orderId, items);
-        } catch (err) {
-          console.error(err);
-          alert('讀取商品明細失敗，請稍後再試');
-        }
-      });
-    }
+      const orderId = btn.dataset.orderId;
+      try {
+        const items = await getOrderItems(orderId);
+        openItemsModal(orderId, items);
+      } catch (err) {
+        console.error(err);
+        alert('讀取商品明細失敗，請稍後再試');
+      }
+    });
 
     async function getOrderItems(orderId) {
       if (orderItemsCache.has(orderId)) return orderItemsCache.get(orderId);
-
-      const res = await fetch(`/api/admin/orders/${orderId}/items`, {
-        headers: { 'Accept': 'application/json' }
-      });
+      const res = await fetch(`/api/admin/orders/${orderId}/items`, { headers: { 'Accept': 'application/json' } });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json(); // 期望是一個 item 陣列
+      const data = await res.json();
       orderItemsCache.set(orderId, data);
       return data;
     }
@@ -407,16 +413,16 @@ tr.dirty-row {
       modalEl.querySelector('.js-order-id').textContent = orderId;
       const tbody = modalEl.querySelector('tbody');
 
-      // 相容不同欄位命名
       const html = (items || []).map(it => {
-        const name  = escapeHtml(it.productName || it.product?.name || '');
+        const name  = escapeHtml(it.productName || it.product?.productName || it.product?.name || '');
         const qty   = Number(it.orderItemQuantity ?? it.quantity ?? 0);
-        const price = Number(it.unitPrice ?? it.buyPrice ?? it.price ?? 0);
+        // 以後端實際欄位為準，優先取 buyPrice；無則 fallback
+        const price = Number(it.buyPrice ?? it.unitPrice ?? it.price ?? 0);
         const sub   = qty * price;
         return `
           <tr>
             <td>${name}</td>
-            <td class="text-end">${qty}</td>
+            <td class="text-end">${fmt(qty)}</td>
             <td class="text-end">$${fmt(price)}</td>
             <td class="text-end">$${fmt(sub)}</td>
           </tr>
@@ -427,7 +433,7 @@ tr.dirty-row {
 
       const total = (items || []).reduce((s, it) => {
         const qty   = Number(it.orderItemQuantity ?? it.quantity ?? 0);
-        const price = Number(it.unitPrice ?? it.price ?? 0);
+        const price = Number(it.buyPrice ?? it.unitPrice ?? it.price ?? 0);
         return s + qty * price;
       }, 0);
       modalEl.querySelector('.js-subtotal').textContent = '$' + fmt(total);
@@ -436,27 +442,17 @@ tr.dirty-row {
       modal.show();
     }
 
-    // 小工具
+    /* ====== 小工具 ====== */
     function fmt(n) { return (Math.round(Number(n || 0) * 100) / 100).toLocaleString(); }
     function escapeHtml(s) {
       return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     }
 
-    /* ===== 讓重繪後也能綁到事件／重補按鈕 ===== */
-    const _origRenderTable = renderTable;
-    window.renderTable = function () {
-      _origRenderTable();
-      bindDirtyMarker();
-      bindSaveButtons();
-      addItemsButtonsToRows();   // ✅ 分頁/搜尋後再補上「商品明細」
-    };
-
-    // 首次載入就綁一次
+    /* ====== 初始綁定 ====== */
     document.addEventListener('DOMContentLoaded', () => {
-      bindDirtyMarker();
-      bindSaveButtons();
-      addItemsButtonsToRows();   // ✅ 初次渲染補按鈕
-      bindItemsButtonClick();    // ✅ 事件委派一次即可
+      renderTable();           // 初次渲染與分頁
+      bindDirtyMarker();       // 監聽 select 變更
+      bindSaveButtons();       // 綁定儲存
     });
   </script>
 </body>

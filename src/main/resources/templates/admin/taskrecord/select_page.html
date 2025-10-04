@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant"
+    th:replace="~{admin/layout :: layout(~{::title}, ~{::#pageContent}, ~{::#pageScripts})}">
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>TaskRecord 管理 - select_page</title>
 
-    <head th:insert="~{/admin/taskrecord/included-fragment}"></head>
+    <!-- 若有需要引入額外 <link>/<meta>/<style> 片段，可在這裡用 th:block 插入 -->
+    <!-- <th:block th:insert="~{/admin/taskrecord/included-fragment}"></th:block> -->
+
     <style>
         :root {
             --card: #fff;
@@ -15,10 +18,7 @@
             --soft: #f8f9fa;
         }
 
-        body {
-            padding-top: 72px;
-        }
-
+        /* 版型已提供固定 header；若需要與 header 齊平，這裡可視需要加上內距 */
         .container-wide {
             max-width: 1200px;
             margin: 0 auto;
@@ -31,7 +31,7 @@
             gap: 1rem;
         }
 
-        @media(max-width:992px) {
+        @media (max-width: 992px) {
             .grid {
                 grid-template-columns: 1fr;
             }
@@ -102,7 +102,7 @@
             align-items: center;
         }
 
-        @media(max-width:768px) {
+        @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
             }
@@ -134,16 +134,8 @@
     </style>
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
-        <div class="text-center">
-            <h2 class="m-0">TaskRecord 管理 - select_page</h2>
-            <div class="mt-1">
-                <a class="navbar-brand" th:href="@{/}"><img th:src="@{/images/back1.gif}" alt="返回"> 回 index</a>
-            </div>
-        </div>
-    </nav>
-
+<!-- 內容容器：會被 layout.html 的 <div th:replace="${content}"> 放進 <main class="app-main"> -->
+<div id="pageContent">
     <main class="container-wide">
         <div class="grid mt-3">
             <!-- 左：查詢/導航 -->
@@ -175,9 +167,6 @@
                         <button type="submit" class="btn">查詢</button>
                     </form>
                 </div>
-<!--                 <footer class="card-footer"> -->
-<!--                     <span class="hint">提示：右側會顯示最近一次查詢的單筆結果。</span> -->
-<!--                 </footer> -->
             </section>
 
             <!-- 右：單筆預覽（片段） -->
@@ -192,6 +181,11 @@
             </aside>
         </div>
     </main>
-</body>
+</div>
+
+<!-- 這頁才需要的腳本（可留空；會被 layout.html 以 <th:block th:replace="${pageScripts}"> 插入） -->
+<th:block id="pageScripts">
+    <!-- <script th:src="@{/js/taskrecord-select-page.js}"></script> -->
+</th:block>
 
 </html>
