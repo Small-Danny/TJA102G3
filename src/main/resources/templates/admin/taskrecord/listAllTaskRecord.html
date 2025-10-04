@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>TaskRecord 列表 - listAllTaskRecord</title>
+    <title>listAllTaskRecord</title>
 
     <script th:src="@{/js/jquery-1.11.3.min.js}"></script>
 
@@ -160,8 +160,8 @@
     <div id="pageContent">
         <main class="container-narrow">
             <div class="subhead">
-                <b>第 <span id="cur">1</span>/<span id="pages"></span> 頁</b>
-                <span class="mx-2">•</span>
+                <!-- <b>第 <span id="cur">1</span>/<span id="pages"></span> 頁</b> -->
+                <!-- <span class="mx-2">•</span> -->
                 <b>共 <span class="text-danger" th:text="${list.size()}"></span> 筆</b>
             </div>
 

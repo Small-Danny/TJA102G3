@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <title>所有任務資料 - listAllTask (Simple0 風格)</title>
+  <title>listAllTask</title>
   <!-- jQuery：保留既有分頁用 -->
   <script th:src="@{/js/jquery-1.11.3.min.js}"></script>
   <!-- 若專案已在 included-fragment 載入 Bootstrap / AdminLTE，這裡不需再引入 -->
@@ -222,8 +222,8 @@
     <main class="container-narrow">
       <!-- 資訊列 -->
       <div class="subhead my-3 text-center">
-        <b>第 <span id="currentPage">1</span>/<span id="pageNumber"></span> 頁</b>
-        <span class="mx-2">•</span>
+        <!-- <b>第 <span id="currentPage">1</span>/<span id="pageNumber"></span> 頁</b> -->
+        <!-- <span class="mx-2">•</span> -->
         <b>符合條件共 <span class="text-danger" th:text="${taskListData.size}"></span> 筆</b>
       </div>
 
