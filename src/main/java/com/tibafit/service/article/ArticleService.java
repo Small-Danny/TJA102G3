@@ -104,7 +104,12 @@ public class ArticleService {
 				dto.setCoverImageUrl(defaults[random.nextInt(defaults.length)]);
 			}
 		}
-
+		String authorAvatar = dto.getProfilePicture();
+		 if(authorAvatar == null || authorAvatar.isBlank()) {
+		        dto.setProfilePicture("/frontend-template/assets/images/profile-picture-default.jpg");
+		    } else if(!authorAvatar.startsWith("http://") && !authorAvatar.startsWith("https://") && !authorAvatar.startsWith("/")) {
+		        dto.setProfilePicture("/" + authorAvatar);
+		    }
 		return dto;
 	}
 
