@@ -8,8 +8,18 @@ public class ArticleCollectionDTO {
 	private String coverImageUrl;
 	private String title;
 	private String authorName;
+	private String email;
 	private Timestamp createTime;
 	private Boolean isDeleted;
+
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 	public Integer getId() {
 		return id;
@@ -59,19 +69,23 @@ public class ArticleCollectionDTO {
 		this.isDeleted = isDeleted;
 	}
 
+	
+
 	@Override
 	public String toString() {
 		return "ArticleCollectionDTO [id=" + id + ", coverImageUrl=" + coverImageUrl + ", title=" + title
-				+ ", authorName=" + authorName + ", createTime=" + createTime + ", isDeleted=" + isDeleted + "]";
+				+ ", authorName=" + authorName + ", email=" + email + ", createTime=" + createTime + ", isDeleted="
+				+ isDeleted + "]";
 	}
 
-	public ArticleCollectionDTO(Integer id, String coverImageUrl, String title, String authorName, Timestamp createTime,
-			Boolean isDeleted) {
+	public ArticleCollectionDTO(Integer id, String coverImageUrl, String title, String authorName, String email,
+			Timestamp createTime, Boolean isDeleted) {
 		super();
 		this.id = id;
 		this.coverImageUrl = coverImageUrl;
 		this.title = title;
 		this.authorName = authorName;
+		this.email = email;
 		this.createTime = createTime;
 		this.isDeleted = isDeleted;
 	}

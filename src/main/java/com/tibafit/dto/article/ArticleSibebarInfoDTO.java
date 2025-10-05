@@ -8,7 +8,16 @@ public class ArticleSibebarInfoDTO {
 	private String coverImageUrl;
 	private String title;
 	private String authorName;
+	private String email;
 	private Timestamp createTime;
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 	public Integer getId() {
 		return id;
@@ -50,18 +59,24 @@ public class ArticleSibebarInfoDTO {
 		this.createTime = createTime;
 	}
 
+	
+
+	
+
 	@Override
 	public String toString() {
-		return "ArticleInfoDTO [id=" + id + ", coverImageUrl=" + coverImageUrl + ", title=" + title + ", authorName="
-				+ authorName + ", createTime=" + createTime + "]";
+		return "ArticleSibebarInfoDTO [id=" + id + ", coverImageUrl=" + coverImageUrl + ", title=" + title
+				+ ", authorName=" + authorName + ", email=" + email + ", createTime=" + createTime + "]";
 	}
 
-	public ArticleSibebarInfoDTO(Integer id, String coverImageUrl, String title, String authorName, Timestamp createTime) {
+	public ArticleSibebarInfoDTO(Integer id, String coverImageUrl, String title, String authorName, String email,
+			Timestamp createTime) {
 		super();
 		this.id = id;
 		this.coverImageUrl = coverImageUrl;
 		this.title = title;
 		this.authorName = authorName;
+		this.email = email;
 		this.createTime = createTime;
 	}
 

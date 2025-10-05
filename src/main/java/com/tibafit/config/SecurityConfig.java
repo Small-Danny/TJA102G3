@@ -362,7 +362,7 @@ public class SecurityConfig {
                                 "/frontend-template/register-success.html", "/frontend-template/register-fail.html",
                                 "/frontend-template/cart.html", "/frontend-template/cart_order.html",
                                 "/frontend-template/pay_success.html", "/shop/products", "/shop/product/**",
-                                "/frontend-template/forum.html", "/frontend-template/article-detail.html"
+                                "/frontend-template/forum.html", "/frontend-template/article-detail.html","/frontend-template/forum/member-detail.html"
                         ).permitAll()
                         // --- 靜態資源 ---
                         .requestMatchers("/frontend-template/**", "/images/**").permitAll()
@@ -373,7 +373,7 @@ public class SecurityConfig {
                                 "/api/csrf-token", "/api/products/**", "/api/cart/**", "/shop/api/**",
                                 "/api/ecpay/callback", "/payment/ecpay/return", "/api/line-pay/confirm",
                                 "/api/posts/**", "/api/sidebar", "/api/categories", "/api/report-types"
-                                , "/api/ai/**"
+                                , "/api/ai/**","/api/forum/member/**"
                         ).permitAll()
                         // --- 規則 B: 其他所有請求，只要登入即可 ---
                         .anyRequest().authenticated()
@@ -399,7 +399,7 @@ public class SecurityConfig {
                                 "/ecpay/callback", "/payment/ecpay", "/payment/ecpay/return",
                                 "/api/line-pay/confirm", "/api/line-pay/callback", "/api/line-pay/notification",
                                 "/api/posts/**", "/api/mycollection/**", "/api/myarticles/**", "/api/cart/**",
-                                "/api/ai/**"
+                                "/api/ai/**","/api/forum/member/**"
                         )
                 )
                 .headers(headers -> headers // 設定安全標頭
