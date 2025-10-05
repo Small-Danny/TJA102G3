@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>文章全文</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
 <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"> -->
 
 <link rel="stylesheet" type="text/css"
@@ -19,81 +23,253 @@
 	href="/frontend-template/assets/css/header.css">
 
 <style>
-body { background:#f5f5f5; font-family:Arial,sans-serif; }
-.container { margin-top:20px; }
+body {
+	background: #f5f5f5;
+	font-family: Arial, sans-serif;
+}
+
+
+/* header */
+.container {
+	margin-top: 0px;
+}
+/* 側邊欄整體上方間距 */
+.col-lg-4>.sidebar, #user-card {
+	margin-top: 50px; /* 可以調整成你想要的距離 */
+}
 
 /* 文章區 */
-.blog-detail { background:#fff; padding:20px; border-radius:10px; box-shadow:0 3px 8px rgba(0,0,0,0.1); }
-.blog-detail h1 { font-size:2rem; font-weight:bold; margin-bottom:15px; color:#333; }
-.blog-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.blog-meta { font-size:12px; color:#666; margin-top:15px; }
-.blog-category { font-size:13px; font-weight:600; color:#555; margin-bottom:10px; }
-.blog-attribute { font-size:14px; margin-bottom:15px; }
-.blog-content { font-size:16px; line-height:1.6; color:#333; }
+.blog-detail {
+	background: #fff;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+	margin-top: 50px; /* 新增上方距離 */
+}
+
+#footer-placeholder {
+	margin-top: 50px; /* 調整成你想要的距離 */
+}
+
+.blog-detail h1 {
+	font-size: 2rem;
+	font-weight: bold;
+	margin-bottom: 15px;
+	color: #333;
+}
+
+.blog-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.blog-meta {
+	font-size: 12px;
+	color: #666;
+	margin-top: 15px;
+}
+
+.blog-category {
+	font-size: 13px;
+	font-weight: 600;
+	color: #555;
+	margin-bottom: 10px;
+}
+
+.blog-attribute {
+	font-size: 14px;
+	margin-bottom: 15px;
+}
+
+.blog-content {
+	font-size: 16px;
+	line-height: 1.6;
+	color: #333;
+}
 
 /* 限制文章內圖片寬度 */
 .blog-content img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 10px 0;
-    border-radius: 6px;
+	max-width: 100%;
+	height: auto;
+	display: block;
+	margin: 10px 0;
+	border-radius: 6px;
 }
 
-.action-btn { display: inline-flex; align-items:center; justify-content:center; padding:6px 10px; border:1px solid #ddd; border-radius:5px; background:#fff; cursor:pointer; transition:0.3s; font-size:16px; text-decoration:none; color:#c62828; }
-.action-btn:hover { background:#c62828; color:#fff; border-color:#c62828; }
-.dropdown .dropdown-toggle::after { display:none; }
+.action-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 6px 10px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	background: #fff;
+	cursor: pointer;
+	transition: 0.3s;
+	font-size: 16px;
+	text-decoration: none;
+	color: #c62828;
+}
+
+.action-btn:hover {
+	background: #c62828;
+	color: #fff;
+	border-color: #c62828;
+}
+
+.dropdown .dropdown-toggle::after {
+	display: none;
+}
 
 /* 側邊欄 */
-.sidebar { background:#fff; padding:15px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:20px; }
-.sidebar h3 { font-size:18px; margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:5px; color:#c62828; }
-.sidebar ul { list-style:none; padding:0; margin:0; }
-.sidebar ul li { display:flex; gap:10px; margin-bottom:12px; }
-.sidebar ul li img { width:50px; height:50px; object-fit:cover; border-radius:6px; }
-.sidebar ul li .info { flex:1; }
-#recent-posts ul li .info a,
-#category-list ul li a,
-#favorites-list ul li .info a,
-#meta-links ul li a {
-    font-size:14px;
-    font-weight:500;
-    color:#555;
-    text-decoration:none;
-}
-#recent-posts ul li .info a:hover,
-#category-list ul li a:hover,
-#favorites-list ul li .info a:hover,
-#meta-links ul li a:hover {
-    color:#c62828;
-    text-decoration:underline;
-}
-#recent-posts ul li .meta,
-#favorites-list ul li .meta {
-    font-size:12px;
-    color:#666;
-    margin-top:4px;
+.sidebar {
+	background: #fff;
+	padding: 15px;
+	border-radius: 10px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
 }
 
-#favorites-list .view-all-btn { display:block; text-align:center; margin-top:10px; padding:6px 10px; background:#c62828; color:#fff; border-radius:5px; text-decoration:none; }
-#favorites-list .view-all-btn:hover { background:#e53935; }
-.favorite-red { color:red !important; }
+.sidebar h3 {
+	font-size: 18px;
+	margin-bottom: 12px;
+	border-bottom: 1px solid #eee;
+	padding-bottom: 5px;
+	color: #c62828;
+}
+
+.sidebar ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.sidebar ul li {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+
+.sidebar ul li img {
+	width: 50px;
+	height: 50px;
+	object-fit: cover;
+	border-radius: 6px;
+}
+
+.sidebar ul li .info {
+	flex: 1;
+}
+
+#recent-posts ul li .info a, #category-list ul li a, #favorites-list ul li .info a,
+	#meta-links ul li a {
+	font-size: 14px;
+	font-weight: 500;
+	color: #555;
+	text-decoration: none;
+}
+
+#recent-posts ul li .info a:hover, #category-list ul li a:hover,
+	#favorites-list ul li .info a:hover, #meta-links ul li a:hover {
+	color: #c62828;
+	text-decoration: underline;
+}
+
+#recent-posts ul li .meta, #favorites-list ul li .meta {
+	font-size: 12px;
+	color: #666;
+	margin-top: 4px;
+}
+
+#favorites-list .view-all-btn {
+	display: block;
+	text-align: center;
+	margin-top: 10px;
+	padding: 6px 10px;
+	background: #c62828;
+	color: #fff;
+	border-radius: 5px;
+	text-decoration: none;
+}
+
+#favorites-list .view-all-btn:hover {
+	background: #e53935;
+}
+
+.favorite-red {
+	color: red !important;
+}
 
 /* 會員功能卡片 */
-#user-card { display:none; background:#fff; padding:15px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:20px; }
-#user-card h3 { font-size:18px; font-weight:600; margin-bottom:15px; border-left:4px solid #c62828; padding-left:8px; color:#c62828; }
-.user-functions { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
-.func-item { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:18px 5px; border:1px solid #eee; border-radius:8px; background:#fafafa; color:#555; text-decoration:none; transition:all 0.25s ease; }
-.func-item i { font-size:24px; margin-bottom:6px; color:#c62828; }
-.func-item span { font-size:14px; }
-.func-item:hover { background:#c62828; color:#fff; }
-.func-item:hover i { color:#fff; }
+#user-card {
+	display: none;
+	background: #fff;
+	padding: 15px;
+	border-radius: 10px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+
+#user-card h3 {
+	font-size: 18px;
+	font-weight: 600;
+	margin-bottom: 15px;
+	border-left: 4px solid #c62828;
+	padding-left: 8px;
+	color: #c62828;
+}
+
+.user-functions {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 12px;
+}
+
+.func-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 18px 5px;
+	border: 1px solid #eee;
+	border-radius: 8px;
+	background: #fafafa;
+	color: #555;
+	text-decoration: none;
+	transition: all 0.25s ease;
+}
+
+.func-item i {
+	font-size: 24px;
+	margin-bottom: 6px;
+	color: #c62828;
+}
+
+.func-item span {
+	font-size: 14px;
+}
+
+.func-item:hover {
+	background: #c62828;
+	color: #fff;
+}
+
+.func-item:hover i {
+	color: #fff;
+}
 
 /* 燈箱 */
-.modal .btn-success { background:#c62828; border-color:#c62828; }
+.modal .btn-success {
+	background: #c62828;
+	border-color: #c62828;
+}
 </style>
 </head>
 <body>
-<div id="header-placeholder"></div>
+	<div id="header-placeholder"></div>
 	<section class="banner-style-one">
 		<div class="parallax"></div>
 		<div class="container">
@@ -105,79 +281,99 @@ body { background:#f5f5f5; font-family:Arial,sans-serif; }
 			</div>
 		</div>
 	</section>
-<div class="container">
-    <div class="row">
-        <!-- 文章內容區 -->
-        <div class="col-lg-8">
-            <div class="blog-detail" id="blog-detail"></div>
-        </div>
+	<div class="container">
+		<div class="row">
+			<!-- 文章內容區 -->
+			<div class="col-lg-8">
+				<div class="blog-detail" id="blog-detail"></div>
+			</div>
 
-        <!-- 側邊欄 -->
-        <div class="col-lg-4">
-            <!-- 會員功能卡片 -->
-            <div id="user-card">
-                <h3>功能一覽</h3>
-                <div class="user-functions">
-                    <a href="myarticles.html" class="func-item"><i class="fa-regular fa-file-lines"></i><span>我的文章</span></a>
-                    <a href="mycollection.html" class="func-item"><i class="fa-regular fa-bookmark"></i><span>我的收藏</span></a>
-                    <a href="profile.html" class="func-item"><i class="fa-solid fa-user-gear"></i><span>會員中心</span></a>
-                    <a href="post-article.html" class="func-item"><i class="fa-regular fa-pen-to-square"></i><span>我要發文</span></a>
-                </div>
-            </div>
+			<!-- 側邊欄 -->
+			<div class="col-lg-4">
+				<!-- 會員功能卡片 -->
+				<div id="user-card">
+					<h3>功能一覽</h3>
+					<div class="user-functions">
+						<a href="myarticles.html" class="func-item"><i
+							class="fa-regular fa-file-lines"></i><span>我的文章</span></a> <a
+							href="mycollection.html" class="func-item"><i
+							class="fa-regular fa-bookmark"></i><span>我的收藏</span></a> <a
+							href="profile.html" class="func-item"><i
+							class="fa-solid fa-user-gear"></i><span>會員中心</span></a> <a
+							href="post-article.html" class="func-item"><i
+							class="fa-regular fa-pen-to-square"></i><span>我要發文</span></a>
+					</div>
+				</div>
 
-            <div class="sidebar" id="recent-posts"><h3>最新文章</h3><ul></ul></div>
-            <div class="sidebar" id="category-list"><h3>分類</h3><ul></ul></div>
-            <div class="sidebar" id="favorites-list"><h3>我的收藏</h3><ul></ul></div>
-            <div class="sidebar" id="meta-links"><h3>網站資訊</h3><ul></ul></div>
-        </div>
-    </div>
-</div>
+				<div class="sidebar" id="recent-posts">
+					<h3>最新文章</h3>
+					<ul></ul>
+				</div>
+				<div class="sidebar" id="category-list">
+					<h3>分類</h3>
+					<ul></ul>
+				</div>
+				<div class="sidebar" id="favorites-list">
+					<h3>我的收藏</h3>
+					<ul></ul>
+				</div>
+				<div class="sidebar" id="meta-links">
+					<h3>網站資訊</h3>
+					<ul></ul>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<!-- 登入燈箱 -->
-<div id="loginModal" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-body text-center p-4">
-        <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
-        <h5 class="mb-2">尚未登入</h5>
-        <p>請先登入 Tibafit！</p>
-        <div class="d-flex justify-content-center gap-3">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">否</button>
-          <button type="button" class="btn btn-success" onclick="window.location.href='/login'">是</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+	<!-- 登入燈箱 -->
+	<div id="loginModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body text-center p-4">
+					<i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+					<h5 class="mb-2">尚未登入</h5>
+					<p>請先登入 Tibafit！</p>
+					<div class="d-flex justify-content-center gap-3">
+						<button type="button" class="btn btn-outline-secondary"
+							data-bs-dismiss="modal">否</button>
+						<button type="button" class="btn btn-success"
+							onclick="window.location.href='/login'">是</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<!-- 檢舉燈箱 -->
-<div id="reportModal" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">檢舉文章</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label for="reportTypeSelect" class="form-label">檢舉類型</label>
-          <select id="reportTypeSelect" class="form-select"></select>
-        </div>
-        <div class="mb-3">
-          <label for="reportReasonInput" class="form-label">備註原因（可選）</label>
-          <textarea id="reportReasonInput" class="form-control" rows="3"></textarea>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-danger" id="submitReportBtn">送出檢舉</button>
-      </div>
-    </div>
-  </div>
-</div>
+	<!-- 檢舉燈箱 -->
+	<div id="reportModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">檢舉文章</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label for="reportTypeSelect" class="form-label">檢舉類型</label> <select
+							id="reportTypeSelect" class="form-select"></select>
+					</div>
+					<div class="mb-3">
+						<label for="reportReasonInput" class="form-label">備註原因（可選）</label>
+						<textarea id="reportReasonInput" class="form-control" rows="3"></textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-bs-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-danger" id="submitReportBtn">送出檢舉</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
 document.addEventListener("DOMContentLoaded", function() {
     let isLoggedIn = false;
     let currentUser = null;
@@ -191,6 +387,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const metaLinks = document.querySelector('#meta-links ul');
     const params = new URLSearchParams(window.location.search);
     const articleId = params.get('id');
+    
+
     const defaultImages = ["/images/1.jpg","/images/2.jpg","/images/3.jpg","/images/4.jpg","/images/5.jpg"];
     const randomImage = () => defaultImages[Math.floor(Math.random()*defaultImages.length)];
 
@@ -270,6 +468,7 @@ document.addEventListener("DOMContentLoaded", function() {
             blogDetail.innerHTML = `
                 <div class="blog-header">
                     <h1>${article.title}</h1>
+                    
                     <div class="dropdown">
                         <button class="action-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-ellipsis-v"></i>
@@ -345,10 +544,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else { favoritesList.innerHTML = '<li>尚無收藏文章</li>'; }
 
                 // 網站資訊
+             // 網站資訊
                 metaLinks.innerHTML = '';
-                data.metaLinks.forEach(meta=>{
-                    metaLinks.innerHTML += `<li><a href="${meta.url}">${meta.name}</a></li>`;
-                });
+                if(!isLoggedIn){  // 只有沒登入才顯示
+                    data.metaLinks.forEach(meta=>{
+                        metaLinks.innerHTML += `<li><a href="${meta.url}">${meta.name}</a></li>`;
+                    });
+                    document.getElementById('meta-links').style.display = 'block';
+                } else {
+                    document.getElementById('meta-links').style.display = 'none';
+                }
+
             });
     }
 
@@ -362,13 +568,145 @@ document.addEventListener("DOMContentLoaded", function() {
  
 });
 </script>
-<div id="footer-placeholder"></div>
+	<div id="footer-placeholder"></div>
 	<!-- ======================= 唯一修改點：會員中心腳本 ======================= -->
 	<script src="/frontend-template/assets/js/jquery.min.js"></script>
-<!-- 	<script src="/frontend-template/assets/js/bootstrap.min.js"></script> -->
+	<!-- 	<script src="/frontend-template/assets/js/bootstrap.min.js"></script> -->
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script src="/frontend-template/assets/js/api.js"></script>
 	<script src="/frontend-template/assets/js/loader.js"></script>
 	<script src="/frontend-template/assets/js/custom.js"></script>
+
+
+<!-- ===== 浮動按鈕容器 ===== -->
+<div id="floating-btns">
+    <button id="shareLineBtn" title="分享給 LINE">
+        <i class="fab fa-line"></i>
+    </button>
+    <button id="shareFBBtn" title="分享給 Facebook">
+        <i class="fab fa-facebook-f"></i>
+    </button>
+    <button id="shareThreadsBtn" title="分享給 Threads">
+        <i class="fab fa-instagram"></i> 
+    </button>
+    <button id="shareTwBtn" title="分享給 Twitter">
+        <i class="fab fa-twitter"></i>
+    </button>
+    <button id="copyLinkBtn" title="複製文章連結">
+        <i class="fas fa-link"></i>
+    </button>
+</div>
+
+<style>
+
+#floating-btns {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* 自動間距 */
+    z-index: 9999;
+}
+
+#floating-btns button {
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+/* 各按鈕顏色 */
+#shareLineBtn { background: #00c300; color: #fff; }
+#shareFBBtn   { background: #3b5998; color: #fff; }
+#shareTwBtn   { background: #1da1f2; color: #fff; }
+#copyLinkBtn  { background: #c62828; color: #fff; }
+#shareThreadsBtn   { background: #1c1c1c; color: #fff; } /* Threads 官方色可以用深灰 */
+#shareThreadsBtn:hover   { background-color: #3d3d3d; }
+
+/* hover 動畫 */
+#floating-btns button:hover {
+    transform: scale(1.1);
+}
+#shareLineBtn:hover { background-color: #00a000; }
+#shareFBBtn:hover   { background-color: #334d84; }
+#shareIGBtn:hover   { background-color: #c72e61; }
+#shareTwBtn:hover   { background-color: #0d95e8; }
+#copyLinkBtn:hover  { background-color: #e53935; }
+</style>
+
+
+<script>
+const copyBtn = document.getElementById('copyLinkBtn');
+const shareLine = document.getElementById('shareLineBtn');
+const shareFB = document.getElementById('shareFBBtn');
+const shareThreads = document.getElementById('shareThreadsBtn');
+const shareTw = document.getElementById('shareTwBtn');
+const blogDetail = document.getElementById('blog-detail');
+
+// 複製連結
+copyBtn.addEventListener('click', function() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        Swal.fire({ icon: 'success', title: '已複製連結！', showConfirmButton: false, timer: 1500 });
+    });
+});
+
+// LINE 分享
+shareLine.addEventListener('click', function() {
+    window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(window.location.href)}`, '_blank');
+});
+
+// Facebook 分享
+shareFB.addEventListener('click', function() {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+});
+
+
+
+shareThreads.addEventListener('click', function() {
+    // 開啟 Threads 官方網站，或可以考慮預設用戶貼文頁面
+    window.open(`https://www.threads.com/intent/post?text=${encodeURIComponent(window.location.href)}`, '_blank');
+});
+
+// Twitter 分享
+shareTw.addEventListener('click', function() {
+    window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}`, '_blank');
+});
+
+// 顯示/隱藏按鈕
+const buttons = [copyBtn, shareLine, shareFB, shareThreads, shareTw];
+buttons.forEach(btn => { btn.style.display='none'; btn.style.opacity='0'; btn.style.transition='opacity 0.3s'; });
+
+function checkButtonVisibility() {
+    const scrollTop = window.scrollY || window.pageYOffset;
+    const blogTop = blogDetail.offsetTop;
+    const blogBottom = blogTop + blogDetail.offsetHeight;
+    const windowMiddle = scrollTop + window.innerHeight / 2;
+
+    if (windowMiddle >= blogTop && windowMiddle <= blogBottom) {
+        buttons.forEach(btn => { btn.style.display='flex'; btn.style.opacity='1'; });
+    } else {
+        buttons.forEach(btn => { 
+            btn.style.opacity='0';
+            setTimeout(()=>{ if(btn.style.opacity==='0') btn.style.display='none'; }, 300);
+        });
+    }
+}
+
+window.addEventListener('scroll', checkButtonVisibility);
+window.addEventListener('resize', checkButtonVisibility);
+checkButtonVisibility();
+</script>
+
+
+
+
 </body>
 </html>

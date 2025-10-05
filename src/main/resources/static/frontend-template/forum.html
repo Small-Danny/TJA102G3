@@ -26,6 +26,8 @@
 
 
 <style>
+/* 文章列表專屬間距 */
+
 html, body {
     margin: 0;
     padding: 0;
@@ -37,9 +39,13 @@ body {
 	background: #f5f5f5;
 	font-family: Arial, sans-serif;
 }
-/* 文章列表 */
+.content-container {
+   margin-top: 50px !important; /* 調整成你想要的距離 */
+    margin-bottom: 50px; /* 分頁離 footer 也可以加間距 */
+}
+/* header */
 .container {
-	margin-top: 20px;
+	margin-top: 0px;
 }
 
 .blog-post {
@@ -373,7 +379,7 @@ body {
 			</div>
 		</div>
 	</section>
-	<div class="container">
+	<div class="container content-container">
 
 		<div class="row">
 			<div class="col-lg-8">
@@ -388,8 +394,8 @@ body {
 					<ul class="pagination" id="pagination"></ul>
 					<div class="page-size-select">
 						<select id="pageSizeSelect">
-							<option value="3">3</option>
-							<option value="7" selected>7</option>
+							<option value="3" selected>3</option>
+							<option value="7">7</option>
 							<option value="10">10</option>
 						</select>
 					</div>
@@ -551,10 +557,15 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // 使用者登入資訊
+        
+     // 使用者登入資訊
         if(sb.currentUser && sb.currentUser.userId){
             userCard.style.display = 'block';
+            document.getElementById('meta-links').style.display = 'none'; // 隱藏網站資訊
+        } else {
+            document.getElementById('meta-links').style.display = 'block'; // 若沒登入則顯示
         }
+
 
 //         // 登出 JS (fetch)
 //         document.querySelectorAll('.logoutBtn').forEach(btn=>{
