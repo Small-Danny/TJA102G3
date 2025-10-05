@@ -266,6 +266,49 @@ body {
 	background: #c62828;
 	border-color: #c62828;
 }
+/* 作者區塊 */
+.article-author {
+    display: flex;
+    align-items: center;
+    margin: 15px 0; /* 標題下方間距 */
+}
+
+.article-author img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.article-author a {
+    font-weight: 600;
+    color: #c62828;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.article-author a:hover {
+    text-decoration: underline;
+}
+
+/* RWD 調整 */
+@media (max-width: 576px) {
+    .article-author {
+        flex-direction: row;
+        gap: 8px;
+        margin: 10px 0;
+    }
+    .article-author img {
+        width: 40px;
+        height: 40px;
+    }
+    .article-author a {
+        font-size: 14px;
+    }
+}
+
+/* 作者區塊 */
 </style>
 </head>
 <body>
@@ -275,7 +318,7 @@ body {
 		<div class="container">
 			<div class="row">
 				<div class="banner-details">
-					<h2>討論版</h2>
+					<h2>討論區</h2>
 					<p>歡迎回來！管理您的個人資料與服務</p>
 				</div>
 			</div>
@@ -465,10 +508,28 @@ document.addEventListener("DOMContentLoaded", function() {
     function loadArticleDetail(id){
         fetch(`/api/posts/${id}`).then(res=>res.json()).then(article=>{
             const formattedDate = article.updateTime ? new Date(article.updateTime).toISOString().slice(0,10) : '';
+         // 若有暱稱則使用暱稱，否則用 email
+            const displayName = article.nickName && article.nickName.trim() !== "" 
+                ? article.nickName 
+                : article.email;
             blogDetail.innerHTML = `
                 <div class="blog-header">
-                    <h1>${article.title}</h1>
-                    
+            	<!-- 作者區塊：圖片 + 名稱在同一行 -->
+            	<div class="article-header">
+            	  <div class="article-author">
+            	    <a href="forum-profile.html?userId=${article.userId}">
+            	      <img src="${article.profilePicture || '/frontend-template/assets/images/profile-picture-default.jpg'}" 
+            	           alt="${article.userName}" 
+            	           class="rounded-circle">
+            	    </a>
+            	    <a href="forum-profile.html?userId=${article.userId}" class="author-name">
+            	      ${displayName}
+            	    </a>
+            	  </div>
+
+            	  <h2 class="article-title">${article.title}</h2>
+            	</div>
+
                     <div class="dropdown">
                         <button class="action-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-ellipsis-v"></i>
@@ -479,11 +540,13 @@ document.addEventListener("DOMContentLoaded", function() {
                         </ul>
                     </div>
                 </div>
+                
+               
                 <hr>
                 <div class="blog-category">分類：${article.forumTypeName||''}</div>
                 <div class="blog-attribute">文章屬性：<span style="color:${article.articleAttribute==='公告'?'red':'#555'}; font-weight:bold;">${article.articleAttribute}</span></div>
                 <div class="blog-content">${article.content}</div>
-                <div class="blog-meta">更新日期：${formattedDate} | 作者：${article.userName} | 瀏覽數：${article.views||0}</div>
+                <div class="blog-meta">更新日期：${formattedDate} | 作者：${displayName} | 瀏覽數：${article.views||0}</div>
             `;
             bindFavoriteButton(id);
             
@@ -516,7 +579,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             <img src="${rp.imageUrl||randomImage()}" alt="${rp.title}">
                             <div class="info">
                                 <a href="article-detail.html?id=${rp.id}">${rp.title}</a>
-                                <div class="meta">${rp.author || ''} | ${rp.date || ''}</div>
+                                <div class="meta">${rp.author ? rp.author : rp.email} | ${rp.date || ''}</div>
                             </div>
                         </li>`;
                 });
@@ -536,7 +599,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 <img src="${fav.imageUrl||randomImage()}" alt="${fav.title}">
                                 <div class="info">
                                     <a href="article-detail.html?id=${fav.id}">${fav.title}</a>
-                                    <div class="meta">${fav.author || ''} | ${fav.date || ''}</div>
+                                    <div class="meta">${fav.author ?fav.author:fav.email} | ${fav.date || ''}</div>
                                 </div>
                             </li>`;
                     });

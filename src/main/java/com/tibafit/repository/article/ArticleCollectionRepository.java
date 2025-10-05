@@ -25,7 +25,8 @@ public interface ArticleCollectionRepository extends JpaRepository<ArticleCollec
 							    ac.article.articleId,
 							    ac.article.coverImageUrl,
 							    ac.article.title,
-							    ac.article.user.name,
+							    ac.article.user.nickName,
+							    ac.article.user.email,
 							    ac.article.createTime,
 							    ac.article.isDeleted
 							)

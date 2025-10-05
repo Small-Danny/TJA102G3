@@ -170,6 +170,7 @@ public class CollectionController {
 			map.put("articleId", fav.getId());
 			map.put("title", fav.getTitle());
 			map.put("authorName", fav.getAuthorName());
+			map.put("email", fav.getEmail());
 			map.put("createTime", date);
 			map.put("coverImageUrl", imageUrl);
 
