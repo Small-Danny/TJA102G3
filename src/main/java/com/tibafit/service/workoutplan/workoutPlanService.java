@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -45,6 +46,9 @@ public class workoutPlanService implements workoutPlanService_interface {
     @Autowired
     @Qualifier("rrooMailSender")
     private JavaMailSender rrooMailSender;
+    
+    @Value("${r.mail.default}")
+    private String defaultSendToEmail;
 
 
 	@Override
@@ -238,7 +242,7 @@ public class workoutPlanService implements workoutPlanService_interface {
     }
 
     private String resolveUserEmail(WorkoutPlanVO planVO) {
-    	String defaultEmail = "funwave.funwave@gmail.com";
+    	String defaultEmail = defaultSendToEmail;
         if(planVO.getUserVO() == null || planVO.getUserVO().getEmail() == null) {
         	return defaultEmail;
         }
