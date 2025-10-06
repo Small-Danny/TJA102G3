@@ -370,7 +370,7 @@ public class SecurityConfig {
                                 "/frontend-template/cart.html", "/frontend-template/cart_order.html",
                                 "/frontend-template/pay_success.html", "/shop/products", "/shop/product/**",
                                 "/frontend-template/forum.html", "/frontend-template/article-detail.html","/frontend-template/forum/member-detail.html"
-                                ,"/dMain/fd/workoutPlan_main"
+                                ,"/dMain/fd/workoutPlan_main", "/sportPics/publicImg/fd/sportCommon/**"
                         ).permitAll()
                         // --- 靜態資源 ---
                         .requestMatchers("/frontend-template/**", "/images/**").permitAll()
