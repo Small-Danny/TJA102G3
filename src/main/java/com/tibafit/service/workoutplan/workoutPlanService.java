@@ -47,6 +47,9 @@ public class workoutPlanService implements workoutPlanService_interface {
     @Qualifier("rrooMailSender")
     private JavaMailSender rrooMailSender;
     
+    @Value("${r.mail.username}")
+    private String sendFromEmail;
+    
     @Value("${r.mail.default}")
     private String defaultSendToEmail;
 
@@ -213,6 +216,7 @@ public class workoutPlanService implements workoutPlanService_interface {
 
         SimpleMailMessage message = new SimpleMailMessage();
         String setndToEmail = resolveUserEmail(planVO);
+        message.setFrom("TibaFit 團隊 <" + sendFromEmail + ">");
         message.setTo(setndToEmail);
         message.setSubject(subject);
         message.setText(content);
