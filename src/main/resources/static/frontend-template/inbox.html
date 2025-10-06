@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>收件匣</title>
+<link rel="stylesheet" href="/frontend-template/assets/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="/frontend-template/assets/css/style.css">
+<link rel="stylesheet" href="/frontend-template/assets/css/responsive.css">
+<link rel="stylesheet" href="/frontend-template/assets/css/header.css">
+<style>
+body { background: #f5f5f5; font-family: Arial, sans-serif; }
+.container2 { max-width: 900px; margin: 30px auto; }
+.profile-card { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 3px 12px rgba(0,0,0,0.1); }
+.profile-header h2 { display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 15px; }
+.article-tabs { display: flex; gap: 15px; margin-top: 10px; margin-bottom: 15px; border-bottom: 2px solid #c62828; }
+.article-tabs div { padding-bottom: 5px; cursor: pointer; font-weight: 500; color: #555; }
+.article-tabs .active { color: #c62828; border-bottom: 2px solid #c62828; }
+.profile-actions { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+.profile-actions label { font-weight: 500; cursor: pointer; }
+.profile-actions a { text-decoration: none; color: #c62828; font-weight: 500; cursor: pointer; }
+.profile-actions a:hover { text-decoration: underline; }
+.message-list .article-item { display: flex; gap: 15px; background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 3px 8px rgba(0,0,0,0.08); transition: transform 0.3s ease, opacity 0.3s ease; align-items: flex-start; cursor: pointer; }
+.message-list .article-item:hover { transform: translateY(-3px); }
+.message-list .article-item input[type="checkbox"] { margin-top: 10px; }
+.message-list .article-content h5 { margin: 0 0 5px 0; font-weight: bold; }
+.message-list .article-content p { margin: 0 0 5px 0; font-size: 14px; color: #555; }
+.message-list .article-content p.unread-text { font-weight: bold; }
+.message-list .article-meta { font-size: 12px; color: #888; margin-top: 5px; }
+.message-list .article-meta span.badge-danger { background-color: #c62828; color: #fff; padding: 2px 6px; border-radius: 12px; font-size: 12px; }
+.message-list .article-item.unread { border-left: 4px solid #c62828; background-color: #fff3f3; transition: border 0.3s, background 0.3s; }
+/* 自訂燈箱 */
+.modal-custom { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+.modal-content-custom { background-color: #fff; margin: 10% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 600px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: fadeIn 0.3s ease-in-out; }
+.modal-header-custom { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
+.modal-header-custom h4 { margin: 0; }
+.close-btn { cursor: pointer; font-size: 20px; font-weight: bold; color: #888; }
+.close-btn:hover { color: #c62828; }
+.modal-body-custom img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; float: left; margin-right: 15px; }
+.modal-body-custom h5 { margin: 0; }
+.modal-body-custom p { margin-top: 10px; font-size: 14px; line-height: 1.5; }
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+</style>
+</head>
+<body>
+<div id="header-placeholder"></div>
+
+<section class="banner-style-one">
+    <div class="parallax"></div>
+    <div class="container">
+        <div class="row">
+            <div class="banner-details">
+                <h2>討論區</h2>
+                <p>歡迎回來！管理您的個人資料與服務</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container2">
+    <div class="profile-card">
+        <div class="profile-header">
+            <h2><i class="fa-regular fa-envelope"></i> 收件匣</h2>
+        </div>
+
+        <div class="article-tabs">
+            <div class="active">收件匣</div>
+            <div>已發訊息</div>
+            <div>系統通知</div>
+        </div>
+
+        <div class="profile-actions">
+            <label><input type="checkbox" id="selectAll"> 全選</label>
+            <a href="#" id="markRead"><i class="fa-regular fa-envelope"></i> 標為已讀</a>
+            <a href="#" id="deleteMsg"><i class="fa-regular fa-trash-can"></i> 刪除</a>
+        </div>
+
+        <div class="article-list message-list"></div>
+        <div id="pagination" class="mt-3 text-center"></div>
+    </div>
+</div>
+
+<div id="messageModal" class="modal-custom">
+    <div class="modal-content-custom">
+        <div class="modal-header-custom">
+            <h4>訊息內容</h4>
+            <span class="close-btn">&times;</span>
+        </div>
+        <div class="modal-body-custom"></div>
+    </div>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="/frontend-template/assets/js/jquery.min.js"></script>
+<script src="/frontend-template/assets/js/bootstrap.min.js"></script>
+<script src="/frontend-template/assets/js/loader.js"></script>
+<script>
+let currentPage = 1;
+const pageSize = 5;
+let currentMessages = [];
+
+$(document).ready(function() {
+    $('#selectAll').on('change', function() {
+        $('.message-list input[type="checkbox"]').prop('checked', this.checked);
+    });
+
+    $('.article-tabs div').click(function(){
+        $('.article-tabs div').removeClass('active');
+        $(this).addClass('active');
+        loadMessages($(this).text().trim());
+    });
+
+    $('#markRead').click(function(e){
+        e.preventDefault();
+        const selectedIds = $('.message-list input[type="checkbox"]:checked').closest('.article-item').map(function(){ return $(this).data('id'); }).get();
+        if(selectedIds.length===0) return alert('請先選擇訊息');
+        fetch('/api/messages/markRead', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ids:selectedIds}) })
+        .then(()=>selectedIds.forEach(id=>{
+            const item = $(`.article-item[data-id="${id}"]`);
+            item.removeClass('unread'); item.find('.msg-title').removeClass('unread-text');
+        })).catch(err=>console.error(err));
+    });
+
+    $('#deleteMsg').click(function(e){
+        e.preventDefault();
+        const selectedIds = $('.message-list input[type="checkbox"]:checked').closest('.article-item').map(function(){ return $(this).data('id'); }).get();
+        if(selectedIds.length===0) return alert('請先選擇訊息');
+        if(!confirm('確定要刪除選擇的訊息嗎？')) return;
+        fetch('/api/messages/delete', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ids:selectedIds}) })
+        .then(()=>{ currentMessages = currentMessages.filter(m=>!selectedIds.includes(m.id)); renderMessagesPage(); })
+        .catch(err=>console.error(err));
+    });
+
+    loadMessages('收件匣');
+});
+
+function loadMessages(tabName){
+    fetch(`/api/messages?tab=${encodeURIComponent(tabName)}`)
+        .then(res=>res.json())
+        .then(data=>{ currentMessages=data; currentPage=1; renderMessagesPage(); })
+        .catch(err=>{ console.error(err); $('.message-list').html('<p>載入訊息失敗</p>'); $('#pagination').empty(); });
+}
+
+function renderMessagesPage(){
+    const list = $('.message-list'); list.empty();
+    if(currentMessages.length===0){ list.html('<p>目前沒有訊息</p>'); $('#pagination').empty(); return; }
+    const totalPages = Math.ceil(currentMessages.length/pageSize);
+    const start = (currentPage-1)*pageSize;
+    const messagesToShow = currentMessages.slice(start, start+pageSize);
+    const tab = $('.article-tabs .active').text().trim();
+
+    messagesToShow.forEach(msg=>{
+        let displayName=msg.senderName; let displayAvatar=msg.senderAvatar; let isUnread=!msg.isRead;
+        let prefix = tab==='收件匣'?'來自：':tab==='已發訊息'?'寄給：':'通知：';
+        if(tab==='已發訊息'){ displayName=msg.receiverName; displayAvatar=msg.senderAvatar; isUnread=false; }
+        else if(tab==='系統通知'){ displayName=msg.senderName||'系統通知'; displayAvatar=msg.senderAvatar||'/images/admin.png'; isUnread=!msg.isRead; }
+        if(!displayAvatar||displayAvatar.trim()==='') displayAvatar='/frontend-template/assets/images/profile-picture-default.jpg';
+
+        const html = `
+        <div class="article-item ${isUnread?'unread':''}" data-id="${msg.id}">
+            <div style="flex-shrink:0;"><input type="checkbox"></div>
+            <img src="${displayAvatar}" alt="${displayName}" style="width:60px;height:60px;border-radius:10px;object-fit:cover;">
+            <div class="article-content">
+                <h5>${prefix}${displayName}</h5>
+                <p class="msg-title ${isUnread?'unread-text':''}"><strong>主題：</strong>${msg.title}</p>
+                <p class="msg-content">${msg.content.length>10?msg.content.substring(0,10)+'...':msg.content}</p>
+                <div class="article-meta"><span>${msg.createTimeStr}</span></div>
+            </div>
+        </div>`;
+        list.append(html);
+    });
+
+    renderPagination(totalPages);
+    bindMessageClick();
+}
+
+function renderPagination(totalPages){
+    const pagination = $('#pagination'); pagination.empty();
+    if(totalPages<=1) return;
+    for(let i=1;i<=totalPages;i++){
+        const btn=$(`<button class="btn btn-sm btn-outline-secondary mx-1">${i}</button>`);
+        if(i===currentPage) btn.addClass('active btn-secondary').removeClass('btn-outline-secondary');
+        btn.click(()=>{ currentPage=i; renderMessagesPage(); });
+        pagination.append(btn);
+    }
+}
+
+function bindMessageClick(){
+    $('.article-item').off('click').on('click', function(e){
+        if($(e.target).is('input')) return;
+        const id=$(this).data('id');
+        const msg=currentMessages.find(m=>m.id==id);
+        const name=$(this).find('h5').text();
+        const avatar=$(this).find('img').attr('src');
+        const time=$(this).find('.article-meta span').text();
+
+        if($(this).hasClass('unread')){
+            fetch(`/api/messages/markRead/${id}`, {method:'POST'})
+            .then(()=>{ $(this).removeClass('unread'); $(this).find('.msg-title').removeClass('unread-text'); })
+            .catch(err=>console.error(err));
+        }
+
+        const modal=$('#messageModal');
+        modal.find('.modal-body-custom').html(`
+            <img src="${avatar}" alt="${name}">
+            <h5>${name}</h5>
+            <p><strong>主題：</strong>${msg.title}</p>
+            <p>${msg.content}</p>
+            <p><small>時間：${time}</small></p>
+        `);
+        modal.show();
+    });
+}
+
+$('.close-btn').click(function(){ $('#messageModal').hide(); });
+$('#messageModal').click(function(e){ if(e.target.id==='messageModal') $(this).hide(); });
+</script>
+<!-- 浮動回討論區按鈕 -->
+<a href="/frontend-template/forum.html" class="btn-home-float">
+    <i class="fas fa-home"></i> 回討論區
+</a>
+
+<style>
+/* 浮動按鈕樣式 */
+.btn-home-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 16px;
+    border-radius: 30px;
+    background: #c62828;
+    color: #fff;
+    font-weight: 500;
+    text-decoration: none;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    z-index: 999;
+}
+
+.btn-home-float:hover {
+    background: #e53935;
+}
+</style>
+
+</body>
+</html>

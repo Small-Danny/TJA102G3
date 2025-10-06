@@ -373,7 +373,7 @@ public class SecurityConfig {
                                 "/api/csrf-token", "/api/products/**", "/api/cart/**", "/shop/api/**",
                                 "/api/ecpay/callback", "/payment/ecpay/return", "/api/line-pay/confirm",
                                 "/api/posts/**", "/api/sidebar", "/api/categories", "/api/report-types"
-                                , "/api/ai/**","/api/forum/member/**"
+                                , "/api/ai/**","/api/forum/member/**","/api/messages/**" 
                         ).permitAll()
                         // --- 規則 B: 其他所有請求，只要登入即可 ---
                         .anyRequest().authenticated()
@@ -399,7 +399,7 @@ public class SecurityConfig {
                                 "/ecpay/callback", "/payment/ecpay", "/payment/ecpay/return",
                                 "/api/line-pay/confirm", "/api/line-pay/callback", "/api/line-pay/notification",
                                 "/api/posts/**", "/api/mycollection/**", "/api/myarticles/**", "/api/cart/**",
-                                "/api/ai/**","/api/forum/member/**"
+                                "/api/ai/**","/api/forum/member/**", "/api/messages/**" 
                         )
                 )
                 .headers(headers -> headers // 設定安全標頭
