@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface WorkoutPlanRecordRepository extends JpaRepository<WorkoutPlanRecord, Integer> {
+public interface AnalyticsWorkoutPlanRecordRepository extends JpaRepository<WorkoutPlanRecord, Integer> {
 
     // 依 planId 查所有紀錄
     List<WorkoutPlanRecord> findByWorkoutPlanId(Integer workoutPlanId);

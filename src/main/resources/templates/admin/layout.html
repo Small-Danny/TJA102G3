@@ -91,10 +91,22 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a th:href="@{/admin/workout-settings}" class="nav-link">
+                            <a href="#" class="nav-link">
                                 <i class="nav-icon bi bi-sliders"></i>
-                                <p>運動設定</p>
+                                <p>運動管理<i class="nav-arrow bi bi-chevron-right"></i></p>
                             </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item"><a th:href="@{/dMain/bd/sportList}" class="nav-link"><i
+                                            class="nav-icon bi bi-circle"></i>
+                                        <p>運動管理</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item"><a th:href="@{/dMain/bd/sportTypeList}" class="nav-link"><i
+                                            class="nav-icon bi bi-circle"></i>
+                                        <p>運動分類管理</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
@@ -180,7 +192,7 @@
 
         <th:block th:replace="${pageScripts} ?: ~{}"></th:block>
 
-
+ 	</div>
 </body>
 
 </html>

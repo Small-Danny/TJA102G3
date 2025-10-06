@@ -14,6 +14,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${file.upload-dir}")
     private String uploadDir;
     
+    @Value("${file.upload-sport-dir}")
+    private String uploadSportDir;
+    
     /**
      * 負責將前端的圖片 URL 映射到後端實際的檔案儲存位置。
      */
@@ -54,6 +57,19 @@ public class WebConfig implements WebMvcConfigurer {
 	        // 規則四：其餘前端靜態資源仍走 classpath
 	        registry.addResourceHandler("/frontend-template/**")
 	                .addResourceLocations("classpath:/static/frontend-template/");
+	        
+			// 規則五: 運動計畫通用圖片(公開)
+	        // fd
+			registry.addResourceHandler("/sportPics/publicImg/fd/sportCommon/**")
+			        .addResourceLocations("file:" + normalize(uploadSportDir) + "/sportCommon/");
+			// 運動/自訂義運動/運動分類圖片
+			// fd
+			registry.addResourceHandler("/sportPics/img/fd/**").addResourceLocations(
+					"file:" + normalize(uploadSportDir) + "/");
+			// 運動/自訂義運動/運動分類圖片
+			// bd
+			registry.addResourceHandler("/sportPics/img/bd/**").addResourceLocations(
+					"file:" + normalize(uploadSportDir) + "/");
 	    }
     		
 	
