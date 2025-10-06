@@ -1,0 +1,2141 @@
+<!doctype html>
+
+<html lang="en">
+	<head>
+		<!-- Meta Options -->
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+		<!-- Title -->
+		<title
+			data-translate-key="classes_schedule"
+			data-translate-value="classes schedule"
+		>
+			運動計畫
+		</title>
+		
+		<!-- CSS -->
+		<link
+			href="/frontend-template/assets/css/bootstrap.min.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+		<link
+			href="/frontend-template/assets/images/heading-icon.png"
+			rel="icon"
+			type="image/x-icon"
+		/>
+		<link
+			href="/frontend-template/assets/css/owl.carousel.min.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+		<link
+			href="/frontend-template/assets/css/owl.theme.default.min.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+		<link href="/frontend-template/assets/css/jquery.fancybox.min.css" rel="stylesheet" />
+		<link
+			href="/frontend-template/assets/css/fontawesome.min.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+		<link
+			href="/frontend-template/assets/css/nice-select.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+		<link href="/frontend-template/assets/css/style.css" rel="stylesheet" type="text/css" />
+		<link
+			href="/frontend-template/assets/css/responsive.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+
+		<!-- Header CSS -->
+		<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css" />
+
+		<link
+			href="/frontend-template/assets/vendor/css/sweetalert2.min.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+		<link
+			href="/frontend-template/assets/vendor/css/evo-calendar.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="/frontend-template/assets/vendor/css/workout-plan-uni.css"
+		/>
+
+		<style>
+			.uni-workout-plan-calendar-block {
+				padding: 20px;
+
+				.uni-workout-plan-events-block {
+					background-color: var(--main-white-color);
+					width: 100%;
+					max-height: 900px;
+					padding: 20px;
+				}
+
+				.uni-date-event-header-block {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					height: fit-content;
+					padding-bottom: 20px;
+				}
+
+				.uni-date-block {
+					display: flex;
+					justify-content: start;
+					align-items: center;
+					font-weight: 600;
+				}
+
+				.uni-date-text {
+					font-size: 26px;
+					padding-right: 10px;
+				}
+
+				.uni-text {
+					font-size: 20px;
+				}
+
+				.uni-no-event-block {
+					display: none;
+				}
+
+				.uni-no-event-block.-on {
+					display: block;
+				}
+
+				.uni-no-event-text {
+					width: 100%;
+					height: fit-content;
+					padding: 10px 20px;
+					background-color: var(--active-red-color);
+					border: 1px solid var(--hover-red-color);
+				}
+
+				.uni-plan-card {
+					width: 100%;
+					height: fit-content;
+					min-width: 335px;
+					display: block;
+					box-sizing: border-box;
+					border: 1px solid #e8e8e8;
+					padding: 20px;
+					position: relative;
+					background-color: #ffffff;
+					-webkit-transition: all 0.25s ease-in-out;
+					-moz-transition: all 0.25s ease-in-out;
+					-ms-transition: all 0.25s ease-in-out;
+					-o-transition: all 0.25s ease-in-out;
+					transition: all 0.25s ease-in-out;
+					margin-bottom: 16px;
+					box-shadow: 0 8px 16px #e0e0e0;
+				}
+
+				.uni-card-title-block {
+					width: 100%;
+					padding-bottom: 8px;
+					border-bottom: 1px solid #e0e0e0;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+
+				.uni-card-l {
+					flex: 1 1 0;
+					/* width: calc(100% - 90px); */
+				}
+
+				.uni-card-plan-status {
+					flex: 0 0 auto;
+					width: fit-content;
+					height: fit-content;
+					background-color: var(--main-black-color);
+					color: var(--main-white-color);
+					padding: 6px 8px;
+					border-radius: 6px;
+					margin-right: 10px;
+				}
+
+				.uni-card-title {
+					width: 100%;
+					font-size: 24px;
+					font-weight: bold;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					text-wrap: nowrap;
+					display: -webkit-box;
+					-webkit-box-orient: vertical;
+					-webkit-line-clamp: 1;
+				}
+
+				.uni-sub-info-block {
+					border-bottom: 1px solid #e0e0e0;
+					padding: 10px 10px;
+					line-height: 16px;
+				}
+
+				.uni-card-sub-title {
+					font-size: 16px;
+					font-weight: 600;
+					padding: 6px 0px;
+				}
+
+				.uni-sub-content-highlight {
+					padding-left: 10px;
+					display: inline-block;
+					font-size: 16px;
+					font-weight: 600;
+				}
+
+				.uni-sub-content-highlight-red {
+					font-weight: bold;
+					color: var(--main-red-color);
+					font-size: 24px;
+				}
+
+				.uni-card-manual-block {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+				}
+
+				.uni-card-sport-description {
+					width: 100%;
+					font-size: 14px;
+					line-height: 20px;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					display: -webkit-box;
+					-webkit-box-orient: vertical;
+					-webkit-line-clamp: 3;
+				}
+
+				.uni-card-r {
+					flex: 0 0 auto;
+					width: fit-content;
+					padding: 10px;
+				}
+
+				.uni-card-sport-img-block {
+					width: 78px;
+					height: 78px;
+					overflow: hidden;
+				}
+
+				.uni-choose-sport-style
+					.uni-card-sport-img-block
+					.uni-card-sport-img {
+					width: 100%;
+					height: auto;
+				}
+			}
+
+			.modal-body {
+				display: block !important;
+				width: 100%;
+				overflow: auto !important;
+			}
+
+			.uni-hint {
+				font-size: 14px;
+				color: #888;
+			}
+
+			.record-success-msg-kcal {
+				font-size: 70px;
+				font-weight: bold;
+				text-align: center;
+				color: var(--main-red-color);
+				font-style: italic;
+			}
+
+			.record-success-msg-text {
+				text-align: center;
+				font-size: 32px;
+				font-weight: bold;
+			}
+
+			.record-success-msg-text-second {
+				padding: 6px 0px;
+				text-align: center;
+				font-size: 26px;
+				font-weight: bold;
+			}
+
+			.uni-method-desc {
+				font-size: 12px;
+				color: #888;
+				font-family: Arial, Helvetica, sans-serif !important;
+			}
+
+			.uni-list-group {
+				width: 100%;
+				max-height: 300px;
+				overflow: auto;
+			}
+
+			.uni-list-group-item {
+				box-sizing: border-box;
+				border: 1px solid #e5e5e5;
+				padding: 16px;
+				margin-bottom: 16px;
+				border-radius: 6px;
+				background-color: #ffffff;
+			}
+
+			.list-group-item-text {
+				font-weight: 500;
+				font-family: Arial, Helvetica, sans-serif !important;
+			}
+			
+			.uni-title-text {
+				font-size: 86px;
+				text-align: center;
+				font-weight: 500;
+				padding-bottom: 10px;
+				color: #ffffff;
+				opacity: .96;
+			}
+			
+			.uni-title-sub-text {
+				font-size: 20px;
+				text-align: center;
+				font-weight: 400;
+				padding-bottom: 10px;
+				color: #ffffff;
+				font-style: italic;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!-- Loader -->
+		<div class="preloader">
+			<div class="loader-wrap-heading">
+				<div class="load-text">
+					<span
+						data-translate-key="t_d160e0986a"
+						data-translate-value="L"
+						>L</span
+					>
+					<span
+						data-translate-key="t_7a81af3e59"
+						data-translate-value="o"
+						>o</span
+					>
+					<span
+						data-translate-key="t_86f7e437fa"
+						data-translate-value="a"
+						>a</span
+					>
+					<span
+						data-translate-key="t_3c363836cf"
+						data-translate-value="d"
+						>d</span
+					>
+					<span
+						data-translate-key="t_042dc4512f"
+						data-translate-value="i"
+						>i</span
+					>
+					<span
+						data-translate-key="t_d1854cae89"
+						data-translate-value="n"
+						>n</span
+					>
+					<span
+						data-translate-key="t_54fd171120"
+						data-translate-value="g"
+						>g</span
+					>
+				</div>
+			</div>
+		</div>
+
+		
+
+		<!-- Header -->
+	    <div id="header-placeholder" style="display: block !important; position:relative !important; background-color: black !important; height:fit-content !important; max-height: 100px !important;"></div>
+	
+	
+	    <!--  banner -->
+	    <section class="banner-style-one">
+	     <div class="parallax" style="background-image: url(/sportPics/publicImg/fd/sportCommon/workout_plan_banner.jpg);"></div>
+	      <div class="container">
+	        <div class="row">
+	          <div class="banner-details">
+	            <div class="uni-title-text">運動計畫日曆</div>
+	            <div class="uni-title-sub-text">- &nbsp; 變化始於計畫 。 PLan Makes Change. &nbsp; -</div>
+	          </div>
+	        </div>
+	      </div>
+	    </section>
+
+		<section>
+			<div class="uni-workout-plan-calendar-block">
+				<div id="uni-workout-plan-calendar"></div>
+
+				<div class="uni-workout-plan-events-block">
+					<div class="uni-date-event-header-block">
+						<div class="uni-date-block">
+							<div class="uni-date-text">2025-01</div>
+							<div class="uni-text">計畫清單</div>
+						</div>
+						<div>
+							<button class="general-btn" id="addPlanBtn">
+								新增計畫到日曆
+							</button>
+						</div>
+					</div>
+					<div class="uni-no-event-block">
+						<div class="uni-no-event-text">
+							今天沒有運動計畫安排~ 休息一下吧 &nbsp; : &nbsp; )
+						</div>
+					</div>
+
+					<div class="uni-plan-cards-block">
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ------ Modals ------ -->
+		<div
+			class="modal fade"
+			id="uniEditPlanModal"
+			tabindex="-1"
+			data-bs-backdrop="static"
+		>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">編輯計畫</h5>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+						></button>
+					</div>
+					<div class="modal-body">
+						<div class="p-2 w-100">
+							<div class="mb-3 position-relative">
+								<label class="form-label"
+									>預計開始時間 (HH:mm)</label
+								>
+								<div class="input-group">
+									<input
+										type="time"
+										class="form-control"
+										id="editPlan_time"
+										step="60"
+										style="width: 300px"
+									/>
+									<button
+										class="btn btn-outline-secondary"
+										type="button"
+										id="clearEditPlanTime"
+									>
+										×
+									</button>
+								</div>
+							</div>
+							<div class="mb-3 form-check form-switch">
+								<label
+									class="form-check-label"
+									for="editPlan_isNotify"
+									>是否提醒</label
+								>
+								<input
+									class="form-check-input"
+									type="checkbox"
+									id="editPlan_isNotify"
+								/>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">
+									預計時長 (分鐘，大於0正整數)
+								</label>
+								<input
+									type="number"
+									class="form-control"
+									id="editPlan_expectedMinutes"
+									min="1"
+									step="1"
+									placeholder="填寫範例：60"
+								/>
+							</div>
+						</div>
+						<input type="hidden" id="editPlan_planId" />
+					</div>
+					<div class="modal-footer">
+						<button
+							type="button"
+							class="btn btn-secondary"
+							data-bs-dismiss="modal"
+						>
+							取消
+						</button>
+						<button
+							type="button"
+							class="btn btn-primary"
+							id="editPlan_confirmBtn"
+						>
+							確定更新
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div
+			class="modal fade"
+			id="uniRecordModal"
+			tabindex="-1"
+			data-bs-backdrop="static"
+		>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">新增計畫紀錄</h5>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+						></button>
+					</div>
+					<div class="modal-body">
+						<div class="d-flex flex-column justify-content-center">
+							<div class="p-2 w-100">
+								<div class="mb-3">
+									<label class="form-label"
+										>實際開始時間</label
+									>
+									<input
+										type="datetime-local"
+										class="form-control"
+										id="record_actualStart"
+										step="60"
+									/>
+								</div>
+								<div class="mb-3">
+									<label class="form-label"
+										>實際結束時間</label
+									>
+									<input
+										type="datetime-local"
+										class="form-control"
+										id="record_actualEnd"
+										step="60"
+									/>
+								</div>
+							</div>
+						</div>
+						<input type="hidden" id="record_planId" />
+					</div>
+					<div class="modal-footer">
+						<button
+							type="button"
+							class="btn btn-secondary"
+							id="record_cancelBtn"
+							data-bs-dismiss="modal"
+						>
+							取消
+						</button>
+						<button
+							type="button"
+							class="btn btn-primary"
+							id="record_confirmBtn"
+						>
+							確定新增
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div
+			class="modal fade"
+			id="uniRecordSuccessModal"
+			tabindex="-1"
+			data-bs-backdrop="static"
+		>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">🎉 紀錄成功 🎉</h5>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+						></button>
+					</div>
+					<div class="modal-body">
+						<div class="p-3">
+							<div id="record_success_msg">
+								<div class="record-success-msg-text">
+									🤩 您已消耗 🤩
+								</div>
+								<div
+									class="record-success-msg-kcal"
+									id="record_success_msg_kcal_num"
+								>
+									0
+								</div>
+								<div class="record-success-msg-text">
+									🎊 kcal 🎊
+								</div>
+								<div
+									class="uni-hint text-center"
+									id="record_success_msg_count_method"
+								>
+									估算
+								</div>
+								<div class="record-success-msg-text-second">
+									🙌 \ 恭喜老爺，賀喜夫人 / 🙌
+								</div>
+							</div>
+							<div class="uni-method-desc pt-3 text-center">
+								計算方式說明:
+								<br /><br />
+								估算: <br />
+								[系統運動] &nbsp;&nbsp; METs × 體重(以 60
+								kg計算) × (運動時長(min) / 60)
+								<br />
+								體重計算: <br />
+								[系統運動] &nbsp;&nbsp; METs × 會員填寫體重(kg)
+								× (運動時長(min) / 60)
+								<br />
+								自填: <br />
+								[自訂義運動] &nbsp;&nbsp; (會員填寫消耗熱量
+								(1hr) / 60) × 運動時長(min)
+								<br />
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button
+							type="button"
+							class="btn btn-primary"
+							data-bs-dismiss="modal"
+						>
+							YEAH✌️ 好喔!!! 🥳
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Plan Records Modal -->
+		<div
+			class="modal fade"
+			id="uniPlanRecordModal"
+			tabindex="-1"
+			data-bs-backdrop="static"
+		>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">計畫紀錄列表</h5>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+						></button>
+					</div>
+					<div class="modal-body" style="background-color: #e5e5e5">
+						<div id="planRecordList" class="uni-list-group">
+							<!-- 動態插入紀錄 -->
+						</div>
+						<div
+							id="planRecordEmpty"
+							class="text-center text-danger"
+							style="display: none; padding: 20px"
+						>
+							尚無紀錄
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button
+							type="button"
+							class="btn btn-secondary"
+							data-bs-dismiss="modal"
+						>
+							關閉
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="scroll-percentage">
+			<span id="scroll-percentage-value"></span>
+		</div>
+		
+		<div id="footer-placeholder"></div>
+
+
+		<script src="/frontend-template/assets/js/jquery.min.js"></script>
+		<script src="/frontend-template/assets/js/jquery.waypoints.min.js"></script>
+		<script src="/frontend-template/assets/js/jquery.counterup.min.js"></script>
+		<script src="/frontend-template/assets/js/bootstrap.min.js"></script>
+		<script src="/frontend-template/assets/js/jquery.fancybox.min.js"></script>
+		<script src="/frontend-template/assets/js/jquery.nice-select.js"></script>
+		<script src="/frontend-template/assets/js/owl.carousel.min.js"></script>
+			
+		<!-- script -->
+		<script src="/frontend-template/assets/js/api.js"></script>
+		<script src="/frontend-template/assets/js/custom.js"></script>
+		<script src="/frontend-template/assets/js/loader.js"></script>
+
+		<script src="/frontend-template/assets/vendor/jquery/jquery3.4.1.min.js"></script>
+		<script src="/frontend-template/assets/vendor/evo-calendar/evo-calendar.js"></script>
+		<script src="/frontend-template/assets/vendor/moment/moment.min.js"></script>
+		<script src="/frontend-template/assets/vendor/api/sport-api.js"></script>
+		<script src="/frontend-template/assets/vendor/api/csrf-api.js"></script>
+		<script src="/frontend-template/assets/vendor/sweetalert2/sweetalert2.all.min.js"></script>
+		<script>
+			const API_MAP = {
+				getSidebar: BASE_API_URL + "/sportSidebar/api/fd/sidebar",
+				getWorkoutPlanByDateRange:
+					BASE_API_URL +
+					'/workoutPlan/api/getMultipleByUserIdAndDateRange',
+				getWorkoutPlanByDate:
+					BASE_API_URL +
+					'/workoutPlan/api/getMultipleByUserIdAndWorkoutPlanDate',
+				updateWorkoutPlan:
+					BASE_API_URL + '/workoutPlan/api/updateMultiple',
+				deleteWorkoutPlan:
+					BASE_API_URL +
+					'/workoutPlan/api/updateMultipleWorkoutPlanDataStatus',
+				insertRecord:
+					BASE_API_URL + '/workoutPlanRecord/api/insertMultiple',
+				updateRecordStatus:
+					BASE_API_URL +
+					'/workoutPlanRecord/api/updateWorkoutPlanRecordDataStatusByRecordIds'
+			};
+
+			const todayDate = moment().format('YYYY-MM-DD');
+			// 畫面顯示年月 (用於api日期範圍計算)
+			let visibleYearMonth = { year: '', month: '' };
+			let workoutPlanByDateRangeList = [];
+			let planCache = new Map();
+			let currentSelectedDate = todayDate;
+			let currSidebar = null;
+			let defaultRangeList = [];
+
+			// 計算前後日期
+			function getRangeFromCenterMonth(ymStr, range = 1) {
+				try {
+					// 檢查輸入格式 (必須是 YYYY-MM)
+					if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(ymStr)) {
+						console.warn(
+							"輸入格式錯誤，請使用 'YYYY-MM' 格式，例如 '2025-09'，原帶入: " +
+								ymStr
+						);
+						return null;
+					}
+
+					if (!Number.isInteger(range) || range < 0) {
+						console.warn('range 必須是大於等於 0 的整數');
+						return null;
+					}
+
+					// 建立 moment 物件 (嚴格)
+					const center = moment(ymStr, 'YYYY-MM', true);
+					if (!center.isValid()) {
+						console.warn('無效的日期，請確認輸入的年月是否正確');
+						return null;
+					}
+
+					// 計算前後 range 月
+					const start = center
+						.clone()
+						.subtract(range, 'month')
+						.startOf('month');
+					const end = center
+						.clone()
+						.add(range, 'month')
+						.endOf('month');
+
+					return {
+						startDate: start.format('YYYY-MM-DD'),
+						endDate: end.format('YYYY-MM-DD')
+					};
+				} catch (err) {
+					console.error('程式執行錯誤:', err.message);
+					return null;
+				}
+			}
+
+			async function getWorkoutPlanByDateRange(toStartDate, toEndDate) {
+				let defaultReturnList = [];
+
+				// 預設參數
+				const payload = {
+					userId: currSidebar,
+					startDate: toStartDate,
+					endDate: toEndDate,
+					dataStatuses: [1]
+				};
+
+				// 防呆檢查
+				if (!payload.userId || typeof payload.userId !== 'number') {
+					console.error('userId 無效');
+					return defaultReturnList;
+				}
+				if (!payload.startDate || !payload.endDate) {
+					console.error('startDate 或 endDate 不可為空');
+					return defaultReturnList;
+				}
+				const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+				if (
+					!dateRegex.test(payload.startDate) ||
+					!dateRegex.test(payload.endDate)
+				) {
+					console.error('日期格式錯誤，需為 YYYY-MM-DD');
+					return defaultReturnList;
+				}
+				if (
+					!Array.isArray(payload.dataStatuses) ||
+					payload.dataStatuses.length === 0
+				) {
+					console.warn('dataStatuses 無效，使用預設值 [1]');
+					payload.dataStatuses = [1];
+				}
+
+				// 發送請求
+				const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+					API_MAP.getWorkoutPlanByDateRange,
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(payload)
+					}
+				);
+				if (retResult) {
+					console.log(
+						'workoutPlan_main getWorkoutPlanByDateRange success'
+					);
+					return retData || defaultReturnList;
+				} else {
+					console.error(
+						'workoutPlan_main getWorkoutPlanByDateRange error retMsg: ',
+						retMsg
+					);
+					return defaultReturnList;
+				}
+			}
+
+			async function getWorkoutPlanByDate(targetDate) {
+				let defaultReturnList = [];
+				try {
+					// 預設參數
+					const payload = {
+						userId: currSidebar,
+						workoutPlanDate: targetDate,
+						dataStatuses: [1]
+					};
+
+					// 防呆檢查
+					if (!payload.userId || typeof payload.userId !== 'number') {
+						console.error('userId 無效');
+						return defaultReturnList;
+					}
+					if (!payload.workoutPlanDate) {
+						console.error('workoutPlanDate 不可為空');
+						return defaultReturnList;
+					}
+					const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+					if (!dateRegex.test(payload.workoutPlanDate)) {
+						console.error('日期格式錯誤，需為 YYYY-MM-DD');
+						return defaultReturnList;
+					}
+					if (
+						!Array.isArray(payload.dataStatuses) ||
+						payload.dataStatuses.length === 0
+					) {
+						console.warn('dataStatuses 無效，使用預設值 [1]');
+						payload.dataStatuses = [1];
+					}
+
+					// 發送請求
+					const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+						API_MAP.getWorkoutPlanByDate,
+						{
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify(payload)
+						}
+					);
+
+					if (retResult) {
+						console.log(
+							'workoutPlan_main getWorkoutPlanByDate success'
+						);
+						return retData || defaultReturnList;
+					} else {
+						console.error(
+							'workoutPlan_main getWorkoutPlanByDate error retMsg: ',
+							retMsg
+						);
+						return defaultReturnList;
+					}
+				} catch (err) {
+					console.error('程式執行錯誤:', err.message);
+					return defaultReturnList;
+				}
+			}
+
+			// session 選中日期儲存
+			function setSessionTargetDate(targetDate) {
+				sessionStorage.setItem('workoutPlanTargetDate', targetDate);
+			}
+			function getSessionTargetDate() {
+				let date = sessionStorage.getItem('workoutPlanTargetDate');
+				if (date) {
+					return date;
+				}
+				return null;
+			}
+			function clearSessionTargetDate(targetDate) {
+				sessionStorage.removeItem('workoutPlanTargetDate');
+			}
+
+			$(document).ready(async function () {
+				console.log('Document ready');
+				
+				// 取得sidebar
+				const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+					API_MAP.getSidebar,
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({})
+					}
+				);
+				if (retResult) {
+					console.log(
+						'workoutPlan_main getSidebar success'
+					);
+					currSidebar = retData?.uudd || null;
+				} else {
+					console.error(
+						'workoutPlan_main getSidebar error retMsg: ',
+						retMsg
+					);
+					currSidebar = null;
+				}
+				
+
+				let chooseDate = todayDate;
+				if (getSessionTargetDate()) {
+					chooseDate = getSessionTargetDate();
+				}
+
+				visibleYearMonth.year = chooseDate.split('-')[0];
+				visibleYearMonth.month = chooseDate.split('-')[1];
+
+				let yyyyMM =
+					chooseDate.split('-')[0] + '-' + chooseDate.split('-')[1];
+				let resultObj = getRangeFromCenterMonth(yyyyMM);
+				
+				
+				defaultRangeList = [
+					  {
+						    workoutPlanId: 100,
+						    workoutPlanName: '我是範例計畫 (未執行，僅展示用)',
+						    userId: currSidebar,
+						    sportFrom: 'system',
+						    sportFromText: '系統運動',
+						    sportId: 2,
+						    customSportId: null,
+						    sportName: '健走(進階)',
+						    sportLevel: 'senior',
+						    sportLevelText: '中階',
+						    sportCalories: 250,
+						    workoutPlanRecordResponseDTOs: [],
+						    workoutPlanStatus: 0,
+						    workoutPlanStatusText: '未執行',
+						    workoutPlanDate: todayDate,
+						    workoutPlanTime: null,
+						    workoutPlanIsNotify: 0,
+						    workoutPlanIsNotifyText: '已關閉',
+						    workoutPlanExpectedDuration: 30,
+						    workoutPlanExpectedDurationText: '0 hr 30 min',
+						    actualTotalCount: 0,
+						    actualTotalDuration: 0,
+						    actualTotalDurationText: '0 hr 0 min',
+						    actualTotalCalories: 0,
+						    workoutPlanDataStatus: 1,
+						    taskRecordId: null,
+						    createDatetime: todayDate + ' 07:00:00',
+						    updateDatetime: todayDate + ' 07:00:00',
+						    
+		                    id: '100',
+							name: "我是範例計畫 (僅展示唷)",
+							date: todayDate,
+							type: 'event',
+							color: '#ff7676'
+					  },
+					  {
+						    workoutPlanId: 200,
+						    workoutPlanName: '我是範例計畫 (已執行，僅展示用)',
+						    userId: currSidebar,
+						    sportFrom: 'system',
+						    sportFromText: '系統運動',
+						    sportId: 4,
+						    customSportId: null,
+						    sportName: '跑步(初階)',
+						    sportLevel: 'senior',
+						    sportLevelText: '中階',
+						    sportCalories: 300,
+						    workoutPlanRecordResponseDTOs: [
+						      {
+						        workoutPlanRecordId: 300,
+						        workoutPlanId: 200,
+						        sportFrom: 'system',
+						        sportId: 4,
+						        customSportId: null,
+						        actualCalories: 150,
+						        calorieCountMethod: 1,
+						        calorieCountMethodText: '估算',
+						        actualStartTime: todayDate + ' 07:30',
+						        actualEndTime: todayDate + ' 08:00',
+						        actualDuration: 30,
+						        actualDurationText: '0 hr 30 min',
+						        actualRecordDatetime: todayDate + '08:00:00',
+						        workoutPlanRecordDataStatus: 1,
+						        createDatetime: todayDate + ' 08:00:00',
+						        updateDatetime: todayDate + ' 08:00:00',
+						      },
+						      {
+						        workoutPlanRecordId: 400,
+						        workoutPlanId: 200,
+						        sportFrom: 'system',
+						        sportId: 4,
+						        customSportId: null,
+						        actualCalories: 150,
+						        calorieCountMethod: 1,
+						        calorieCountMethodText: '估算',
+						        actualStartTime: todayDate + ' 06:30',
+						        actualEndTime: todayDate + ' 07:00',
+						        actualDuration: 30,
+						        actualDurationText: '0 hr 30 min',
+						        actualRecordDatetime: todayDate + ' 08:00:00',
+						        workoutPlanRecordDataStatus: 0,
+						        createDatetime: todayDate + ' 08:00:00',
+						        updateDatetime: todayDate + ' 08:00:00',
+						      }
+						    ],
+						    workoutPlanStatus: 1,
+						    workoutPlanStatusText: '已執行',
+						    workoutPlanDate: todayDate,
+						    workoutPlanTime: null,
+						    workoutPlanIsNotify: 0,
+						    workoutPlanIsNotifyText: '已關閉',
+						    workoutPlanExpectedDuration: 30,
+						    workoutPlanExpectedDurationText: '0 hr 30 min',
+						    actualTotalCount: 1,
+						    actualTotalDuration: 30,
+						    actualTotalDurationText: '0 hr 30 min',
+						    actualTotalCalories: 150,
+						    workoutPlanDataStatus: 1,
+						    taskRecordId: null,
+						    createDatetime: todayDate + ' 07:00:00',
+						    updateDatetime: todayDate + ' 07:00:00',
+						    
+		                    id: '200',
+							name: "我是範例計畫 (僅展示唷)",
+							date: todayDate,
+							type: 'event',
+							color: '#ff7676'
+					  }
+					];
+				
+
+				if (currSidebar && resultObj && resultObj.startDate && resultObj.endDate) {
+					let eventRawList = await getWorkoutPlanByDateRange(
+						resultObj.startDate,
+						resultObj.endDate
+					) || [];
+					workoutPlanByDateRangeList = ([...(eventRawList || [])]).map(
+						(item) => {
+							return {
+								// ...item,
+								id: item.workoutPlanId + '',
+								name: item.workoutPlanName,
+								date: item.workoutPlanDate,
+								type: 'event',
+								color: '#ff7676'
+							};
+						}
+					);
+				} else {
+					workoutPlanByDateRangeList = [...defaultRangeList].map(
+							(item, index) => {
+								defaultRangeList[index].userId = currSidebar;
+								return {
+									// ...item,
+									id: item.id + '',
+									name: item.name,
+									date: item.date,
+									type: 'event',
+									color: '#ff7676'
+								};
+							}
+						);
+				}
+
+				let addPlanBtn = $('#addPlanBtn');
+				addPlanBtn.on('click', function () {
+					console.log('點新增計畫', currSidebar);
+					if(currSidebar){
+						window.location.href = '/dMain/fd/workoutPlan_add';
+					} else {
+					    Swal.fire({
+					        title: "新增計畫 。 需為會員",
+					        text: "體驗新增計畫，快來登入會員吧~ : )",
+					        icon: "info",
+					        showCancelButton: true,
+					        confirmButtonText: "沒問題! 來都來了",
+					        cancelButtonText: "先不要...怕.jpg"
+					    }).then((result) => {
+					        if (result.isConfirmed) {
+					            // 按下確定
+					            console.log("按下確定");
+					            // 例如：導向登入頁
+					            window.location.href = "/frontend-template/login.html";
+					        } else if (result.isDismissed) {
+					            // 按下取消 或 關閉彈窗
+					            console.log("按下取消");
+					        }
+					    });
+					}
+				});
+
+				$('#uni-workout-plan-calendar').evoCalendar({
+					theme: 'default',
+					format: 'yyyy-mm-dd',
+					titleFormat: 'yyyy-mm',
+					eventHeaderFormat: 'yyyy-mm-dd',
+					firstDayOfWeek: 1,
+					language: 'tw',
+					todayHighlight: true,
+					sidebarDisplayDefault: false,
+					sidebarToggler: true,
+					eventDisplayDefault: false,
+					eventListToggler: false,
+
+					calendarEvents: workoutPlanByDateRangeList
+				});
+
+				// 共用處理日期選中邏輯
+				async function handleSelectDate(newDate, oldDate) {
+					setSessionTargetDate(newDate);
+
+					let workoutPlanDateTextEl =
+						document.querySelector('.uni-date-text');
+					let workoutPlanNoEventBlockEl = document.querySelector(
+						'.uni-no-event-block'
+					);
+					let cardsBlockEl = document.querySelector(
+						'.uni-plan-cards-block'
+					);
+
+					workoutPlanDateTextEl.innerHTML = newDate;
+
+					// 查詢 API
+					let eventRawList = [];
+						
+					if(currSidebar){
+						eventRawList = await getWorkoutPlanByDate(newDate);
+					} else {
+						if(newDate === todayDate){
+							eventRawList = [...defaultRangeList];
+						} else {
+							eventRawList = [];
+						}
+					}
+
+					planCache.clear();
+					(eventRawList || []).forEach((it) =>
+						planCache.set(it.workoutPlanId, it)
+					);
+					currentSelectedDate = newDate;
+
+					// 清空舊卡片
+					cardsBlockEl.innerHTML = '';
+
+					if (!eventRawList || eventRawList.length === 0) {
+						workoutPlanNoEventBlockEl.classList.add('-on');
+						return;
+					}
+					workoutPlanNoEventBlockEl.classList.remove('-on');
+
+					// 遍歷回傳資料並組成卡片資料
+					eventRawList.forEach((item) => {
+						const statusColor =
+							item.workoutPlanStatus === 1
+								? 'var(--main-blue-color)'
+								: 'var(--main-black-color)';
+
+						const mainBtnHtmlStr =
+							item.workoutPlanStatus === 1
+								? `<div class="uni-border-right pe-4 me-4">
+										<button class="general-blue-btn uni-do-again-btn">
+											再做一次
+										</button>
+									</div>`
+								: `<div class="uni-border-right pe-4 me-4">
+									<button class="general-btn uni-do-record-btn">做紀錄</button>
+									</div>`;
+
+						const safe = (val, fallback = '無') => {
+							if (!val) {
+								return fallback;
+							}
+							return val;
+						};
+
+						const cardHtml = `
+										<div class="uni-plan-card" style="border-left:6px solid ${statusColor}" data-workout-plan-id="${item.workoutPlanId}">
+											<div class="row">
+												<div class="d-flex align-center">
+													<div class="uni-card-l">
+														<div class="uni-card-title-block">
+															<div class="uni-card-plan-status" style="background-color:${statusColor}">
+																${safe(item.workoutPlanStatusText)}
+															</div>
+															<div class="uni-card-title" title="${safe(item.sportName)}">
+																${safe(item.workoutPlanName)}
+															</div>
+														</div>
+														<div class="row px-3">
+															<div class="col-12 uni-sub-info-block">
+																<div class="uni-card-sub-title">計畫預計內容</div>
+																<div class="row">
+																	<div class="col-4 d-flex align-center">
+																		<i class="pe-1 fa-solid fa-clock"></i>
+																		<div>預計開始時間:
+																			<span class="uni-sub-content-highlight">${safe(item.workoutPlanTime)}</span>
+																		</div>
+																	</div>
+																	<div class="col-4 d-flex align-center">
+																		<i class="pe-1 fa-solid fa-bell"></i>
+																		<div>提醒:
+																			<span class="uni-sub-content-highlight">${safe(item.workoutPlanIsNotifyText)}</span>
+																		</div>
+																	</div>
+																	<div class="col-4 d-flex align-center">
+																		<i class="pe-1 fa-solid fa-stopwatch"></i>
+																		<div>預計時長:
+																			<span class="uni-sub-content-highlight">${safe(item.workoutPlanExpectedDurationText)}</span>
+																		</div>
+																	</div>
+																</div>
+															</div>
+
+															<div class="col-12 uni-sub-info-block">
+																<div class="uni-card-sub-title">運動內容</div>
+																<div class="row">
+																	<div class="col-4 d-flex align-center">
+																		<i class="pe-1 fa-solid fa-dumbbell"></i>
+																		<div>名稱:
+																			<span class="uni-sub-content-highlight">${safe(item.sportName)}</span>
+																		</div>
+																	</div>
+																	<div class="col-4 d-flex align-center justify-center">
+																		<i class="pe-1 fa-solid fa-layer-group"></i>
+																		<div>來源:
+																			<span class="uni-sub-content-highlight">${safe(item.sportFromText)} (${safe(item.sportLevelText)})</span>
+																		</div>
+																	</div>
+																	<div class="col-4 d-flex align-center">
+																		<i class="pe-1 fa-solid fa-fire"></i>
+																		<div>熱量:
+																			<span class="uni-sub-content-highlight">${safe(item.sportCalories, 0)} kcal/hr<span class="uni-hint ps-1">${item.sportFrom == 'system' ? '(估算)' : '(自填)'}</span></span>
+																		</div>
+																	</div>
+																</div>
+															</div>
+
+															<div class="col-12 uni-sub-info-block">
+																<div class="uni-card-sub-title">執行紀錄</div>
+																<div class="row">
+																	<div class="col-4 d-flex align-center">
+																		<i class="pe-1 fa-solid fa-flag"></i>
+																		執行總次數:
+																		<span class="uni-sub-content-highlight uni-sub-content-highlight-red">${safe(item.actualTotalCount, 0)}</span>
+																	</div>
+																	<div class="col-4 uni-card-sport-calories">
+																		<i class="uni-theme-color pe-1 fa-solid fa-stopwatch"></i>
+																		累計總時長:
+																		<span class="uni-sub-content-highlight uni-sub-content-highlight-red">${safe(item.actualTotalDurationText, '0 hr 0 min')}</span>
+																	</div>
+																	<div class="col-4 uni-card-sport-calories">
+																		<i class="uni-theme-color pe-1 fa-solid fa-fire"></i>
+																		累計總熱量:
+																		<span class="uni-sub-content-highlight uni-sub-content-highlight-red">${safe(item.actualTotalCalories, 0)} kcal</span>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="uni-card-r"></div>
+											</div>
+											<div class="uni-card-manual-block">
+												<button class="icon-btn uni-do-view-record-btn">看紀錄</button>
+												<div class="d-flex justify-end align-center">
+												    ${mainBtnHtmlStr}
+													<button class="icon-btn uni-do-edit-btn me-2" title="編輯計畫">
+														<i class="uni-theme-color pe-1 fa-solid fa-pen"></i>
+													</button>
+													<button class="icon-btn uni-do-delete-btn" title="刪除計畫">
+														<i class="uni-theme-color pe-1 fa-solid fa-trash"></i>
+													</button>
+												</div>
+											</div>
+										</div>
+									`;
+
+						cardsBlockEl.insertAdjacentHTML('beforeend', cardHtml);
+					});
+				}
+
+				// 刷新事件
+				async function refreshCalendarEvents(newEventList) {
+					const $cal = $('#uni-workout-plan-calendar');
+					if ($cal.length === 0) {
+						console.warn(
+							'refreshCalendarEvents 找不到 #uni-workout-plan-calendar 元素'
+						);
+						return;
+					}
+
+					// 取得舊事件
+					const existingEvents =
+						JSON.parse(
+							JSON.stringify(workoutPlanByDateRangeList)
+						) || [];
+
+					// 取ids
+					const existingEventIds = existingEvents.map(({ id }) => {
+						return id + '';
+					});
+
+					// 移除舊的事件
+					$cal.evoCalendar('removeCalendarEvent', existingEventIds);
+
+					const transNewEventList = (newEventList || []).map(
+						(newE) => {
+							return {
+								...newE,
+								id: newE.workoutPlanId + '',
+								name: newE.workoutPlanName,
+								date: newE.workoutPlanDate,
+								type: 'event',
+								color: '#ff7676'
+							};
+						}
+					);
+
+					// 加入新事件
+					$cal.evoCalendar('addCalendarEvent', transNewEventList);
+
+					// 存全域變數 (更新)
+					workoutPlanByDateRangeList = transNewEventList;
+				}
+
+				// 載入時預先選中當天日期 + 呼叫處理
+				$('#uni-workout-plan-calendar').evoCalendar(
+					'selectDate',
+					chooseDate
+				);
+				await handleSelectDate(chooseDate, null);
+
+				// 綁定 selectDate 事件
+				$('#uni-workout-plan-calendar').on(
+					'selectDate',
+					async function (event, newDate, oldDate) {
+						await handleSelectDate(newDate, oldDate);
+					}
+				);
+
+				// 綁定 selectMonth 事件
+				$('#uni-workout-plan-calendar').on(
+					'selectMonth',
+					async function (event, activeMonth, monthIndex) {
+						if(!currSidebar){
+							return;
+						}
+						
+						let monthStr =
+							monthIndex + 1 > 9
+								? monthIndex + 1
+								: '0' + (monthIndex + 1);
+
+						visibleYearMonth.month = monthStr;
+
+						let yyyyMM = visibleYearMonth.year + '-' + monthStr;
+
+						let resultObj = getRangeFromCenterMonth(yyyyMM);
+
+						if (
+							resultObj &&
+							resultObj.startDate &&
+							resultObj.endDate
+						) {
+							let newEventList = await getWorkoutPlanByDateRange(
+								resultObj.startDate,
+								resultObj.endDate
+							);
+
+							refreshCalendarEvents(newEventList);
+						}
+					}
+				);
+
+				// 綁定 selectYear 事件
+				$('#uni-workout-plan-calendar').on(
+					'selectYear',
+					async function (event, activeYear) {
+						if(!currSidebar){
+							return;
+						}
+						
+						let yyyyStr = activeYear + '';
+
+						visibleYearMonth.year = yyyyStr;
+
+						let yyyyMM = yyyyStr + '-' + visibleYearMonth.month;
+
+						let resultObj = getRangeFromCenterMonth(yyyyMM);
+
+						if (
+							resultObj &&
+							resultObj.startDate &&
+							resultObj.endDate
+						) {
+							let newEventList = await getWorkoutPlanByDateRange(
+								resultObj.startDate,
+								resultObj.endDate
+							);
+
+							refreshCalendarEvents(newEventList);
+						}
+					}
+				);
+			});
+
+			// ------ Helpers ------
+			function handlerToastr(msg) {
+				try {
+					alert(msg);
+				} catch (e) {
+					console.log(msg);
+				}
+			}
+
+			function validHHmm(val) {
+				// strict HH:mm 24h
+				return /^\d{2}:\d{2}$/.test(val);
+			}
+
+			function validMinutes(minutesStr) {
+				let result = true;
+				// 驗證分鐘數：只能是大於 0 的正整數
+				if (!/^[1-9]\d*$/.test(minutesStr)) {
+					result = false;
+				}
+				return result;
+			}
+
+			function validDateTime(val) {
+				// YYYY-MM-DD HH:mm
+				return /^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}$/.test(val);
+			}
+
+			function handleCountDurationAndGetEndDateTime(
+				startDateTime,
+				minutesToAdd
+			) {
+				// 檢查 minutesToAdd 是否為有效數字
+				if (typeof minutesToAdd !== 'number' || isNaN(minutesToAdd)) {
+					console.error('minutesToAdd 必須是數字');
+					return '';
+				}
+
+				// 使用 moment 驗證 startDateTime 格式
+				let start = moment(startDateTime, 'YYYY-MM-DD HH:mm', true);
+				if (!start.isValid()) {
+					console.error(
+						'startDateTime 格式錯誤，必須是 YYYY-MM-DD HH:mm'
+					);
+					return '';
+				}
+
+				// 計算結束時間
+				let endDateTime = start
+					.add(minutesToAdd, 'minutes')
+					.format('YYYY-MM-DD HH:mm');
+
+				return endDateTime;
+			}
+
+			function handleCountDurationAndGetStartDateTime(
+				endDateTime,
+				minutesToAdd
+			) {
+				// 檢查 minutesToAdd 是否為有效數字
+				if (typeof minutesToAdd !== 'number' || isNaN(minutesToAdd)) {
+					console.error('minutesToAdd 必須是數字');
+					return '';
+				}
+
+				// 使用 moment 驗證 startDateTime 格式
+				let end = moment(endDateTime, 'YYYY-MM-DD HH:mm', true);
+				if (!end.isValid()) {
+					console.error(
+						'endDateTime 格式錯誤，必須是 YYYY-MM-DD HH:mm'
+					);
+					return '';
+				}
+
+				// 計算開始時間
+				let startDateTime = end
+					.subtract(minutesToAdd, 'minutes')
+					.format('YYYY-MM-DD HH:mm');
+
+				return startDateTime;
+			}
+
+			function handleParseInputDateTime(val) {
+				if (!val || typeof val !== 'string') {
+					console.warn(
+						'handleParseInputDateTime val 無值或不是字串',
+						val
+					);
+					return '';
+				}
+
+				// 支援 datetime-local (YYYY-MM-DDTHH:mm) → 轉換成 YYYY-MM-DD HH:mm
+				let dt = moment(
+					val,
+					['YYYY-MM-DDTHH:mm', 'YYYY-MM-DD HH:mm'],
+					true
+				);
+
+				if (!dt.isValid()) {
+					console.error(
+						'handleParseInputDateTime 時間格式錯誤:',
+						val
+					);
+					return '';
+				}
+
+				return dt.format('YYYY-MM-DD HH:mm');
+			}
+
+			// Bootstrap modal helpers
+			function pickModalDom(id) {
+				const el = document.getElementById(id);
+				return (
+					bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el)
+				);
+			}
+
+			// ------ Edit (fa-pen) ------
+			$(document).on('click', '.uni-do-edit-btn', function () {
+				if(!currSidebar){
+				    Swal.fire({
+				        title: "編輯計畫 。 需為會員",
+				        text: "體驗編輯計畫，快來登入會員吧~ : )",
+				        icon: "info",
+				        showCancelButton: true,
+				        confirmButtonText: "沒問題! 來都來了",
+				        cancelButtonText: "先不要...怕.jpg"
+				    }).then((result) => {
+				        if (result.isConfirmed) {
+				            // 按下確定
+				            console.log("按下確定");
+				            // 例如：導向登入頁
+				            window.location.href = "/frontend-template/login.html";
+				        } else if (result.isDismissed) {
+				            // 按下取消 或 關閉彈窗
+				            console.log("按下取消");
+				        }
+				    });
+					return;
+				}
+				
+				const card = $(this).closest('.uni-plan-card');
+				const id = Number(card.data('workout-plan-id'));
+				const plan = planCache.get(id);
+				if (!plan) {
+					return handlerToastr('找不到計畫資料');
+				}
+
+				$('#editPlan_planId').val(id);
+				$('#editPlan_time').val(
+					(plan.workoutPlanTime || '').slice(0, 5)
+				); // 'HH:mm'
+				$('#editPlan_isNotify').prop(
+					'checked',
+					Number(plan.workoutPlanIsNotify) === 1
+				);
+				$('#editPlan_expectedMinutes').val(
+					plan.workoutPlanExpectedDuration || ''
+				);
+
+				pickModalDom('uniEditPlanModal').show();
+			});
+
+			$('#editPlan_confirmBtn').on('click', async function () {
+				try {
+					const id = Number($('#editPlan_planId').val());
+					const plan = planCache.get(id);
+					if (!plan) {
+						handlerToastr('找不到計畫資料');
+						return;
+					}
+
+					const hhmm = String($('#editPlan_time').val() || '').trim();
+					const isNotify = $('#editPlan_isNotify').is(':checked')
+						? 1
+						: 0;
+					const minutes = Number(
+						$('#editPlan_expectedMinutes').val()
+					);
+					const minutesStr = Number(
+						$('#editPlan_expectedMinutes').val().trim()
+					);
+
+					// console.log("hhmm", hhmm);
+					if (hhmm.length > 0 && !validHHmm(hhmm)) {
+						handlerToastr('預計開始時間需為正確時間格式：HH:mm');
+						return;
+					}
+					if (isNotify === 1 && hhmm.length === 0) {
+						handlerToastr('開啟提醒，需輸入預計開始時間');
+						return;
+					}
+					if (!validMinutes(minutesStr)) {
+						handlerToastr('預計時長需為正整數且大於 0');
+						return;
+					}
+
+					const payload = {
+						list: [
+							{
+								workoutPlanId: plan.workoutPlanId,
+								workoutPlanName: plan.workoutPlanName,
+								userId: plan.userId,
+								sportFrom: plan.sportFrom,
+								sportId: plan.sportId,
+								customSportId: plan.customSportId,
+								workoutPlanDate: plan.workoutPlanDate,
+								workoutPlanTime: hhmm || null,
+								workoutPlanIsNotify: isNotify,
+								workoutPlanExpectedDuration: minutes
+							}
+						]
+					};
+
+					const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+						API_MAP.updateWorkoutPlan,
+						{
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify(payload)
+						}
+					);
+					if (retResult) {
+						handlerToastr('更新成功');
+						pickModalDom('uniEditPlanModal').hide();
+						// 刷新當天列表
+						$('#uni-workout-plan-calendar').evoCalendar(
+							'selectDate',
+							currentSelectedDate
+						);
+					} else {
+						console.error(
+							'workoutPlan_main loadSportTypes error retMsg: ',
+							retMsg
+						);
+						handlerToastr('更新失敗');
+					}
+				} catch (e) {
+					console.error('程式執行錯誤', e);
+				}
+			});
+
+			// ------ Record / Do Again ------
+			function uni_openRecordModalWithDefaults(planId) {
+				const plan = planCache.get(Number(planId));
+				if (!plan) {
+					handlerToastr('找不到計畫資料');
+					return;
+				}
+				// YYYY-MM-DD 必須有
+				const date = plan.workoutPlanDate;
+				// HH:mm 或 null
+				const time = plan.workoutPlanTime;
+				const duration = plan.workoutPlanExpectedDuration || 0;
+				// 最終格式要是YYYY-MM-DD HH:mm
+				let startDateTime = '';
+				let endDateTime = '';
+
+				if (date && time) {
+					startDateTime = `${date} ${time}`;
+					endDateTime = handleCountDurationAndGetEndDateTime(
+						startDateTime,
+						plan.workoutPlanExpectedDuration
+					);
+				} else {
+					endDateTime = moment().format('YYYY-MM-DD HH:mm');
+					startDateTime = handleCountDurationAndGetStartDateTime(
+						endDateTime,
+						plan.workoutPlanExpectedDuration
+					);
+				}
+
+				$('#record_planId').val(planId);
+				$('#record_actualStart').val(startDateTime);
+				$('#record_actualEnd').val(endDateTime);
+				pickModalDom('uniRecordModal').show();
+			}
+
+			$(document).on(
+				'click',
+				'.uni-do-record-btn, .uni-do-again-btn',
+				function () {
+					if(!currSidebar){
+					    Swal.fire({
+					        title: "計畫紀錄 。 需為會員",
+					        text: "體驗計畫紀錄，快來登入會員吧~ : )",
+					        icon: "info",
+					        showCancelButton: true,
+					        confirmButtonText: "沒問題! 來都來了",
+					        cancelButtonText: "先不要...怕.jpg"
+					    }).then((result) => {
+					        if (result.isConfirmed) {
+					            // 按下確定
+					            console.log("按下確定");
+					            // 例如：導向登入頁
+					            window.location.href = "/frontend-template/login.html";
+					        } else if (result.isDismissed) {
+					            // 按下取消 或 關閉彈窗
+					            console.log("按下取消");
+					        }
+					    });
+						return;
+					}
+					
+					const card = $(this).closest('.uni-plan-card');
+					const id = Number(card.data('workout-plan-id'));
+					uni_openRecordModalWithDefaults(id);
+				}
+			);
+
+			$('#record_cancelBtn').on('click', function () {
+				$('#record_planId').val('');
+				$('#record_actualStart').val('');
+				$('#record_actualEnd').val('');
+			});
+
+			$('#record_confirmBtn').on('click', async function () {
+				const id = Number($('#record_planId').val());
+				const plan = planCache.get(id);
+				if (!plan) {
+					return handlerToastr('找不到計畫資料');
+				}
+
+				// datetime_local Input 的格式是 YYYY-MM-DDTHH:mm
+				const startVal = String(
+					$('#record_actualStart').val() || ''
+				).trim();
+				const endVal = String(
+					$('#record_actualEnd').val() || ''
+				).trim();
+
+				// 轉格式 YYYY-MM-DD HH:mm 字串
+				const startDateTime = handleParseInputDateTime(startVal);
+				const endDateTime = handleParseInputDateTime(endVal);
+
+				if (!startDateTime || !endDateTime) {
+					handlerToastr('實際開始時間 / 結束時間不可為空');
+					return;
+				}
+				if (!validDateTime(startDateTime)) {
+					handlerToastr('請輸入正確時間格式：YYYY-MM-DD HH:mm');
+					return;
+				}
+
+				if (!validDateTime(endDateTime)) {
+					handlerToastr('請輸入正確時間格式：YYYY-MM-DD HH:mm');
+					return;
+				}
+
+				// 區間檢核
+				const s = moment(startDateTime, 'YYYY-MM-DD HH:mm', true);
+				const e = moment(endDateTime, 'YYYY-MM-DD HH:mm', true);
+				if (!e.isAfter(s)) {
+					handlerToastr('結束時間需晚於開始時間');
+					return;
+				}
+
+				const payload = [
+					{
+						workoutPlanId: plan.workoutPlanId,
+						sportFrom: plan.sportFrom,
+						sportId: plan.sportId,
+						customSportId: plan.customSportId,
+						actualStartTime: startDateTime,
+						actualEndTime: endDateTime,
+						userId: currSidebar
+					}
+				];
+
+				try {
+					const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+						API_MAP.insertRecord,
+						{
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ records: payload })
+						}
+					);
+					if (retResult) {
+						let data = retData || null;
+						let kcal = 0;
+						let method = '';
+
+						if (Array.isArray(data) && data[0]) {
+							if (
+								typeof data[0].actualCalories !== 'undefined' &&
+								data[0].actualCalories !== null
+							) {
+								kcal = data[0].actualCalories;
+							}
+							if (
+								typeof data[0].calorieCountMethodText !==
+									'undefined' &&
+								data[0].calorieCountMethodText !== null
+							) {
+								method = data[0].calorieCountMethodText;
+							}
+						}
+
+						$('#record_success_msg_kcal_num').html(`${kcal}`);
+
+						if (method) {
+							$('#record_success_msg_count_method').html(
+								`( ${method} )`
+							);
+						} else {
+							$('#record_success_msg_count_method').html('');
+						}
+						pickModalDom('uniRecordModal').hide();
+						pickModalDom('uniRecordSuccessModal').show();
+
+						// 刷新當天列表（狀態或次數可能改變）
+						$('#uni-workout-plan-calendar').evoCalendar(
+							'selectDate',
+							currentSelectedDate
+						);
+						handlerToastr('紀錄成功');
+					} else {
+						console.error(
+							'workoutPlan_main insertRecord error retMsg: ',
+							retMsg
+						);
+						handlerToastr('紀錄失敗');
+					}
+				} catch (e) {
+					console.error('程式執行錯誤', e);
+				}
+			});
+
+			// datetime-local 處理
+			function handleParseDateTimeLocal(val) {
+				return moment(val, 'YYYY-MM-DDTHH:mm', true).isValid();
+			}
+			function toApiDateTime(val) {
+				return val.replace('T', ' ');
+			}
+			$('#clearEditPlanTime').on('click', function () {
+				$('#editPlan_time').val('');
+			});
+
+			// ------ Soft Delete (trash) ------
+			$(document).on('click', '.uni-do-delete-btn', async function () {
+				if(!currSidebar){
+				    Swal.fire({
+				        title: "新增計畫 。 需為會員",
+				        text: "體驗新增計畫，快來登入會員吧~ : )",
+				        icon: "info",
+				        showCancelButton: true,
+				        confirmButtonText: "沒問題! 來都來了",
+				        cancelButtonText: "先不要...怕.jpg"
+				    }).then((result) => {
+				        if (result.isConfirmed) {
+				            // 按下確定
+				            console.log("按下確定");
+				            // 例如：導向登入頁
+				            window.location.href = "/frontend-template/login.html";
+				        } else if (result.isDismissed) {
+				            // 按下取消 或 關閉彈窗
+				            console.log("按下取消");
+				        }
+				    });
+					return;
+				}
+				
+				const card = $(this).closest('.uni-plan-card');
+				const id = Number(card.data('workout-plan-id'));
+				if (!id) {
+					return;
+				}
+				if (!confirm('確定要刪除這筆計畫嗎？')) {
+					return;
+				}
+				try {
+					const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+						API_MAP.deleteWorkoutPlan,
+						{
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({
+								dataStatus: 0,
+								workoutPlanIds: [id]
+							})
+						}
+					);
+
+					if (retResult) {
+						// 刪除日曆計畫點點
+						$('#uni-workout-plan-calendar').evoCalendar(
+							'removeCalendarEvent',
+							[String(id)]
+						);
+						// 刷新列表
+						$('#uni-workout-plan-calendar').evoCalendar(
+							'selectDate',
+							currentSelectedDate
+						);
+						handlerToastr('刪除成功');
+					} else {
+						console.error(
+							'workoutPlan_main deleteWorkoutPlan error retMsg: ',
+							retMsg
+						);
+						handlerToastr('刪除失敗');
+					}
+				} catch (e) {
+					console.error('程式執行錯誤', e);
+				}
+			});
+
+			// ------ View Records (uni-do-view-record-btn) ------
+			$(document).on('click', '.uni-do-view-record-btn', function () {
+				const card = $(this).closest('.uni-plan-card');
+				const id = Number(card.data('workout-plan-id'));
+				const plan = planCache.get(id);
+				if (!plan) {
+					return handlerToastr('找不到計畫資料');
+				}
+
+				const records = plan.workoutPlanRecordResponseDTOs || [];
+				const listEl = $('#planRecordList');
+				const emptyEl = $('#planRecordEmpty');
+				listEl.html('');
+
+				if (records.length === 0) {
+					emptyEl.show();
+				} else {
+					emptyEl.hide();
+					records.forEach((rec) => {
+						const status = Number(rec.workoutPlanRecordDataStatus);
+						const actionBtn =
+							status === 1
+								? `<button class="icon-btn uni-record-delete-btn" data-id="${rec.workoutPlanRecordId}" data-bs-toggle="tooltip" title="刪除紀錄">
+						            <i class="fa-solid fa-trash"></i>
+						         </button>`
+								: `<button class="icon-btn uni-record-restore-btn" data-id="${rec.workoutPlanRecordId}" data-bs-toggle="tooltip" title="復原紀錄">
+						            <i class="fa-solid fa-rotate-left text-primary"></i>
+						        </button>`;
+
+						const rowHtml = `
+						              <div class="uni-list-group-item d-flex justify-content-between align-items-center">
+						                <div>
+						                  <div class="list-group-item-text"><b>開始:</b> <span class="text-primary">${rec.actualStartTime}</span></div>
+										  <div class="list-group-item-text"><b>結束:</b> <span class="text-primary">${rec.actualEndTime}</span></div>
+						                  <div class="list-group-item-text"><b>時長:</b> ${rec.actualDuration} 分鐘</div>
+										  <div class="list-group-item-text"><b>熱量:</b> <span class="text-danger">${rec.actualCalories} kcal</span> <span class="uni-hint">(${rec.calorieCountMethodText})</span></div>
+						                  <div class="list-group-item-text"><b>紀錄時間:</b> ${rec.actualRecordDatetime}</div>
+										  <div class="list-group-item-text"><b>更新時間:</b> ${rec.updateDatetime}</div>
+						                </div>
+						                <div>${actionBtn}</div>
+						              </div>`;
+						listEl.append(rowHtml);
+					});
+				}
+
+				pickModalDom('uniPlanRecordModal').show();
+			});
+
+			// 刪除紀錄
+			$(document).on(
+				'click',
+				'.uni-record-delete-btn',
+				async function () {
+					if(!currSidebar){
+					    Swal.fire({
+					        title: "刪除紀錄 。 需為會員",
+					        text: "體驗刪除紀錄，快來登入會員吧~ : )",
+					        icon: "info",
+					        showCancelButton: true,
+					        confirmButtonText: "沒問題! 來都來了",
+					        cancelButtonText: "先不要...怕.jpg"
+					    }).then((result) => {
+					        if (result.isConfirmed) {
+					            // 按下確定
+					            console.log("按下確定");
+					            // 例如：導向登入頁
+					            window.location.href = "/frontend-template/login.html";
+					        } else if (result.isDismissed) {
+					            // 按下取消 或 關閉彈窗
+					            console.log("按下取消");
+					        }
+					    });
+						return;
+					}
+					
+					const id = Number($(this).data('id'));
+					if (!id) {
+						return;
+					}
+					if (!confirm('確定要刪除這筆紀錄嗎？')) {
+						return;
+					}
+
+					try {
+						const { retResult, retData, retMsg } =
+							await csrfSafeCallAPI(API_MAP.updateRecordStatus, {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({
+									dataStatus: 0,
+									workoutPlanRecordIds: [id]
+								})
+							});
+
+						if (retResult) {
+							// 重新刷新當天列表
+							$('#uni-workout-plan-calendar').evoCalendar(
+								'selectDate',
+								currentSelectedDate
+							);
+							pickModalDom('uniPlanRecordModal').hide();
+							handlerToastr('刪除成功');
+						} else {
+							console.error(
+								'workoutPlan_main updateRecordStatus error retMsg: ',
+								retMsg
+							);
+							handlerToastr('刪除失敗');
+						}
+					} catch (e) {
+						console.error('程式執行錯誤', e);
+					}
+				}
+			);
+
+			// 復原紀錄
+			$(document).on(
+				'click',
+				'.uni-record-restore-btn',
+				async function () {
+
+					if(!currSidebar){
+					    Swal.fire({
+					        title: "復原紀錄 。 需為會員",
+					        text: "體驗復原紀錄，快來登入會員吧~ : )",
+					        icon: "info",
+					        showCancelButton: true,
+					        confirmButtonText: "沒問題! 來都來了",
+					        cancelButtonText: "先不要...怕.jpg"
+					    }).then((result) => {
+					        if (result.isConfirmed) {
+					            // 按下確定
+					            console.log("按下確定");
+					            // 例如：導向登入頁
+					            window.location.href = "/frontend-template/login.html";
+					        } else if (result.isDismissed) {
+					            // 按下取消 或 關閉彈窗
+					            console.log("按下取消");
+					        }
+					    });
+						return;
+					}
+					
+					const id = Number($(this).data('id'));
+					if (!id) {
+						return;
+					}
+					if (!confirm('確定要復原這筆紀錄嗎？')) {
+						return;
+					}
+					try {
+						const { retResult, retData, retMsg } =
+							await csrfSafeCallAPI(API_MAP.updateRecordStatus, {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({
+									dataStatus: 1,
+									workoutPlanRecordIds: [id]
+								})
+							});
+
+						if (retResult) {
+							// 重新刷新當天列表
+							$('#uni-workout-plan-calendar').evoCalendar(
+								'selectDate',
+								currentSelectedDate
+							);
+							pickModalDom('uniPlanRecordModal').hide();
+							handlerToastr('復原成功');
+						} else {
+							console.error(
+								'workoutPlan_main updateRecordStatus error retMsg: ',
+								retMsg
+							);
+							handlerToastr('復原失敗');
+						}
+					} catch (e) {
+						console.error('程式執行錯誤', e);
+					}
+				}
+			);
+
+			// 啟用 Bootstrap Tooltip
+			var tooltipTriggerList = [].slice.call(
+				document.querySelectorAll('[data-bs-toggle="tooltip"]')
+			);
+			tooltipTriggerList.map(function (tooltipTriggerEl) {
+				return new bootstrap.Tooltip(tooltipTriggerEl);
+			});
+		</script>
+	</body>
+</html>
