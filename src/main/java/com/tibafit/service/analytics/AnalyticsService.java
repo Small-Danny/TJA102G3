@@ -4,7 +4,7 @@ import com.tibafit.dto.analytics.SeriesResponse;
 import com.tibafit.model.analytics.TaskRecord;
 import com.tibafit.model.analytics.WorkoutPlan;
 import com.tibafit.repository.analytics.AnalyticsTaskRecordRepository;
-import com.tibafit.repository.analytics.WorkoutPlanRepository;
+import com.tibafit.repository.analytics.AnalyticsWorkoutPlanRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 public class AnalyticsService {
 
     private final AnalyticsTaskRecordRepository taskRepo;
-    private final WorkoutPlanRepository workoutPlanRepo;
+    private final AnalyticsWorkoutPlanRepository workoutPlanRepo;
 
     private static final ZoneId ZONE_TW = ZoneId.of("Asia/Taipei");
 
@@ -33,7 +33,7 @@ public class AnalyticsService {
     }
 
     public AnalyticsService(AnalyticsTaskRecordRepository taskRepo,
-                            WorkoutPlanRepository workoutPlanRepo) {
+                            AnalyticsWorkoutPlanRepository workoutPlanRepo) {
         this.taskRepo = taskRepo;
         this.workoutPlanRepo = workoutPlanRepo;
     }
