@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant"
+    th:replace="~{admin/layout :: layout(~{::title}, ~{::#pageContent}, ~{::#pageScripts})}">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>所有類別資料 - listAllTaskType (Simple0)</title>
+    <title>listAllTaskType</title>
 
     <script th:src="@{/js/jquery-1.11.3.min.js}"></script>
 
@@ -176,64 +177,67 @@
             </div>
         </div>
     </nav>
-
-    <main class="container-narrow">
-        <div class="subhead my-3 text-center">
-            <b>第 <span id="currentPage">1</span>/<span id="pageNumber"></span> 頁</b>
-            <span class="mx-2">•</span>
-            <b>符合條件共 <span class="text-danger" th:text="${list.size()}"></span> 筆</b>
-        </div>
-
-        <section class="card mb-4">
-            <header class="card-header">
-                <h3 class="card-title">類別列表</h3>
-                <div>
-                    <a class="btn" th:href="@{/admin/tasktype/add}">新增類別</a>
-                </div>
-            </header>
-
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="ttTable" class="table table-bordered align-middle">
-                        <thead>
-                            <tr>
-                                <th style="width:60px">#</th>
-                                <th style="width:120px">類別ID</th>
-                                <th>類別名稱</th>
-                                <th style="width:100px">修改</th>
-                                <th style="width:100px">刪除</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <th:block th:each="tt, st : ${list}">
-                                <tr>
-                                    <td th:text="${st.count}"></td>
-                                    <td th:text="${tt.taskTypeId}"></td>
-                                    <td th:text="${tt.taskTypeName}"></td>
-                                    <td>
-                                        <form method="get" th:action="@{/admin/tasktype/getOne_For_Update}" style="margin:0">
-                                            <input type="hidden" name="taskTypeId" th:value="${tt.taskTypeId}" />
-                                            <input type="submit" class="btn" value="修改" />
-                                        </form>
-                                    </td>
-                                    <td>
-                                        <form method="post" th:action="@{/admin/tasktype/delete}" style="margin:0">
-                                            <input type="hidden" name="taskTypeId" th:value="${tt.taskTypeId}" />
-                                            <input type="submit" class="btn" value="刪除" />
-                                        </form>
-                                    </td>
-                                </tr>
-                            </th:block>
-                        </tbody>
-                    </table>
-                </div>
+    <div id="pageContent">
+        <main class="container-narrow">
+            <div class="subhead my-3 text-center">
+                <!-- <b>第 <span id="currentPage">1</span>/<span id="pageNumber"></span> 頁</b> -->
+                <!-- <span class="mx-2">•</span> -->
+                <b>符合條件共 <span class="text-danger" th:text="${list.size()}"></span> 筆</b>
+                <a class="btn btn-secondary" th:href="@{/admin/tasktype/select_page}">返回</a>
             </div>
 
-            <footer class="card-footer clearfix">
-                <ul id="pager" class="pagination pagination-sm m-0" style="justify-content:flex-end"></ul>
-            </footer>
-        </section>
-    </main>
+            <section class="card mb-4">
+                <header class="card-header">
+                    <h3 class="card-title">類別列表</h3>
+                    <div>
+                        <a class="btn" th:href="@{/admin/tasktype/add}">新增類別</a>
+                    </div>
+                </header>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="ttTable" class="table table-bordered align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width:60px">#</th>
+                                    <th style="width:120px">類別ID</th>
+                                    <th>類別名稱</th>
+                                    <th style="width:100px">修改</th>
+                                    <th style="width:100px">刪除</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <th:block th:each="tt, st : ${list}">
+                                    <tr>
+                                        <td th:text="${st.count}"></td>
+                                        <td th:text="${tt.taskTypeId}"></td>
+                                        <td th:text="${tt.taskTypeName}"></td>
+                                        <td>
+                                            <form method="get" th:action="@{/admin/tasktype/getOne_For_Update}"
+                                                style="margin:0">
+                                                <input type="hidden" name="taskTypeId" th:value="${tt.taskTypeId}" />
+                                                <input type="submit" class="btn" value="修改" />
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <form method="post" th:action="@{/admin/tasktype/delete}" style="margin:0">
+                                                <input type="hidden" name="taskTypeId" th:value="${tt.taskTypeId}" />
+                                                <input type="submit" class="btn" value="刪除" />
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <footer class="card-footer clearfix">
+                    <ul id="pager" class="pagination pagination-sm m-0" style="justify-content:flex-end"></ul>
+                </footer>
+            </section>
+        </main>
+    </div>
 </body>
 
 </html>

@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant"
+    th:replace="~{admin/layout :: layout(~{::title}, ~{::#pageContent}, ~{::#pageScripts})}">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>類別資料新增 - add_tasktype (Simple0)</title>
+    <title>addTaskType)</title>
 
-    <head th:insert="~{/admin/tasktype/included-fragment}"></head>
+<!--     <head th:insert="~{/admin/tasktype/included-fragment}"></head> -->
     <style>
         :root {
             --card-bg: #fff;
@@ -133,40 +134,41 @@
             </div>
         </div>
     </nav>
+    <div id="pageContent">
+        <main class="container-narrow">
+            <p class="hint mt-3 mb-2 text-center"><b>所有欄位皆為必填欄位</b></p>
 
-    <main class="container-narrow">
-        <p class="hint mt-3 mb-2 text-center"><b>所有欄位皆為必填欄位</b></p>
+            <section class="card mb-4">
+                <header class="card-header">
+                    <h3 class="card-title">新增類別</h3>
+                    <a class="btn btn-secondary" th:href="@{/admin/tasktype/select_page}">回查詢頁</a>
+                </header>
 
-        <section class="card mb-4">
-            <header class="card-header">
-                <h3 class="card-title">新增類別</h3>
-                <a class="btn btn-secondary" th:href="@{/admin/tasktype/select_page}">回查詢頁</a>
-            </header>
-
-            <div class="card-body">
-                <!-- Post 至 /tasktype/insert；綁定 taskTypeVO -->
-                <form th:action="@{/admin/tasktype/insert}" method="post" th:object="${taskTypeVO}">
-                    <div class="form-grid">
-                        <label>類別名稱</label>
-                        <div>
-                            <input type="text" th:field="*{taskTypeName}"
-                                onclick="hideContent('taskTypeName.errors');" />
-                            <span th:if="${#fields.hasErrors('taskTypeName')}" th:errors="*{taskTypeName}" class="error"
-                                id="taskTypeName.errors"></span>
+                <div class="card-body">
+                    <!-- Post 至 /tasktype/insert；綁定 taskTypeVO -->
+                    <form th:action="@{/admin/tasktype/insert}" method="post" th:object="${taskTypeVO}">
+                        <div class="form-grid">
+                            <label>類別名稱</label>
+                            <div>
+                                <input type="text" th:field="*{taskTypeName}"
+                                    onclick="hideContent('taskTypeName.errors');" />
+                                <span th:if="${#fields.hasErrors('taskTypeName')}" th:errors="*{taskTypeName}"
+                                    class="error" id="taskTypeName.errors"></span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="text-end mt-3">
-                        <button type="submit" class="btn" id="submit">送出新增</button>
-                    </div>
-                </form>
-            </div>
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn" id="submit">送出新增</button>
+                        </div>
+                    </form>
+                </div>
 
-            <footer class="card-footer">
-                <span class="hint">提示：採 Thymeleaf <code>th:field</code> 綁定，Controller 會做名稱重複驗證。</span>
-            </footer>
-        </section>
-    </main>
+<!--                 <footer class="card-footer"> -->
+<!--                     <span class="hint">提示：採 Thymeleaf <code>th:field</code> 綁定，Controller 會做名稱重複驗證。</span> -->
+<!--                 </footer> -->
+            </section>
+        </main>
+    </div>
 
     <script>
         function hideContent(id) { var el = document.getElementById(id); if (el) el.style.display = 'none'; }

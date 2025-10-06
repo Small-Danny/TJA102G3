@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-Hant"
+    th:replace="~{admin/layout :: layout(~{::title}, ~{::#pageContent}, ~{::#pageScripts})}">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>類別個人資料 - listOneTaskType (Simple0)</title>
+    <title>listOneTaskType</title>
 
     <head th:insert="~{/admin/tasktype/included-fragment}"></head>
     <style>
@@ -121,54 +122,56 @@
             </div>
         </div>
     </nav>
+    <div id="pageContent">
+        <main class="container-narrow">
+            <section class="card mt-3">
+                <header class="card-header">
+                    <h3 class="card-title">查詢結果</h3>
+                    <a class="btn btn-secondary" th:href="@{/admin/tasktype/select_page}">返回</a>
+                </header>
+                <div class="card-body">
+                    <div class="details-grid">
+                        <div class="label">類別ID</div>
+                        <div class="value" th:text="${taskTypeVO.taskTypeId}"></div>
 
-    <main class="container-narrow">
-        <section class="card mt-3">
-            <header class="card-header">
-                <h3 class="card-title">查詢結果</h3>
-                <a class="btn btn-secondary" th:href="@{/admin/tasktype/select_page}">返回</a>
-            </header>
-            <div class="card-body">
-                <div class="details-grid">
-                    <div class="label">類別ID</div>
-                    <div class="value" th:text="${taskTypeVO.taskTypeId}"></div>
-
-                    <div class="label">類別名稱</div>
-                    <div class="value" th:text="${taskTypeVO.taskTypeName}"></div>
+                        <div class="label">類別名稱</div>
+                        <div class="value" th:text="${taskTypeVO.taskTypeName}"></div>
+                    </div>
                 </div>
-            </div>
-            <footer class="card-footer">
-                <div>
-                    <form th:action="@{/admin/tasktype/getOne_For_Update}" method="get" style="display:inline">
-                        <input type="hidden" name="taskTypeId" th:value="${taskTypeVO.taskTypeId}" />
-                        <button type="submit" class="btn">修改</button>
-                    </form>
-                    <form th:action="@{/admin/tasktype/delete}" method="post" style="display:inline;margin-left:.5rem">
-                        <input type="hidden" name="taskTypeId" th:value="${taskTypeVO.taskTypeId}" />
-                        <button type="submit" class="btn btn-secondary">刪除</button>
-                    </form>
-                </div>
-            </footer>
-        </section>
-    </main>
+                <footer class="card-footer">
+                    <div>
+                        <form th:action="@{/admin/tasktype/getOne_For_Update}" method="get" style="display:inline">
+                            <input type="hidden" name="taskTypeId" th:value="${taskTypeVO.taskTypeId}" />
+                            <button type="submit" class="btn">修改</button>
+                        </form>
+                        <form th:action="@{/admin/tasktype/delete}" method="post"
+                            style="display:inline;margin-left:.5rem">
+                            <input type="hidden" name="taskTypeId" th:value="${taskTypeVO.taskTypeId}" />
+                            <button type="submit" class="btn btn-secondary">刪除</button>
+                        </form>
+                    </div>
+                </footer>
+            </section>
+        </main>
+    </div>
 
     <!-- 供右側預覽用的片段 -->
-<!--     <div th:fragment="listOneTaskType-div"> -->
-<!--         <section class="card"> -->
-<!--             <header class="card-header"> -->
-<!--                 <h3 class="card-title">查詢結果</h3> -->
-<!--             </header> -->
-<!--             <div class="card-body"> -->
-<!--                 <div class="details-grid"> -->
-<!--                     <div class="label">類別ID</div> -->
-<!--                     <div class="value" th:text="${taskTypeVO.taskTypeId}"></div> -->
+    <!--     <div th:fragment="listOneTaskType-div"> -->
+    <!--         <section class="card"> -->
+    <!--             <header class="card-header"> -->
+    <!--                 <h3 class="card-title">查詢結果</h3> -->
+    <!--             </header> -->
+    <!--             <div class="card-body"> -->
+    <!--                 <div class="details-grid"> -->
+    <!--                     <div class="label">類別ID</div> -->
+    <!--                     <div class="value" th:text="${taskTypeVO.taskTypeId}"></div> -->
 
-<!--                     <div class="label">類別名稱</div> -->
-<!--                     <div class="value" th:text="${taskTypeVO.taskTypeName}"></div> -->
-<!--                 </div> -->
-<!--             </div> -->
-<!--         </section> -->
-<!--     </div> -->
+    <!--                     <div class="label">類別名稱</div> -->
+    <!--                     <div class="value" th:text="${taskTypeVO.taskTypeName}"></div> -->
+    <!--                 </div> -->
+    <!--             </div> -->
+    <!--         </section> -->
+    <!--     </div> -->
 </body>
 
 </html>

@@ -7,6 +7,10 @@ import com.tibafit.model.article.Article;
 import com.tibafit.model.article.Article.ArticleAttribute;
 
 public class ArticleDetailDTO {
+	private Integer userId;
+	private String profilePicture;
+	private String email;
+	private String nickName;
 	private Integer articleId;
 	private String title;
 	private String content;
@@ -16,6 +20,46 @@ public class ArticleDetailDTO {
 	private String name;
 	private Integer views;
 	private Timestamp updateTime;
+
+	public String getProfilePicture() {
+		return profilePicture;
+	}
+
+	public void setProfilePicture(String profilePicture) {
+		this.profilePicture = profilePicture;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public Integer getArticleId() {
 		return articleId;
@@ -89,10 +133,19 @@ public class ArticleDetailDTO {
 		this.updateTime = updateTime;
 	}
 
-	public ArticleDetailDTO(Integer articleId, String title, String content, String coverImageUrl,
-			ArticleAttribute articleAttribute, String forumTypeName, String name, Integer views,
-			Timestamp updateTime) {
+	
+	public ArticleDetailDTO() {
 		super();
+	}
+
+	public ArticleDetailDTO(Integer userId, String profilePicture, String email, String nickName, Integer articleId,
+			String title, String content, String coverImageUrl, ArticleAttribute articleAttribute, String forumTypeName,
+			String name, Integer views, Timestamp updateTime) {
+		super();
+		this.userId = userId;
+		this.profilePicture = profilePicture;
+		this.email = email;
+		this.nickName = nickName;
 		this.articleId = articleId;
 		this.title = title;
 		this.content = content;
@@ -104,16 +157,17 @@ public class ArticleDetailDTO {
 		this.updateTime = updateTime;
 	}
 
-	public ArticleDetailDTO() {
-		super();
-	}
-
 	@Override
 	public String toString() {
-		return "ArticleDetailDTO [articleId=" + articleId + ", title=" + title + ", content=" + content
+		return "ArticleDetailDTO [userId=" + userId + ", profilePicture=" + profilePicture + ", email=" + email
+				+ ", nickName=" + nickName + ", articleId=" + articleId + ", title=" + title + ", content=" + content
 				+ ", coverImageUrl=" + coverImageUrl + ", articleAttribute=" + articleAttribute + ", forumTypeName="
 				+ forumTypeName + ", name=" + name + ", views=" + views + ", updateTime=" + updateTime + "]";
 	}
+
+	
+
+	
 
 	
 

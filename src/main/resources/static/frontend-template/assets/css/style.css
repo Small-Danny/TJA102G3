@@ -6239,9 +6239,9 @@ ul.pd-price li:not(:last-child){
     border: 0;
     width: 100px;
 }
-.modal-content {
-    width: auto;
-}
+/* .modal-content { */
+/*     width: auto; */
+/* } */
 .popups .modal-header .btn-close {
     padding: 0;
     margin: 0;
@@ -6286,12 +6286,12 @@ ul.pd-price li:not(:last-child){
     padding: 0;
     width: 875px;
 }
-.modal-body {
-    display: flex;
-}
-/*.conslt-popup .modal-dialog {
+/* .modal-body { */
+/*     display: flex; */
+/* } */
+.conslt-popup .modal-dialog {
     max-width: 520px;
-}*/
+} 
 .conslt-popup .popup h3 {
     margin-bottom: 22px;
     text-transform: uppercase;
@@ -6390,7 +6390,8 @@ ul.pd-price li:not(:last-child){
   100% {
     opacity: 0;
   }
-}.page-loaded .preloader {
+}
+.page-loaded .preloader {
   top: -100%;
 }
 

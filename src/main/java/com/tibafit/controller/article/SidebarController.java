@@ -348,6 +348,7 @@ public class SidebarController {
                     "author", article.getAuthorName(),
                     "title", article.getTitle(),
                     "date", createTime.format(formatter),
+                    "email", article.getEmail(),
                     "imageUrl", imageUrl
             ));
         }
@@ -367,7 +368,8 @@ public class SidebarController {
                         "author", article.getAuthorName(),
                         "title", article.getTitle(),
                         "date", collectTime.format(formatter),
-                        "imageUrl", imageUrl
+                        "imageUrl", imageUrl,
+                        "email",article.getEmail()
                 ));
             }
         }

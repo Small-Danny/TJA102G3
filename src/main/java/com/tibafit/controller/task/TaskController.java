@@ -107,7 +107,7 @@ public class TaskController {
 
 	    // 若還有其他欄位驗證錯誤 → 回表單
 	    if (result.hasErrors()) {
-	        return "admin/tasks/addTask"; // 這裡順便把你原本的 emp 路徑修正為 task
+	        return "admin/task/addTask"; // 這裡順便把你原本的 emp 路徑修正為 task
 	    }
 
 	    taskSvc.addTask(taskVO);

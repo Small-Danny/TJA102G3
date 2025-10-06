@@ -207,12 +207,13 @@
     <!-- Footer Style One End -->
 
     <!-- 依樣式順序附上模板腳本（若模板另有組合檔，請改成相同路徑） -->
-    <script src="assets/js/custom.js"></script>
+    <!-- <script src="assets/js/custom.js"></script> -->
     <script src="/frontend-template/assets/js/api.js"></script>
 
     <script>
         // ====== API 基本設定（依你的環境調整） ======
-        const API_BASE = 'http://localhost:8080'; // 若與頁面同網域，可用 ''（空字串）代表同源
+        const API_BASE = 'http://tibafit.ddns.net/'; // 若與頁面同網域，可用 ''（空字串）代表同源
+        // const API_BASE = (typeof window !== 'undefined' && window.API_BASE) ? window.API_BASE : '';
         function join(base, path) {
             return base.replace(/\/+$/, '') + '/' + path.replace(/^\/+/, '');
         }
@@ -381,6 +382,7 @@
                 const iconUrl = first(m.task_icon, `${API_BASE.replace(/\/+$/, '')}/tasks/${taskId}/icon`);
                 const statusText = first(m.status, m.statusName, (m.statusId === 0 ? '進行中' : ''));
                 const isOngoing = (statusText === '進行中') || (m.statusId === 0);
+                const icon = m.task_icon ?? join(API_BASE, `/tasks/${m.id}/icon`);
 
                 rows.push(`<tr>
       <td data-th="任務名稱">${name}</td>
@@ -389,7 +391,7 @@
       <td data-th="任務開始日">${startAt}</td>
       <td data-th="點數">${points}</td>
       <td data-th="任務圖騰">
-        <img src="${iconUrl}" alt="任務圖示" width="160" onerror="this.src='fallback.png'">
+        <img src="${icon}" alt="任務圖示" width="160" onerror="this.src='fallback.png'">
       </td>
       <td data-th="操作">${isOngoing
                         ? `<button class="btn btn-sm btn-outline-dark"
@@ -420,7 +422,9 @@
       <td data-th="任務目標值">${m.targetValue ?? ''}</td>
       <td data-th="單位">${m.unit ?? ''}</td>
       <td data-th="點數">${m.points ?? 0}</td>
-      <td data-th="任務圖騰"><img src="http://localhost:8080/tasks/${m.id}/icon" alt="任務圖示" width="160" onerror="this.src='fallback.png'"></td>
+      <td data-th="任務圖騰">
+        <img src="${icon}" alt="任務圖示" width="160" onerror="this.src='fallback.png'">
+      </td>
       <td data-th="操作">
         <button class="btn btn-sm btn-outline-dark"
                 data-action="accept" data-task-id="${m.id}">接取任務</button>
@@ -618,9 +622,12 @@
     <script src="assets/js/cart.js"></script>
     <script>
         // 載入你提供的 header HTML
-        fetch('header.txt?v=' + Date.now(), { cache: 'no-store' })
+        fetch('/frontend-template/header.txt?v=' + Date.now(), { cache: 'no-store' })
             .then(r => r.text())
-            .then(html => { document.getElementById('header').innerHTML = html; });
+            .then(html => {
+                document.getElementById('header-placeholder').innerHTML = html; // ← 改這裡
+            })
+            .catch(err => console.error('載入 header 失敗：', err));
     </script>
 
     <script src="/frontend-template/assets/js/jquery.min.js"></script>

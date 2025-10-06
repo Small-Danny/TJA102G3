@@ -934,12 +934,16 @@
 
 					} catch (error) {
 						console.error('更改密碼時出錯:', error);
-						if (error.field && error.message) {
-							showError(error.field + 'Error', error.message);
+						if (error && error.errors) {
+							// 從 errors 物件中找出第一個錯誤來顯示
+							// Object.keys(error.errors) 會得到 ["newPassword"]
+							const fieldName = Object.keys(error.errors)[0];
+							const message = error.errors[fieldName];
+							showError(fieldName + 'Error', message);
 						} else {
 							Swal.fire({
 								title: '更改失敗',
-								text: `更改失敗：${error.message || '請稍後再試'}`,
+								text: `更改失敗：${error.detail || error.message || '請稍後再試'}`, // 優先使用 detail 欄位
 								icon: 'error'
 							});
 						}
@@ -955,5 +959,4 @@
 		});
 	</script>
 </body>
-
 </html>

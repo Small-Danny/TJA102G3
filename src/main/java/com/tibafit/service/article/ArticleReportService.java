@@ -18,53 +18,57 @@ import java.util.List;
 @Transactional
 public class ArticleReportService {
 
-    private final ReportRepository reportRepository;
+	private final ReportRepository reportRepository;
 
-    public ArticleReportService(ReportRepository reportRepository) {
-        this.reportRepository = reportRepository;
-    }
+	public ArticleReportService(ReportRepository reportRepository) {
+		this.reportRepository = reportRepository;
+	}
 
-    /** 取得所有檢舉類型，回傳 DTO */
-    public List<ReportTypeDTO> getAllReportTypes() {
-        List<ReportType> reportTypes = reportRepository.findAllReportTypes();
-        List<ReportTypeDTO> dtos = new ArrayList<>();
-        for (ReportType rt : reportTypes) {
-            dtos.add(new ReportTypeDTO(rt.getReportTypeId(), rt.getReportTypeName()));
-        }
-        return dtos;
-    }
+	/** 取得所有檢舉類型，回傳 DTO */
+	public List<ReportTypeDTO> getAllReportTypes() {
+		List<ReportType> reportTypes = reportRepository.findAllReportTypes();
+		List<ReportTypeDTO> dtos = new ArrayList<>();
+		for (ReportType rt : reportTypes) {
+			dtos.add(new ReportTypeDTO(rt.getReportTypeId(), rt.getReportTypeName()));
+		}
+		return dtos;
+	}
 
-    /** 依 ID 取得檢舉類型 */
-    public ReportType getReportTypeById(Integer id) {
-        return reportRepository.findReportTypeById(id);
-    }
+	/** 依 ID 取得檢舉類型 */
+	public ReportType getReportTypeById(Integer id) {
+		return reportRepository.findReportTypeById(id);
+	}
 
-    /** 建立檢舉文章紀錄（createTime 由資料庫自動處理） */
-    public ArticleReport createArticleReport(Article article, Integer reportTypeId, String reason, User user) {
-        if (article == null) {
-            throw new IllegalArgumentException("文章不存在");
-        }
+	/** 建立檢舉文章紀錄（createTime 由資料庫自動處理） */
+	public ArticleReport createArticleReport(Article article, Integer reportTypeId, String reason, User user) {
+		if (article == null) {
+			throw new IllegalArgumentException("文章不存在");
+		}
+		// 新增：檢查是否是文章作者
+		if (article.getUser().getUserId().equals(user.getUserId())) {
+			throw new IllegalArgumentException("你無法檢舉自己的文章");
+		}
+		// 檢查是否已經檢舉過
+		boolean alreadyReported = reportRepository.existsByUser_UserIdAndArticle_ArticleId(user.getUserId(),
+				article.getArticleId());
+		if (alreadyReported) {
+			throw new IllegalArgumentException("你已經檢舉過這篇文章了");
+		}
 
-        // 檢查是否已經檢舉過
-        boolean alreadyReported = reportRepository.existsByUser_UserIdAndArticle_ArticleId(user.getUserId(), article.getArticleId());
-        if (alreadyReported) {
-            throw new IllegalArgumentException("你已經檢舉過這篇文章了");
-        }
+		ReportType reportType = getReportTypeById(reportTypeId);
+		if (reportType == null) {
+			throw new IllegalArgumentException("檢舉類型不存在");
+		}
 
-        ReportType reportType = getReportTypeById(reportTypeId);
-        if (reportType == null) {
-            throw new IllegalArgumentException("檢舉類型不存在");
-        }
+		ReportStatus defaultStatus = reportRepository.findReportStatusById(0);
+		ArticleReport report = new ArticleReport();
+		report.setArticle(article);
+		report.setUser(user);
+		report.setReportType(reportType);
+		report.setReason(reason);
+		report.setReportStatus(defaultStatus); // 設定預設狀態為0
 
-        ReportStatus defaultStatus = reportRepository.findReportStatusById(0);
-        ArticleReport report = new ArticleReport();
-        report.setArticle(article);
-        report.setUser(user);
-        report.setReportType(reportType);
-        report.setReason(reason);
-        report.setReportStatus(defaultStatus); //設定預設狀態為0
-
-        return reportRepository.save(report);
-    }
+		return reportRepository.save(report);
+	}
 
 }
