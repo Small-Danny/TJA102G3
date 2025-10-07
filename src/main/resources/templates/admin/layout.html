@@ -75,20 +75,6 @@
                                 <i class="nav-icon bi bi-star-fill"></i>
                                 <p>目標模板<i class="nav-arrow bi bi-chevron-right"></i></p>
                             </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item"><a th:href="@{/admin/taskrecord/select_page}" class="nav-link"><i
-                                            class="nav-icon bi bi-circle"></i>
-                                        <p>任務記錄</p>
-                                    </a></li>
-                                <li class="nav-item"><a th:href="@{/admin/tasks/select_page}" class="nav-link"><i
-                                            class="nav-icon bi bi-circle"></i>
-                                        <p>任務</p>
-                                    </a></li>
-                                <li class="nav-item"><a th:href="@{/admin/tasktype/select_page}" class="nav-link"><i
-                                            class="nav-icon bi bi-circle"></i>
-                                        <p>任務類型</p>
-                                    </a></li>
-                            </ul>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
@@ -156,13 +142,17 @@
                                 <p>任務管理<i class="nav-arrow bi bi-chevron-right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
-                                <li class="nav-item"><a th:href="@{/admin/tasks/settings}" class="nav-link"><i
+                                <li class="nav-item"><a th:href="@{/admin/taskrecord/select_page}" class="nav-link"><i
                                             class="nav-icon bi bi-circle"></i>
-                                        <p>任務設定</p>
+                                        <p>任務記錄</p>
                                     </a></li>
-                                <li class="nav-item"><a th:href="@{/admin/tasks/records}" class="nav-link"><i
+                                <li class="nav-item"><a th:href="@{/admin/tasks/select_page}" class="nav-link"><i
                                             class="nav-icon bi bi-circle"></i>
-                                        <p>任務紀錄</p>
+                                        <p>任務</p>
+                                    </a></li>
+                                <li class="nav-item"><a th:href="@{/admin/tasktype/select_page}" class="nav-link"><i
+                                            class="nav-icon bi bi-circle"></i>
+                                        <p>任務類型</p>
                                     </a></li>
                             </ul>
                         </li>
