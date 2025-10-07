@@ -316,7 +316,7 @@ public class SecurityConfig {
                 .authenticationProvider(adminAuthenticationProvider()) // 指定後台驗證邏輯
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/adminlte/**", "/uploads/**", "/plugins/**", "/images/**", "/webjars/**"
-                                , "/css/**", "/js/**", "/tasks/**").permitAll()
+                                , "/css/**", "/js/**", "/tasks/**","/api/analytics/workouts/**").permitAll()
                         .requestMatchers("/admin/login").permitAll()  // 開放後台登入頁
                         .anyRequest().hasRole("ADMIN") // 其他 /admin/ 路徑皆需 ADMIN 角色
                 )
