@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +14,8 @@
 	href="/frontend-template/assets/css/responsive.css">
 <link rel="stylesheet" type="text/css"
 	href="/frontend-template/assets/css/header.css">
-
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
 body {
 	background: #f5f5f5;
@@ -27,7 +27,6 @@ body {
 	margin: 30px auto;
 }
 
-/* 會員卡片 */
 .profile-card {
 	background: #fff;
 	padding: 20px;
@@ -59,6 +58,7 @@ body {
 	color: #c62828;
 	text-decoration: none;
 	font-weight: 500;
+	cursor: pointer;
 }
 
 .profile-actions a:hover {
@@ -77,7 +77,6 @@ body {
 	margin-right: 20px;
 }
 
-/* 文章 Tabs */
 .article-tabs {
 	display: flex;
 	gap: 15px;
@@ -98,7 +97,6 @@ body {
 	border-bottom: 2px solid #c62828;
 }
 
-/* 文章列表 */
 .article-list .article-item {
 	background: #fff;
 	border-radius: 10px;
@@ -115,11 +113,11 @@ body {
 }
 
 .article-list .article-item img {
-	width: 180px; /* 統一寬度 */
-	aspect-ratio: 16/9; /* 固定比例 */
-	object-fit: cover; /* 等比例裁切 */
+	width: 180px;
+	aspect-ratio: 16/9;
+	object-fit: cover;
 	border-radius: 8px;
-	flex-shrink: 0; /* 不被壓縮 */
+	flex-shrink: 0;
 }
 
 .article-content h5 {
@@ -142,7 +140,6 @@ body {
 	margin-right: 15px;
 }
 
-/* 分頁樣式統一風格 */
 #pagination {
 	margin-top: 20px;
 	text-align: center;
@@ -177,26 +174,6 @@ body {
 	box-shadow: 0 3px 8px rgba(198, 40, 40, 0.3);
 }
 
-/* 私訊 Modal */
-.modal-header {
-	background: #c62828;
-	color: #fff;
-}
-
-.modal-header .close {
-	color: #fff;
-	opacity: 1;
-}
-
-.modal-body input, .modal-body textarea {
-	width: 100%;
-	padding: 8px 10px;
-	margin-bottom: 10px;
-	border-radius: 5px;
-	border: 1px solid #ccc;
-}
-
-/* 浮動回首頁按鈕 */
 .btn-home-float {
 	position: fixed;
 	bottom: 20px;
@@ -216,10 +193,9 @@ body {
 }
 
 .btn-home-float:hover {
-	background: #e53935;
+	background-color: #e53935;
 }
 
-/* 更多按鈕 */
 .article-content a.more-link {
 	display: inline-block;
 	padding: 2px 8px;
@@ -238,11 +214,10 @@ body {
 	text-decoration: none;
 }
 </style>
-
 </head>
 
 <body>
-<div id="header-placeholder"></div>
+	<div id="header-placeholder"></div>
 	<section class="banner-style-one">
 		<div class="parallax"></div>
 		<div class="container">
@@ -254,9 +229,9 @@ body {
 			</div>
 		</div>
 	</section>
+
 	<div class="container2">
 		<div class="profile-card">
-			<!-- 會員頭貼區 -->
 			<div class="profile-header">
 				<img id="profile-img"
 					src="/frontend-template/assets/images/profile-picture-default.jpg"
@@ -264,146 +239,108 @@ body {
 				<div>
 					<span class="username" id="username">Bryan.S</span>
 					<div class="profile-actions mt-2">
-						<a href="#" data-toggle="modal" data-target="#messageModal"> <i
+						<a href="#" id="privateMsgBtn"> <i
 							class="fa-regular fa-envelope"></i> 私訊
 						</a>
-						<!-- 以下兩個按鈕已移除 -->
-						<!-- <a href="#"><i class="fa-solid fa-user-plus"></i> 加入好友</a> -->
-						<!-- <a href="#"><i class="fa-solid fa-ban"></i> 加入黑名單</a> -->
 					</div>
 				</div>
 			</div>
 
-
-			<!-- 會員資訊列 -->
 			<div class="profile-info">
 				<span>註冊日期：<span id="createTime">2011-07-07 13:24</span></span> <span>會員編號：<span
 					id="userId">123</span></span>
 			</div>
 
-			<!-- Tabs -->
 			<div class="article-tabs">
 				<div class="active">發佈文章</div>
 				<div>精選文章</div>
 			</div>
 
-			<!-- 文章列表 -->
 			<div class="article-list" id="article-list"></div>
 		</div>
 	</div>
 
-	<!-- 私訊 Modal -->
-	<div class="modal fade" id="messageModal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">
-						<i class="fa-regular fa-envelope"></i> 發送私信
-					</h5>
-					<button type="button" class="close" data-dismiss="modal">
-						<span>&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<input type="text" id="msg-title" placeholder="標題">
-					<textarea id="msg-content" rows="5" placeholder="輸入訊息內容"></textarea>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary"
-						data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" id="sendMsgBtn">發送</button>
-				</div>
-			</div>
-		</div>
-	</div>
+	<a href="/frontend-template/forum.html" class="btn-home-float"><i
+		class="fas fa-home"></i> 回討論區</a>
 
-	<!-- 浮動回首頁 -->
-	<a href="/frontend-template/forum.html" class="btn-home-float"> <i
-		class="fas fa-home"></i> 回討論區
-	</a>
-
-	<script src="/frontend-template/assets/js/jquery.min.js"></script>
-	<script src="/frontend-template/assets/js/bootstrap.min.js"></script>
 	<script>
 const params = new URLSearchParams(window.location.search);
-const userId = params.get('userId');
+const userId = params.get('userId'); 
 const ARTICLES_PER_PAGE = 5;
 let allArticles = [];
 let currentPage = 1;
+let currentUserId = null; // 登入者 ID
 
+// 取得登入使用者資訊
+async function loadCurrentUser() {
+    try {
+        const res = await fetch('/api/sidebar');
+        const data = await res.json();
+        if (data.currentUser) currentUserId = data.currentUser.userId;
+    } catch(e) { console.error('無法取得登入資訊', e); }
+}
+
+// 載入會員資料
 async function loadMemberData() {
     if (!userId) return;
     try {
-        const response = await fetch(`/api/forum/member/${userId}`);
-        const data = await response.json();
+        const res = await fetch(`/api/forum/member/${userId}`);
+        const data = await res.json();
         document.getElementById('profile-img').src = data.profilePicture || '/frontend-template/assets/images/avatar.jpg';
         document.getElementById('username').textContent = data.nickName;
         document.getElementById('createTime').textContent = new Date(data.createTime).toLocaleString();
         document.getElementById('userId').textContent = data.userId;
-    } catch (e) { console.error(e); }
+    } catch(e){ console.error(e); }
 }
 
+// 載入文章
 async function loadMemberArticles() {
     try {
-        const response = await fetch(`/api/forum/member/articles/${userId}`);
-        allArticles = await response.json();
+        const res = await fetch(`/api/forum/member/articles/${userId}`);
+        allArticles = await res.json();
         renderArticlePage(1);
-    } catch (e) {
-        console.error(e);
+    } catch(e){ 
+        console.error(e); 
         document.getElementById('article-list').innerHTML = '<p>載入文章列表失敗</p>';
     }
 }
-//切換 Tabs
-document.querySelectorAll('.article-tabs div').forEach(tab => {
-    tab.addEventListener('click', (e) => {
-        document.querySelectorAll('.article-tabs div').forEach(t => t.classList.remove('active'));
-        e.target.classList.add('active');
-
-        const tabName = e.target.textContent.trim();
-        if (tabName === '發佈文章') {
-            loadMemberArticles();
-        } else if (tabName === '精選文章') {
-            loadFeaturedArticles();
-        }
-    });
-});
 
 // 載入精選文章
 async function loadFeaturedArticles() {
     try {
-        const response = await fetch(`/api/forum/member/featured/${userId}`);
-        allArticles = await response.json();
+        const res = await fetch(`/api/forum/member/featured/${userId}`);
+        allArticles = await res.json();
         renderArticlePage(1);
-    } catch (e) {
-        console.error(e);
+    } catch(e){ 
+        console.error(e); 
         document.getElementById('article-list').innerHTML = '<p>載入精選文章失敗</p>';
     }
 }
 
-function renderArticlePage(page) {
+// 分頁渲染
+function renderArticlePage(page){
     const list = document.getElementById('article-list');
     list.innerHTML = '';
-    if (allArticles.length === 0) return list.innerHTML = '<p>尚無發佈文章</p>';
-
+    if (!allArticles.length) return list.innerHTML = '<p>尚無發佈文章</p>';
+    
     currentPage = page;
-    const start = (page - 1) * ARTICLES_PER_PAGE;
+    const start = (page-1) * ARTICLES_PER_PAGE;
     const end = start + ARTICLES_PER_PAGE;
     const pageArticles = allArticles.slice(start, end);
-
+    
     pageArticles.forEach(article => {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = article.content || '';
-        const textContent = (tempDiv.textContent || '').replace(/\s+/g, ' ').trim();
-        const shortContent = textContent.length > 100 ? textContent.substring(0, 100) + ' ...' : textContent;
-
+        const textContent = (tempDiv.textContent || '').replace(/\s+/g,' ').trim();
+        const shortContent = textContent.length > 100 ? textContent.substring(0,100)+' ...' : textContent;
+        
         const item = document.createElement('div');
         item.className = 'article-item';
         item.innerHTML = `
-            <img src="${article.coverImageUrl}" alt="文章封面">
+            <img src="${article.coverImageUrl || '/frontend-template/assets/images/default-cover.jpg'}" alt="文章封面">
             <div class="article-content">
                 <h5>${article.title}</h5>
-                <p>${shortContent}${textContent.length > 100 ? 
-                    `<a href="/frontend-template/article-detail.html?id=${article.articleId}" class="more-link">更多</a>` : ''}</p>
+                <p>${shortContent}${textContent.length>100? `<a href="/frontend-template/article-detail.html?id=${article.articleId}" class="more-link">更多</a>` : ''}</p>
                 <p>分類：${article.forumTypeName}</p>
                 <div class="article-meta">
                     <span>發布時間：${new Date(article.createTime).toLocaleString()}</span>
@@ -412,43 +349,59 @@ function renderArticlePage(page) {
             </div>`;
         list.appendChild(item);
     });
-
     renderPagination();
 }
 
-function renderPagination() {
+// 分頁按鈕
+function renderPagination(){
     let old = document.getElementById('pagination');
-    if (old) old.remove();
-
+    if(old) old.remove();
     const totalPages = Math.ceil(allArticles.length / ARTICLES_PER_PAGE);
-    if (totalPages <= 1) return;
-
+    if(totalPages <= 1) return;
     const pagination = document.createElement('div');
     pagination.id = 'pagination';
     pagination.innerHTML = `<nav><ul class="pagination">
-        ${Array.from({length: totalPages}, (_, i) => `
-            <li class="page-item ${i + 1 === currentPage ? 'active' : ''}">
-                <a class="page-link" href="#" onclick="renderArticlePage(${i + 1}); return false;">${i + 1}</a>
+        ${Array.from({length: totalPages},(_,i)=>`
+            <li class="page-item ${i+1===currentPage?'active':''}">
+                <a class="page-link" href="#" onclick="renderArticlePage(${i+1}); return false;">${i+1}</a>
             </li>`).join('')}
     </ul></nav>`;
-
     document.querySelector('.profile-card').appendChild(pagination);
 }
 
-document.getElementById('sendMsgBtn').addEventListener('click', () => {
-    const title = document.getElementById('msg-title').value.trim();
-    const content = document.getElementById('msg-content').value.trim();
-    if(!title || !content) return alert('請填寫標題和內容');
-    alert('私信已發送！\\n標題: ' + title + '\\n內容: ' + content);
-    $('#messageModal').modal('hide');
+// 切換文章 Tabs
+document.querySelectorAll('.article-tabs div').forEach(tab => {
+    tab.addEventListener('click', e => {
+        document.querySelectorAll('.article-tabs div').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        const tabName = e.target.textContent.trim();
+        if(tabName === '發佈文章') loadMemberArticles();
+        else loadFeaturedArticles();
+    });
 });
 
+// 私訊按鈕
+document.getElementById('privateMsgBtn').addEventListener('click', async () => {
+    if(currentUserId === null) await loadCurrentUser(); // 取得登入者資訊
+    if(!currentUserId){
+        Swal.fire({
+            icon: 'warning',
+            title: '請先登入',
+            text: '您必須登入才能發送私訊！',
+            confirmButtonText: '前往登入'
+        }).then(()=> window.location.href='/frontend-template/login.html');
+        return;
+    }
+    window.location.href = `/frontend-template/privateMessage.html?receiverUserId=${userId}`;
+});
+
+// 初始化
+loadCurrentUser();
 loadMemberData();
 loadMemberArticles();
 </script>
-	<!--  頁尾 -->
+
 	<div id="footer-placeholder"></div>
-	<!-- ======================= 唯一修改點：會員中心腳本 ======================= -->
 	<script src="/frontend-template/assets/js/jquery.min.js"></script>
 	<script src="/frontend-template/assets/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

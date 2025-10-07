@@ -404,6 +404,9 @@ body {
 							class="fa-solid fa-user-gear"></i><span>會員中心</span></a> <a
 							href="post-article.html" class="func-item"><i
 							class="fa-regular fa-pen-to-square"></i><span>我要發文</span></a>
+							</a> <a
+							href="inbox.html" class="func-item"><i
+							class="fa-regular fa-envelope"></i><span>收件匣</span></a>
 					</div>
 				</div>
 
@@ -664,5 +667,36 @@ document.addEventListener("DOMContentLoaded", function(){
 	<script src="/frontend-template/assets/js/api.js"></script>
 	<script src="/frontend-template/assets/js/loader.js"></script>
 	<script src="/frontend-template/assets/js/custom.js"></script>
+	
+	<!-- 浮動回討論區按鈕 -->
+<a href="/frontend-template/forum.html" class="btn-home-float">
+    <i class="fas fa-home"></i> 回討論區
+</a>
+
+<style>
+/* 浮動按鈕樣式 */
+.btn-home-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 16px;
+    border-radius: 30px;
+    background: #c62828;
+    color: #fff;
+    font-weight: 500;
+    text-decoration: none;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    z-index: 999;
+}
+
+.btn-home-float:hover {
+    background: #e53935;
+}
+</style>
+	
 </body>
 </html>
