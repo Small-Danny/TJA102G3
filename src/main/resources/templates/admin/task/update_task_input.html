@@ -288,23 +288,45 @@
     function hideContent(d) { var el = document.getElementById(d); if (el) el.style.display = 'none'; }
 
     // 立即預覽選取的圖片
+    // 立即預覽選取的圖片（不改動排版／欄位順序）
     document.addEventListener('DOMContentLoaded', function () {
       var fileInput = document.getElementById('taskIcon');
       var holder = document.getElementById('blob_holder');
       if (!fileInput || !holder) return;
+
+      // 直接鎖定既有預覽 <img>，不重建 DOM，避免造成任何版面變動
+      var preview = holder.querySelector('img');
+      var lastObjectUrl = null;
+
       fileInput.addEventListener('change', function () {
         var file = this.files && this.files[0];
         if (!file) return;
-        if (!/^image\//.test(file.type)) { holder.innerHTML = "<span style='color:#dc3545'>請選擇圖片檔</span>"; return; }
+        if (!/^image\//.test(file.type)) {
+          holder.innerHTML = "<span style='color:#dc3545'>請選擇圖片檔</span>";
+          return;
+        }
+
+        // 先用 FileReader -> data URL（相容性高）
         var reader = new FileReader();
         reader.onload = function (e) {
-          var img = new Image();
-          img.width = 120; img.height = 120; img.className = 'img-preview';
-          img.src = e.target.result;
-          holder.innerHTML = '';
-          holder.appendChild(img);
+          if (preview) {
+            preview.onerror = function () {
+              // 若 site 的 CSP 禁 data:，就退回用 blob: 預覽
+              try {
+                if (lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
+                lastObjectUrl = URL.createObjectURL(file);
+                preview.src = lastObjectUrl;
+              } catch (_) { /* 忽略 */ }
+            };
+            preview.src = e.target.result;
+          }
         };
         reader.readAsDataURL(file);
+      });
+
+      // 離開頁面前釋放 blob URL
+      window.addEventListener('beforeunload', function () {
+        if (lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
       });
     });
   </script>
