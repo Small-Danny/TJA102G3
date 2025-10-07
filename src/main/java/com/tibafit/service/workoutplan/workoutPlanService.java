@@ -13,8 +13,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +28,9 @@ import com.tibafit.model.workoutplan.WorkoutPlanVO;
 import com.tibafit.model.workoutplanrecord.WorkoutPlanRecordVO;
 import com.tibafit.repository.workoutplan.WorkoutPlanRepository;
 import com.tibafit.repository.workoutplanrecord.WorkoutPlanRecordRepository;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 @Transactional
@@ -214,15 +217,20 @@ public class workoutPlanService implements workoutPlanService_interface {
         
         content += "\n\n\n\n" + "Best wishes, \n" + "TibaFit 團隊 :)";
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        String setndToEmail = resolveUserEmail(planVO);
-        message.setFrom("TibaFit 團隊 <" + sendFromEmail + ">");
-        message.setTo(setndToEmail);
-        message.setSubject(subject);
-        message.setText(content);
-        
-        // 寄出
-        rrooMailSender.send(message);
+        try {
+            MimeMessage mimeMessage = rrooMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+            String setndToEmail = resolveUserEmail(planVO);
+            helper.setFrom("TibaFit 團隊 <" + sendFromEmail + ">");
+            helper.setTo(setndToEmail);
+            helper.setSubject(subject);
+            helper.setText(content, false);
+
+            // 寄出
+            rrooMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+        	System.out.println("Svc 寄信失敗: " + e.getMessage());
+        }
     }
 
     private String resolveSportName(WorkoutPlanVO planVO) {
