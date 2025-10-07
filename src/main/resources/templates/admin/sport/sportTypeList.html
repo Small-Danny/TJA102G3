@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{admin/layout :: layout(~{::title}, ~{::content}, ~{::#empty-scripts})}">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>運動分類管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <link rel="preload" href="/adminlte/css/adminlte.css" as="style" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
+        crossorigin="anonymous" media="print" onload="this.media='all'" />
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" th:href="@{/adminlte/css/adminlte.min.css}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .badge-status {
+            font-size: .8rem;
+        }
+
+        #sportTypeTable {
+            table-layout: fixed;
+        }
+
+        #sportTypeTable td,
+        #sportTypeTable th {
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            vertical-align: middle;
+        }
+
+        #sportTypeTable td {
+            overflow: auto;
+        }
+
+        #sportTypeTable td img {
+            max-width: 100%;
+            object-fit: contain;
+            overflow: hidden;
+        }
+
+        .status-note {
+            font-size: .75rem;
+            color: var(--bs-secondary-color);
+        }
+
+        .option-muted {
+            opacity: .75;
+        }
+
+        .modal-xl .form-select[size] {
+            min-height: 380px;
+        }
+
+        .uni-form-hint {
+            font-size: .85rem;
+            color: var(--bs-secondary-color);
+        }
+
+        .search-input {
+            position: relative;
+        }
+
+        .search-input .bi-search {
+            position: absolute;
+            left: .5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .search-input input {
+            padding-left: 2rem;
+        }
+
+        .uni-table-block {
+            overflow: auto;
+        }
+
+        .uni-table-block {
+            overflow: auto;
+        }
+
+
+        .uni-required-text {
+            color: red;
+            padding-right: 1px;
+        }
+
+        .uni-sport-type-pic-preview {
+            max-height: 300px !important;
+            height: 300px !important;
+            font-size: .9rem !important;
+            border: 2px dashed #e0e0e0 !important;
+            overflow: hidden !important;
+        }
+    </style>
+</head>
+
+<body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+    <div th:fragment="content">
+        <div class="app-wrapper">
+
+            <!-- Main -->
+            <main class="app-main">
+
+                <!-- Content Header -->
+                <div class="app-content-header">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <h3 class="mb-0">運動分類管理</h3>
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="float-sm-end">
+                                    <button id="btnAddType" type="button" class="btn btn-primary me-2">新增分類</button>
+                                    <button id="btnEnable" type="button" class="btn btn-success me-2">上架</button>
+                                    <button id="btnDisable" type="button" class="btn btn-secondary me-2">下架</button>
+                                    <button id="btnDelete" type="button" class="btn btn-danger">刪除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="app-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <form id="queryForm" class="row g-3 align-items-center">
+                                <div class="col-xl-2">
+                                    <label for="qName" class="form-label">名稱</label>
+                                    <input type="text" id="qName" class="form-control form-control-sm"
+                                        placeholder="輸入名稱關鍵字">
+                                </div>
+                                <div class="col-xl-2">
+                                    <label for="qStatus" class="form-label">資料狀態</label>
+                                    <select id="qStatus" class="form-select form-select-sm">
+                                        <option value="">全部</option>
+                                        <option value="1">上架</option>
+                                        <option value="0">下架</option>
+                                    </select>
+                                </div>
+                                <div class="col-xl-4">
+                                    <label class="form-label">建立時間</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="date" id="qCreateStart" class="form-control form-control-sm">
+                                        <span>至</span>
+                                        <input type="date" id="qCreateEnd" class="form-control form-control-sm">
+                                    </div>
+                                </div>
+                                <div class="col-xl-4">
+                                    <label class="form-label">更新時間</label>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="date" id="qUpdateStart" class="form-control form-control-sm">
+                                        <span>至</span>
+                                        <input type="date" id="qUpdateEnd" class="form-control form-control-sm">
+                                    </div>
+                                </div>
+                                <div class="col-xl-12 d-flex align-items-end justify-content-end">
+                                    <button type="button" id="btnQuery" class="btn btn-outline-primary me-2">查詢</button>
+                                    <button type="button" id="btnReset" class="btn btn-outline-secondary">清空</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-body">
+                            <div class="uni-table-block">
+                                <div class="uni-table-block"></div>
+                                <table class="table table-bordered table-striped table-fixed" id="sportTypeTable">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:50px;"><input type="checkbox" id="chkAll"></th>
+                                            <th style="width:70px;">ID</th>
+                                            <th style="width:160px;">分類名稱</th>
+                                            <th style="width:200px;">圖片</th>
+                                            <th style="width:110px;">資料狀態</th>
+                                            <th style="width:160px;">建立時間</th>
+                                            <th style="width:160px;">更新時間</th>
+                                            <th style="width:200px;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sportTypeTbody">
+                                        <tr>
+                                            <td colspan="8" class="text-center text-secondary">無資料</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer clearfix d-flex justify-content-between align-items-center">
+                        <div class="small text-secondary" id="pageInfo"></div>
+                        <ul id="pager" class="pagination pagination-sm m-0"></ul>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+
+        <!-- Add type Modal -->
+        <div class="modal fade" id="modalAddType" tabindex="-1" data-bs-backdrop="static">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">新增分類</h5><button type="button" class="btn-close"
+                            data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formAddType">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <span class="uni-required-text" style="color: red;">*</span>
+                                    名稱
+                                </label>
+                                <input id="addTypeName" type="text" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">圖片<span class="uni-form-hint ps-1">(建議寬高 300px * 300px，大小上限
+                                        4MB)</span></label>
+                                <input id="addTypePic" type="file" accept="image/*" class="form-control">
+                                <div id="addTypePicPreview"
+                                    class="mt-2 d-flex align-items-center justify-content-center uni-sport-type-pic-preview"
+                                    style="max-height: 300px !important; height: 300px !important; font-size: .9rem !important; border: 2px dashed #e0e0e0 !important; overflow: hidden !important;">
+                                    尚無圖片</div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">取消</button>
+                        <button id="btnAddTypeSubmit" type="button" class="btn btn-primary">確認新增</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit type Modal -->
+        <div class="modal fade" id="modalEditType" tabindex="-1" data-bs-backdrop="static">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">編輯分類</h5><button type="button" class="btn-close"
+                            data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formEditType">
+                            <input type="hidden" id="editTypeId">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <span class="uni-required-text" style="color: red;">*</span>
+                                    名稱
+                                </label>
+                                <input id="editTypeName" type="text" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">原圖片 ------ </label>
+                                <input type="text" id="editTypePicOriginalName" class="form-control" accept="image/*"
+                                    disabled />
+                                <div class="mt-2 d-flex justify-content-center align-items-center uni-sport-type-pic-preview"
+                                    id="editTypePicOriginalPreview"
+                                    style="max-height: 300px !important; height: 300px !important; font-size: .9rem !important; border: 2px dashed #e0e0e0 !important; overflow: hidden !important;">
+                                    <span class="uni-pic-none-text">無原圖</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">更新圖片 ------ <span class="uni-form-hint ps-1">(建議寬高 300px *
+                                        300px，大小上限
+                                        4MB)</span></label>
+                                <input id="editTypePic" type="file" accept="image/*" class="form-control">
+                                <div id="editTypePicPreview"
+                                    class="mt-2 d-flex align-items-center justify-content-center uni-sport-type-pic-preview"
+                                    style="max-height: 300px !important; height: 300px !important; font-size: .9rem !important; border: 2px dashed #e0e0e0 !important; overflow: hidden !important;">
+                                    <span class="uni-pic-none-text">尚無圖片</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">取消</button>
+                        <button id="btnEditTypeSubmit" type="button" class="btn btn-primary">儲存變更</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Sports Beneath Type Modal -->
+        <div class="modal fade" id="modalManageSports" tabindex="-1" data-bs-backdrop="static">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">管理運動</h5><button type="button" class="btn-close"
+                            data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="search-input">
+                                    <i class="bi bi-search"></i>
+                                    <input type="text" id="searchSports" class="form-control"
+                                        placeholder="搜尋運動 (名稱 / 等級 / 狀態)…">
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold fs-4">未加入分類的運動</label>
+                                <span class="uni-form-hint ps-2"
+                                    style="font-size: .85rem; color: var(--bs-secondary-color);">( 可多選，加入 )</span>
+                                <select id="allSports" class="form-select" multiple size="15"></select>
+                            </div>
+                            <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
+                                <button id="btnAddSports" type="button" class="btn btn-primary btn-lg mb-3">
+                                    加入
+                                    <i class="bi bi-box-arrow-in-right pe-1"></i>
+                                </button>
+                                <button id="btnRemoveSports" type="button" class="btn btn-danger btn-lg">
+                                    <i class="bi bi-box-arrow-in-left pe-1"></i>
+                                    移除
+                                </button>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold fs-4">已加入分類的運動</label>
+                                <span class="uni-form-hint ps-2"
+                                    style="font-size: .85rem; color: var(--bs-secondary-color);">( 可多選，移除 )</span>
+                                <select id="selectedSports" class="form-select" multiple size="15"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">關閉</button>
+                        <button id="btnSaveSports" type="button" class="btn btn-primary">儲存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/overlaysscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"></script>
+
+
+        <script>
+            const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
+            const Default = {
+                scrollbarTheme: 'os-theme-light',
+                scrollbarAutoHide: 'leave',
+                scrollbarClickScroll: true,
+            };
+            document.addEventListener('DOMContentLoaded', function () {
+                const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
+                if (sidebarWrapper && OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined) {
+                    OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
+                        scrollbars: {
+                            theme: Default.scrollbarTheme,
+                            autoHide: Default.scrollbarAutoHide,
+                            clickScroll: Default.scrollbarClickScroll,
+                        },
+                    });
+                }
+            });
+        </script>
+
+
+        <script src="/frontend-template/assets/vendor/api/sport-api.js"></script>
+        <script src="/frontend-template/assets/vendor/api/csrf-api.js"></script>
+        <script th:inline="none">
+            // ------ 基本設定 ------
+            const PIC_MAP = {
+                sportType: BASE_API_URL + '/sportPics/img/bd/sportType/',
+                sport: BASE_API_URL + '/sportPics/img/bd/sport/',
+                customSport: BASE_API_URL + '/sportPics/img/bd/customSport/',
+                sportCommon: BASE_API_URL + '/sportPics/img/bd/sportCommon/'
+            };
+
+            const API_MAP = {
+                getSidebar: BASE_API_URL + "/sportSidebar/api/bd/sidebar",
+                getTypeList: BASE_API_URL + "/sportType/api/bd/getByComplexCondition",
+                isExistSportTypeName: BASE_API_URL + "/sportType/api/bd/isExistSportTypeName",
+                insertType: BASE_API_URL + "/sportType/api/bd/insertMultiple",
+                updateType: BASE_API_URL + "/sportType/api/bd/updateMultiple",
+                updateTypeStatus: BASE_API_URL + "/sportType/api/bd/updateSportTypeDataStatusBySportTypeIds",
+                insertTypeItem: BASE_API_URL + "/sportTypeItem/api/insertMultiple",
+                deleteTypeItem: BASE_API_URL + "/sportTypeItem/api/deleteBySportTypeItemIds",
+                getSportListAll: BASE_API_URL + "/sport/api/getMultipleAll",
+                getSportStatusesList: BASE_API_URL + "/sport/api/getMultipleByDataStatuses",
+                fileImgUpload: BASE_API_URL + '/fileImg/api/bd/upload',
+                fileImgUpdate: BASE_API_URL + '/fileImg/api/bd/update'
+            };
+
+            // ------ state ------
+            // 全分類 (含 items)
+            let typeList = [];
+            let currentPage = 1;
+            const pageSize = 10;
+            const selectedTypeIds = new Set();
+            // 不能上下架/刪除
+            const DEFAULT_BLOCK_IDS = new Set([1, 2, 3]);
+            // 不能管理運動
+            const CUSTOM_TYPE_ID = 3;
+            let currSidebar = null;
+
+            document.addEventListener('DOMContentLoaded', async function () {
+                console.log('Ready');
+
+
+                // ------ DOM ------
+                const tbody = document.getElementById("sportTypeTbody");
+                const pager = document.getElementById("pager");
+                const pageInfo = document.getElementById("pageInfo");
+                const chkAll = document.getElementById("chkAll");
+                const modalAddTypeEl = document.getElementById('modalAddType');
+                const modalAddTypeInst = bootstrap.Modal.getOrCreateInstance(modalAddTypeEl);
+                const modalEditTypeEl = document.getElementById('modalEditType');
+                const modalEditTypeInst = bootstrap.Modal.getOrCreateInstance(modalEditTypeEl);
+                const modalManageSportsEl = document.getElementById("modalManageSports");
+                const modalManageSportsInst = bootstrap.Modal.getOrCreateInstance(modalManageSportsEl);
+
+                // ------ API ------
+                const API = {
+                    getSidebar: async function () {
+                        try {
+                            const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.getSidebar, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({})
+                            });
+                            if (retResult) {
+                                console.info(
+                                    'sportList getSidebar success: ',
+                                    retData
+                                );
+                                currSidebar = retData?.uudd || null;
+                            } else {
+                                console.error(
+                                    'sportList getSidebar error retMsg: ',
+                                    retMsg
+                                );
+                                currSidebar = null;
+                            }
+                        } catch (err) {
+                            console.error('getSidebar程式執行錯誤', err);
+                            return false;
+                        }
+                    },
+                    // ------ sportType ------
+                    getTypeList: async (payload, defaultStatuses = [0, 1]) => {
+                        payload.statuses = Array.isArray(payload.statuses) && payload.statuses.length > 0 ? payload.statuses : defaultStatuses;
+                        // console.log("ComplexCondition payload:", payload);
+
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.getTypeList, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(payload)
+                        });
+
+                        return { retResult, retData, retMsg };
+                    },
+                    isExistSportTypeName: async (name) => {
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.isExistSportTypeName, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ sportTypeName: name })
+                        });
+
+                        if (retResult) {
+                            console.info(
+                                'sportTypeList isExistSportTypeName success: ',
+                                retData
+                            );
+                            return retData;
+                        } else {
+                            console.error(
+                                'sportTypeList isExistSportTypeName error retMsg: ',
+                                retMsg
+                            );
+                            return false;
+                        }
+
+                    },
+                    insertType: async (rows) => {
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.insertType, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ dtos: rows })
+                        });
+
+                        return { retResult, retData, retMsg };
+                    },
+                    updateType: async (rows) => {
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.updateType, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ dtos: rows })
+                        });
+
+                        return { retResult, retData, retMsg };
+                    },
+                    updateTypeStatus: async (ids, status) => {
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.updateTypeStatus, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ dataStatus: status, sportTypeIds: ids })
+                        });
+
+                        return { retResult, retData, retMsg };
+                    },
+                    insertTypeItem: async (rows) => {
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.insertTypeItem, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ dtos: rows })
+                        });
+
+                        return { retResult, retData, retMsg };
+                    },
+                    deleteTypeItem: async (toDeleteSportTypeItemIds) => {
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.deleteTypeItem, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ sportTypeItemIds: toDeleteSportTypeItemIds })
+                        });
+
+                        return { retResult, retData, retMsg };
+                    },
+
+                    // ---- sport ----
+                    getSportListAll: async () => {
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.getSportListAll, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({})
+                        });
+
+                        return { retResult, retData, retMsg };
+                    },
+                    getSportStatusesList: async () => {
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.getSportStatusesList, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({})
+                        });
+
+                        return { retResult, retData, retMsg };
+                    },
+
+                    // ---- pic ----
+                    uploadFileImg: async (funcType, file) => {
+                        let formData = new FormData();
+                        formData.append('funcType', funcType);
+                        formData.append('file', file);
+
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.fileImgUpload, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        console.log('retData: ', retData);
+                        // 由外部判斷是否跳提示
+                        return retData;
+                    },
+                    updateFileImg: async (funcType, oldFileName, file) => {
+                        let formData = new FormData();
+                        formData.append('funcType', funcType);
+                        formData.append('oldFileName', oldFileName);
+                        formData.append('newFile', file);
+
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.fileImgUpdate, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        // 由外部判斷是否跳提示
+                        return retData;
+                    }
+                };
+
+
+                // 取得sidebar
+                await API.getSidebar();
+
+
+                // ------ method ------
+                function pad(n) { return String(n).padStart(2, '0'); }
+                function fmtDT(s) {
+                    if (!s) return "-";
+                    try {
+                        const d = new Date(s);
+                        if (String(d) === "Invalid Date") return s;
+                        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+                    } catch (e) { return s; }
+                }
+                function statusBadgeVal(v) {
+                    const map = { 0: "下架", 1: "上架", 2: "刪除" };
+                    const cls = v === 1 ? "text-bg-success" : v === 0 ? "text-bg-secondary" : "text-bg-danger";
+                    return `<span class="badge badge-status ${cls}">${map[v] ?? "-"}</span>`;
+                }
+                function escapeHtml(str) {
+                    if (str == null) return "";
+                    return String(str).replace(/[&<>\"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
+                }
+
+                // ------ render table ------
+                function renderTable() {
+                    const visible = typeList.filter(r => r);
+                    const total = visible.length;
+                    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+                    if (currentPage > totalPages) currentPage = totalPages;
+
+                    const start = (currentPage - 1) * pageSize;
+                    const pageRows = visible.slice(start, start + pageSize);
+
+                    if (pageRows.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-secondary">無資料</td></tr>`;
+                    } else {
+                        tbody.innerHTML = pageRows.map(r => {
+                            const id = r.sportTypeId;
+                            const disabledOps = DEFAULT_BLOCK_IDS.has(id);
+                            const checked = selectedTypeIds.has(id) ? 'checked' : '';
+
+                            let checkboxHtml = DEFAULT_BLOCK_IDS.has(id) ? `<td><div>預設</div></td>` : `<td><input type="checkbox" class="rowChk" data-id="${id}" ${checked}></td>`;
+
+                            let btnManageSportsHtml = id === CUSTOM_TYPE_ID ? `<div class="status-note pt-1">( 自訂義分類 不可管理運動 )</div>` : `<button class="btn btn-sm btn-warning btnManageSports">管理運動</button>`;
+
+                            let img = r.sportTypePic ? `<img src="${PIC_MAP['sportType'] + r.sportTypePic}" alt="${r.sportTypePic}" style="max-width:100%;" />` : `<img src="${PIC_MAP['sportCommon'] + 'none.png'}" alt="暫無圖片" style="max-width:100%;;" />`;
+
+                            return `<tr data-id="${id}">
+	            ${checkboxHtml}
+	            <td>${id}</td>
+	            <td>${escapeHtml(r.sportTypeName)}</td>
+	            <td>${img}</td>
+	            <td>${statusBadgeVal(r.sportTypeDataStatus)}</td>
+	            <td>${fmtDT(r.createDatetime)}</td>
+	            <td>${fmtDT(r.updateDatetime)}</td>
+	            <td>
+	              <button class="btn btn-sm btn-primary me-1 btnEditType">編輯</button>
+	              ${btnManageSportsHtml}
+	              ${disabledOps ? `<div class="status-note pt-1">( 預設分類 不可上架/下架/刪除 )</div>` : ''}
+	            </td>
+	          </tr>`;
+                        }).join("");
+                    }
+
+                    // page info & pager
+                    pageInfo.textContent = `共 ${total} 筆，頁碼 ${currentPage}/${Math.max(1, totalPages)}`;
+                    renderPager(totalPages);
+                    bindTableEvents();
+                    updateChkAllState();
+                }
+
+                // ------ render page ------
+                function renderPager(totalPages) {
+                    pager.innerHTML = "";
+                    const addLi = (label, page, disabled = false, active = false) => {
+                        const li = document.createElement("li");
+                        li.className = "page-item" + (disabled ? " disabled" : "") + (active ? " active" : "");
+                        const a = document.createElement("a");
+                        a.className = "page-link"; a.href = "#"; a.textContent = label;
+                        a.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            if (!disabled) {
+                                currentPage = page;
+                                renderTable();
+                            }
+                        });
+                        li.appendChild(a);
+                        pager.appendChild(li);
+                    };
+                    addLi("«", Math.max(1, currentPage - 1), currentPage === 1, false);
+                    for (let p = 1; p <= totalPages; p++) addLi(String(p), p, false, p === currentPage);
+                    addLi("»", Math.min(totalPages, currentPage + 1), currentPage === totalPages, false);
+                }
+
+                // ------bind table events ------
+                function bindTableEvents() {
+                    tbody.querySelectorAll(".rowChk").forEach(chk => {
+                        chk.addEventListener("change", () => {
+                            const id = Number(chk.dataset.id);
+                            if (chk.checked) selectedTypeIds.add(id); else selectedTypeIds.delete(id);
+                            updateChkAllState();
+                        });
+                    });
+                    tbody.querySelectorAll(".btnEditType").forEach(btn => {
+                        btn.addEventListener("click", () => {
+                            const id = Number(btn.closest("tr").dataset.id);
+                            openEditType(id);
+                        });
+                    });
+                    tbody.querySelectorAll(".btnManageSports").forEach(btn => {
+                        btn.addEventListener("click", () => {
+                            const id = Number(btn.closest("tr").dataset.id);
+                            openManageSports(id);
+                        });
+                    });
+                }
+
+                // ------ update checkbox all ------
+                function updateChkAllState() {
+                    const pageIds = Array.from(tbody.querySelectorAll(".rowChk")).map(c => Number(c.dataset.id));
+                    const allChecked = pageIds.length > 0 && pageIds.every(id => selectedTypeIds.has(id));
+                    chkAll.checked = allChecked;
+                    chkAll.indeterminate = !allChecked && pageIds.some(id => selectedTypeIds.has(id));
+                }
+
+                chkAll.addEventListener("change", () => {
+                    tbody.querySelectorAll(".rowChk").forEach(chk => {
+                        chk.checked = chkAll.checked;
+                        const id = Number(chk.dataset.id);
+                        if (chkAll.checked) selectedTypeIds.add(id); else selectedTypeIds.delete(id);
+                    });
+                    updateChkAllState();
+                });
+
+                // ------ load initial & query search ------
+                async function loadTypes() {
+                    const payload = {
+                        sportTypeNameFuzzy: document.getElementById("qName").value.trim() || null,
+                        createStartDate: document.getElementById("qCreateStart").value || null,
+                        createEndDate: document.getElementById("qCreateEnd").value || null,
+                        updateStartDate: document.getElementById("qUpdateStart").value || null,
+                        updateEndDate: document.getElementById("qUpdateEnd").value || null,
+                        statuses: document.getElementById("qStatus").value === "" ? null : Number(document.getElementById("qStatus").value),
+                    };
+                    const { retResult, retData, retMsg } = await API.getTypeList(payload);
+                    if (retResult) {
+                        typeList = retData || [];
+                    } else {
+                        console.error(
+                            'sportTypeList getTypeList error retMsg: ',
+                            retMsg
+                        );
+                        typeList = [];
+                    }
+                    currentPage = 1;
+                    renderTable();
+                }
+                loadTypes();
+
+                // ------ query search ------
+                document.getElementById("btnQuery").addEventListener("click", async () => {
+                    const payload = {
+                        sportTypeNameFuzzy: document.getElementById("qName").value.trim() || null,
+                        createStartDate: document.getElementById("qCreateStart").value || null,
+                        createEndDate: document.getElementById("qCreateEnd").value || null,
+                        updateStartDate: document.getElementById("qUpdateStart").value || null,
+                        updateEndDate: document.getElementById("qUpdateEnd").value || null,
+                        statuses: document.getElementById("qStatus").value === "" ? [0, 1] : [Number(document.getElementById("qStatus").value)],
+                    };
+
+                    // 簡單前端過濾 (直到後端完成真正複合查詢)
+                    const { retResult, retData, retMsg } = await API.getTypeList(payload);
+                    if (retResult) {
+                        typeList = retData || [];
+                    } else {
+                        console.error(
+                            'sportTypeList getTypeList error retMsg: ',
+                            retMsg
+                        );
+                        typeList = [];
+                    }
+                    currentPage = 1;
+                    renderTable();
+                });
+
+                // clear form
+                document.getElementById("btnReset").addEventListener("click", () => {
+                    document.getElementById("queryForm").reset();
+                });
+
+
+                // ------ Add Modal ------
+                function openAddType() {
+                    console.log('showwww');
+                    document.getElementById("addTypeName").value = "";
+                    document.getElementById("addTypePic").value = "";
+
+                    // clear
+                    const previewNewPic = document.getElementById('addTypePicPreview');
+                    previewNewPic.innerHTML = '<span class="uni-pic-none-text">尚無圖片</span>';
+
+                    modalAddTypeInst.show();
+                };
+
+
+                // Add Modal submit confirm
+                document.getElementById("btnAddTypeSubmit").addEventListener("click", async () => {
+                    const name = document.getElementById("addTypeName").value.trim();
+                    if (!name) {
+                        return alert("名稱必填")
+                    };
+
+                    const isExist = await API.isExistSportTypeName(name);
+                    if (typeof isExist === "boolean" && isExist === true) {
+                        alert("名稱已存在");
+                        return;
+                    }
+
+                    // 圖片處理
+                    let fileInput = document.getElementById("addTypePic");
+                    let picBase64 = null;
+                    let file = null;
+                    if (fileInput && fileInput.files && fileInput.files[0]) {
+                        file = fileInput.files[0];
+
+                        if (!file.type.startsWith('image/')) {
+                            alert('請上傳圖片檔案 (jpg/jpeg/png)');
+                            return;
+                        }
+                        if (file.size > 4 * 1024 * 1024) {
+                            alert('圖片大小不得超過 4MB');
+                            return;
+                        }
+
+                        picBase64 = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = (e) => resolve(e.target.result);
+                            reader.onerror = () => {
+                                alert('圖片讀取失敗，請重新選擇');
+                                reject(null);
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    }
+
+                    let uploadResult = null;
+                    if (file) {
+                        uploadResult = await API.uploadFileImg('sportType', file);
+                        if (!uploadResult || !uploadResult?.fileName) {
+                            alert('圖片上傳失敗');
+                            return;
+                        }
+                    }
+
+                    console.log('uploadResult', uploadResult);
+
+
+                    const { retResult, retData, retMsg } = await API.insertType([{
+                        sportTypeId: null,
+                        sportTypeName: name,
+                        sportTypePic: uploadResult?.fileName || null,
+                        sportTypeDataStatus: 1
+                    }]);
+                    if (retResult) {
+                        alert("新增成功");
+                        document.getElementById("formAddType").reset();
+
+                        modalAddTypeInst.hide();
+                        await loadTypes();
+
+                    } else {
+                        console.error(
+                            'sportTypeList insertType error retMsg: ',
+                            retMsg
+                        );
+                        alert("新增失敗");
+                    }
+                });
+
+                // ------ Edit Modal ------
+                function openEditType(id) {
+                    const row = typeList.find(x => x.sportTypeId === id);
+                    if (!row) {
+                        alert("找不到資料");
+                        return;
+                    };
+                    document.getElementById("editTypeId").value = row.sportTypeId;
+                    document.getElementById("editTypeName").value = row.sportTypeName ?? "";
+
+                    // 清空 新圖片預覽等
+                    document.getElementById("editTypePic").value = "";
+                    const previewNewPic = document.getElementById('editTypePicPreview');
+                    previewNewPic.innerHTML = '<span class="uni-pic-none-text">尚無圖片</span>';
+
+                    // 原圖片預覽（如果有 sportTypePic 就顯示）
+                    const preview = document.getElementById('editTypePicOriginalPreview');
+                    const picOriginalName = document.getElementById('editTypePicOriginalName');
+                    if (preview) {
+                        preview.innerHTML = '';
+                        if (row.sportTypePic) {
+                            preview.innerHTML = `<img src="${PIC_MAP['sportType'] + row.sportTypePic}" alt="${row.sportTypePic}" style="max-height:300px;">`;
+                        } else {
+                            preview.innerHTML = '<span class="uni-pic-none-text">無原圖</span>';
+                        }
+                    }
+                    if (picOriginalName) {
+                        if (row.sportTypePic) {
+                            picOriginalName.value = row.sportTypePic;
+                        } else {
+                            picOriginalName.value = '';
+                        }
+                    }
+
+                    modalEditTypeInst.show();
+                }
+
+                // Edit Modal submit confirm
+                document.getElementById("btnEditTypeSubmit").addEventListener("click", async () => {
+                    const id = Number(document.getElementById("editTypeId").value);
+                    const name = document.getElementById("editTypeName").value.trim();
+                    if (!id) {
+                        alert("ID 遺失");
+                        return;
+                    }
+                    if (!name) {
+                        alert("名稱必填")
+                        return
+                    };
+
+
+                    let picFile = document.getElementById("editTypePic").files[0];
+                    let pic = picFile ? picFile.name : null;
+
+
+                    // 圖片處理
+                    // 拿原圖名稱
+                    const editPicOriginalNameEl = document.getElementById('editSportTypePicOriginalName');
+                    const editPicOriginalName = editPicOriginalNameEl ? editPicOriginalNameEl.value.trim() : "";
+
+                    console.log('editPicOriginalName', editPicOriginalName);
+
+                    // 處理更新圖片
+                    const fileInput = document.getElementById('editTypePic');
+                    let picBase64 = null;
+                    let file = null;
+                    if (fileInput && fileInput.files && fileInput.files[0]) {
+                        file = fileInput.files[0];
+
+                        if (!file.type.startsWith('image/')) {
+                            alert('請上傳圖片檔案 (jpg/jpeg/png)');
+                            return;
+                        }
+                        if (file.size > 4 * 1024 * 1024) {
+                            alert('圖片大小不得超過 4MB');
+                            return;
+                        }
+
+                        picBase64 = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = (e) => resolve(e.target.result);
+                            reader.onerror = () => {
+                                alert('圖片讀取失敗，請重新選擇');
+                                reject(null);
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    }
+
+                    let finalSendPic = null;
+                    let updateOrUploadResult = false;
+
+                    // 有原圖、有更新圖片
+                    if (editPicOriginalName && file) {
+                        // 更新上傳的圖片 (會刪除原圖片)
+                        let updateResult = await API.updateFileImg('sportType', editPicOriginalName, file);
+                        if (!updateResult || !updateResult?.fileName) {
+                            updateOrUploadResult = false;
+                        }
+
+                        console.log('updateResult', updateResult);
+                        finalSendPic = updateResult?.fileName || null;
+                        updateOrUploadResult = true;
+                    } else if (!editPicOriginalName && file) {
+                        // 無原圖、有更新圖片
+                        let uploadResult = await API.uploadFileImg('sportType', file);
+                        if (!uploadResult || !uploadResult?.fileName) {
+                            updateOrUploadResult = false;
+                        }
+
+                        console.log('uploadResult', uploadResult);
+                        finalSendPic = uploadResult?.fileName || null;
+                        updateOrUploadResult = true;
+                    } else if (editPicOriginalName && !file) {
+                        // 有原圖、無更新圖片
+                        finalSendPic = editPicOriginalName;
+                        updateOrUploadResult = true;
+                    } else {
+                        // 無原圖、無更新圖片
+                        finalSendPic = null;
+                        updateOrUploadResult = true;
+                    }
+
+                    if (!updateOrUploadResult) {
+                        return;
+                    }
+
+                    const { retResult, retData, retMsg } = await API.updateType([{ sportTypeId: id, sportTypeName: name, sportTypePic: finalSendPic }]);
+                    if (retResult) {
+                        alert("更新成功");
+                        modalEditTypeInst.hide();
+                        await loadTypes();
+
+                    } else {
+                        console.error(
+                            'sportTypeList updateType error retMsg: ',
+                            retMsg
+                        );
+                        alert("更新失敗");
+                    }
+                });
+
+                // ------ Bind pic choose & preview ------
+                function bindFilePreview(inputId, previewId) {
+                    const input = document.getElementById(inputId);
+                    const preview = document.getElementById(previewId);
+
+                    if (!input || !preview) return;
+
+                    input.addEventListener("change", () => {
+                        // 短路寫法
+                        const file = input.files && input.files[0];
+
+                        if (!file) {
+                            // no file (cancel or file empty)
+                            if (preview.tagName === "DIV") {
+                                preview.innerHTML = '<span class="uni-pic-none-text">尚無圖片</span>';
+                            } else {
+                                preview.src = "";
+                                preview.classList.add("d-none");
+                            }
+                            return;
+                        }
+
+                        if (!file.type.startsWith("image/")) {
+                            alert("請選擇圖片檔");
+                            input.value = "";
+                            return;
+                        }
+
+                        // show pic
+                        if (preview.tagName === "DIV") {
+                            preview.innerHTML = `<img src="${URL.createObjectURL(file)}" style="max-height:300px;">`;
+                        } else {
+                            preview.src = URL.createObjectURL(file);
+                            preview.classList.remove("d-none");
+                        }
+                    });
+                }
+
+                bindFilePreview("addTypePic", "addTypePicPreview");
+                bindFilePreview("editTypePic", "editTypePicPreview");
+
+
+
+                // ------ Status update (Enable/Disable/Delete) ------
+                async function batchUpdateStatus(status) {
+                    const ids = Array.from(selectedTypeIds).filter(id => !DEFAULT_BLOCK_IDS.has(id));
+                    if (ids.length === 0) {
+                        alert("請至少勾選一筆")
+                        return;
+                    };
+                    const map = { 1: "上架", 0: "下架", 2: "刪除" };
+
+                    if (!confirm(`確認要 ${map[status]} 選取的 ${ids.length} 筆嗎？`)) {
+                        return;
+                    };
+
+                    const { retResult, retData, retMsg } = await API.updateTypeStatus(ids, status);
+                    if (retResult) {
+                        alert(`${map[status] || ''}成功`);
+                        selectedTypeIds.clear();
+                        await loadTypes();
+                    } else {
+                        console.error(
+                            'sportTypeList loadSportTypes error retMsg: ',
+                            retMsg
+                        );
+                        alert(`${map[status] || ''}失敗`);
+                    }
+
+                }
+                document.getElementById("btnEnable").addEventListener("click", () => batchUpdateStatus(1));
+                document.getElementById("btnDisable").addEventListener("click", () => batchUpdateStatus(0));
+                document.getElementById("btnDelete").addEventListener("click", () => batchUpdateStatus(2));
+                // 新增安紐 
+                document.getElementById("btnAddType").addEventListener("click", () => {
+                    openAddType();
+                });
+
+                // ------ Manage Sports Beneath Type Modal ------
+                let manageCtx = {
+                    // 目標分類id
+                    typeId: null,
+                    // 所有運動
+                    allSports: [],
+                    // 所有運動的運動id與obj的Map
+                    allSportsMap: new Map(),
+                    // 已加入分類的運動Obj (不變動)
+                    currentSelected: [],
+                    // 已加入分類的運動id與obj的Map (會變動)
+                    selectedSportIdAndObjMap: new Map()
+                };
+
+                // Manage Sports Beneath Type Modal
+                async function openManageSports(typeId) {
+                    let search = document.getElementById("searchSports");
+                    if (search) {
+                        search.value = '';
+                    }
+
+                    manageCtx = {
+                        // 目標分類id
+                        typeId: null,
+                        // 所有運動
+                        allSports: [],
+                        // 所有運動的運動id與obj的Map
+                        allSportsMap: new Map(),
+                        // 已加入分類的運動Obj (不變動)
+                        currentSelected: [],
+                        // 已加入分類的運動id與obj的Map (會變動)
+                        selectedSportIdAndObjMap: new Map()
+                    };
+
+                    manageCtx.typeId = typeId;
+                    // 取分類資料
+                    const row = typeList.find(x => x.sportTypeId === typeId);
+                    if (!row) {
+                        alert("找不到分類");
+                        return;
+                    };
+
+                    let tempAllSports = [];
+                    // 取得所有運動 (不含 已刪除)
+                    const { retResult, retData, retMsg } = await API.getSportStatusesList();
+                    if (retResult) {
+                        tempAllSports = retData || [];
+                    } else {
+                        console.error(
+                            'sportTypeList getSportStatusesList error retMsg: ',
+                            retMsg
+                        );
+                        tempAllSports = [];
+                    }
+
+                    tempAllSports.forEach(sport => {
+                        manageCtx.allSportsMap.set(
+                            sport.sportId,
+                            {
+                                ...sport,
+                                // 加入key (預設null)
+                                sportTypeItemId: null
+                            }
+                        );
+                    });
+
+                    // 取已加入分類運動，轉成新物件 (從 DTO)
+                    const existItems = Array.isArray(row.sportTypeItemResponseDTOs) ? row.sportTypeItemResponseDTOs : [];
+
+                    // 將已加入分類的運動也加入map (可能會有 已刪除，也要加進去)
+                    existItems.forEach(item => {
+                        if (item.sportResponseDTO?.sportId) {
+
+                            let newObj = {
+                                ...item.sportResponseDTO,
+                                // 改or加值
+                                sportTypeItemId: item.sportTypeItemId
+                            };
+
+                            // 有覆蓋/沒有加入新的object
+                            manageCtx.allSportsMap.set(
+                                item.sportResponseDTO.sportId,
+                                newObj
+                            );
+                        }
+                    })
+
+
+                    const unrepeatList = Array.from(manageCtx.allSportsMap.values());
+                    // 放入全部運動(陣列，去重) 
+                    manageCtx.allSports = Array.isArray(unrepeatList) ? unrepeatList : [];
+
+
+                    // 已加入分類的運動Obj (不變動)
+                    manageCtx.currentSelected = existItems.map(item => {
+                        return {
+                            sportTypeItemId: item.sportTypeItemId,
+                            sportId: item.sportId,
+                            sportDataStatus: item.sportResponseDTO?.sportDataStatus,
+                            sportDataStatusText: item.sportResponseDTO?.sportDataStatus
+                        }
+                    });
+
+                    // 已加入分類的運動id與obj的Map (會變動)
+                    manageCtx.selectedSportIdAndObjMap = new Map(manageCtx.currentSelected.map(x => [x.sportId, x]));
+
+                    // render sport list
+                    renderSportsLists();
+                    modalManageSportsInst.show();
+                }
+
+                // 左右運動選項顯示文案
+                function sportOptionLabel(s) {
+                    const levelMap = { junior: "初階", senior: "中階", advanced: "高階" };
+                    const statusMap = { 0: "下架", 1: "上架", 2: "刪除" };
+                    const levelText = s.sportLevel ? levelMap[s.sportLevel] || s.sportLevel : "未設定";
+                    const statusText = statusMap[s.sportDataStatus] ?? "-";
+                    return `${s.sportName}  |  ${levelText}  |  ${statusText} `;
+                }
+
+                // 渲染左右運動清單
+                function renderSportsLists(filterText = "") {
+                    const allSel = document.getElementById("allSports");
+                    const selSel = document.getElementById("selectedSports");
+                    const ft = filterText.trim().toLowerCase();
+
+                    const left = manageCtx.allSports
+                        .filter(s => !manageCtx.selectedSportIdAndObjMap.has(s.sportId))
+                        .filter(s => !ft || (s.sportName || "").toLowerCase().includes(ft) || (s.sportLevel || "").toLowerCase().includes(ft) || String(s.sportDataStatus).includes(ft));
+
+                    const right = manageCtx.allSports
+                        .filter(s => manageCtx.selectedSportIdAndObjMap.has(s.sportId))
+                        .filter(s => !ft || (s.sportName || "").toLowerCase().includes(ft) || (s.sportLevel || "").toLowerCase().includes(ft) || String(s.sportDataStatus).includes(ft));
+
+                    allSel.innerHTML = left.map(s => `<option class="p-1" value="${s.sportId}">${escapeHtml(sportOptionLabel(s))}</option>`).join("");
+                    selSel.innerHTML = right.map(s => `<option class="p-1" value="${s.sportId}">${escapeHtml(sportOptionLabel(s))}</option>`).join("");
+                }
+
+                // search
+                document.getElementById("searchSports").addEventListener("input", (e) => {
+                    renderSportsLists(e.target.value || "");
+                });
+
+                // 加入運動
+                document.getElementById("btnAddSports").addEventListener("click", () => {
+                    const allSportsDomOptions = Array.from(document.getElementById("allSports").selectedOptions);
+                    const allSportDomIds = allSportsDomOptions.map(o => Number(o.value));
+
+                    allSportDomIds.forEach(sportId => {
+                        if (manageCtx.allSportsMap.has(sportId)) {
+                            const tempSportObj = manageCtx.allSportsMap.get(sportId);
+                            manageCtx.selectedSportIdAndObjMap.set(
+                                sportId,
+                                {
+                                    sportTypeItemId: tempSportObj.sportTypeItemId,
+                                    sportId: sportId,
+                                    sportDataStatus: tempSportObj.sportDataStatus,
+                                    sportDataStatusText: tempSportObj.sportDataStatusText
+                                });
+                        }
+                    });
+                    renderSportsLists(document.getElementById("searchSports").value || "");
+                });
+
+                // 移除運動
+                document.getElementById("btnRemoveSports").addEventListener("click", () => {
+                    const selectedSportsDomIds = Array.from(document.getElementById("selectedSports").selectedOptions).map(o => Number(o.value));
+                    selectedSportsDomIds.forEach(sportId => { manageCtx.selectedSportIdAndObjMap.delete(sportId); });
+                    renderSportsLists(document.getElementById("searchSports").value || "");
+                });
+
+                // Manage Sports Beneath Type Modal submit confirm
+                document.getElementById("btnSaveSports").addEventListener("click", async () => {
+                    // 目標分類id
+                    const typeId = manageCtx.typeId;
+                    // 原分類已有運動MAP
+                    const original = new Map(manageCtx.currentSelected.map(x => [x.sportId, x]));
+                    // 儲存時分類要的運動
+                    const wanted = new Set(Array.from(manageCtx.selectedSportIdAndObjMap.keys()));
+
+                    // 計算要新增 / 移除
+                    const toAddSportIds = Array.from(wanted).filter(id => !original.has(id));
+                    const toRemoveSportObjs = Array.from(original.values()).filter(sportObj => !wanted.has(sportObj.sportId));
+
+                    // 新增
+                    if (toAddSportIds.length > 0) {
+                        const rows = toAddSportIds.map(spId => {
+                            return {
+                                sportTypeItemId: null,
+                                sportTypeId: typeId,
+                                sportId: spId
+                            }
+                        });
+
+                        if (rows.length > 0) {
+                            const { retResult, retData, retMsg } = await API.insertTypeItem(rows);
+                            if (!retResult) {
+                                alert("儲存運動清單失敗");
+                                console.error(
+                                    'sportTypeList insertTypeItem error retMsg: ',
+                                    retMsg
+                                );
+                                return;
+                            }
+                        }
+                    }
+                    // 移除 -> 將對應 item 標記刪除
+                    if (toRemoveSportObjs.length > 0) {
+                        let deleteSportTypeItemIds = toRemoveSportObjs.map(sportObj => {
+                            return sportObj.sportTypeItemId;
+                        });
+                        // 過濾掉空值
+                        deleteSportTypeItemIds = deleteSportTypeItemIds.filter(id => id);
+
+                        if (deleteSportTypeItemIds.length > 0) {
+                            const { retResult, retData, retMsg } = await API.deleteTypeItem(deleteSportTypeItemIds);
+                            if (!retResult) {
+                                alert("儲存運動清單失敗");
+                                console.error(
+                                    'sportTypeList deleteTypeItem error retMsg: ',
+                                    retMsg
+                                );
+                                return;
+                            }
+                        }
+                    }
+
+                    alert("儲存運動清單成功");
+
+                    modalManageSportsInst.hide();
+                    await loadTypes();
+
+                });
+            });
+        </script>
+    </div>
+</body>
+
+</html>

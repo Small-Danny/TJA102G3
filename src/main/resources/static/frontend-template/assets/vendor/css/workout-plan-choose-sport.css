@@ -1,0 +1,160 @@
+.uni-theme-color {
+	color: var(--theme-color);
+}
+
+.uni-choose-sport-style {
+	width: 100%;
+}
+
+.uni-choose-sport-style .uni-sport-card {
+	width: 100%;
+	height: 200px;
+	min-width: 335px;
+	display: block;
+	box-sizing: border-box;
+	border: 1px solid #e8e8e8;
+	padding: 20px;
+	position: relative;
+	background-color: #ffffff;
+	-webkit-transition: all 0.25s ease-in-out;
+	-moz-transition: all 0.25s ease-in-out;
+	-ms-transition: all 0.25s ease-in-out;
+	-o-transition: all 0.25s ease-in-out;
+	transition: all 0.25s ease-in-out;
+	margin-bottom: 16px;
+}
+
+.uni-choose-sport-style .uni-sport-card:hover:after {
+	border-color: transparent transparent var(--theme-color) transparent;
+}
+
+.uni-choose-sport-style .uni-sport-card:hover {
+	transform: translateY(-8px);
+	box-shadow: 0 8px 16px #eee;
+	background-color: #f1f1f1;
+}
+
+.uni-choose-sport-style .uni-sport-card:after {
+	content: '';
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 0 0 14px 14px;
+	border-color: transparent transparent #e8e8e8 transparent;
+	position: absolute;
+	right: 4px;
+	bottom: 4px;
+}
+
+/* .uni-choose-sport-style .uni-sport-card .count {
+			font-size: 100px;
+			color: var(--theme-color);
+			position: relative;
+			line-height: 105px;
+			display: flex;
+			} */
+
+/* span.counter {
+			font-weight: 500;
+			color: #000;
+			font-family: var(--common-found);
+			} */
+
+/* .uni-choose-sport-style .uni-sport-card .count i {
+			font-size: 16px;
+			font-weight: 900;
+			color: #161616;
+			-webkit-text-fill-color: #161616;
+			-webkit-text-stroke-width: 0;
+			text-transform: uppercase;
+			line-height: 26px;
+			font-style: normal;
+			margin-top: 15px;
+			margin-left: 8px;
+			} */
+
+/* .uni-choose-sport-style .uni-sport-card h4 {
+			font-size: 16px;
+			font-weight: 400;
+			line-height: 26px;
+			font-family: var(--theme-found);
+			color: #161616;
+			} */
+
+.uni-choose-sport-style .uni-card-title-block {
+	width: 100%;
+	padding-bottom: 8px;
+}
+
+.uni-choose-sport-style .uni-card-l {
+	flex: 1 1 0;
+	width: calc(100% - 90px);
+}
+
+.uni-choose-sport-style .uni-card-title {
+	width: 100%;
+	font-size: 24px;
+	font-weight: bold;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-wrap: nowrap;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
+}
+
+.uni-choose-sport-style .uni-card-sport-from,
+.uni-choose-sport-style .uni-card-sport-level {
+	font-size: 16px;
+	font-weight: 400;
+}
+
+.uni-choose-sport-style .uni-card-sport-calories {
+	font-size: 16px;
+	font-weight: 400;
+}
+
+.uni-choose-sport-style .uni-card-sport-calories-num {
+	font-size: 24px;
+	font-weight: 400;
+}
+
+.uni-choose-sport-style .uni-card-sport-calories-num {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.uni-choose-sport-style .uni-card-sport-description {
+	width: 100%;
+	font-size: 14px;
+	line-height: 20px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+}
+
+.uni-choose-sport-style .uni-card-r {
+	flex: 0 0 90px;
+	width: 90px;
+	height: 90px;
+	padding: 0 6px 6px 6px;
+}
+
+.uni-choose-sport-style .uni-card-sport-img-block {
+	width: 78px;
+	height: 78px;
+	/* border-radius: 50%; */
+	overflow: hidden;
+	/* border: 1px solid #e8e8e8; */
+}
+
+.uni-choose-sport-style .uni-card-sport-img-block .uni-card-sport-img {
+	width: 100%;
+	height: auto;
+}
+
+.border-theme-red {
+	border: 3px solid var(--theme-color) !important;
+}

@@ -304,7 +304,14 @@ public class SecurityConfig {
                         new AntPathRequestMatcher("/webjars/**"),
                         new AntPathRequestMatcher("/css/**"),
                         new AntPathRequestMatcher("/js/**"),
-                        new AntPathRequestMatcher("/tasks/**")
+                        new AntPathRequestMatcher("/tasks/**"),
+                        new AntPathRequestMatcher("/dMain/bd/**"),  // 運動計畫
+                        new AntPathRequestMatcher("/sportSidebar/api/bd/**"),
+                        new AntPathRequestMatcher("/sport/api/**"),
+                        new AntPathRequestMatcher("/sportType/api/bd/**"),
+                        new AntPathRequestMatcher("/sportTypeItem/api/**"),
+                        new AntPathRequestMatcher("/fileImg/api/bd/**"),
+                        new AntPathRequestMatcher("/sportPics/img/bd/**")
                 ))
                 .authenticationProvider(adminAuthenticationProvider()) // 指定後台驗證邏輯
                 .authorizeHttpRequests(authorize -> authorize
@@ -363,6 +370,7 @@ public class SecurityConfig {
                                 "/frontend-template/cart.html", "/frontend-template/cart_order.html",
                                 "/frontend-template/pay_success.html", "/shop/products", "/shop/product/**",
                                 "/frontend-template/forum.html", "/frontend-template/article-detail.html","/frontend-template/forum/member-detail.html"
+                                ,"/dMain/fd/workoutPlan_main", "/sportPics/publicImg/fd/sportCommon/**"
                         ).permitAll()
                         // --- 靜態資源 ---
                         .requestMatchers("/frontend-template/**", "/images/**").permitAll()
@@ -374,6 +382,7 @@ public class SecurityConfig {
                                 "/api/ecpay/callback", "/payment/ecpay/return", "/api/line-pay/confirm",
                                 "/api/posts/**", "/api/sidebar", "/api/categories", "/api/report-types"
                                 , "/api/ai/**","/api/forum/member/**","/api/messages/**" 
+                                ,"/sportSidebar/api/fd/**"
                         ).permitAll()
                         // --- 規則 B: 其他所有請求，只要登入即可 ---
                         .anyRequest().authenticated()

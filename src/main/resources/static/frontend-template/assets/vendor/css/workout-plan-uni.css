@@ -1,0 +1,456 @@
+:root {
+	/* 紅 */
+	--main-red-color: #ea2127;
+	--hover-red-color: #ff7676;
+	--active-red-color: #ffacac;
+	/* 淡紅 */
+	--light-red-color: #fde2e2;
+
+	/* 黑 */
+	--main-black-color: #333333;
+	--hover-black-color: #222222;
+	--active-black-color: #000000;
+	/* 淡灰 */
+	--light-black-color: #e5e5e5;
+
+	/* 藍 */
+	--main-blue-color: #3b82f6;
+	--hover-blue-color: #2563eb;
+	--active-blue-color: #1d4ed8;
+	/* 淡藍 */
+	--light-blue-color: #dbeafe;
+
+	/* 黃 */
+	--main-yellow-color: #fbbf24;
+	--hover-yellow-color: #f59e0b;
+	--active-yellow-color: #d97706;
+	/* 淡黃 */
+	--light-yellow-color: #fef9c3;
+
+	/* 綠 */
+	--main-green-color: #22c55e;
+	--hover-green-color: #16a34a;
+	--active-green-color: #15803d;
+	/* 淡綠 */
+	--light-green-color: #dcfce7;
+
+	/* 共用 */
+	--main-white-color: #ffffff;
+	--main-line-color: #e0e0e0;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+/* 基本按鈕 */
+/* 紅 */
+.btn-red {
+	color: var(--main-white-color);
+	background-color: var(--main-red-color);
+	border-color: var(--main-red-color);
+}
+.btn-red:hover {
+	color: var(--main-white-color);
+	background-color: var(--hover-red-color);
+	border-color: var(--hover-red-color);
+}
+.btn-red:active,
+.btn-red.active {
+	color: var(--main-white-color);
+	background-color: var(--active-red-color);
+	border-color: var(--active-red-color);
+}
+.btn-red:disabled {
+	color: var(--main-white-color);
+	background-color: var(--main-red-color);
+	border-color: var(--main-red-color);
+	opacity: 0.65;
+}
+
+/* 黑 */
+.btn-black {
+	color: var(--main-white-color);
+	background-color: var(--main-black-color);
+	border-color: var(--main-black-color);
+}
+.btn-black:hover {
+	color: var(--main-white-color);
+	background-color: var(--hover-black-color);
+	border-color: var(--hover-black-color);
+}
+.btn-black:active,
+.btn-black.active {
+	color: var(--main-white-color);
+	background-color: var(--active-black-color);
+	border-color: var(--active-black-color);
+}
+.btn-black:disabled {
+	color: var(--main-white-color);
+	background-color: var(--main-black-color);
+	border-color: var(--main-black-color);
+	opacity: 0.65;
+}
+
+/* 藍 */
+.btn-blue {
+	color: var(--main-white-color);
+	background-color: var(--main-blue-color);
+	border-color: var(--main-blue-color);
+}
+.btn-blue:hover {
+	color: var(--main-white-color);
+	background-color: var(--hover-blue-color);
+	border-color: var(--hover-blue-color);
+}
+.btn-blue:active,
+.btn-blue.active {
+	color: var(--main-white-color);
+	background-color: var(--active-blue-color);
+	border-color: var(--active-blue-color);
+}
+.btn-blue:disabled {
+	color: var(--main-white-color);
+	background-color: var(--main-blue-color);
+	border-color: var(--main-blue-color);
+	opacity: 0.65;
+}
+
+/* 黃 */
+.btn-yellow {
+	color: var(--main-white-color);
+	background-color: var(--main-yellow-color);
+	border-color: var(--main-yellow-color);
+}
+.btn-yellow:hover {
+	color: var(--main-white-color);
+	background-color: var(--hover-yellow-color);
+	border-color: var(--hover-yellow-color);
+}
+.btn-yellow:active,
+.btn-yellow.active {
+	color: var(--main-white-color);
+	background-color: var(--active-yellow-color);
+	border-color: var(--active-yellow-color);
+}
+.btn-yellow:disabled {
+	color: var(--main-white-color);
+	background-color: var(--main-yellow-color);
+	border-color: var(--main-yellow-color);
+	opacity: 0.65;
+}
+
+/* 綠 */
+.btn-green {
+	color: var(--main-white-color);
+	background-color: var(--main-green-color);
+	border-color: var(--main-green-color);
+}
+.btn-green:hover {
+	color: var(--main-white-color);
+	background-color: var(--hover-green-color);
+	border-color: var(--hover-green-color);
+}
+.btn-green:active,
+.btn-green.active {
+	color: var(--main-white-color);
+	background-color: var(--active-green-color);
+	border-color: var(--active-green-color);
+}
+.btn-green:disabled {
+	color: var(--main-white-color);
+	background-color: var(--main-green-color);
+	border-color: var(--main-green-color);
+	opacity: 0.65;
+}
+
+/* 外框線按鈕 */
+/* 紅 */
+.btn-outline-red {
+	color: var(--main-red-color);
+	background-color: var(--main-white-color);
+	border: 1px solid var(--main-red-color);
+}
+.btn-outline-red:hover {
+	color: var(--main-red-color);
+	background-color: var(--light-red-color);
+	border-color: var(--main-red-color);
+}
+.btn-outline-red:active,
+.btn-outline-red.active {
+	color: var(--main-white-color);
+	background-color: var(--main-red-color);
+	border-color: var(--main-red-color);
+}
+
+/* 黑 */
+.btn-outline-black {
+	color: var(--main-black-color);
+	background-color: var(--main-white-color);
+	border: 1px solid var(--main-black-color);
+}
+.btn-outline-black:hover {
+	color: var(--main-black-color);
+	background-color: var(--light-black-color);
+	border-color: var(--main-black-color);
+}
+.btn-outline-black:active,
+.btn-outline-black.active {
+	color: var(--main-white-color);
+	background-color: var(--main-black-color);
+	border-color: var(--main-black-color);
+}
+
+/* 藍 */
+.btn-outline-blue {
+	color: var(--main-blue-color);
+	background-color: var(--main-white-color);
+	border: 1px solid var(--main-blue-color);
+}
+.btn-outline-blue:hover {
+	color: var(--main-blue-color);
+	background-color: var(--light-blue-color);
+	border-color: var(--main-blue-color);
+}
+.btn-outline-blue:active,
+.btn-outline-blue.active {
+	color: var(--main-white-color);
+	background-color: var(--main-blue-color);
+	border-color: var(--main-blue-color);
+}
+
+/* 黃 */
+.btn-outline-yellow {
+	color: var(--main-yellow-color);
+	background-color: var(--main-white-color);
+	border: 1px solid var(--main-yellow-color);
+}
+.btn-outline-yellow:hover {
+	color: var(--main-yellow-color);
+	background-color: var(--light-yellow-color);
+	border-color: var(--main-yellow-color);
+}
+.btn-outline-yellow:active,
+.btn-outline-yellow.active {
+	color: var(--main-white-color);
+	background-color: var(--main-yellow-color);
+	border-color: var(--main-yellow-color);
+}
+
+/* 綠 */
+.btn-outline-green {
+	color: var(--main-green-color);
+	background-color: var(--main-white-color);
+	border: 1px solid var(--main-green-color);
+}
+.btn-outline-green:hover {
+	color: var(--main-green-color);
+	background-color: var(--light-green-color);
+	border-color: var(--main-green-color);
+}
+.btn-outline-green:active,
+.btn-outline-green.active {
+	color: var(--main-white-color);
+	background-color: var(--main-green-color);
+	border-color: var(--main-green-color);
+}
+
+/* template use */
+.uni-border-bottom {
+	border-bottom: 1px solid #e0e0e0 !important;
+}
+.uni-border-right {
+	border-right: 1px solid #e0e0e0 !important;
+}
+
+.confirm-btn {
+	padding: 16px 36px;
+	font-size: 20px;
+	font-family: var(--theme-found);
+	color: var(--main-white-color);
+	position: relative;
+	border: 2px solid var(--main-red-color);
+	font-weight: 500;
+	display: inline-block;
+	text-transform: uppercase;
+	background-color: var(--main-red-color);
+	letter-spacing: 1px;
+}
+.confirm-btn:after {
+	content: '';
+	position: absolute;
+	width: 10px;
+	clip-path: polygon(100% 0, 0% 100%, 100% 100%);
+	height: 10px;
+	background-color: var(--main-white-color);
+	z-index: 11111111111;
+	right: 6px;
+	bottom: 4px;
+	z-index: 0;
+}
+.confirm-btn:hover {
+	background-color: transparent;
+	color: var(--main-red-color);
+}
+.confirm-btn:hover:after {
+	background-color: var(--main-red-color);
+}
+
+.cancel-btn {
+	padding: 16px 36px;
+	font-size: 20px;
+	font-family: var(--theme-found);
+	color: var(--main-white-color);
+	position: relative;
+	border: 2px solid var(--main-black-color);
+	font-weight: 500;
+	display: inline-block;
+	text-transform: uppercase;
+	background-color: var(--main-black-color);
+	letter-spacing: 1px;
+}
+.cancel-btn:after {
+	content: '';
+	position: absolute;
+	width: 10px;
+	clip-path: polygon(100% 0, 0% 100%, 100% 100%);
+	height: 10px;
+	background-color: var(--main-white-color);
+	z-index: 11111111111;
+	right: 6px;
+	bottom: 4px;
+	z-index: 0;
+}
+.cancel-btn:hover {
+	background-color: transparent;
+	color: var(--main-black-color);
+}
+.cancel-btn:hover:after {
+	background-color: var(--main-black-color);
+}
+
+.general-btn {
+	padding: 8px 36px;
+	font-size: 16px;
+	font-family: var(--theme-found);
+	color: var(--main-white-color);
+	position: relative;
+	border: 1.5px solid var(--main-red-color);
+	font-weight: 500;
+	display: inline-block;
+	text-transform: uppercase;
+	background-color: var(--main-red-color);
+	letter-spacing: 1px;
+}
+.general-btn:after {
+	content: '';
+	position: absolute;
+	width: 10px;
+	clip-path: polygon(100% 0, 0% 100%, 100% 100%);
+	height: 10px;
+	background-color: var(--main-white-color);
+	z-index: 11111111111;
+	right: 6px;
+	bottom: 4px;
+	z-index: 0;
+}
+.general-btn:hover {
+	background-color: transparent;
+	color: var(--main-red-color);
+}
+.general-btn:hover:after {
+	background-color: var(--main-red-color);
+}
+
+.icon-btn {
+	padding: 8px 30px;
+	font-size: 16px;
+	font-family: var(--theme-found);
+	color: var(--main-white-color);
+	position: relative;
+	border: 1.5px solid var(--main-black-color);
+	font-weight: 500;
+	display: inline-block;
+	text-transform: uppercase;
+	background-color: var(--main-black-color);
+	letter-spacing: 1px;
+}
+.icon-btn:after {
+	content: '';
+	position: absolute;
+	width: 10px;
+	clip-path: polygon(100% 0, 0% 100%, 100% 100%);
+	height: 10px;
+	background-color: var(--main-white-color);
+	z-index: 11111111111;
+	right: 6px;
+	bottom: 4px;
+	z-index: 0;
+}
+.icon-btn:hover {
+	background-color: transparent;
+	color: var(--main-black-color);
+}
+.icon-btn:hover:after {
+	background-color: var(--main-black-color);
+}
+
+.general-blue-btn {
+	padding: 8px 36px;
+	font-size: 16px;
+	font-family: var(--theme-found);
+	color: var(--main-white-color);
+	position: relative;
+	border: 1.5px solid var(--main-blue-color);
+	font-weight: 500;
+	display: inline-block;
+	text-transform: uppercase;
+	background-color: var(--main-blue-color);
+	letter-spacing: 1px;
+}
+.general-blue-btn:after {
+	content: '';
+	position: absolute;
+	width: 10px;
+	clip-path: polygon(100% 0, 0% 100%, 100% 100%);
+	height: 10px;
+	background-color: var(--main-white-color);
+	z-index: 11111111111;
+	right: 6px;
+	bottom: 4px;
+	z-index: 0;
+}
+.general-blue-btn:hover {
+	background-color: transparent;
+	color: var(--main-blue-color);
+}
+.general-blue-btn:hover:after {
+	background-color: var(--main-blue-color);
+}
+
+/* 外框線 */
+.uni-border-bottom {
+	border-bottom: 1px solid var(--main-line-color);
+}
+.uni-border-top {
+	border-top: 1px solid var(--main-line-color);
+}
+.uni-border-left {
+	border-left: 1px solid var(--main-line-color);
+}
+.uni-border-right {
+	border-right: 1px solid var(--main-line-color);
+}
+.uni-border-y {
+	border-bottom: 1px solid var(--main-line-color);
+	border-top: 1px solid var(--main-line-color);
+}
+.uni-border-x {
+	border-left: 1px solid var(--main-line-color);
+	border-right: 1px solid var(--main-line-color);
+}
+
+.required-text {
+	color: var(--main-red-color);
+	padding-right: 1px;
+}

@@ -1,0 +1,162 @@
+.uni-sport-type {
+	width: 100%;
+	margin: auto;
+	position: relative;
+}
+
+.uni-sport-type .uni-sport-type-card {
+	width: 100%;
+	height: 200px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: 1px solid #e8e8e8;
+	position: relative;
+	overflow: hidden;
+}
+
+.uni-sport-type-card::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: var(--theme-color);
+	opacity: 0;
+	transition: all 0.35s ease-in-out;
+	z-index: 0;
+}
+
+.uni-sport-type-card:hover::before {
+	transform: scale(1.02);
+	opacity: 1;
+}
+
+.uni-sport-type .uni-type-content-block {
+	flex: 1 1 300px;
+	min-width: 300px;
+	padding: 30px;
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	position: relative;
+	z-index: 2;
+}
+
+.uni-sport-type .uni-type-name {
+	font-size: 30px;
+	font-weight: 500;
+	padding-bottom: 18px;
+	transition: color 0.35s ease-in-out;
+}
+
+.uni-sport-type .uni-type-description {
+	color: #d0d0d0;
+	font-size: 16px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	transition: color 0.35s ease-in-out;
+}
+
+.uni-sport-type-card:hover .uni-type-name,
+.uni-sport-type-card:hover .uni-type-description {
+	color: #fff;
+	position: relative;
+	z-index: 2;
+}
+
+.uni-sport-type .uni-image-block {
+	flex: 1 1 0;
+	height: 100%;
+	min-width: 300px;
+	border: 1px solid #e0e0e0;
+	overflow: hidden;
+	position: relative;
+	z-index: 1;
+}
+
+.uni-sport-type .uni-image-block img {
+	width: 101%;
+	min-width: 300px;
+	height: auto;
+	object-fit: cover;
+	display: block;
+	transition: transform 0.35s ease-in-out;
+}
+
+.uni-sport-type-card:hover .uni-image-block img {
+	transform: scale(1.05);
+}
+
+.uni-sport-type .uni-type-go-icon-block {
+	position: absolute;
+	right: 20px;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 5;
+}
+
+.uni-sport-type .uni-type-go-icon {
+	width: 50px;
+	height: 50px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: #333333;
+	position: relative;
+	z-index: 5;
+	transition:
+		transform 0.35s ease-in-out,
+		background-color 0.35s ease-in-out,
+		border 0.35s ease-in-out;
+}
+
+.uni-sport-type .uni-type-go-icon i {
+	color: #fff;
+	font-size: 12px;
+	transition:
+		font-size 0.35s ease-in-out,
+		color 0.35s ease-in-out;
+}
+
+.uni-sport-type-card:hover .uni-type-go-icon {
+	transform: translateX(20px);
+}
+
+.uni-sport-type .uni-type-go-icon:hover {
+	background-color: #fff;
+	border: 2px solid var(--theme-color);
+}
+
+.uni-sport-type .uni-type-go-icon:hover i {
+	color: #333333;
+	font-size: 12px;
+}
+
+/* 選中樣式 (同 hover 樣式) */
+.uni-sport-type-card.active::before {
+	transform: scale(1.02);
+	opacity: 1;
+	background-color: var(--theme-color);
+}
+
+.uni-sport-type-card.active .uni-type-name,
+.uni-sport-type-card.active .uni-type-description {
+	color: #fff;
+	position: relative;
+	z-index: 2;
+}
+
+.uni-sport-type-card.active .uni-type-go-icon {
+	transform: translateX(20px);
+}
+
+@media screen and (max-width: 1040px) {
+	.uni-sport-type .uni-image-block {
+		display: none;
+	}
+}

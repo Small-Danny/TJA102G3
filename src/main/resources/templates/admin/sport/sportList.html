@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{admin/layout :: layout(~{::title}, ~{::content}, ~{::#empty-scripts})}">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>運動管理</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+
+    <meta name="title" content="AdminLTE 4 | Simple Tables" />
+    <meta name="author" content="ColorlibHQ" />
+    <meta name="description"
+        content="AdminLTE is a Free Bootstrap 5 Admin Dashboard, 30 example pages using Vanilla JS. Fully accessible with WCAG 2.1 AA compliance." />
+    <meta name="keywords"
+        content="bootstrap 5, bootstrap, bootstrap 5 admin dashboard, bootstrap 5 dashboard, bootstrap 5 charts, bootstrap 5 calendar, bootstrap 5 datepicker, bootstrap 5 tables, bootstrap 5 datatable, vanilla js datatable, colorlibhq, colorlibhq dashboard, colorlibhq admin dashboard, accessible admin panel, WCAG compliant" />
+
+    <meta name="supported-color-schemes" content="light dark" />
+    <link rel="preload" href="/adminlte/css/adminlte.css" as="style" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
+        integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q=" crossorigin="anonymous" media="print"
+        onload="this.media='all'" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
+        crossorigin="anonymous" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+        crossorigin="anonymous" />
+    <link rel="stylesheet" th:href="@{/adminlte/css/adminlte.min.css}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .uni-required-text {
+            color: red;
+            padding-right: 1px;
+        }
+
+        .uni-sport-type-pic-preview {
+            max-height: 300px;
+            height: 300px;
+            font-size: .9rem;
+            border: 2px dashed #e0e0e0;
+            overflow: hidden;
+        }
+
+        .uni-form-hint {
+            font-size: .85rem;
+            color: var(--bs-secondary-color);
+        }
+
+        #sportTable {
+            table-layout: fixed;
+        }
+
+        #sportTable th,
+        #sportTable td {
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            vertical-align: middle;
+        }
+
+        #sportTable td {
+            overflow: auto;
+        }
+
+        #sportTable td img {
+            max-width: 100%;
+            object-fit: contain;
+            overflow: hidden;
+        }
+
+        .badge-status {
+            font-size: .8rem;
+        }
+
+        .uni-table-block {
+            overflow: auto;
+        }
+    </style>
+
+</head>
+
+
+<body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+    <div th:fragment="content">
+        <div class="app-wrapper">
+        
+        
+            <!--begin::App Main-->
+            <main class="app-main">
+                <!--begin::App Content Header-->
+                <div class="app-content-header">
+                    <!--begin::Container-->
+                    <div class="container-fluid">
+                        <!--begin::Row-->
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <h3 class="mb-0">運動管理 (系統運動)</h3>
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="float-sm-end">
+                                    <button id="btnAdd" type="button" class="btn btn-primary mb-2 me-2">新增運動</button>
+
+                                    <button id="btnEnable" type="button" class="btn btn-success mb-2 me-2">上架</button>
+
+                                    <button id="btnDisable" type="button"
+                                        class="btn btn-secondary mb-2 me-2">下架</button>
+                                    <button id="btnDelete" type="button" class="btn btn-danger mb-2 me-2">刪除</button>
+
+                                    <button id="btnImport" type="button" class="btn btn-dark mb-2 me-2"
+                                        data-bs-toggle="modal" data-bs-target="#modalImport"
+                                        style="display: none;">匯入運動</button>
+                                    <button id="btnExport" type="button" class="btn btn-dark mb-2"
+                                        style="display: none;">匯出運動</button>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Row-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::App Content Header-->
+
+                <!--begin::App Content-->
+                <div class="app-content">
+                    <!--begin::Container-->
+                    <div class="container-fluid">
+                        <!--begin::Row-->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <form id="queryForm" class="row g-3 align-items-center">
+                                            <div class="col-xl-4">
+                                                <label for="qName" class="form-label">名稱/描述</label>
+                                                <input type="text" id="qName" class="form-control form-control-sm"
+                                                    placeholder="輸入名稱/描述關鍵字">
+                                            </div>
+                                            <div class="col-xl-4">
+                                                <label for="qStatus" class="form-label">資料狀態</label>
+                                                <select id="qStatus" class="form-select form-select-sm">
+                                                    <option value="">全部</option>
+                                                    <option value="1">上架</option>
+                                                    <option value="0">下架</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-xl-4">
+                                                <label class="form-label">等級</label>
+                                                <select id="qLevel" class="form-select">
+                                                    <option value="">全部</option>
+                                                    <option value="junior">初階</option>
+                                                    <option value="senior">中階</option>
+                                                    <option value="advanced">高階</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <label class="form-label">建立時間</label>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <input type="date" id="qCreateStart"
+                                                        class="form-control form-control-sm">
+                                                    <span>至</span>
+                                                    <input type="date" id="qCreateEnd"
+                                                        class="form-control form-control-sm">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <label class="form-label">更新時間</label>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <input type="date" id="qUpdateStart"
+                                                        class="form-control form-control-sm">
+                                                    <span>至</span>
+                                                    <input type="date" id="qUpdateEnd"
+                                                        class="form-control form-control-sm">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-12 d-flex align-items-end justify-content-end">
+                                                <button type="button" id="btnQuery"
+                                                    class="btn btn-outline-primary me-2">查詢</button>
+                                                <button type="button" id="btnReset"
+                                                    class="btn btn-outline-secondary">清空</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!-- /.card-header -->
+                                    <div class="card-body">
+                                        <div class="uni-table-block">
+                                            <table id="sportTable" class="table table-bordered table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:48px; max-width:48px;">
+                                                            <input id="chkAll" type="checkbox" />
+                                                        </th>
+                                                        <th style="width:72px;">ID</th>
+                                                        <th style="width:200px;">圖片</th>
+                                                        <th style="width:180px;">運動名稱</th>
+                                                        <th style="width:220px;">描述</th>
+                                                        <th style="width:110px;">強度METs</th>
+                                                        <th style="width:170px;">消耗熱量<br>(kcal/hr/60kg)
+                                                        </th>
+                                                        <th style="width:100px;">等級</th>
+                                                        <th style="width:110px;">資料狀態</th>
+                                                        <th style="width:160px;">建立時間</th>
+                                                        <th style="width:160px;">更新時間</th>
+                                                        <th style="width:100px;">操作</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="sportTbody"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer clearfix d-flex justify-content-between align-items-center">
+                                        <div class="small text-secondary" id="pageInfo"></div>
+                                        <ul id="pager" class="pagination pagination-sm m-0"></ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--end::Row-->
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::App Content-->
+            </main>
+            <!--end::App Main-->
+
+
+            <!-- Add Modal -->
+            <div class="modal fade" id="modalAdd" tabindex="-1" data-bs-backdrop="static"
+                aria-labelledby="modalAddLabel">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalAddLabel">新增運動</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="p-2">
+                                <form id="formAdd" novalidate>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label"><span class="uni-required-text"
+                                                    style="color: red;">*</span>名稱</label>
+                                            <input id="add_name" type="text" class="form-control" maxlength="100"
+                                                required />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label"><span class="uni-required-text"
+                                                    style="color: red;">*</span>消耗熱量
+                                                (kcal/hr/60kg)</label>
+                                            <input id="add_cal" type="number" step="1" min="0" class="form-control"
+                                                required />
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label"><span class="uni-required-text"
+                                                    style="color: red;">*</span>描述</label>
+                                            <textarea id="add_desc" class="form-control" rows="2" maxlength="300"
+                                                required></textarea>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label"><span class="uni-required-text"
+                                                    style="color: red;">*</span>強度 METs (小數 2
+                                                位)</label>
+                                            <input id="add_mets" type="number" step="0.01" min="0" class="form-control"
+                                                required />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">等級</label>
+                                            <select id="add_level" class="form-select" disabled hidden>
+                                                <option value="">未設定</option>
+                                                <option value="junior">初階</option>
+                                                <option value="senior">中階</option>
+                                                <option value="advanced">高階</option>
+                                            </select>
+                                            <textarea class="form-control" rows="2" maxlength="300"
+                                                placeholder="自動計算，初階: 0 < METs < 3，中階: 3 <= METs < 6，高階: METs >= 6"
+                                                disabled></textarea>
+                                        </div>
+
+                                        <!-- 圖片上傳與預覽 -->
+                                        <div class="col-md-12">
+                                            <div class="mt-2">
+                                                <label class="form-label">圖片
+                                                    <span class="uni-form-hint ps-1"
+                                                        style="font-size: .85rem; color: var(--bs-secondary-color);">(建議寬高
+                                                        90px * 90px，大小上限 4MB)</span>
+                                                </label>
+                                                <input id="addPic" type="file" accept="image/*" class="form-control">
+                                                <div id="addPicPreview"
+                                                    class="mt-2 d-flex align-items-center justify-content-center uni-sport-type-pic-preview" 
+                                                    style="max-height: 300px !important; height: 300px !important; font-size: .9rem !important; border: 2px dashed #e0e0e0 !important; overflow: hidden !important;">
+                                                    <span class="uni-pic-none-text">尚無圖片</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">取消</button>
+                            <button id="btnAddSubmit" type="submit" class="btn btn-primary">確認新增</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Modal -->
+            <div class="modal fade" id="modalEdit" tabindex="-1" data-bs-backdrop="static"
+                aria-labelledby="modalEditLabel">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalEditLabel">編輯運動</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="formEdit" novalidate>
+                                <input type="hidden" id="edit_id" />
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label"><span class="uni-required-text"
+                                                style="color: red;">*</span>名稱</label>
+                                        <input id="edit_name" type="text" class="form-control" maxlength="100"
+                                            required />
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label"><span class="uni-required-text"
+                                                style="color: red;">*</span>消耗熱量
+                                            (kcal/hr/60kg)</label>
+                                        <input id="edit_cal" type="number" step="1" min="0" class="form-control"
+                                            required />
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label"><span class="uni-required-text"
+                                                style="color: red;">*</span>描述</label>
+                                        <textarea id="edit_desc" class="form-control" rows="2" maxlength="300"
+                                            required></textarea>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label"><span class="uni-required-text"
+                                                style="color: red;">*</span>強度 METs (小數 2
+                                            位)</label>
+                                        <input id="edit_mets" type="number" inputmode="decimal"
+                                            pattern="^\d+(\.\d{1,2})?$" min="0.01" class="form-control" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">等級</label>
+                                        <select id="edit_level" class="form-select" disabled hidden>
+                                            <option value="">未設定</option>
+                                            <option value="junior">初階</option>
+                                            <option value="senior">中階</option>
+                                            <option value="advanced">高階</option>
+                                        </select>
+                                        <textarea class="form-control" rows="2" maxlength="300"
+                                            placeholder="自動計算，初階: 0 < METs < 3，中階: 3 <= METs < 6，高階: METs >= 6"
+                                            disabled></textarea>
+                                    </div>
+
+                                    <!-- 圖片編輯/預覽 -->
+                                    <div class="col-md-6">
+                                        <div class="mt-2">
+                                            <label class="form-label">原圖片 ------ </label>
+                                            <input type="text" id="editPicOriginalName" class="form-control"
+                                                accept="image/*" disabled />
+                                            <div class="mt-2 d-flex justify-content-center align-items-center uni-sport-type-pic-preview"
+                                                id="editPicOriginalPreview"
+                                                style="max-height: 300px !important; height: 300px !important; font-size: .9rem !important; border: 2px dashed #e0e0e0 !important; overflow: hidden !important;">
+                                                <span class="uni-pic-none-text">無原圖</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mt-2">
+                                            <label class="form-label">更新圖片 ------
+                                                <span class="uni-form-hint ps-1"
+                                                    style="font-size: .85rem; color: var(--bs-secondary-color);">(建議寬高
+                                                    90px *
+                                                    90px，大小上限 4MB)</span>
+                                            </label>
+                                            <input id="editPic" type="file" accept="image/*" class="form-control">
+                                            <div id="editPicPreview"
+                                                class="mt-2 d-flex align-items-center justify-content-center uni-sport-type-pic-preview"
+                                                style="max-height: 300px !important; height: 300px !important; font-size: .9rem !important; border: 2px dashed #e0e0e0 !important; overflow: hidden !important;">
+                                                <span class="uni-pic-none-text">尚無圖片</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">取消</button>
+                            <button id="btnEditSubmit" type="submit" class="btn btn-primary">儲存變更</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Modal -->
+            <div class="modal fade" id="modalImport" tabindex="-1" data-bs-backdrop="static"
+                aria-labelledby="modalImportLabel">
+                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalImportLabel">匯入運動 (CSV)</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-2">
+                                <input id="import_file" type="file" class="form-control" accept=".csv" />
+                                <div class="form-text">格式：name,description,mets,estimatedCalories,level
+                                    (第一列視為標題可忽略)。無圖片。
+                                </div>
+                            </div>
+                            <div id="importPreviewWrap" class="table-responsive" style="max-height:40vh;overflow:auto;">
+                                <table class="table table-bordered table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>名稱</th>
+                                            <th>描述</th>
+                                            <th>METs</th>
+                                            <th>熱量</th>
+                                            <th>等級</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="importPreview"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">取消</button>
+                            <button id="btnImportSubmit" type="button" class="btn btn-primary">確認匯入</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+
+
+        <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+            crossorigin="anonymous"></script>
+
+
+        <script>
+            const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
+            const Default = {
+                scrollbarTheme: 'os-theme-light',
+                scrollbarAutoHide: 'leave',
+                scrollbarClickScroll: true,
+            };
+            document.addEventListener('DOMContentLoaded', function () {
+                const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
+                if (sidebarWrapper && OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined) {
+                    OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
+                        scrollbars: {
+                            theme: Default.scrollbarTheme,
+                            autoHide: Default.scrollbarAutoHide,
+                            clickScroll: Default.scrollbarClickScroll,
+                        },
+                    });
+                }
+            });
+        </script>
+
+
+        <script src="/frontend-template/assets/vendor/api/sport-api.js"></script>
+        <script src="/frontend-template/assets/vendor/api/csrf-api.js"></script>
+        <script th:inline="none">
+            const PIC_MAP = {
+                sportType: BASE_API_URL + '/sportPics/img/bd/sportType/',
+                sport: BASE_API_URL + '/sportPics/img/bd/sport/',
+                customSport: BASE_API_URL + '/sportPics/img/bd/customSport/',
+                sportCommon: BASE_API_URL + '/sportPics/img/bd/sportCommon/'
+            };
+
+            const API_MAP = {
+                getSidebar: BASE_API_URL + "/sportSidebar/api/bd/sidebar",
+                getSportList: BASE_API_URL + "/sport/api/getByComplexCondition",
+                insertSport: BASE_API_URL + "/sport/api/insertMultiple",
+                updateSport: BASE_API_URL + "/sport/api/updateSingle",
+                updateSportStatus: BASE_API_URL + "/sport/api/updateMultipleSportDataStatus",
+                isExistSportName: BASE_API_URL + '/sport/api/isExistSportName',
+                fileImgUpload: BASE_API_URL + '/fileImg/api/bd/upload',
+                fileImgUpdate: BASE_API_URL + '/fileImg/api/bd/update'
+            };
+
+
+            // ------ State ------
+            // 全部資料(目前用非分頁查詢)
+            let fullList = [];
+            let currentPage = 1;
+            const pageSize = 10;
+            // 跨頁勾選維持
+            const selectedIds = new Set();
+            let currSidebar = null;
+
+            document.addEventListener('DOMContentLoaded', async function () {
+                console.log('Ready');
+
+
+                // ------ DOM ------
+                const tbody = document.getElementById("sportTbody");
+                const pager = document.getElementById("pager");
+                const pageInfo = document.getElementById("pageInfo");
+                const chkAll = document.getElementById("chkAll");
+                const modalAddEl = document.getElementById('modalAdd');
+                const modalAddInst = bootstrap.Modal.getOrCreateInstance(modalAddEl);
+                const modalEditEl = document.getElementById('modalEdit');
+                const modalEditInst = bootstrap.Modal.getOrCreateInstance(modalEditEl);
+                const modalImportEl = document.getElementById("modalImport");
+                const modalImportInst = bootstrap.Modal.getOrCreateInstance(modalImportEl);
+
+                // ------ APIs ------
+                const API = {
+                    getSidebar: async function (payload) {
+                        try {
+                            const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.getSidebar, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ sportName: payload })
+                            });
+                            if (retResult) {
+                                console.info(
+                                    'sportList getSidebar success: ',
+                                    retData
+                                );
+                                currSidebar = retData?.uudd || null;
+                            } else {
+                                console.error(
+                                    'sportList getSidebar error retMsg: ',
+                                    retMsg
+                                );
+                                currSidebar = null;
+                            }
+                        } catch (err) {
+                            console.error('getSidebar程式執行錯誤', err);
+                            return false;
+                        }
+                    },
+                    isExistSportName: async function (payload) {
+                        try {
+                            const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.isExistSportName, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ sportName: payload })
+                            });
+                            if (retResult) {
+                                console.info(
+                                    'sportList isExistSportName success: ',
+                                    retData
+                                );
+                                return retData;
+                            } else {
+                                console.error(
+                                    'sportList isExistSportName error retMsg: ',
+                                    retMsg
+                                );
+                                return false;
+                            }
+                        } catch (err) {
+                            console.error('isExistSportName程式執行錯誤', err);
+                            return false;
+                        }
+                    },
+                    getSportList: async function () {
+                        const name = document.getElementById("qName").value.trim();
+                        const status = document.getElementById("qStatus").value;
+                        const level = document.getElementById("qLevel").value;
+                        const createStartDate = document.getElementById("qCreateStart").value;
+                        const createEndDate = document.getElementById("qCreateEnd").value;
+                        const updateStartDate = document.getElementById("qUpdateStart").value;
+                        const updateEndDate = document.getElementById("qUpdateEnd").value;
+
+                        // 狀態值要用陣列，空的話送空陣列
+                        // console.log(status);
+                        const statuses = status ? [parseInt(status)] : [0, 1];
+
+                        const payload = {
+                            sportNameDescFuzzy: name || null,
+                            sportLevel: level || null,
+                            createStartDate: createStartDate || null,
+                            createEndDate: createEndDate || null,
+                            updateStartDate: updateStartDate || null,
+                            updateEndDate: updateEndDate || null,
+                            statuses: statuses
+                        };
+
+                        // console.log("送出查詢參數:", payload);
+
+                        try {
+                            const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.getSportList, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(payload)
+                            });
+
+                            console.log("API_MAP.getSportList", retResult, retData, retMsg);
+                            if (retResult) {
+                                currentPage = 1;
+                                return retData || [];
+                            } else {
+                                console.error(
+                                    'sportList getSportList error retMsg: ',
+                                    retMsg
+                                );
+                                currentPage = 1;
+                                return [];
+                            }
+                        } catch (err) {
+                            console.error('getSportLis程式執行錯誤', err);
+                            currentPage = 1;
+                            return [];
+                        }
+                    },
+                    insertSport: async function (sports) {
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.insertSport, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(sports)
+                        });
+
+                        // if (retResult) {
+                        //     alert('新增成功');
+                        // } else {
+                        //     console.error(
+                        //         'sportList insertSport error retMsg: ',
+                        //         retMsg
+                        //     );
+                        //     alert('新增失敗');
+                        // }
+
+                        return { retResult, retData, retMsg };
+                    },
+                    updateSport: async function (payload) {
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.updateSport, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(payload)
+                        });
+
+                        // if (retResult) {
+                        //     alert('更新成功');
+                        // } else {
+                        //     console.error(
+                        //         'sportList updateSport error retMsg: ',
+                        //         retMsg
+                        //     );
+                        //     alert('更新失敗');
+                        // }
+
+                        return { retResult, retData, retMsg };
+                    },
+                    updateSportStatus: async function (ids, status) {
+                        let hintStr = '';
+                        hintStr = status + '' === '1' ? '上架' : status + '' === '0' ? '下架' : '刪除';
+
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.updateSportStatus, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ sportIds: ids, sportDataStatus: status })
+                        });
+                        // if (retResult) {
+                        //     alert(hintStr + '成功');
+                        // } else {
+                        //     console.error(
+                        //         'sportList loadSportTypes error retMsg: ',
+                        //         retMsg
+                        //     );
+                        //     alert(hintStr + '失敗');
+                        // }
+
+                        return { retResult, retData, retMsg };
+                    },
+
+                    // ---- pic ----
+                    uploadFileImg: async (funcType, file) => {
+                        let formData = new FormData();
+                        formData.append('funcType', funcType);
+                        formData.append('file', file);
+
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.fileImgUpload, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        // 由外部判斷是否跳提示
+                        return retData;
+                    },
+                    updateFileImg: async (funcType, oldFileName, file) => {
+                        let formData = new FormData();
+                        formData.append('funcType', funcType);
+                        formData.append('oldFileName', oldFileName);
+                        formData.append('newFile', file);
+
+                        const { retResult, retData, retMsg } = await csrfSafeCallAPI(API_MAP.fileImgUpdate, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        // 由外部判斷是否跳提示
+                        return retData;
+                    }
+                };
+
+                // 取得sidebar
+                await API.getSidebar();
+
+                // ------ Methods ------
+                function fmtDT(s) {
+                    if (!s) return "-";
+                    try {
+                        const d = new Date(s);
+                        if (String(d) === "Invalid Date") return s;
+                        const pad = (n) => String(n).padStart(2, "0");
+                        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+                    } catch (e) { return s; }
+                }
+                function levelText(val) {
+                    return val === "junior" ? "初階" : val === "senior" ? "中階" : val === "advanced" ? "高階" : "";
+                }
+                function statusBadge(row) {
+                    const map = { 0: "下架", 1: "上架", 2: "刪除" };
+                    const cls = row.sportDataStatus === 1 ? "text-bg-success" : row.sportDataStatus === 0 ? "text-bg-secondary" : "text-bg-danger";
+                    return `<span class="badge badge-status ${cls}">${map[row.sportDataStatus] ?? "-"}</span>`;
+                }
+                function escapeHtml(str) {
+                    if (str == null) return "";
+                    return String(str).replace(/[&<>"']/g, s => ({
+                        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+                    }[s]));
+                }
+
+                // render table row
+                function buildRow(row, idx) {
+                    const checked = selectedIds.has(row.sportId) ? 'checked' : '';
+
+                    const img = row.sportPic ? `<img src="${PIC_MAP['sport'] + row.sportPic}" alt="${row.sportPic}" style="max-width:100%;" />` : `<img src="${PIC_MAP['sportCommon'] + 'none.png'}" alt="暫無圖片" style="max-width:100%;" />`;
+
+                    return `<tr data-id="${row.sportId}">
+                        <td><input type="checkbox" class="rowChk" data-id="${row.sportId}" ${checked}></td>
+                        <td>${row.sportId ?? "-"}</td>
+                        <td>${img}</td>
+                        <td>${escapeHtml(row.sportName)}</td>
+                        <td>${escapeHtml(row.sportDescription)}</td>
+                        <td>${Number(row.sportMets ?? 0).toFixed(2)}</td>
+                        <td>${Number(row.sportEstimatedCalories ?? 0)}</td>
+                        <td>${levelText(row.sportLevel)}</td>
+                        <td>${statusBadge(row)}</td>
+                        <td>${fmtDT(row.createDatetime)}</td>
+                        <td>${fmtDT(row.updateDatetime)}</td>
+                        <td><button class="btn btn-sm btn-primary btnEdit" data-id="${row.sportId}">編輯</button></td>
+                    </tr>`;
+                }
+
+                // ------ render table ------
+                function render() {
+                    const total = fullList.length;
+                    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+                    if (currentPage > totalPages) currentPage = totalPages;
+                    const start = (currentPage - 1) * pageSize;
+                    const pageList = fullList.slice(start, start + pageSize);
+                    if (pageList.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="12" class="text-center text-secondary">無資料</td></tr>`;
+                    } else {
+                        let htmlStr = pageList.map(buildRow).join("");
+                        tbody.innerHTML = htmlStr;
+                    }
+                    pageInfo.textContent = `第 ${currentPage}/${totalPages} 頁，共 ${total} 筆`;
+                    renderPager(totalPages);
+                    // 更新全選狀態
+                    updateChkAllState();
+                    bindRowEvents();
+                }
+
+                // render pager
+                function renderPager(totalPages) {
+                    pager.innerHTML = "";
+                    function li(disabled, page, label) {
+                        const cls = ["page-item"];
+                        if (disabled) cls.push("disabled");
+                        const a = document.createElement("a");
+                        a.className = "page-link";
+                        a.href = "#";
+                        a.textContent = label;
+                        a.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            if (!disabled) { currentPage = page; render(); }
+                        });
+                        const li = document.createElement("li");
+                        li.className = cls.join(" ");
+                        li.appendChild(a);
+                        return li;
+                    }
+                    pager.appendChild(li(currentPage === 1, 1, "«"));
+                    for (let p = 1; p <= totalPages; p++) {
+                        const el = li(false, p, String(p));
+                        if (p === currentPage) el.classList.add("active");
+                        pager.appendChild(el);
+                    }
+                    pager.appendChild(li(currentPage === totalPages, totalPages, "»"));
+                }
+
+                // ------ check checkbox all ------
+                function updateChkAllState() {
+                    const pageIds = Array.from(tbody.querySelectorAll(".rowChk")).map(c => Number(c.dataset.id));
+                    const allChecked = pageIds.length > 0 && pageIds.every(id => selectedIds.has(id));
+                    chkAll.checked = allChecked;
+                    chkAll.indeterminate = !allChecked && pageIds.some(id => selectedIds.has(id));
+                }
+
+                // bind table row
+                function bindRowEvents() {
+                    tbody.querySelectorAll(".rowChk").forEach(chk => {
+                        chk.addEventListener("change", (e) => {
+                            const id = Number(chk.dataset.id);
+                            if (chk.checked) selectedIds.add(id); else selectedIds.delete(id);
+                            updateChkAllState();
+                        });
+                    });
+                    tbody.querySelectorAll(".btnEdit").forEach(btn => {
+                        btn.addEventListener("click", (e) => openEditModal(Number(btn.dataset.id)));
+                    });
+                }
+
+                //  checkbox check
+                chkAll.addEventListener("change", () => {
+                    const pageChecks = tbody.querySelectorAll(".rowChk");
+                    pageChecks.forEach(chk => {
+                        chk.checked = !!chkAll.checked;
+                        const id = Number(chk.dataset.id);
+                        if (chkAll.checked) selectedIds.add(id); else selectedIds.delete(id);
+                    });
+                    updateChkAllState();
+                });
+
+                // ------ initial ------
+                async function load() {
+                    fullList = await API.getSportList();
+                    render();
+                }
+                load();
+
+                // ------ complex condition query ------
+                document.getElementById("btnQuery").addEventListener("click", async () => {
+                    fullList = await API.getSportList();
+                    // 更新表格
+                    render();
+                });
+
+                // ------ clear form ------
+                document.getElementById("btnReset").addEventListener("click", () => {
+                    document.getElementById("queryForm").reset();
+                });
+
+
+                // ------ Add Modal bind pic choose & preview ------
+                const addPic = document.getElementById("addPic");
+                const addPicPreview = document.getElementById("addPicPreview");
+
+                addPic.addEventListener("change", () => {
+                    // ES2020 optional chaining
+                    const file = addPic.files?.[0];
+
+                    if (!file) {
+                        // no file (cancel or file empty)
+                        if (addPicPreview.tagName === "DIV") {
+                            addPicPreview.innerHTML = '<span class="uni-pic-none-text">尚無圖片</span>';
+                        } else {
+                            addPicPreview.src = "";
+                            addPicPreview.classList.add("d-none");
+                        }
+                        return;
+                    }
+
+                    if (!file.type.startsWith("image/")) {
+                        alert("請選擇圖片檔");
+                        addPic.value = "";
+                        return;
+                    }
+
+                    // use FileReader
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        // base64 DataURL
+                        const result = e.target.result;
+
+                        if (addPicPreview.tagName === "DIV") {
+                            addPicPreview.innerHTML = `<img src="${result}" style="max-height:300px;">`;
+                        } else {
+                            addPicPreview.src = result;
+                            addPicPreview.classList.remove("d-none");
+                        }
+                    };
+
+                    // trigger read file
+                    reader.readAsDataURL(file);
+                });
+
+                // ------ Add Modal ------
+                function openAddSport() {
+                    document.getElementById("add_name").value = "";
+                    document.getElementById("add_desc").value = "";
+                    document.getElementById("add_mets").value = "";
+                    document.getElementById("add_cal").value = "";
+                    document.getElementById("addPic").value = "";
+
+                    // clear
+                    const previewNewPic = document.getElementById('addPicPreview');
+                    previewNewPic.innerHTML = '<span class="uni-pic-none-text">尚無圖片</span>';
+
+                    modalAddInst.show();
+                }
+                document.getElementById("btnAdd").addEventListener("click", openAddSport);
+
+                // Add Modal submit confirm
+                document.getElementById("btnAddSubmit").addEventListener("click", async () => {
+                    const name = document.getElementById("add_name").value.trim();
+                    const desc = document.getElementById("add_desc").value.trim();
+                    const mets = parseFloat(document.getElementById("add_mets").value);
+                    const cal = parseInt(document.getElementById("add_cal").value, 10);
+                    const metsStr = document.getElementById("add_mets").value.trim();
+                    const calStr = document.getElementById("add_cal").value.trim();
+
+                    if (!name) {
+                        alert("名稱必填");
+                        return;
+                    }
+                    if (!desc) {
+                        alert("描述必填");
+                        return;
+                    }
+                    // 驗證 METs (必填，大於 0，最多小數 2 位，不能輸入 "3." 這種格式)
+                    if (!/^(?!0\d)(\d+(\.\d{1,2})?)$/.test(metsStr) || Number(metsStr) <= 0 || metsStr.endsWith('.')) {
+                        alert("METs 必填，需為大於 0 的數字，最多小數點後 2 位，不能以小數點結尾");
+                        return;
+                    }
+
+                    // 驗證 熱量必須為大於 0 的正整數，不能有小數點
+                    if (!/^[1-9]\d*$/.test(calStr) || calStr.includes('.') || calStr.endsWith('.')) {
+                        alert("熱量需為大於 0 的正整數，不能有小數點或小數點結尾");
+                        return;
+                    }
+
+                    const exist = await API.isExistSportName(name);
+                    if ((typeof exist === "string" && exist === 'true') || (typeof exist === "boolean" && exist === true)) {
+                        alert("名稱已存在");
+                        return;
+                    }
+
+
+                    // 圖片處理
+                    let fileInput = document.getElementById("addPic");
+                    let picBase64 = null;
+                    let file = null;
+                    if (fileInput && fileInput.files && fileInput.files[0]) {
+                        file = fileInput.files[0];
+
+                        if (!file.type.startsWith('image/')) {
+                            alert('請上傳圖片檔案 (jpg/jpeg/png)');
+                            return;
+                        }
+                        if (file.size > 4 * 1024 * 1024) {
+                            alert('圖片大小不得超過 4MB');
+                            return;
+                        }
+
+                        picBase64 = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = (e) => resolve(e.target.result);
+                            reader.onerror = () => {
+                                alert('圖片讀取失敗，請重新選擇');
+                                reject(null);
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    }
+
+                    let uploadResult = null;
+                    if (file) {
+                        uploadResult = await API.uploadFileImg('sport', file);
+                        if (!uploadResult || !uploadResult?.fileName) {
+                            alert('圖片上傳失敗');
+                            return;
+                        }
+                    }
+
+                    console.log('uploadResult', uploadResult);
+
+                    // Note: sportPic 無上傳 API，暫以 null 送出
+                    const payload = {
+                        sports: [{
+                            sportId: null,
+                            sportName: name,
+                            sportDescription: desc,
+                            sportMets: Number(mets.toFixed(2)),
+                            sportEstimatedCalories: cal,
+                            // BE count by sportMets
+                            sportLevel: null,
+                            sportPic: uploadResult?.fileName || null,
+                            sportDataStatus: 1,
+                            adminId: currSidebar
+                        }]
+                    };
+
+
+                    const { retResult, retData, retMsg } = await API.insertSport(payload);
+                    if (retResult) {
+                        alert('新增成功');
+                        document.getElementById("formAdd").reset();
+                        modalAddInst.hide();
+                        await load();
+                    } else {
+                        console.error(
+                            'sportList insertSport error retMsg: ',
+                            retMsg
+                        );
+                        alert('新增失敗');
+                    }
+                });
+
+
+                // ------ Edit Modal bind pic choose & preview ------
+                // input
+                const editPic = document.getElementById("editPic");
+                // preview
+                const editPicPreview = document.getElementById("editPicPreview");
+
+                editPic.addEventListener("change", () => {
+                    // ES2020 optional chaining
+                    const file = editPic.files?.[0];
+
+                    if (!file) {
+                        // no file (cancel or file empty)
+                        if (editPicPreview.tagName === "DIV") {
+                            editPicPreview.innerHTML = '<span class="uni-pic-none-text">尚無圖片</span>';
+                        } else {
+                            editPicPreview.src = "";
+                            editPicPreview.classList.add("d-none");
+                        }
+                        return;
+                    }
+
+                    if (!file.type.startsWith("image/")) {
+                        alert("請選擇圖片檔");
+                        editPic.value = "";
+                        return;
+                    }
+
+                    // use FileReader
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const result = e.target.result; // base64 DataURL
+
+                        if (editPicPreview.tagName === "DIV") {
+                            editPicPreview.innerHTML = `<img src="${result}" style="max-height:300px;">`;
+                        } else {
+                            editPicPreview.src = result;
+                            editPicPreview.classList.remove("d-none");
+                        }
+                    };
+
+                    // trigger read file
+                    reader.readAsDataURL(file);
+                });
+
+
+                // ------ Edit Modal ------
+                async function openEditModal(id) {
+                    const row = fullList.find(x => x.sportId === id);
+                    if (!row) {
+                        alert("找不到資料");
+                        return;
+                    };
+                    document.getElementById("edit_id").value = row.sportId;
+                    document.getElementById("edit_name").value = row.sportName ?? "";
+                    document.getElementById("edit_desc").value = row.sportDescription ?? "";
+                    document.getElementById("edit_mets").value = Number(row.sportMets ?? 0);
+                    document.getElementById("edit_cal").value = Number(row.sportEstimatedCalories ?? 0);
+
+
+                    // 清空 新圖片預覽等
+                    document.getElementById("editPic").value = "";
+                    const previewNewPic = document.getElementById('editPicPreview');
+                    previewNewPic.innerHTML = '<span class="uni-pic-none-text">尚無圖片</span>';
+
+                    // 原圖片預覽（如果有 sportPic 就顯示）
+                    const preview = document.getElementById('editPicOriginalPreview');
+                    const picOriginalName = document.getElementById('editPicOriginalName');
+                    if (preview) {
+                        preview.innerHTML = '';
+                        if (row.sportPic) {
+                            preview.innerHTML = `<img src="${PIC_MAP['sport'] + row.sportPic}" alt="${row.sportPic}" style="max-height:300px;">`;
+                        } else {
+                            preview.innerHTML = '<span class="uni-pic-none-text">無原圖</span>';
+                        }
+                    }
+                    if (picOriginalName) {
+                        if (row.sportPic) {
+                            picOriginalName.value = row.sportPic;
+                        } else {
+                            picOriginalName.value = '';
+                        }
+                    }
+
+                    modalEditInst.show();
+                }
+
+                // Edit Modal submit confirm
+                document.getElementById("btnEditSubmit").addEventListener("click", async () => {
+                    const id = Number(document.getElementById("edit_id").value);
+                    const name = document.getElementById("edit_name").value.trim();
+                    const desc = document.getElementById("edit_desc").value.trim();
+                    const mets = parseFloat(document.getElementById("edit_mets").value);
+                    const cal = parseInt(document.getElementById("edit_cal").value, 10);
+                    const metsStr = document.getElementById("edit_mets").value.trim();
+                    const calStr = document.getElementById("edit_cal").value.trim();
+
+                    if (!id) {
+                        alert("ID 遺失");
+                        return;
+                    }
+                    if (!name) {
+                        alert("名稱必填");
+                        return;
+                    }
+                    if (!desc) {
+                        alert("描述必填");
+                        return;
+                    }
+                    // 驗證 METs (必填，大於 0，最多小數 2 位，不能輸入 "3." 這種格式)
+                    if (!/^(?!0\d)(\d+(\.\d{1,2})?)$/.test(metsStr) || Number(metsStr) <= 0 || metsStr.endsWith('.')) {
+                        alert("METs 必填，需為大於 0 的數字，最多小數點後 2 位，不能以小數點結尾");
+                        return;
+                    }
+
+                    // 驗證 熱量必須為大於 0 的正整數，不能有小數點
+                    if (!/^[1-9]\d*$/.test(calStr) || calStr.includes('.') || calStr.endsWith('.')) {
+                        alert("熱量需為大於 0 的正整數，不能有小數點或小數點結尾");
+                        return;
+                    }
+
+                    // 圖片處理
+                    // 拿原圖名稱
+                    const editPicOriginalNameEl = document.getElementById('editPicOriginalName');
+                    const editPicOriginalName = editPicOriginalNameEl ? editPicOriginalNameEl.value.trim() : "";
+
+                    console.log('editPicOriginalName', editPicOriginalName);
+
+                    // 處理更新圖片
+                    const fileInput = document.getElementById('editPic');
+                    let picBase64 = null;
+                    let file = null;
+                    if (fileInput && fileInput.files && fileInput.files[0]) {
+                        file = fileInput.files[0];
+
+                        if (!file.type.startsWith('image/')) {
+                            alert('請上傳圖片檔案 (jpg/jpeg/png)');
+                            return;
+                        }
+                        if (file.size > 4 * 1024 * 1024) {
+                            alert('圖片大小不得超過 4MB');
+                            return;
+                        }
+
+                        picBase64 = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = (e) => resolve(e.target.result);
+                            reader.onerror = () => {
+                                alert('圖片讀取失敗，請重新選擇');
+                                reject(null);
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    }
+
+                    let finalSendPic = null;
+                    let updateOrUploadResult = false;
+
+                    // 有原圖、有更新圖片
+                    if (editPicOriginalName && file) {
+                        // 更新上傳的圖片 (會刪除原圖片)
+                        let updateResult = await API.updateFileImg('sport', editPicOriginalName, file);
+                        if (!updateResult || !updateResult?.fileName) {
+                            updateOrUploadResult = false;
+                        }
+
+                        console.log('updateResult', updateResult);
+                        finalSendPic = updateResult?.fileName || null;
+                        updateOrUploadResult = true;
+                    } else if (!editPicOriginalName && file) {
+                        // 無原圖、有更新圖片
+                        let uploadResult = await API.uploadFileImg('sport', file);
+                        if (!uploadResult || !uploadResult?.fileName) {
+                            updateOrUploadResult = false;
+                        }
+
+                        console.log('uploadResult', uploadResult);
+                        finalSendPic = uploadResult?.fileName || null;
+                        updateOrUploadResult = true;
+                    } else if (editPicOriginalName && !file) {
+                        // 有原圖、無更新圖片
+                        finalSendPic = editPicOriginalName;
+                        updateOrUploadResult = true;
+                    } else {
+                        // 無原圖、無更新圖片
+                        finalSendPic = null;
+                        updateOrUploadResult = true;
+                    }
+
+                    if (!updateOrUploadResult) {
+                        return;
+                    }
+
+                    const payload = {
+                        sportId: id,
+                        sportName: name,
+                        sportDescription: desc,
+                        sportMets: Number(mets.toFixed(2)),
+                        sportEstimatedCalories: cal,
+                        // BE count by sportMets
+                        sportLevel: null,
+                        sportPic: finalSendPic,
+                        sportDataStatus: 1,
+                        adminId: currSidebar
+                    }
+
+                    const { retResult, retData, retMsg } = await API.updateSport(payload);
+                    if (retResult) {
+                        alert("更新成功");
+                        modalEditInst.hide();
+                        await load();
+                    } else {
+                        console.error(
+                            'sportList updateSport error retMsg: ',
+                            retMsg
+                        );
+                        alert('更新失敗');
+                    }
+                });
+
+
+                // ------ Status update (Enable/Disable/Delete) ------
+                function getCheckedIds() { return Array.from(selectedIds); }
+
+                async function updateStatus(status) {
+                    const ids = getCheckedIds();
+                    if (ids.length === 0) {
+                        alert("請至少勾選一筆資料");
+                        return;
+                    };
+                    const map = { 1: "上架", 0: "下架", 2: "刪除" };
+                    if (!confirm(`確認要${map[status]}這 ${ids.length} 筆嗎？`)) {
+                        return;
+                    };
+
+                    const { retResult, retData, retMsg } = await API.updateSportStatus(ids, status);
+                    if (retResult) {
+                        alert(`${map[status]}成功`);
+                        // 成功後清空選取
+                        selectedIds.clear();
+                        await load();
+                    } else {
+                        console.error(
+                            'sportList updateSportStatus error retMsg: ',
+                            retMsg
+                        );
+                        alert(`${map[status]}失敗 (已保留勾選)`);
+                    }
+                }
+                document.getElementById("btnEnable").addEventListener("click", () => updateStatus(1));
+                document.getElementById("btnDisable").addEventListener("click", () => updateStatus(0));
+                document.getElementById("btnDelete").addEventListener("click", () => updateStatus(2));
+
+                // ------ Import CSV ------
+                // parsed rows
+                let importRows = [];
+                document.getElementById("import_file").addEventListener("change", async (e) => {
+                    const f = e.target.files && e.target.files[0];
+                    importRows = [];
+                    document.getElementById("importPreview").innerHTML = "";
+                    if (!f) {
+                        return
+                    };
+                    if (!f.name.toLowerCase().endsWith(".csv")) {
+                        alert("請上傳 CSV 檔");
+                        e.target.value = "";
+                        return;
+                    }
+                    const text = await f.text();
+                    // Simple CSV parse (commas, newlines). Quote support minimal.
+                    const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+                    if (lines.length === 0) {
+                        alert("CSV 內容為空");
+                        return;
+                    };
+                    // Build rows
+                    lines.forEach((line, idx) => {
+                        const cols = parseCsvLine(line);
+
+                        if (cols.length < 5) {
+                            // ship this loop
+                            return
+                        };
+
+                        if (idx === 0 && (cols[2].toLowerCase().includes("met") || cols[3].toLowerCase().includes("cal"))) {
+                            return;
+                        }
+                        const row = {
+                            name: cols[0].trim(),
+                            desc: cols[1].trim(),
+                            mets: parseFloat(cols[2]),
+                            cal: parseInt(cols[3], 10),
+                            level: (cols[4] || "").trim()
+                        };
+                        if (!row.name || !row.desc || isNaN(row.mets) || isNaN(row.cal)) { return; }
+                        importRows.push(row);
+                    });
+                    if (importRows.length === 0) return alert("無可用資料列");
+                    document.getElementById("importPreview").innerHTML = importRows.map((r, i) => `<tr>
+                    <td>${i + 1}</td>
+                    <td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.desc)}</td>
+                    <td>${r.mets.toFixed(2)}</td>
+                    <td>${r.cal}</td><td>${escapeHtml(r.level)}</td>
+                </tr>`).join("");
+                });
+
+                function parseCsvLine(line) {
+                    const result = [];
+                    let cur = "";
+                    let inQ = false;
+                    for (let i = 0; i < line.length; i++) {
+                        const ch = line[i];
+                        if (ch === '"') {
+                            if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
+                            else inQ = !inQ;
+                        } else if (ch === ',' && !inQ) {
+                            result.push(cur); cur = "";
+                        } else {
+                            cur += ch;
+                        }
+                    }
+                    result.push(cur);
+                    return result;
+                }
+
+                document.getElementById("btnImportSubmit").addEventListener("click", async () => {
+                    if (importRows.length === 0) {
+                        alert("尚未載入可匯入資料");
+                        return;
+                    };
+                    const sports = importRows.map(r => ({
+                        sportId: null,
+                        sportName: r.name,
+                        sportDescription: r.desc,
+                        sportMets: Number(parseFloat(r.mets).toFixed(2)),
+                        sportEstimatedCalories: parseInt(r.cal, 10),
+                        sportLevel: null,
+                        sportPic: null,
+                        sportDataStatus: 1,
+                        adminId: currSidebar
+                    }));
+                    try {
+                        const { retResult, retData, retMsg } = await API.insertSport(sports);
+                        if (retResult) {
+                            modalImportInst.hide();
+                            // reset
+                            document.getElementById("import_file").value = "";
+                            document.getElementById("importPreview").innerHTML = "";
+                            importRows = [];
+                            await load();
+                            alert(`匯入成功 (${sports.length} 筆)`);
+                        } else {
+                            console.error(
+                                'sportList insertSport error retMsg: ',
+                                retMsg
+                            );
+                            alert('匯入失敗');
+                        }
+                    } catch (e) {
+                        console.error('程式執行錯誤', e);
+                    }
+                });
+
+                // ------ Export CSV ------
+                document.getElementById("btnExport").addEventListener("click", () => {
+                    if (!fullList || fullList.length === 0) return alert("目前無資料可匯出");
+                    const headers = ["sportId", "sportName", "sportDescription", "sportMets", "sportEstimatedCalories", "sportLevel", "sportDataStatus", "createDatetime", "updateDatetime"];
+                    const rows = fullList.map(r => headers.map(h => {
+                        let v = r[h];
+                        if (v == null) v = "";
+                        if (typeof v === "string") v = v.replace(/"/g, '""');
+                        return `"${v}"`;
+                    }).join(","));
+                    const csv = [headers.join(","), ...rows].join("\n");
+                    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    const ts = new Date();
+                    const pad = (n) => String(n).padStart(2, "0");
+                    const stamp = `${ts.getFullYear()}${pad(ts.getMonth() + 1)}${pad(ts.getDate())}${pad(ts.getHours())}${pad(ts.getMinutes())}${pad(ts.getSeconds())}`;
+                    a.href = url;
+                    a.download = `sports_export_${stamp}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        URL.revokeObjectURL(url);
+                        a.remove();
+                    }, 100);
+                });
+
+
+
+                // Import button (reset state when opening)
+                document.getElementById("btnImport").addEventListener("click", () => {
+                    document.getElementById("import_file").value = "";
+                    document.getElementById("importPreview").innerHTML = "";
+                    importRows = [];
+                });
+
+            });
+        </script>
+    </div>
+</body>
+
+</html>
