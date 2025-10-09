@@ -89,9 +89,9 @@
 <summary>點此展開所有相關文件連結</summary>
 
 ### 置頂常用
-- 📘 【3.0】TibaFit 專案：共用 Header & Footer 導入指南｜[連結](https://docs.google.com/document/d/1d6IbYluVN3PTOd46kBJGrdmg39DfGHIatgf_UoGVAtM/edit?usp=sharing)
-- 🗄️ SQL 資料庫（0930 最新）｜[連結](https://docs.google.com/document/d/1Mv8Y0tZvodUAg5iY2C7T5kaWCZFwTcNsEEVekQTxDF0/edit?tab=t.0)
-- 🚨 緊急 SOP：從 Git 歷史強制刪除敏感檔案｜[連結](https://docs.google.com/document/d/1GUcw4dmD11z4d1WKMY6nYQU4wZXTrE0omPbqiteggck/edit?usp=sharing)
+- 📘 【3.0】TibaFit 專案：共用 Header & Footer 導入指南｜[Google 文件](https://docs.google.com/document/d/1d6IbYluVN3PTOd46kBJGrdmg39DfGHIatgf_UoGVAtM/edit?usp=sharing)
+- 🗄️ SQL 資料庫（0930 最新）｜[Google 文件](https://docs.google.com/document/d/1Mv8Y0tZvodUAg5iY2C7T5kaWCZFwTcNsEEVekQTxDF0/edit?tab=t.0)
+- 🚨 緊急 SOP：從 Git 歷史強制刪除敏感檔案｜[Google 文件](https://docs.google.com/document/d/1GUcw4dmD11z4d1WKMY6nYQU4wZXTrE0omPbqiteggck/edit?usp=sharing)
 
 ### 開發環境與工具
 - 🧭 SourceTree 下載連結（共筆）｜[HackMD](https://hackmd.io/@necdisd/SJSctAhYh#SourceTree-%E4%B8%8B%E8%BC%89%E9%80%A3%E7%B5%90)
@@ -114,9 +114,10 @@
 ### 專案模組與文件
 - 📘 規範文檔｜[Google 文件](https://docs.google.com/document/d/1yWMLyZnHneiVIY0PNK857lqcUnP4e_bbDdLTOG7RN1g/edit?tab=t.0)
 - 📄 【2.0】TibaFit - 會員與認證系統模組 README｜[Google 文件](https://docs.google.com/document/d/1mG8NWSN3xs50Z9qYxrSL3eJfwwnUOAuwxGMPW8newHM/edit?usp=sharing)
-- 🐳 Docker 崩潰安裝｜（Notion 子頁）
-- ☁️ GCP 環境建置與部署教學｜（Notion 子頁）
+- 🐳 Docker 崩潰安裝｜[Google 文件](連結網址)
+- ☁️ GCP 環境建置與部署教學｜[Google 文件](連結網址)
 - 💳 LINE Pay 模擬串接（前後端整合）｜[Google 文件](https://docs.google.com/document/d/1lLFje8nG917H-4V4YfoFPe8ETYlOgaBVNnXZcbbVtU8/edit?usp=sharing)
 - 💳 TibaFit 金流串接整合｜[Google 文件](https://docs.google.com/document/d/1Z6ixvdG3221meCfPTjRUS8yRG9Jh8H51ndjUjY1PpcU/edit?tab=t.0)
+- 🖥️ TJA102G3 簡報｜[Google 文件](https://docs.google.com/presentation/d/19NFrOkiwjrEjuGoqULAUm6hftoAE2plSIn8Ri3zTfKM/edit?usp=sharing)
 
 </details>
