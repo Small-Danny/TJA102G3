@@ -248,7 +248,22 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.httpFirewall(allowSemicolonHttpFirewall());
+        return web -> web
+                // 1. 設定 HTTP 防火牆 (您原有的)
+                .httpFirewall(allowSemicolonHttpFirewall())
+                // 2. 忽略所有靜態資源
+                .ignoring().requestMatchers(
+                        // 這些路徑必須從 Admin Filter Chain 的 securityMatcher 中移除
+                        "/css/**", "/js/**", "/images/**", "/webjars/**", "/plugins/**",
+                        "/adminlte/**", "/uploads/**", "/frontend-template/**",
+                        "/favicon.ico",
+                        // 修正您 WebConfig 中定義的靜態路徑，確保不經過 Security
+                        "/avatars/**",
+                        "/sportPics/publicImg/fd/sportCommon/**",
+                        "/sportPics/img/fd/**",
+                        // 確保 /src/ts/ 也在忽略名單中
+                        "/src/ts/**"
+                );
     }
 
     /**
@@ -296,20 +311,19 @@ public class SecurityConfig {
                                                         @Qualifier("adminRememberMeServices") RememberMeServices adminRememberMeServices) throws Exception {
         http
                 .securityMatcher(new OrRequestMatcher(
-                        new AntPathRequestMatcher("/admin/**"),
-                        new AntPathRequestMatcher("/adminlte/**"),// 讓後台過濾器也處理 adminlte 的請求
-                        new AntPathRequestMatcher("/uploads/**"),
-                        new AntPathRequestMatcher("/plugins/**"), // 任務
-                        new AntPathRequestMatcher("/images/**"),
-                        new AntPathRequestMatcher("/webjars/**"),
-                        new AntPathRequestMatcher("/css/**"),
-                        new AntPathRequestMatcher("/js/**"),
-                        new AntPathRequestMatcher("/tasks/**")
+                        new AntPathRequestMatcher("/admin/**"), // 後台所有頁面
+                        new AntPathRequestMatcher("/api/admin/**"), // 後台 API
+                        new AntPathRequestMatcher("/dMain/bd/**"),  // 運動計畫 API (bd)
+                        new AntPathRequestMatcher("/sportSidebar/api/bd/**"),
+                        new AntPathRequestMatcher("/sport/api/**"),
+                        new AntPathRequestMatcher("/sportType/api/bd/**"),
+                        new AntPathRequestMatcher("/sportTypeItem/api/**"),
+                        new AntPathRequestMatcher("/fileImg/api/bd/**"),
+                        new AntPathRequestMatcher("/sportPics/img/bd/**"), // 後台專屬的圖片API
+                        new AntPathRequestMatcher("/tasks/**") // 後台任務
                 ))
                 .authenticationProvider(adminAuthenticationProvider()) // 指定後台驗證邏輯
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/adminlte/**", "/uploads/**", "/plugins/**", "/images/**", "/webjars/**"
-                                , "/css/**", "/js/**", "/tasks/**").permitAll()
                         .requestMatchers("/admin/login").permitAll()  // 開放後台登入頁
                         .anyRequest().hasRole("ADMIN") // 其他 /admin/ 路徑皆需 ADMIN 角色
                 )
@@ -352,7 +366,21 @@ public class SecurityConfig {
                                                        // ▼▼▼ 注入主要的委派服務 ▼▼▼
                                                        @Qualifier("userRememberMeServices") RememberMeServices userRememberMeServices) throws Exception {
         http
-                .securityMatcher("/**") // ★ 關鍵1: 作用於所有其他請求
+                .securityMatcher(new OrRequestMatcher(
+                        // 匹配所有路徑
+                        new AntPathRequestMatcher("/**"),
+                        // 排除後台路徑
+                        new AntPathRequestMatcher("/admin/**"),
+                        new AntPathRequestMatcher("/api/admin/**"),
+                        new AntPathRequestMatcher("/dMain/bd/**"),
+                        new AntPathRequestMatcher("/sportSidebar/api/bd/**"),
+                        new AntPathRequestMatcher("/sport/api/**"),
+                        new AntPathRequestMatcher("/sportType/api/bd/**"),
+                        new AntPathRequestMatcher("/sportTypeItem/api/**"),
+                        new AntPathRequestMatcher("/fileImg/api/bd/**"),
+                        new AntPathRequestMatcher("/sportPics/img/bd/**"),
+                        new AntPathRequestMatcher("/tasks/**")
+                ))
                 .authenticationProvider(customUserAuthenticationProvider) // 指定前台驗證邏輯
                 .authorizeHttpRequests(authorize -> authorize
                         // --- 規則 A: 公開訪問區 ---
@@ -362,7 +390,8 @@ public class SecurityConfig {
                                 "/frontend-template/register-success.html", "/frontend-template/register-fail.html",
                                 "/frontend-template/cart.html", "/frontend-template/cart_order.html",
                                 "/frontend-template/pay_success.html", "/shop/products", "/shop/product/**",
-                                "/frontend-template/forum.html", "/frontend-template/article-detail.html"
+                                "/frontend-template/forum.html", "/frontend-template/article-detail.html","/frontend-template/forum/member-detail.html"
+                                ,"/dMain/fd/workoutPlan_main", "/sportPics/publicImg/fd/sportCommon/**"
                         ).permitAll()
                         // --- 靜態資源 ---
                         .requestMatchers("/frontend-template/**", "/images/**").permitAll()
@@ -373,7 +402,8 @@ public class SecurityConfig {
                                 "/api/csrf-token", "/api/products/**", "/api/cart/**", "/shop/api/**",
                                 "/api/ecpay/callback", "/payment/ecpay/return", "/api/line-pay/confirm",
                                 "/api/posts/**", "/api/sidebar", "/api/categories", "/api/report-types"
-                                , "/api/ai/**"
+                                , "/api/ai/**","/api/forum/member/**","/api/messages/**"
+                                ,"/sportSidebar/api/fd/**"
                         ).permitAll()
                         // --- 規則 B: 其他所有請求，只要登入即可 ---
                         .anyRequest().authenticated()
@@ -399,7 +429,7 @@ public class SecurityConfig {
                                 "/ecpay/callback", "/payment/ecpay", "/payment/ecpay/return",
                                 "/api/line-pay/confirm", "/api/line-pay/callback", "/api/line-pay/notification",
                                 "/api/posts/**", "/api/mycollection/**", "/api/myarticles/**", "/api/cart/**",
-                                "/api/ai/**"
+                                "/api/ai/**","/api/forum/member/**", "/api/messages/**"
                         )
                 )
                 .headers(headers -> headers // 設定安全標頭
