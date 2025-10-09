@@ -252,6 +252,7 @@ package com.tibafit.controller.article;
 
 import org.springframework.web.bind.annotation.GetMapping;
 
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -348,6 +349,7 @@ public class SidebarController {
                     "author", article.getAuthorName(),
                     "title", article.getTitle(),
                     "date", createTime.format(formatter),
+                    "email", article.getEmail(),
                     "imageUrl", imageUrl
             ));
         }
@@ -367,7 +369,8 @@ public class SidebarController {
                         "author", article.getAuthorName(),
                         "title", article.getTitle(),
                         "date", collectTime.format(formatter),
-                        "imageUrl", imageUrl
+                        "imageUrl", imageUrl,
+                        "email",article.getEmail()
                 ));
             }
         }

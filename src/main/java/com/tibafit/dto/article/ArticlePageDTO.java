@@ -4,76 +4,118 @@ import java.sql.Timestamp;
 
 public class ArticlePageDTO {
 
-    // 文章ID
-    private Integer articleId;
+	// 文章ID
+	private Integer articleId;
 
-    // 標題
-    private String title;
+	// 標題
+	private String title;
 
-    // 作者名稱
-    private String authorName;
+	// 作者名稱
+	private String authorName;
 
-    // 瀏覽量
-    private Integer views;
+	// 作者email
+	private String email;
 
-    // 建立日期
-    private Timestamp createTime;
+	// 瀏覽量
+	private Integer views;
 
-    // 文章分類名稱
-    private String forumName;
+	// 建立日期
+	private Timestamp createTime;
 
-    // 封面圖片
-    private String coverImageUrl;
+	// 文章分類名稱
+	private String forumName;
 
-    // ======== Constructor ========
-    public ArticlePageDTO() {
-    }
+	// 封面圖片
+	private String coverImageUrl;
 
-    public ArticlePageDTO(Integer articleId, String title, String authorName,
-                          Integer views, Timestamp createTime,
-                          String forumName, String coverImageUrl) {
-        this.articleId = articleId;
-        this.title = title;
-        this.authorName = authorName;
-        this.views = views;
-        this.createTime = createTime;
-        this.forumName = forumName;
-        this.coverImageUrl = coverImageUrl;
-    }
+	// ======== Constructor ========
+	public ArticlePageDTO() {
+	}
 
-    // ======== Getter / Setter ========
-    public Integer getArticleId() { return articleId; }
-    public void setArticleId(Integer articleId) { this.articleId = articleId; }
+	public ArticlePageDTO(Integer articleId, String title, String authorName, String email, Integer views,
+			Timestamp createTime, String forumName, String coverImageUrl) {
+		super();
+		this.articleId = articleId;
+		this.title = title;
+		this.authorName = authorName;
+		this.email = email;
+		this.views = views;
+		this.createTime = createTime;
+		this.forumName = forumName;
+		this.coverImageUrl = coverImageUrl;
+	}
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+	// ======== Getter / Setter ========
 
-    public String getAuthorName() { return authorName; }
-    public void setAuthorName(String authorName) { this.authorName = authorName; }
+	public String getEmail() {
+		return email;
+	}
 
-    public Integer getViews() { return views; }
-    public void setViews(Integer views) { this.views = views; }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public Timestamp getCreateTime() { return createTime; }
-    public void setCreateTime(Timestamp createTime) { this.createTime = createTime; }
+	public Integer getArticleId() {
+		return articleId;
+	}
 
-    public String getForumName() { return forumName; }
-    public void setForumName(String forumName) { this.forumName = forumName; }
+	public void setArticleId(Integer articleId) {
+		this.articleId = articleId;
+	}
 
-    public String getCoverImageUrl() { return coverImageUrl; }
-    public void setCoverImageUrl(String coverImageUrl) { this.coverImageUrl = coverImageUrl; }
+	public String getTitle() {
+		return title;
+	}
 
-    // ======== toString ========
-    @Override
-    public String toString() {
-        return "ArticlePageDTO{" +
-                "articleId=" + articleId +
-                ", title='" + title + '\'' +
-                ", authorName='" + authorName + '\'' +
-                ", views=" + views +
-                ", createTime=" + createTime +
-                ", forumName='" + forumName + '\'' +
-                ", coverImageUrl='" + coverImageUrl + '\'' +
-                '}';
-    }
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getAuthorName() {
+		return authorName;
+	}
+
+	public void setAuthorName(String authorName) {
+		this.authorName = authorName;
+	}
+
+	public Integer getViews() {
+		return views;
+	}
+
+	public void setViews(Integer views) {
+		this.views = views;
+	}
+
+	public Timestamp getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Timestamp createTime) {
+		this.createTime = createTime;
+	}
+
+	public String getForumName() {
+		return forumName;
+	}
+
+	public void setForumName(String forumName) {
+		this.forumName = forumName;
+	}
+
+	public String getCoverImageUrl() {
+		return coverImageUrl;
+	}
+
+	public void setCoverImageUrl(String coverImageUrl) {
+		this.coverImageUrl = coverImageUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "ArticlePageDTO [articleId=" + articleId + ", title=" + title + ", authorName=" + authorName + ", email="
+				+ email + ", views=" + views + ", createTime=" + createTime + ", forumName=" + forumName
+				+ ", coverImageUrl=" + coverImageUrl + "]";
+	}
+
 }

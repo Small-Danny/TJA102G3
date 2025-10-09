@@ -5,94 +5,119 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>listOneTaskType</title>
+    <title>任務類別詳情｜listOneTaskType</title>
+
+    <!-- 延用你專案共用片段（含 Bootstrap 等） -->
 
     <head th:insert="~{/admin/tasktype/included-fragment}"></head>
+
     <style>
         :root {
-            --card-bg: #fff;
-            --card-border: #dee2e6;
+            --border: #e5e7eb;
             --soft: #f8f9fa;
-            --nav-h: 72px;
+            --nav: 72px;
+            --card-bg: #ffffff;
+            --radius: 14px;
+            --shadow: 0 10px 24px rgba(0, 0, 0, .06);
+            --muted: #6b7280;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --border: #1f2937;
+                --soft: #0f141b;
+                --card-bg: #0b0f15;
+                --shadow: 0 10px 24px rgba(0, 0, 0, .35);
+                --muted: #9ca3af;
+            }
         }
 
         body {
-            padding-top: var(--nav-h);
+            padding-top: var(--nav);
         }
 
         [id] {
-            scroll-margin-top: var(--nav-h);
+            scroll-margin-top: var(--nav);
         }
 
         .container-narrow {
             max-width: 900px;
             margin: 0 auto;
-            padding: 0 12px;
+            padding: 0 16px;
         }
 
         .card {
             background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: .5rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
 
         .card-header {
-            padding: .75rem 1rem;
-            border-bottom: 1px solid var(--card-border);
+            padding: .9rem 1.1rem;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: linear-gradient(180deg, var(--soft), transparent);
         }
 
         .card-title {
             margin: 0;
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1.12rem;
+            font-weight: 700;
+            letter-spacing: .3px;
         }
 
         .card-body {
-            padding: 1rem;
+            padding: 1.1rem;
         }
 
         .card-footer {
-            padding: .75rem 1rem;
-            border-top: 1px solid var(--card-border);
+            padding: .9rem 1.1rem;
+            border-top: 1px solid var(--border);
             background: var(--soft);
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
         }
 
-        .details-grid {
-            display: grid;
-            grid-template-columns: 160px 1fr;
-            gap: .5rem .75rem;
-            align-items: center;
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
         }
 
-        @media (max-width:768px) {
-            .details-grid {
-                grid-template-columns: 1fr;
-            }
+        /* 表格強化 */
+        .table {
+            margin: 0;
         }
 
-        .details-grid .label {
+        .table th {
+            width: 180px;
+            color: var(--muted);
             font-weight: 700;
-            color: #333;
         }
 
-        .details-grid .value {
-            color: #111;
+        .table td {
+            color: inherit;
+        }
+
+        .table>:not(caption)>*>* {
+            border-bottom-color: var(--border);
         }
 
         .btn {
-            display: inline-block;
-            padding: .375rem .75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .5rem .9rem;
+            border-radius: .6rem;
             border: 1px solid #198754;
             color: #198754;
-            background: #fff;
-            border-radius: .375rem;
+            background: transparent;
             text-decoration: none;
-            font-size: .9rem;
             cursor: pointer;
+            transition: .2s ease;
         }
 
         .btn:hover {
@@ -109,19 +134,38 @@
             background: #6c757d;
             color: #fff;
         }
+
+        @media print {
+
+            .navbar,
+            .card-footer,
+            #pageScripts {
+                display: none !important;
+            }
+
+            body {
+                padding-top: 0;
+            }
+
+            .card {
+                box-shadow: none;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
-        <div class="text-center">
-            <h2 class="m-0">類別個人資料 - listOneTaskType</h2>
-            <div class="mt-1">
-                <a class="navbar-brand" th:href="@{/admin/tasktype/select_page}"><img th:src="@{/images/back1.gif}"
-                        alt="返回">回查詢頁</a>
-            </div>
+    <!-- 導覽列：置中標題＋返回連結 -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top">
+        <div class="container-narrow d-flex align-items-center justify-content-between w-100">
+            <a class="navbar-brand d-inline-flex align-items-center" th:href="@{/admin/tasktype/select_page}">
+                <img th:src="@{/images/back1.gif}" alt="返回" style="height:22px;margin-right:6px;">回查詢頁
+            </a>
+            <h2 class="m-0 text-center flex-grow-1" style="letter-spacing:.5px">任務類別詳情</h2>
+            <span class="d-none d-md-inline" style="opacity:.6">單筆檢視</span>
         </div>
     </nav>
+
     <div id="pageContent">
         <main class="container-narrow">
             <section class="card mt-3">
@@ -129,49 +173,52 @@
                     <h3 class="card-title">查詢結果</h3>
                     <a class="btn btn-secondary" th:href="@{/admin/tasktype/select_page}">返回</a>
                 </header>
-                <div class="card-body">
-                    <div class="details-grid">
-                        <div class="label">類別ID</div>
-                        <div class="value" th:text="${taskTypeVO.taskTypeId}"></div>
 
-                        <div class="label">類別名稱</div>
-                        <div class="value" th:text="${taskTypeVO.taskTypeName}"></div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">類別 ID</th>
+                                    <td class="mono" th:text="${taskTypeVO.taskTypeId}"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">類別名稱</th>
+                                    <td th:text="${taskTypeVO.taskTypeName}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+
                 <footer class="card-footer">
-                    <div>
-                        <form th:action="@{/admin/tasktype/getOne_For_Update}" method="get" style="display:inline">
-                            <input type="hidden" name="taskTypeId" th:value="${taskTypeVO.taskTypeId}" />
-                            <button type="submit" class="btn">修改</button>
-                        </form>
-                        <form th:action="@{/admin/tasktype/delete}" method="post"
-                            style="display:inline;margin-left:.5rem">
-                            <input type="hidden" name="taskTypeId" th:value="${taskTypeVO.taskTypeId}" />
-                            <button type="submit" class="btn btn-secondary">刪除</button>
-                        </form>
-                    </div>
+                    <form th:action="@{/admin/tasktype/getOne_For_Update}" method="get">
+                        <input type="hidden" name="taskTypeId" th:value="${taskTypeVO.taskTypeId}" />
+                        <button type="submit" class="btn">修改</button>
+                    </form>
+                    <form th:action="@{/admin/tasktype/delete}" method="post">
+                        <input type="hidden" name="taskTypeId" th:value="${taskTypeVO.taskTypeId}" />
+                        <button type="submit" class="btn btn-secondary">刪除</button>
+                    </form>
                 </footer>
             </section>
         </main>
     </div>
 
-    <!-- 供右側預覽用的片段 -->
-    <!--     <div th:fragment="listOneTaskType-div"> -->
-    <!--         <section class="card"> -->
-    <!--             <header class="card-header"> -->
-    <!--                 <h3 class="card-title">查詢結果</h3> -->
-    <!--             </header> -->
-    <!--             <div class="card-body"> -->
-    <!--                 <div class="details-grid"> -->
-    <!--                     <div class="label">類別ID</div> -->
-    <!--                     <div class="value" th:text="${taskTypeVO.taskTypeId}"></div> -->
+    <div id="pageScripts"></div>
 
-    <!--                     <div class="label">類別名稱</div> -->
-    <!--                     <div class="value" th:text="${taskTypeVO.taskTypeName}"></div> -->
-    <!--                 </div> -->
-    <!--             </div> -->
-    <!--         </section> -->
-    <!--     </div> -->
+    <script>
+        // 依實際 navbar 高度動態設定 body 上方留白
+        (function () {
+            function refreshNavPadding() {
+                var nav = document.querySelector('.navbar.fixed-top');
+                var h = nav ? nav.offsetHeight : 72;
+                document.documentElement.style.setProperty('--nav', h + 'px');
+            }
+            window.addEventListener('load', refreshNavPadding);
+            window.addEventListener('resize', refreshNavPadding);
+        })();
+    </script>
 </body>
 
 </html>

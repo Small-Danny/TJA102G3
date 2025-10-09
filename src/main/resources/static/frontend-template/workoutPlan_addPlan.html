@@ -1,0 +1,2421 @@
+<!doctype html>
+<html lang="zh-Hant">
+	<head>
+		<!-- Meta Options -->
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+		<!-- Title -->
+		<title data-translate-key="services" data-translate-value="Services">
+			新增計畫
+		</title>
+
+		<!-- CSS -->
+		<link
+			href="/frontend-template/assets/css/bootstrap.min.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+		<link
+			href="/frontend-template/assets/images/heading-icon.png"
+			rel="icon"
+			type="image/x-icon"
+		/>
+		<link href="/frontend-template/assets/font/flaticon_mycollection.css" rel="stylesheet" />
+		<link
+			href="assets/css/owl.carousel.min.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+		<link
+			href="/frontend-template/assets/css/owl.theme.default.min.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+		<link href="/frontend-template/assets/css/jquery.fancybox.min.css" rel="stylesheet" />
+		<link
+			href="/frontend-template/assets/css/fontawesome.min.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+		<link
+			href="/frontend-template/assets/css/nice-select.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+		<link href="/frontend-template/assets/css/style.css" rel="stylesheet" type="text/css" />
+		<link
+			href="/frontend-template/assets/css/responsive.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+
+		<!-- Header CSS -->
+		<link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css" />
+
+
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="/frontend-template/assets/vendor/css/workout-plan-uni.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="/frontend-template/assets/vendor/css/workout-plan-choose-type.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="/frontend-template/assets/vendor/css/workout-plan-choose-sport.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="/frontend-template/assets/vendor/css/workout-plan-choose-date-fill.css"
+		/>
+		<link
+			href="/frontend-template/assets/vendor/css/bs-stepper.min.css"
+			rel="stylesheet"
+			type="text/css"
+		/>
+
+		<style>
+			/* stepper - 當前 */
+			#uni-add-plan-stepper.bs-stepper .step.active .bs-stepper-circle {
+				background-color: var(--main-red-color) !important;
+			}
+
+			/* stepper - 已完成(無效) */
+			#uni-add-plan-stepper.bs-stepper .step.crossed .bs-stepper-circle {
+				background-color: var(--active-red-color) !important;
+				color: #fff;
+			}
+
+			/* stepper 總區 */
+			#uni-add-plan-stepper.bs-stepper {
+				width: 100%;
+			}
+
+			/* stepper header */
+			#uni-add-plan-stepper .bs-stepper-header {
+				max-width: 100%;
+				width: fit-content;
+				margin: 0 auto;
+			}
+
+			/* stepper content */
+			#uni-add-plan-stepper .bs-stepper-content {
+				width: 100%;
+			}
+
+			/* 小提醒樣式 */
+			.uni-hint {
+				font-size: 14px;
+				color: #888;
+			}
+
+			.cursor-pointer {
+				cursor: pointer;
+			}
+
+			/* 右側選擇日期列表 */
+			.selected-date-pill {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				padding: 6px 10px;
+				border: 1px solid #e5e5e5;
+				border-radius: 8px;
+				margin: 6px 0;
+				background: #fff;
+			}
+
+			.selected-date-pill .remove-btn {
+				border: none;
+				background: transparent;
+			}
+
+			.selected-date-pill .remove-btn i {
+				color: #ea2127;
+			}
+
+			.clear-time {
+				color: #999;
+				font-size: 18px;
+				cursor: pointer;
+			}
+
+			.clear-time:hover {
+				color: #ea2127;
+			}
+
+			.uni-cal-choose-dates {
+				font-size: 20px;
+				font-weight: bold;
+			}
+
+			.uni-custom-sport-pic-preview {
+				width: 100%;
+				height: 300px;
+				border: 2px dashed #e0e0e0;
+				border-radius: 8px;
+				overflow: hidden;
+			}
+
+			.uni-custom-sport-pic-preview img {
+				max-width: 100%;
+				max-height: 100%;
+				object-fit: contain;
+			}
+
+			.uni-pic-none-text {
+				color: #888;
+			}
+
+			.modal-body {
+				display: block !important;
+				width: 100%;
+				overflow: auto !important;
+			}
+
+			#addCustomSportPic,
+			#editCustomSportPic,
+			#editCustomSportPicOriginalName {
+				height: 38px !important;
+			}
+
+			/* 避免模板css造成燈箱圖不見 */
+			@media (max-width: 1200px) {
+				#editCustomSportForm img {
+					display: block !important;
+				}
+				#addCustomSportForm img {
+					display: block !important;
+				}
+			}
+
+			.uni-a-link {
+				color: blue;
+				text-decoration: underline;
+				cursor: pointer;
+			}
+			.uni-a-link:hover {
+				color: rgb(5, 5, 190);
+				text-decoration: underline;
+				cursor: pointer;
+			}
+			
+			.uni-title-text {
+			    margin-top: 26px;
+				text-align: center;
+				font-size: 20px;
+				text-align: center;
+				font-weight: 600;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!-- Loader -->
+		<div class="preloader">
+			<div class="loader-wrap-heading">
+				<div class="load-text">
+					<span
+						data-translate-key="t_d160e0986a"
+						data-translate-value="L"
+						>L</span
+					>
+					<span
+						data-translate-key="t_7a81af3e59"
+						data-translate-value="o"
+						>o</span
+					>
+					<span
+						data-translate-key="t_86f7e437fa"
+						data-translate-value="a"
+						>a</span
+					>
+					<span
+						data-translate-key="t_3c363836cf"
+						data-translate-value="d"
+						>d</span
+					>
+					<span
+						data-translate-key="t_042dc4512f"
+						data-translate-value="i"
+						>i</span
+					>
+					<span
+						data-translate-key="t_d1854cae89"
+						data-translate-value="n"
+						>n</span
+					>
+					<span
+						data-translate-key="t_54fd171120"
+						data-translate-value="g"
+						>g</span
+					>
+				</div>
+			</div>
+		</div>
+		<!-- Loader End -->
+
+		<!-- Header -->
+	    <div id="header-placeholder" style="display: block !important; position:relative !important; background-color: black !important; height:fit-content !important; max-height: 100px !important;"></div>
+
+
+		<section class="pt-2 pb-3">
+			<div class="container">
+			    <div class="uni-title-text">新增計畫到日曆 4 步驟</div>
+				<div class="pb-3 d-flex justify-content-center">
+					<!-- Stepper -->
+					<div id="uni-add-plan-stepper" class="bs-stepper">
+						<!-- 步驟頭部 -->
+						<div class="bs-stepper-header" role="tablist">
+							<div class="step" data-target="#step-1">
+								<button
+									type="button"
+									class="step-trigger"
+									role="tab"
+									id="step-1-trigger"
+									aria-controls="step-1"
+								>
+									<span class="bs-stepper-circle">1</span>
+									<span class="bs-stepper-label"
+										>選擇運動分類</span
+									>
+								</button>
+							</div>
+							<div class="line"></div>
+							<div class="step" data-target="#step-2">
+								<button
+									type="button"
+									class="step-trigger"
+									role="tab"
+									id="step-2-trigger"
+									aria-controls="step-2"
+								>
+									<span class="bs-stepper-circle">2</span>
+									<span class="bs-stepper-label"
+										>選擇運動</span
+									>
+								</button>
+							</div>
+							<div class="line"></div>
+							<div class="step" data-target="#step-3">
+								<button
+									type="button"
+									class="step-trigger"
+									role="tab"
+									id="step-3-trigger"
+									aria-controls="step-3"
+								>
+									<span class="bs-stepper-circle">3</span>
+									<span class="bs-stepper-label"
+										>選擇計畫日期</span
+									>
+								</button>
+							</div>
+							<div class="line"></div>
+							<div class="step" data-target="#step-4">
+								<button
+									type="button"
+									class="step-trigger"
+									role="tab"
+									id="step-4-trigger"
+									aria-controls="step-4"
+								>
+									<span class="bs-stepper-circle">4</span>
+									<span class="bs-stepper-label"
+										>填寫計畫內容</span
+									>
+								</button>
+							</div>
+						</div>
+
+						<!-- 步驟內容 -->
+						<div class="bs-stepper-content">
+							<!-- 步驟 1 -->
+							<div
+								id="step-1"
+								class="content"
+								role="tabpanel"
+								aria-labelledby="step-1-trigger"
+							>
+								<div class="py-2 uni-border-y mb-4">
+									<div
+										class="row justify-content-center align-items-center"
+									>
+										<div class="col-4"></div>
+										<div
+											class="col-4 d-flex flex-column justify-content-center"
+										>
+											<div
+												class="d-flex justify-content-center"
+											>
+												<div>
+													步驟1： 選擇「 一項
+													」運動分類
+												</div>
+											</div>
+											<div
+												class="d-flex justify-content-center"
+											>
+												<span class="uni-hint"
+													>提示：點分類卡片會直接前往下一步</span
+												>
+											</div>
+										</div>
+										<div class="col-4">
+											<div
+												class="d-flex justify-content-center"
+											>
+												<button
+													class="btn btn-black btn-sm"
+													id="btnStep1Next"
+												>
+													下一步
+													<i
+														class="ps-1 fa-solid fa-arrow-right"
+													></i>
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div>
+									<div class="row">
+										<div class="col-12">
+											<div class="uni-sport-type mb-4">
+												<div id="sportTypeList"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- 步驟 2 -->
+							<div
+								id="step-2"
+								class="content"
+								role="tabpanel"
+								aria-labelledby="step-2-trigger"
+							>
+								<div class="py-2 uni-border-y mb-4">
+									<div
+										class="row justify-content-center align-items-center"
+									>
+										<div class="col-4">
+											<div
+												class="d-flex justify-content-center"
+											>
+												<button
+													class="btn btn-outline-black btn-sm"
+													id="btnStep2Prev"
+												>
+													<i
+														class="fa-solid fa-arrow-left"
+													></i>
+													上一步
+												</button>
+											</div>
+										</div>
+										<div
+											class="col-4"
+											id="step2CenterBlock"
+										>
+										</div>
+										<div class="col-4">
+											<div
+												class="d-flex justify-content-center"
+											>
+												<button
+													class="btn btn-black btn-sm"
+													id="btnStep2Next"
+												>
+													下一步
+													<i
+														class="ps-1 fa-solid fa-arrow-right"
+													></i>
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<section class="uni-choose-sport-style">
+									<div class="container">
+										<div class="row" id="sportListRow">
+											<div
+												id="sportList"
+												class="row w-100"
+											></div>
+										</div>
+									</div>
+								</section>
+
+								<div
+									id="customCreateArea"
+									class="text-center d-none pb-4"
+								>
+									<div
+										id="customEmptyHint"
+										class="mt-2 d-none"
+									>
+										尚無自訂義運動，take it easy
+									</div>
+								</div>
+
+								<!-- 分頁區（保留結構，如需可動態接） -->
+								<!-- <div class="gym-pagination pb-5">
+								<nav aria-label="Page navigation example">
+									<ul class="pagination">
+										<li class="page-item">
+											<a class="page-link" href="#"><i
+													class="fa-solid fa-arrow-left-long"></i></a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="#" onclick="return false;">01</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="#" onclick="return false;">02</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="#" onclick="return false;">03</a>
+										</li>
+										<li class="page-item space">
+											<a class="page-link" href="#" onclick="return false;">..........</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="#" onclick="return false;">08</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="#"><i
+													class="fa-solid fa-arrow-right-long"></i></a>
+										</li>
+									</ul>
+								</nav>
+							</div> -->
+							</div>
+
+							<!-- 步驟 3 -->
+							<div
+								id="step-3"
+								class="content"
+								role="tabpanel"
+								aria-labelledby="step-3-trigger"
+							>
+								<div class="py-2 uni-border-y">
+									<div
+										class="row justify-content-center align-items-center"
+									>
+										<div class="col-4">
+											<div
+												class="d-flex justify-content-center"
+											>
+												<button
+													class="btn btn-outline-black btn-sm"
+													id="btnStep3Prev"
+												>
+													<i
+														class="pe-1 fa-solid fa-arrow-left"
+													></i>
+													上一步
+												</button>
+											</div>
+										</div>
+										<div class="col-4">
+											<div
+												class="d-flex flex-column justify-content-center align-items-center"
+											>
+												<div>步驟3： 至少選擇 1 天</div>
+												<div>
+													<span class="uni-hint">
+														右方可設定各別天「預計開始時間」、「提醒開啟/關閉」
+													</span>
+												</div>
+											</div>
+										</div>
+										<div class="col-4">
+											<div
+												class="d-flex justify-content-center"
+											>
+												<button
+													class="btn btn-black btn-sm"
+													id="btnStep3Next"
+												>
+													下一步
+													<i
+														class="ps-1 fa-solid fa-arrow-right"
+													></i>
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="d-flex align-items-start pt-3">
+									<div class="calendar-block pt-3">
+										<div
+											id="workout_plan_choose_calendar"
+										></div>
+									</div>
+									<div
+										class="fill-in-block"
+										style="min-width: 280px"
+									>
+										<div
+											class="uni-select-day-hint py-2 uni-border-bottom"
+										>
+											已選擇
+											<span id="selectedCount">0</span>
+											天
+										</div>
+										<div class="mb-2">
+											<div class="py-3 uni-border-bottom">
+												<button
+													id="btnAllNotifyOn"
+													class="btn btn-sm btn-primary me-2"
+												>
+													全部開提醒
+												</button>
+												<button
+													id="btnAllNotifyOff"
+													class="btn btn-sm btn-secondary"
+												>
+													全部關提醒
+												</button>
+											</div>
+											<div
+												class="d-flex gap-2 py-3 uni-border-bottom flex-wrap"
+											>
+												<div
+													class="position-relative"
+													style="width: 200px"
+												>
+													<input
+														id="inputAllTime"
+														type="time"
+														class="form-control form-control-sm pe-4"
+														style="
+															height: 30px;
+															max-width: 200px;
+														"
+														placeholder="統一時間"
+													/>
+													<span
+														id="inputAllTimeClear"
+														class="clear-time position-absolute top-50 end-0 translate-middle-y me-2 cursor-pointer"
+														title="清空時間"
+														>&times;</span
+													>
+												</div>
+												<button
+													id="btnApplyAllTime"
+													class="btn btn-sm btn-outline-dark"
+												>
+													全部套用時間
+												</button>
+											</div>
+											<span class="uni-hint"
+												>( 提醒開啟，需輸入預計開始時間
+												)</span
+											>
+										</div>
+
+										<div
+											id="selectedDatesList"
+											class="mt-3"
+										></div>
+									</div>
+								</div>
+							</div>
+
+							<!-- 步驟 4 -->
+							<div
+								id="step-4"
+								class="content"
+								role="tabpanel"
+								aria-labelledby="step-4-trigger"
+							>
+								<div class="py-2 uni-border-y mb-2">
+									<div
+										class="row justify-content-center align-items-center"
+									>
+										<div class="col-4">
+											<div
+												class="d-flex justify-content-center"
+											>
+												<button
+													class="btn btn-outline-black btn-sm"
+													id="btnStep4Prev"
+												>
+													<i
+														class="pe-1 fa-solid fa-arrow-left"
+													></i>
+													上一步
+												</button>
+											</div>
+										</div>
+										<div class="col-4">
+											<div
+												class="d-flex justify-content-center"
+											>
+												<div>步驟4： 填寫計畫內容</div>
+											</div>
+										</div>
+										<div class="col-4"></div>
+									</div>
+								</div>
+								<div
+									class="pt-3 pb-3 d-flex justify-content-center"
+								>
+									<div class="fill-in-block">
+										<form id="planForm">
+											<div class="pb-3">
+												<label>計畫名稱</label>
+												<input
+													class="form-control"
+													id="planName"
+													placeholder="請填寫計畫名稱"
+													type="text"
+													required
+												/>
+											</div>
+											<div class="pb-3">
+												<label
+													>計畫運動做幾分鐘呢 ?</label
+												>
+												<input
+													class="form-control"
+													id="planMinutes"
+													placeholder="請填入分鐘數"
+													type="number"
+													min="1"
+													step="1"
+													required
+												/>
+											</div>
+
+											<div
+												class="d-flex justify-content-center mt-2"
+											>
+												<button
+													class="confirm-btn me-2"
+													type="submit"
+												>
+													確定新增計畫
+												</button>
+												<button
+													class="cancel-btn"
+													type="button"
+													id="btnPlanCancel"
+												>
+													取消
+												</button>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- 新增自訂義運動 Modal -->
+		<div
+			class="modal fade"
+			id="customSportModal"
+			tabindex="-1"
+			data-bs-backdrop="static"
+		>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">新增自訂義運動</h5>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+							aria-label="Close"
+						></button>
+					</div>
+					<div class="modal-body">
+						<div class="p-2 w-100">
+							<form id="addCustomSportForm">
+								<div class="mb-3">
+									<label
+										><span class="required-text">*</span
+										>運動名稱</label
+									>
+									<input
+										type="text"
+										id="customSportName"
+										class="form-control"
+										required
+									/>
+								</div>
+								<div class="mb-3">
+									<label
+										><span class="required-text">*</span
+										>描述</label
+									>
+									<textarea
+										id="customSportDesc"
+										class="form-control"
+										rows="2"
+										required
+									></textarea>
+								</div>
+								<div class="mb-3">
+									<label>
+										<span class="required-text">*</span>
+										消耗卡路里
+										<span class="uni-hint">
+											(kcal / 1h，大於0正整數)
+										</span>
+										<a
+											href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=571&pid=9738"
+											class="uni-a-link"
+											target="_blank"
+											>參考網站請點此</a
+										>
+									</label>
+									<input
+										type="number"
+										id="customSportCalories"
+										class="form-control"
+										min="1"
+										step="1"
+										required
+									/>
+								</div>
+								<div class="pb-3">
+									<label>
+										圖片
+										<span class="uni-hint">
+											(建議寬高: 90px * 90px，大小上限
+											4MB)
+										</span>
+									</label>
+									<input
+										type="file"
+										id="addCustomSportPic"
+										class="form-control"
+										accept="image/*"
+									/>
+									<div
+										class="mt-2 d-flex justify-content-center align-items-center uni-custom-sport-pic-preview"
+										id="addCustomSportPicPreview"
+									>
+										<span class="uni-pic-none-text"
+											>尚無圖片</span
+										>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="d-flex justify-content-end gap-2">
+							<button
+								type="button"
+								class="btn btn-outline-black"
+								data-bs-dismiss="modal"
+							>
+								取消
+							</button>
+							<button
+								type="submit"
+								id="addCustomSportConfirmBtn"
+								class="btn btn-blue"
+							>
+								確定新增
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 編輯自訂義運動 Modal -->
+		<div
+			class="modal fade"
+			id="editCustomSportModal"
+			tabindex="-1"
+			data-bs-backdrop="static"
+		>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">編輯自訂義運動</h5>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+						></button>
+					</div>
+					<div class="modal-body">
+						<div class="p-2 w-100">
+							<form id="editCustomSportForm">
+								<input type="hidden" id="editCustomSportId" />
+								<div class="mb-3">
+									<label
+										><span class="required-text">*</span
+										>運動名稱</label
+									>
+									<input
+										type="text"
+										id="editCustomSportName"
+										class="form-control"
+										required
+									/>
+								</div>
+								<div class="mb-3">
+									<label
+										><span class="required-text">*</span
+										>描述</label
+									>
+									<textarea
+										id="editCustomSportDesc"
+										class="form-control"
+										rows="3"
+										required
+									></textarea>
+								</div>
+								<div class="mb-3">
+									<label>
+										<span class="required-text">*</span
+										>消耗卡路里
+										<span class="uni-hint">
+											(kcal / 1h，大於0正整數)
+										</span>
+										<a
+											href="https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=571&pid=9738"
+											class="uni-a-link"
+											target="_blank"
+											>參考網站請點此</a
+										>
+									</label>
+									<input
+										type="number"
+										id="editCustomSportCalories"
+										class="form-control"
+										min="1"
+										step="1"
+										required
+									/>
+								</div>
+								<div class="pb-3">
+									<label>原圖預覽 ---------</label>
+									<input
+										type="text"
+										id="editCustomSportPicOriginalName"
+										class="form-control"
+										disabled
+									/>
+									<div
+										class="mt-2 d-flex justify-content-center align-items-center uni-custom-sport-pic-preview"
+										id="editCustomSportPicPreviewOriginal"
+									>
+										<span class="uni-pic-none-text"
+											>無原圖</span
+										>
+									</div>
+								</div>
+								<div class="pb-3">
+									<label>
+										更換圖片 ---------
+										<span class="uni-hint">
+											(建議大小: 90px * 90px)
+										</span></label
+									>
+									<input
+										type="file"
+										id="editCustomSportPic"
+										class="form-control"
+										accept="image/*"
+									/>
+									<div
+										class="mt-2 d-flex justify-content-center align-items-center uni-custom-sport-pic-preview"
+										id="editCustomSportPicPreview"
+									>
+										<span class="uni-pic-none-text"
+											>尚無圖片</span
+										>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="d-flex justify-content-end gap-2">
+							<button
+								type="button"
+								class="btn btn-outline-secondary"
+								data-bs-dismiss="modal"
+							>
+								取消
+							</button>
+							<button
+								type="submit"
+								class="btn btn-primary"
+								id="editCustomSportConfirmBtn"
+							>
+								儲存修改
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="scroll-percentage">
+			<span id="scroll-percentage-value"></span>
+		</div>
+		
+		<div id="footer-placeholder"></div>
+
+
+		<script src="/frontend-template/assets/js/jquery.min.js"></script>
+		<script src="/frontend-template/assets/js/jquery.waypoints.min.js"></script>
+		<script src="/frontend-template/assets/js/jquery.counterup.min.js"></script>
+		<script src="/frontend-template/assets/js/bootstrap.min.js"></script>
+		<script src="/frontend-template/assets/js/jquery.fancybox.min.js"></script>
+		<script src="/frontend-template/assets/js/jquery.nice-select.js"></script>
+		<script src="/frontend-template/assets/js/owl.carousel.min.js"></script>
+		<script src="/frontend-template/assets/js/custom.js"></script>
+		
+		<!-- script -->
+		<script src="/frontend-template/assets/js/api.js"></script>
+		<script src="/frontend-template/assets/js/custom.js"></script>
+		<script src="/frontend-template/assets/js/loader.js"></script>
+
+		<script src="/frontend-template/assets/vendor/bs-stepper/bs-stepper.min.js"></script>
+		<script src="/frontend-template/assets/vendor/moment/moment.min.js"></script>
+		<script src="/frontend-template/assets/vendor/fl-calendar/index.global.js"></script>
+		<script src="/frontend-template/assets/vendor/api/sport-api.js"></script>
+		<script src="/frontend-template/assets/vendor/api/csrf-api.js"></script>
+		<script>
+			// ------ 全域狀態 ------
+			const API_MAP = {
+				getSidebar: BASE_API_URL + "/sportSidebar/api/fd/sidebar",
+				getSportTypeList:
+					BASE_API_URL +
+					'/sportType/api/fd/getMultipleBySportTypeDataStatusesWithSportDataStatuses',
+				insertWorkoutPlan:
+					BASE_API_URL + '/workoutPlan/api/insertMultiple',
+				getCustomSportList:
+					BASE_API_URL +
+					'/customSport/api/getMultipleBySportDataStatuses',
+				insertCustomSport:
+					BASE_API_URL + '/customSport/api/insertMultiple',
+				updateCustomSport:
+					BASE_API_URL + '/customSport/api/updateMultiple',
+				deleteCustomSport:
+					BASE_API_URL +
+					'/customSport/api/updateMultipleSportDataStatus',
+				fileImgUpload: BASE_API_URL + '/fileImg/api/fd/upload',
+				fileImgUpdate: BASE_API_URL + '/fileImg/api/fd/update'
+			};
+
+			const PIC_MAP = {
+				sportType: BASE_API_URL + '/sportPics/img/fd/sportType/',
+				sport: BASE_API_URL + '/sportPics/img/fd/sport/',
+				customSport: BASE_API_URL + '/sportPics/img/fd/customSport/',
+				sportCommon: BASE_API_URL + '/sportPics/img/fd/sportCommon/'
+			};
+
+			// 上傳圖片
+			async function uploadFileImg(funcType, file) {
+				let formData = new FormData();
+				formData.append('funcType', funcType);
+				formData.append('file', file);
+
+				const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+					API_MAP.fileImgUpload,
+					{
+						method: 'POST',
+						body: formData
+					}
+				);
+				// 由外部判斷是否跳提示
+				return retData;
+			}
+			// 更新圖片
+			async function updateFileImg(funcType, oldFileName, file) {
+				let formData = new FormData();
+				formData.append('funcType', funcType);
+				formData.append('oldFileName', oldFileName);
+				formData.append('newFile', file);
+
+				const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+					API_MAP.fileImgUpdate,
+					{
+						method: 'POST',
+						body: formData
+					}
+				);
+				// 由外部判斷是否跳提示
+				return retData;
+			}
+
+			let stepper;
+			// 儲存分類與其底下運動（方便第二步渲染）
+			let sportTypesList = []; 
+			// 已選分類
+			let selectedTypeId = null; 
+			let lastSelectedTypeId = null;
+			// 'system' | 'custom'
+			let selectedSportFrom = null; 
+			// 系統運動 sportId
+			let selectedSportId = null; 
+			// 自訂義運動 customSportId
+			let selectedCustomSportId = null;
+			// [{date:'YYYY-MM-DD', time:null, notify:0}, ...]
+			let selectedDates = [];
+			// 存放自訂義運動清單
+			let currentCustomSports = [];
+			let currSidebar = null;
+
+			// ------ 初始化 Stepper & 載入分類 ------
+			document.addEventListener('DOMContentLoaded', async function () {
+				// 取得sidebar
+				const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+					API_MAP.getSidebar,
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({})
+					}
+				);
+				if (retResult) {
+					console.log(
+						'workoutPlan_main sidebar success'
+					);
+					currSidebar = retData?.uudd || null;
+				} else {
+					console.error(
+						'workoutPlan_main sidebar error retMsg: ',
+						retMsg
+					);
+					currSidebar = null;
+				}
+				
+				
+				stepper = new Stepper(
+					document.querySelector('#uni-add-plan-stepper'),
+					{ linear: true, animation: true }
+				);
+				stepper.to(1);
+
+
+				// 載入分類
+				loadSportTypes();
+
+				// 綁定下一步/上一步的防呆
+				document
+					.getElementById('btnStep1Next')
+					.addEventListener('click', () => {
+						if (!selectedTypeId) {
+							alert('請先選擇分類');
+							return;
+						}
+						stepper.next();
+					});
+
+				document
+					.getElementById('btnStep2Prev')
+					.addEventListener('click', () => stepper.previous());
+				document
+					.getElementById('btnStep2Next')
+					.addEventListener('click', () => {
+						// 確保變數和 DOM 同步
+						const activeCard = document.querySelector('#sportList .uni-sport-card.border-theme-red');
+						if (activeCard) {
+						  selectedSportId = Number(activeCard.getAttribute('data-sport-id')) || null;
+						  selectedCustomSportId = Number(activeCard.getAttribute('data-custom-id')) || null;
+						}
+						
+						console.log(
+							'btnStep2Next click: ',
+							selectedSportFrom,
+							selectedSportId,
+							selectedCustomSportId
+						);
+						
+						if (
+							selectedSportFrom === 'system' &&
+							!selectedSportId
+						) {
+							alert('請先選擇一個系統運動');
+							return;
+						}
+						if (
+							selectedSportFrom === 'custom' &&
+							!selectedCustomSportId
+						) {
+							alert('請先選擇一個自訂義運動');
+							return;
+						}
+						initCalendarIfNeeded();
+						stepper.next();
+					});
+
+				document
+					.getElementById('btnStep3Prev')
+					.addEventListener('click', () => stepper.previous());
+				document
+					.getElementById('btnStep3Next')
+					.addEventListener('click', () => {
+						if (selectedDates.length === 0) {
+							alert('請至少選擇一個日期');
+							return;
+						}
+
+						// 驗證: 如果要提醒，需有時間
+						let validateResult = true;
+						let invalidObj = null;
+						validateResult = selectedDates.every((obj) => {
+							const ok = !(obj.notify === 1 && !obj.time);
+							if (!ok && !invalidObj) {
+								invalidObj = obj;
+							}
+							return ok;
+						});
+
+						if (!validateResult) {
+							alert(invalidObj.date + ' 如提醒開啟，需填時間');
+							return;
+						}
+
+						stepper.next();
+					});
+
+				document
+					.getElementById('btnStep4Prev')
+					.addEventListener('click', () => stepper.previous());
+				document
+					.getElementById('btnPlanCancel')
+					.addEventListener('click', () => {
+						console.log('點取消新增計畫');
+						window.location.href = '/dMain/fd/workoutPlan_main';
+					});
+
+				// ------ Step3：一鍵控制提醒與時間 ------
+				document
+					.getElementById('btnAllNotifyOn')
+					.addEventListener('click', () => {
+						selectedDates.forEach((d) => (d.notify = 1));
+						refreshSelectedDatesUI();
+					});
+				document
+					.getElementById('btnAllNotifyOff')
+					.addEventListener('click', () => {
+						selectedDates.forEach((d) => (d.notify = 0));
+						refreshSelectedDatesUI();
+					});
+
+				document
+					.getElementById('inputAllTimeClear')
+					.addEventListener('click', () => {
+						const t = document.getElementById('inputAllTime').value;
+						if (t) {
+							// 清空時間
+							document.getElementById('inputAllTime').value = '';
+						}
+					});
+
+				document
+					.getElementById('btnApplyAllTime')
+					.addEventListener('click', () => {
+						const t = document.getElementById('inputAllTime').value;
+						if (!t) {
+							// 清空所有時間
+							selectedDates.forEach((d) => (d.time = null));
+						} else {
+							selectedDates.forEach((d) => (d.time = t));
+						}
+						refreshSelectedDatesUI();
+					});
+
+				// document
+				// 	.getElementById('btnClearAllDates')
+				// 	.addEventListener('click', () => {
+				// 		selectedDates = [];
+				// 		document
+				// 			.querySelectorAll('.fc-daygrid-day')
+				// 			.forEach((cell) => {
+				// 				cell.classList.remove('uni-cal-is-pick');
+				// 			});
+				// 		refreshSelectedDatesUI();
+				// 	});
+
+				// 送出新增計畫
+				document
+					.getElementById('planForm')
+					.addEventListener('submit', submitPlans);
+
+				// 新增自訂義運動 確定按鈕
+				document
+					.getElementById('addCustomSportConfirmBtn')
+					.addEventListener('click', onCreateCustomSport);
+
+				// ------ Stepper 顯示事件，修正 Step3 日曆尺寸 ------
+				document
+					.querySelector('#uni-add-plan-stepper')
+					.addEventListener('shown.bs-stepper', function (event) {
+						if (
+							document
+								.getElementById('step-3')
+								?.classList.contains('active') &&
+							calendarInstance
+						) {
+							setTimeout(() => {
+								try {
+									calendarInstance.updateSize();
+								} catch (e) {}
+							}, 50);
+						}
+					});
+			});
+
+			// ------ Step1：載入分類 ------
+			async function loadSportTypes() {
+				const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+					API_MAP.getSportTypeList,
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							sportTypeDataStatuses: [1], // 分類狀態
+							sportDataStatuses: [1] // 運動狀態
+						})
+					}
+				);
+				if (retResult) {
+					sportTypesList = retData || [];
+				} else {
+					console.error(
+						'workoutPlan_addPlan loadSportTypes error retMsg: ',
+						retMsg
+					);
+					sportTypesList = [];
+				}
+
+				const host = document.getElementById('sportTypeList');
+				host.innerHTML = '';
+
+				// 根據資料生成「col-12 > .uni-sport-type > .uni-sport-type-card」
+				sportTypesList.forEach((type) => {
+					const col = document.createElement('div');
+					col.className = 'col-12';
+					col.innerHTML = `
+						<div class="uni-sport-type mb-4">
+							<div class="uni-sport-type-card cursor-pointer" data-type-id="${type.sportTypeId}">
+							<div class="uni-image-block">
+								<img src="${type.sportTypePic ? PIC_MAP['sportType'] + type.sportTypePic : PIC_MAP['sportCommon'] + 'none.png'}"/>
+							</div>
+							<div class="uni-type-content-block">
+								<div class="uni-type-name">${type.sportTypeName}</div>
+								<div>
+									${type.sportTypeId === 3 ? '[ 自訂義運動 ]' : '[ 系統運動 ]'}
+								</div>
+								<p class="uni-type-description" style="font-size: 14px;">
+								更新：${type.updateDatetime || ''}
+								</p>
+							</div>
+							<div class="uni-type-go-icon-block">
+								<a class="uni-type-go-icon"><i class="fa-solid fa-angles-right"></i></a>
+							</div>
+							</div>
+						</div>`;
+					host.appendChild(col);
+				});
+
+				// 點擊事件
+				host.querySelectorAll('.uni-sport-type-card').forEach(
+					(card) => {
+						card.addEventListener('click', () => {
+							const typeId = Number(
+								card.getAttribute('data-type-id')
+							);
+							selectedTypeId = typeId;
+							
+							// 樣式高亮
+							host.querySelectorAll(
+								'.uni-sport-type-card'
+							).forEach((c) => c.classList.remove('active'));
+							card.classList.add('active');
+
+
+							if (typeId === 3) {
+								// 自訂義分類
+								loadCustomSports(typeId);
+								selectedSportFrom = 'custom';
+							} else {
+								// 系統運動
+								renderSystemSportsByTypeId(typeId);
+								selectedSportFrom = 'system';
+							}
+
+							stepper.to(2);
+							setTimeout(() => restoreSelectedHighlight(), 200);
+						});
+					}
+				);
+			}
+
+			// ------ Step2：渲染系統運動（使用 step1 cache 中的 sportTypeItemResponseDTOs） ------
+			function renderSystemSportsByTypeId(typeId) {
+				const typeObj = sportTypesList.find(
+					(t) => t.sportTypeId === typeId
+				);
+				const listEl = document.getElementById('sportList');
+				const customArea = document.getElementById('customCreateArea');
+				const customHint = document.getElementById('customEmptyHint');
+				
+				
+
+				// 切換到新分類 時做清理 (避每次render清)
+				if (String(selectedTypeId) !== String(lastSelectedTypeId) || selectedSportFrom !== 'system') {
+				  selectedSportId = null;
+				  selectedCustomSportId = null;
+				}
+				selectedSportFrom = 'system';
+				
+				
+				lastSelectedTypeId = typeId;
+				
+
+				// 處理標頭
+				const step2Center = $('#step2CenterBlock');
+				if (step2Center) {
+					let htmlStr = `
+						<div class="d-flex justify-content-center">
+							<div>
+								步驟2： 選擇「 一項 」運動
+							</div>
+						</div>
+						<div class="d-flex flex-column justify-content-center align-items-center">
+							<span class="uni-hint">選擇想要的運動卡片後 (顯示紅框)，點選下一步按鈕</span>
+						</div>
+					`;
+					step2Center.html(htmlStr);
+				}
+
+				// 處理資料
+				listEl.innerHTML = '';
+				customArea.classList.add('d-none');
+				customHint.classList.add('d-none');
+
+				if (!typeObj) {
+					listEl.innerHTML =
+						'<div class="col-12 text-center py-3">請上一步先選擇分類 (´-﹏-`；)</div>';
+					return;
+				}
+
+				if (
+					!Array.isArray(typeObj.sportResponseDTOs) ||
+					(typeObj.sportResponseDTOs || []).length === 0
+				) {
+					listEl.innerHTML =
+						'<div class="col-12 text-center py-3">此分類尚無運動，請上一步重新選擇分類，運動們coming soon~ (´-﹏-`；)</div>';
+					return;
+				}
+
+				typeObj.sportResponseDTOs.forEach((sportResponseDTO) => {
+					const s = { ...sportResponseDTO };
+					const col = document.createElement('div');
+					col.className = 'col-lg-6 col-sm-12';
+					col.innerHTML = `
+						<div class="uni-sport-card cursor-pointer" data-sport-id="${s.sportId}">
+							<div class="d-flex align-items-center">
+							<div class="uni-card-l">
+								<div class="uni-card-title-block">
+								<div class="uni-card-title" title="${s.sportName}">${s.sportName}</div>
+								</div>
+								<div class="d-flex align-items-center">
+								<div class="uni-card-sport-from pe-3"><i class="pe-2 fa-solid fa-bowling-ball"></i>系統運動</div>
+								<div class="uni-card-sport-level"><i class="pe-2 fa-solid fa-stairs"></i>${s.sportLevelText || ''}</div>
+								</div>
+								<div class="uni-card-sport-calories">
+								<i class="uni-theme-color pe-2 fa-solid fa-fire"></i>
+								<span class="counter uni-card-sport-calories-num">${s.sportEstimatedCalories || 0}</span> 大卡 / 小時
+								</div>
+							</div>
+							<div class="uni-card-r">
+								<div class="uni-card-sport-img-block">
+								<img src="${s.sportPic ? PIC_MAP['sport'] + s.sportPic : PIC_MAP['sportCommon'] + 'none.png'}" class="uni-card-sport-img"/>
+								</div>
+							</div>
+							</div>
+							<div class="uni-card-sport-description-block">
+							<p class="uni-card-sport-description" title="${s.sportDescription}">${s.sportDescription || ''}</p>
+							</div>
+						</div>`;
+					listEl.appendChild(col);
+				});
+
+				// system click select
+				listEl.querySelectorAll('.uni-sport-card').forEach((card) => {
+					card.addEventListener('click', () => {
+						selectedSportId = Number(
+							card.getAttribute('data-sport-id')
+						);
+						selectedCustomSportId = null;
+
+						console.log('selectedSportId choose: ', selectedSportFrom, selectedSportId, selectedCustomSportId);
+
+						// 樣式高亮
+						listEl
+							.querySelectorAll('.uni-sport-card')
+							.forEach((c) =>
+								c.classList.remove(
+									'border',
+									'border-3',
+									'border-theme-red'
+								)
+							);
+						card.classList.add(
+							'border',
+							'border-3',
+							'border-theme-red'
+						);
+					});
+				});
+			}
+
+			// ------ Step2：載入自訂義運動 ------
+			async function loadCustomSports(typeId) {
+				const listEl = $('#sportList');
+				$('#customCreateArea').removeClass('d-none');
+				$('#customEmptyHint').addClass('d-none');
+
+				
+				// 切換到新分類 時做清理 (避每次render清)
+				if (String(lastSelectedTypeId) !== '3' || selectedSportFrom !== 'custom') {
+				  selectedSportId = null;
+				  selectedCustomSportId = null;
+				}
+				selectedSportFrom = 'custom';
+				
+				
+				lastSelectedTypeId = typeId;
+
+				
+				// 處理標頭
+				const step2Center = $('#step2CenterBlock');
+				if (step2Center) {
+					let htmlStr = `
+						<div class="d-flex justify-content-center">
+							<div>
+								步驟2： 選擇「 一項 」運動
+							</div>
+						</div>
+						<div class="d-flex flex-column justify-content-center align-items-center">
+							<span class="uni-hint">可新增自訂義運動</span>
+							<button class="btn btn-blue" data-bs-toggle="modal" data-bs-target="#customSportModal">
+								新增自訂義運動
+							</button>
+						</div>
+						`;
+					step2Center.html(htmlStr);
+				}
+
+				// 處理列表
+				listEl.html('');
+				let data = [];
+
+				const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+					API_MAP.getCustomSportList,
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ statuses: [1] })
+					}
+				);
+				if (retResult) {
+					data = retData || [];
+				} else {
+					console.error(
+						'workoutPlan_addPlan getCustomSportList error retMsg: ',
+						retMsg
+					);
+					data = [];
+				}
+
+				currentCustomSports = data;
+
+				if (!Array.isArray(data) || data.length === 0) {
+					$('#customEmptyHint').removeClass('d-none');
+				}
+
+				data.forEach((item) => {
+					let picHtml = item.sportPic
+						? `<img
+							src="${item.sportPic ? PIC_MAP['customSport'] + item.sportPic : '#'}"
+							alt="${item.sportName}"
+							class="uni-card-sport-img"
+						/>`
+						: `<img
+							src="${PIC_MAP['sportCommon'] + 'none.png'}"
+							alt="暫無圖片"
+							class="uni-card-sport-img"
+						/>`;
+
+					listEl.append(`
+						<div class="col-lg-6 col-sm-12">
+							<div class="uni-sport-card cursor-pointer" data-custom-id="${item.customSportId}">
+							<div class="d-flex align-items-center">
+								<div class="uni-card-l">
+								<div class="uni-card-title-block">
+									<div class="uni-card-title" title="${item.sportName}">${item.sportName}</div>
+								</div>
+								<div class="uni-card-sport-calories">
+									<i class="uni-theme-color pe-2 fa-solid fa-fire"></i>
+									<span class="counter uni-card-sport-calories-num">${item.sportEstimatedCalories || 0}</span> 大卡 / 小時
+								</div>
+								</div>
+								<div class="uni-card-r">
+								<div class="uni-card-sport-img-block">
+									${picHtml}
+								</div>
+								</div>
+							</div>
+							<div class="uni-card-sport-description-block">
+								<p class="uni-card-sport-description" title="${item.sportDescription}">${item.sportDescription || ''}</p>
+							</div>
+							<div class="d-flex justify-content-end gap-2 p-2">
+								<button class="btn btn-sm btn-outline-primary btn-edit" data-id="${item.customSportId}">編輯</button>
+								<button class="btn btn-sm btn-outline-danger btn-delete" data-id="${item.customSportId}">刪除</button>
+							</div>
+							</div>
+						</div>
+						`);
+				});
+
+				//
+				$(document).on('click', '#btnAddCustomSport', function () {
+					const modalEl = document.getElementById('customSportModal');
+					const modal = new bootstrap.Modal(modalEl);
+					modal.show();
+				});
+
+				// custom click select
+				listEl.on('click', '.uni-sport-card', function () {
+					selectedSportId = null;
+					selectedCustomSportId = Number($(this).data('custom-id'));
+					
+					console.log('selectedCustomSportId choose: ', selectedSportFrom, selectedSportId, selectedCustomSportId);
+
+					// 移除所有卡片的高亮
+					listEl
+						.find('.uni-sport-card')
+						.removeClass('border border-3 border-theme-red');
+
+					// 對當前點擊的卡片加上高亮
+					$(this).addClass('border border-3 border-theme-red');
+				});
+			}
+
+			// ------ Step2：新增自訂義運動（Modal） ------
+			async function onCreateCustomSport(e) {
+				e.preventDefault();
+				const name = document
+					.getElementById('customSportName')
+					.value.trim();
+				const desc = document
+					.getElementById('customSportDesc')
+					.value.trim();
+				const cal = Number(
+					document.getElementById('customSportCalories').value
+				);
+				const calStr = (
+					document.getElementById('customSportCalories').value || ''
+				).trim();
+
+				if (!name) {
+					alert('名稱必填');
+					return;
+				}
+				if (!desc) {
+					alert('描述必填');
+					return;
+				}
+
+				// 驗證 消耗卡路里 kcal) 必須為大於 0 的正整數，不能有小數點
+				if (
+					!/^[1-9]\d*$/.test(calStr) ||
+					calStr.includes('.') ||
+					calStr.endsWith('.')
+				) {
+					alert(
+						'消耗卡路里需為大於 0 的正整數，不能有小數點或小數點結尾'
+					);
+					return;
+				}
+
+				// 圖片處理
+				const fileInput = $('#addCustomSportPic')[0];
+				let picBase64 = null;
+				let file = null;
+				if (fileInput && fileInput.files && fileInput.files[0]) {
+					file = fileInput.files[0];
+
+					if (!file.type.startsWith('image/')) {
+						alert('請上傳圖片檔案 (jpg/jpeg/png)');
+						return;
+					}
+					if (file.size > 4 * 1024 * 1024) {
+						alert('圖片大小不得超過 4MB');
+						return;
+					}
+
+					picBase64 = await new Promise((resolve, reject) => {
+						const reader = new FileReader();
+						reader.onload = (e) => resolve(e.target.result);
+						reader.onerror = () => {
+							alert('圖片讀取失敗，請重新選擇');
+							reject(null);
+						};
+						reader.readAsDataURL(file);
+					});
+				}
+
+				let uploadResult = null;
+				if (file) {
+					uploadResult = await uploadFileImg('customSport', file);
+					if (!uploadResult || !uploadResult?.fileName) {
+						alert('圖片上傳失敗');
+						return;
+					}
+				}
+
+				console.log('uploadResult', uploadResult);
+
+				const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+					API_MAP.insertCustomSport,
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							sports: [
+								{
+									customSportId: null,
+									sportName: name,
+									sportDescription: desc,
+									sportEstimatedCalories: cal,
+									sportPic: uploadResult?.fileName || null,
+									sportDataStatus: 1,
+									userId: currSidebar
+								}
+							]
+						})
+					}
+				);
+				if (retResult) {
+					// 關閉 modal & 清空表單 & 重新載入列表
+					const modalEl = document.getElementById('customSportModal');
+					bootstrap.Modal.getInstance(modalEl).hide();
+					document.getElementById('addCustomSportForm').reset();
+					await loadCustomSports();
+
+					alert('新增成功');
+
+					// 幫剛新增的項目加上高亮（第一筆），並儲存選中id值
+					const firstCard = document.querySelector(
+						'#sportList .uni-sport-card'
+					);
+					if (firstCard) {
+						selectedCustomSportId = Number(
+							firstCard.getAttribute('data-custom-id')
+						);
+						selectedSportId = null;
+						selectedSportFrom = 'custom', 
+						selectedTypeId = 3;
+						lastSelectedTypeId = 3;
+
+						firstCard.classList.add(
+							'border',
+							'border-3',
+							'border-theme-red'
+						);
+					}
+				} else {
+					alert('新增失敗');
+					console.error(
+						'workoutPlan_addPlan insertCustomSport error: ',
+						retMsg
+					);
+				}
+			}
+
+			// 自訂義Add Modal - 新增圖片上傳
+			$('#addCustomSportPic').on('change', function () {
+				const file = this.files[0];
+				const preview = $('#addCustomSportPicPreview');
+				preview.empty();
+
+				if (file) {
+					const reader = new FileReader();
+					reader.onload = function (e) {
+						preview.html(
+							`<img src="${e.target.result}" alt="預覽圖片" style="max-height: 300px">`
+						);
+					};
+					reader.readAsDataURL(file);
+				} else {
+					preview.html(
+						'<span class="uni-pic-none-text">尚無圖片</span>'
+					);
+				}
+			});
+
+			// 自訂義Edit Modal - 編輯圖片上傳
+			$('#editCustomSportPic').on('change', function () {
+				const file = this.files[0];
+				const preview = $('#editCustomSportPicPreview');
+				preview.empty();
+
+				if (file) {
+					const reader = new FileReader();
+					reader.onload = function (e) {
+						preview.html(
+							`<img src="${e.target.result}" alt="預覽圖片">`
+						);
+					};
+					reader.readAsDataURL(file);
+				} else {
+					preview.html(
+						'<span class="uni-pic-none-text">尚無圖片</span>'
+					);
+				}
+			});
+
+			// ------ Step2：編輯自訂義運動 ------
+			$('#sportList').on('click', '.btn-edit', function (e) {
+				e.stopPropagation();
+				const id = $(this).data('id');
+				if (!id) {
+					alert('找不到要編輯的運動 ID');
+					return;
+				}
+
+				const sport = currentCustomSports.find(
+					(x) => x.customSportId === id
+				);
+				if (!sport) {
+					alert('找不到對應的運動資料');
+					return;
+				}
+
+				// 填入 modal
+				$('#editCustomSportId').val(sport.customSportId);
+				$('#editCustomSportName').val(sport.sportName);
+				$('#editCustomSportDesc').val(sport.sportDescription);
+				$('#editCustomSportCalories').val(sport.sportEstimatedCalories);
+				$('#editCustomSportPic').val('');
+				const previewNewPic = $('#editCustomSportPicPreview');
+				previewNewPic.html(
+					'<span class="uni-pic-none-text">尚無圖片</span>'
+				);
+
+				// 原圖片預覽（如果有 sportPic 就顯示）
+				const preview = $('#editCustomSportPicPreviewOriginal');
+				const picOriginalName = $('#editCustomSportPicOriginalName');
+				if (preview) {
+					preview.empty();
+					if (sport.sportPic) {
+						preview.html(
+							`<img src="${PIC_MAP['customSport'] + sport.sportPic}" alt="${sport.sportPic}" style="max-height:300px;"/>`
+						);
+					} else {
+						preview.html(
+							'<span class="uni-pic-none-text">無原圖</span>'
+						);
+					}
+				}
+				if (picOriginalName) {
+					if (sport.sportPic) {
+						picOriginalName.val(sport.sportPic);
+					} else {
+						picOriginalName.val('');
+					}
+				}
+
+				// 開啟 modal
+				new bootstrap.Modal(
+					document.getElementById('editCustomSportModal')
+				).show();
+			});
+
+			// ------ Step2：送出編輯自訂義運動 ------
+			// $('#editCustomSportForm').on('submit', async function (e) {
+			$('#editCustomSportConfirmBtn').on('click', async function (e) {
+				console.log('送出編輯自訂義運動');
+				e.preventDefault();
+				const id = Number($('#editCustomSportId').val());
+				const name = $('#editCustomSportName').val().trim();
+				const desc = $('#editCustomSportDesc').val().trim();
+				const cal = Number($('#editCustomSportCalories').val());
+				const calStr = (
+					$('#editCustomSportCalories').val() || ''
+				).trim();
+
+				if (!id) {
+					alert('缺少運動 ID');
+					return;
+				}
+				if (!name) {
+					alert('名稱必填');
+					return;
+				}
+				if (!desc) {
+					alert('描述必填');
+					return;
+				}
+
+				// 驗證 消耗卡路里 kcal) 必須為大於 0 的正整數，不能有小數點
+				if (
+					!/^[1-9]\d*$/.test(calStr) ||
+					calStr.includes('.') ||
+					calStr.endsWith('.')
+				) {
+					alert(
+						'消耗卡路里需為大於 0 的正整數，不能有小數點或小數點結尾'
+					);
+					return;
+				}
+
+				// 圖片處理
+				// 拿原圖名稱
+				const editPicOriginalName = $('#editCustomSportPicOriginalName')
+					.val()
+					.trim();
+
+				// 處理更新圖片
+				const fileInput = $('#editCustomSportPic')[0];
+				let picBase64 = null;
+				let file = null;
+				if (fileInput && fileInput.files && fileInput.files[0]) {
+					file = fileInput.files[0];
+
+					if (!file.type.startsWith('image/')) {
+						alert('請上傳圖片檔案 (jpg/jpeg/png)');
+						return;
+					}
+					if (file.size > 4 * 1024 * 1024) {
+						alert('圖片大小不得超過 4MB');
+						return;
+					}
+
+					picBase64 = await new Promise((resolve, reject) => {
+						const reader = new FileReader();
+						reader.onload = (e) => resolve(e.target.result);
+						reader.onerror = () => {
+							alert('圖片讀取失敗，請重新選擇');
+							reject(null);
+						};
+						reader.readAsDataURL(file);
+					});
+				}
+
+				let finalSendPic = null;
+				let updateOrUploadResult = false;
+				// 有原圖、有更新圖片
+				if (editPicOriginalName && file) {
+					// 更新上傳的圖片 (會刪除 原圖片)
+					let updateResult = await updateFileImg(
+						'customSport',
+						editPicOriginalName,
+						file
+					);
+					if (!updateResult || !updateResult?.fileName) {
+						updateOrUploadResult = false;
+					}
+
+					console.log('updateResult', updateResult);
+					finalSendPic = updateResult.fileName || null;
+
+					updateOrUploadResult = true;
+				} else if (!editPicOriginalName && file) {
+					// 無原圖、有更新圖片
+					// 直接上傳
+					let uploadResult = await uploadFileImg('customSport', file);
+					if (!uploadResult || !uploadResult?.fileName) {
+						updateOrUploadResult = false;
+					}
+
+					console.log('uploadResult', uploadResult);
+					finalSendPic = uploadResult.fileName || null;
+
+					updateOrUploadResult = true;
+				} else if (editPicOriginalName && !file) {
+					// 有原圖、無更新圖片
+					finalSendPic = editPicOriginalName;
+
+					updateOrUploadResult = true;
+				} else {
+					// 無原圖、無更新圖片
+					finalSendPic = null;
+
+					updateOrUploadResult = true;
+				}
+
+				if (!updateOrUploadResult) {
+					return;
+				}
+
+				const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+					API_MAP.updateCustomSport,
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							sports: [
+								{
+									customSportId: id,
+									sportName: name,
+									sportDescription: desc,
+									sportEstimatedCalories: cal,
+									sportPic: finalSendPic,
+									sportDataStatus: 1,
+									userId: currSidebar
+								}
+							]
+						})
+					}
+				);
+				if (retResult) {
+					alert('更新成功');
+					bootstrap.Modal.getInstance(
+						document.getElementById('editCustomSportModal')
+					).hide();
+					await loadCustomSports();
+				} else {
+					console.error(
+						'workoutPlan_addPlan updateCustomSport error retMsg: ',
+						retMsg
+					);
+					alert('更新失敗，請稍後再試');
+				}
+			});
+
+			// ------ Step2：刪除自訂義運動 ------
+			$('#sportList').on('click', '.btn-delete', async function (e) {
+				e.stopPropagation();
+				const id = $(this).data('id');
+				if (!id) {
+					alert('找不到要刪除的運動 ID');
+					return;
+				}
+
+				if (!confirm('確定要刪除這個運動嗎？')) return;
+
+				const { retResult, retData, retMsg } = await csrfSafeCallAPI(
+					API_MAP.deleteCustomSport,
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							sportIds: [id],
+							sportDataStatus: 0
+						})
+					}
+				);
+				if (retResult) {
+					alert('刪除成功');
+					await loadCustomSports();
+				} else {
+					console.error(
+						'workoutPlan_addPlan deleteCustomSport error retMsg: ',
+						retMsg
+					);
+					alert('刪除失敗，請稍後再試');
+				}
+			});
+
+			// ------ Step3：FullCalendar 初始化 & 選擇日期管理 ------
+			let calendarInited = false;
+			let calendarInstance = null;
+			function initCalendarIfNeeded() {
+				if (calendarInited) {
+					if (calendarInstance) {
+						try {
+							calendarInstance.updateSize();
+						} catch (e) {}
+					}
+					return;
+				}
+				calendarInited = true;
+
+				const todayDateStr = moment().format('YYYY-MM-DD');
+				const calendarEl = document.getElementById(
+					'workout_plan_choose_calendar'
+				);
+
+				calendarInstance = new FullCalendar.Calendar(calendarEl, {
+					schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+					headerToolbar: {
+						left: '',
+						center: 'title prev,next',
+						right: ''
+					},
+					initialDate: todayDateStr,
+					navLinks: false,
+					nowIndicator: true,
+					editable: false,
+					selectable: true,
+					dayMaxEvents: false,
+					dateClick: function (info) {
+						// toggle select
+						const dateStr = info.dateStr;
+
+						const idx = selectedDates.findIndex(
+							(d) => d.date === dateStr
+						);
+						if (idx >= 0) {
+							selectedDates.splice(idx, 1);
+							info.dayEl.classList.remove('uni-cal-is-pick');
+						} else {
+							selectedDates.push({
+								date: dateStr,
+								time: null,
+								notify: 0
+							});
+							info.dayEl.classList.add('uni-cal-is-pick');
+						}
+						refreshSelectedDatesUI();
+					}
+				});
+
+				calendarInstance.render();
+				setTimeout(() => {
+					try {
+						calendarInstance.updateSize();
+					} catch (e) {}
+				}, 0);
+			}
+
+			function refreshSelectedDatesUI() {
+				document.getElementById('selectedCount').innerText = String(
+					selectedDates.length
+				);
+				const list = document.getElementById('selectedDatesList');
+				list.innerHTML = '';
+				const datesSorted = selectedDates
+					.slice()
+					.sort((a, b) => a.date.localeCompare(b.date));
+				datesSorted.forEach((d) => {
+					const row = document.createElement('div');
+					row.className =
+						'selected-date-pill d-flex justify-content-between align-items-center gap-3 p-3 pt-2 pb-3 flex-wrap';
+					row.innerHTML = `
+						  	<div>
+								<div class="uni-cal-choose-dates">${d.date}</div>
+								<div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+									<div class="position-relative me-3" style="width:200px">
+										<input type="time" class="form-control form-control-sm pe-4 date-time-input" style="min-width: 100px; max-width: 200px; height: 30px;" value="${d.time ? d.time : ''}"/>
+										<span class="clear-time position-absolute top-50 end-0 translate-middle-y me-2 cursor-pointer" title="清空時間">&times;</span>
+									</div>
+									<div class="form-check form-switch m-0">
+										<input class="form-check-input date-notify-switch" type="checkbox" ${d.notify ? 'checked' : ''}>
+									</div>
+								</div>
+							</div>
+							<div class="pe-2 pt-1">
+								<button class="remove-btn" aria-label="移除此日期" title="移除此日期"><i class="fa-solid fa-xmark"></i></button>
+							</div>
+						`;
+
+					// 綁定清空時間 (在時間輸入框內的 ×)
+					row.querySelector('.clear-time').addEventListener(
+						'click',
+						() => {
+							const obj = selectedDates.find(
+								(x) => x.date === d.date
+							);
+							if (obj) obj.time = null;
+							row.querySelector('.date-time-input').value = '';
+						}
+					);
+
+					// 綁定刪除
+					row.querySelector('.remove-btn').addEventListener(
+						'click',
+						() => {
+							const idx = selectedDates.findIndex(
+								(x) => x.date === d.date
+							);
+							if (idx >= 0) selectedDates.splice(idx, 1);
+							document
+								.querySelectorAll('.fc-daygrid-day')
+								.forEach((cell) => {
+									const cellDate =
+										cell.getAttribute('data-date');
+									if (!cellDate) return;
+									if (
+										selectedDates.some(
+											(x) => x.date === cellDate
+										)
+									)
+										cell.classList.add('uni-cal-is-pick');
+									else
+										cell.classList.remove(
+											'uni-cal-is-pick'
+										);
+								});
+							refreshSelectedDatesUI();
+						}
+					);
+					// 綁定時間
+					row.querySelector('.date-time-input').addEventListener(
+						'change',
+						(e) => {
+							const obj = selectedDates.find(
+								(x) => x.date === d.date
+							);
+							if (obj) obj.time = e.target.value || null;
+						}
+					);
+					// 綁定提醒開關
+					row.querySelector('.date-notify-switch').addEventListener(
+						'change',
+						(e) => {
+							const obj = selectedDates.find(
+								(x) => x.date === d.date
+							);
+							if (obj) obj.notify = e.target.checked ? 1 : 0;
+						}
+					);
+					list.appendChild(row);
+				});
+			}
+
+			// ------ 恢復已選擇的分類與運動高亮 ------
+			function restoreSelectedHighlight() {
+				// 分類
+				if (selectedTypeId) {
+					document
+						.querySelectorAll('#sportTypeList .uni-sport-type-card')
+						.forEach((c) => {
+							if (
+								Number(c.getAttribute('data-type-id')) ===
+								selectedTypeId
+							) {
+								c.classList.add('active');
+							} else {
+								c.classList.remove('active');
+							}
+						});
+				}
+				// 運動
+				if (selectedSportFrom === 'system' && selectedSportId) {
+					document
+						.querySelectorAll('#sportList .uni-sport-card')
+						.forEach((c) => {
+							if (
+								Number(c.getAttribute('data-sport-id')) ===
+								selectedSportId
+							) {
+								c.classList.add(
+									'border',
+									'border-3',
+									'border-theme-red'
+								);
+							}
+						});
+				}
+				// 自訂義運動
+				if (selectedSportFrom === 'custom' && selectedCustomSportId) {
+					document
+						.querySelectorAll('#sportList .uni-sport-card')
+						.forEach((c) => {
+							if (
+								Number(c.getAttribute('data-custom-id')) ===
+								selectedCustomSportId
+							) {
+								c.classList.add(
+									'border',
+									'border-3',
+									'border-theme-red'
+								);
+							}
+						});
+				}
+			}
+
+			// ------ Step4：送出 insertMultiple ------
+			async function submitPlans(e) {
+				e.preventDefault();
+				if (selectedSportFrom === 'system' && !selectedSportId) {
+					alert('第二步驟: 請選擇一項運動');
+
+					stepper.to(2);
+					setTimeout(() => restoreSelectedHighlight(), 200);
+
+					return;
+				}
+				if (selectedSportFrom === 'custom' && !selectedCustomSportId) {
+					alert('第二步驟: 請選擇一項自訂義運動');
+
+					stepper.to(2);
+					setTimeout(() => restoreSelectedHighlight(), 200);
+
+					return;
+				}
+				if (selectedDates.length === 0) {
+					alert('第三步驟: 請選擇至少一天');
+					stepper.to(3);
+					return;
+				}
+
+				const name = document.getElementById('planName').value.trim();
+				const minutes = Number(
+					document.getElementById('planMinutes').value
+				);
+				const minuteStr = document
+					.getElementById('planMinutes')
+					.value.trim();
+
+				if (!name) {
+					alert('請填寫計畫名稱');
+					return;
+				}
+				// 驗證分鐘數：只能是大於 0 的正整數
+				if (!/^[1-9]\d*$/.test(minuteStr)) {
+					alert('分鐘數請填大於 0 的正整數');
+					minuteInputEl.focus();
+					return;
+				}
+
+				// 依規格：每個日期是一筆資料
+
+				const list = selectedDates.map((d) => ({
+					workoutPlanId: null,
+					workoutPlanName: name,
+					userId: currSidebar,
+					sportFrom:
+						selectedSportFrom === 'custom' ? 'custom' : 'system',
+					sportId:
+						selectedSportFrom === 'system' ? selectedSportId : null,
+					customSportId:
+						selectedSportFrom === 'custom'
+							? selectedCustomSportId
+							: null,
+					workoutPlanDate: d.date,
+					workoutPlanTime: d.time, // 可能是 null
+					workoutPlanIsNotify: d.notify,
+					workoutPlanExpectedDuration: minutes
+				}));
+
+				let { retResult, retData, retMsg } = await csrfSafeCallAPI(
+					API_MAP.insertWorkoutPlan,
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ list })
+					}
+				);
+				if (retResult) {
+					alert('已新增 ' + list.length + ' 筆計畫！');
+					// 清空狀態
+					resetWizard();
+					window.location.href = '/dMain/fd/workoutPlan_main';
+				} else {
+					console.error(
+						'workoutPlan_addPlan insertWorkoutPlan error retMsg: ',
+						retMsg
+					);
+					alert('新增失敗，請稍後再試');
+				}
+			}
+
+			function resetWizard() {
+				selectedTypeId = null;
+				selectedSportFrom = null;
+				selectedSportId = null;
+				selectedCustomSportId = null;
+				selectedDates = [];
+				document.getElementById('planForm').reset();
+				document.getElementById('selectedDatesList').innerHTML = '';
+				document.getElementById('selectedCount').innerText = '0';
+				// 清掉第二步列表與高亮
+				document.getElementById('sportList').innerHTML = '';
+				// 回第一步並重新載入分類
+				stepper.to(1);
+				loadSportTypes();
+				// 清除日曆選擇樣式
+				document
+					.querySelectorAll('.fc-daygrid-day')
+					.forEach((cell) =>
+						cell.classList.remove('uni-cal-is-pick')
+					);
+			}
+
+			// ------ To ensure FullCalendar fills width when (re)entering Step 3 ------
+			(function () {
+				const stepperEl = document.querySelector(
+					'#uni-add-plan-stepper'
+				);
+				if (!stepperEl) return;
+
+				function ensureCalendarSized(attempts = 6) {
+					if (!calendarInstance) return;
+					try {
+						calendarInstance.render();
+					} catch (e) {}
+					try {
+						calendarInstance.updateSize();
+					} catch (e) {}
+					if (attempts > 1) {
+						setTimeout(() => ensureCalendarSized(attempts - 1), 80);
+					}
+				}
+
+				stepperEl.addEventListener(
+					'shown.bs-stepper',
+					function (event) {
+						const idx =
+							event && event.detail
+								? event.detail.indexStep
+								: undefined;
+						const isStep3 =
+							idx === 2 ||
+							(document.getElementById('step-3') &&
+								document
+									.getElementById('step-3')
+									.classList.contains('active'));
+						if (isStep3 && calendarInstance) {
+							// 確保在CSS過渡 / 隱藏容器時正常，排隊重新整理
+							try {
+								requestAnimationFrame(() =>
+									ensureCalendarSized(1)
+								);
+							} catch (e) {
+						       // requestAnimationFrame 可能不可用
+							}
+							setTimeout(() => ensureCalendarSized(1), 0);
+							setTimeout(() => ensureCalendarSized(3), 120);
+							setTimeout(() => ensureCalendarSized(2), 300);
+						}
+					}
+				);
+
+				// Also fix on window resize
+				window.addEventListener('resize', function () {
+					if (calendarInstance) {
+						try {
+							calendarInstance.updateSize();
+						} catch (e) {}
+					}
+				});
+			})();
+
+		</script>
+	</body>
+</html>

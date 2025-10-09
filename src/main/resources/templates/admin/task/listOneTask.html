@@ -5,17 +5,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <title>listOneTask</title>
+  <title>任務詳情｜listOneTask</title>
+
+  <!-- 延用你專案的共用片段（含 Bootstrap 等） -->
 
   <head th:insert="~{/admin/task/included-fragment}"></head>
 
   <style>
+    /*
+      ──────────────────────────────────────────────────────────────
+      • 設計重點
+        - 更精緻的卡片、標題列與操作列
+        - 響應式兩欄細節格線
+        - 亮/暗色系自動適配
+        - 更好的可讀性與間距
+      ──────────────────────────────────────────────────────────────
+    */
+
     :root {
-      --card-bg: #fff;
-      --card-border: #dee2e6;
-      --muted: #6c757d;
-      --soft: #f8f9fa;
+      --bg: #f6f7f9;
+      --text: #111827;
+      --muted: #6b7280;
+      --primary: #198754;
+      /* 保留與現有專案一致的綠色 */
+      --primary-weak: #e7f6ee;
+      --card-bg: #ffffff;
+      --card-border: #e5e7eb;
+      --soft: #f3f4f6;
+      --shadow: 0 10px 25px rgba(0, 0, 0, .06);
       --nav-h: 72px;
+      --radius: 16px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b0e13;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --primary-weak: rgba(25, 135, 84, .15);
+        --card-bg: #0f141b;
+        --card-border: #1f2937;
+        --soft: #0c1117;
+        --shadow: 0 10px 25px rgba(0, 0, 0, .35);
+      }
+    }
+
+    html,
+    body {
+      background: var(--bg);
+      color: var(--text);
     }
 
     body {
@@ -27,48 +65,83 @@
     }
 
     .container-narrow {
-      max-width: 900px;
+      max-width: 980px;
       margin: 0 auto;
-      padding: 0 12px;
+      padding: 0 16px;
     }
 
-    /* Simple0 卡片樣式 */
+    /* 導覽列：更簡潔且與內容對齊 */
+    .navbar-brand img {
+      height: 22px;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    .navbar h2 {
+      font-size: 1.25rem;
+      letter-spacing: .5px;
+    }
+
+    /* 卡片 */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: .5rem;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
     .card-header {
-      padding: .75rem 1rem;
+      padding: 1rem 1.25rem;
       border-bottom: 1px solid var(--card-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      background: linear-gradient(180deg, var(--soft), transparent);
     }
 
     .card-title {
       margin: 0;
       font-size: 1.1rem;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: .3px;
     }
 
     .card-body {
-      padding: 1rem;
+      padding: 1.25rem;
     }
 
     .card-footer {
-      padding: .75rem 1rem;
+      padding: 1rem 1.25rem;
       border-top: 1px solid var(--card-border);
       background: var(--soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem;
     }
 
-    /* 詳細資料：兩欄對齊 */
+    /* 詳細資料：兩欄對齊 + 漸層分割線 */
+    .details {
+      display: grid;
+      gap: 20px;
+      position: relative;
+    }
+
+    .details::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent 0, rgba(0, 0, 0, .04) 6%, transparent 12%);
+      mask: linear-gradient(#000 0 0) top/100% 2px no-repeat;
+    }
+
     .details-grid {
       display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: .5rem .75rem;
+      grid-template-columns: 180px 1fr;
+      gap: .5rem 1rem;
       align-items: center;
     }
 
@@ -78,46 +151,69 @@
       }
     }
 
-    .details-grid .label {
+    .label {
       font-weight: 700;
-      color: #333;
+      color: var(--muted);
+      letter-spacing: .3px;
     }
 
-    .details-grid .value {
-      color: #111;
+    .value {
+      color: var(--text);
+      word-break: break-word;
     }
 
-    .badge {
-      display: inline-block;
-      padding: .25rem .5rem;
-      border-radius: .375rem;
-      font-size: .75rem;
-      background: #e7f1ff;
+    .value strong {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    /* 圖片縮圖 */
+    .img-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .img-thumb {
-      display: block;
-      width: 140px;
-      height: 140px;
+      width: 160px;
+      height: 160px;
       object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      background: repeating-linear-gradient(45deg, var(--soft), var(--soft) 10px, transparent 10px, transparent 20px);
+    }
+
+    /* 徽章與按鈕 */
+    .badge {
+      display: inline-block;
+      padding: .35rem .6rem;
       border-radius: .5rem;
-      border: 1px solid #e9ecef;
+      font-size: .78rem;
+      background: var(--primary-weak);
     }
 
     .btn {
-      display: inline-block;
-      padding: .375rem .75rem;
-      border: 1px solid #198754;
-      color: #198754;
-      background: #fff;
-      border-radius: .375rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .5rem .9rem;
+      border-radius: .6rem;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      background: transparent;
       text-decoration: none;
-      font-size: .9rem;
+      font-size: .95rem;
       cursor: pointer;
+      transition: .2s ease;
+      user-select: none;
     }
 
     .btn:hover {
-      background: #198754;
+      background: var(--primary);
       color: #fff;
     }
 
@@ -130,126 +226,155 @@
       background: #6c757d;
       color: #fff;
     }
+
+    .btn-ghost {
+      border-color: transparent;
+      color: var(--muted);
+    }
+
+    .btn-ghost:hover {
+      background: var(--soft);
+      color: var(--text);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+    }
+
+    /* 表頭右側輔助訊息 */
+    .subtle {
+      font-size: .85rem;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    /* 小工具：提示列 */
+    .hint {
+      font-size: .85rem;
+      color: var(--muted);
+    }
+
+    /* 打印最佳化 */
+    @media print {
+
+      .navbar,
+      .card-footer,
+      #pageScripts {
+        display: none !important;
+      }
+
+      body {
+        padding-top: 0;
+      }
+
+      .card {
+        box-shadow: none;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <!-- 導覽列：延續 bg-success 與返回連結 -->
-  <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top justify-content-center">
-    <div class="text-center">
-      <h2 class="m-0">任務個人資料 - listOneTask</h2>
-      <div class="mt-1">
-        <a class="navbar-brand" th:href="@{/admin/tasks/select_page}"><img th:src="@{/images/back1.gif}" alt="返回">回查詢頁
-          <label th:text="${success}"></label></a>
-      </div>
+  <!-- 導覽列：延續 bg-success，排版更俐落 -->
+  <nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top">
+    <div class="container-narrow d-flex align-items-center justify-content-between w-100">
+      <a class="navbar-brand d-inline-flex align-items-center" th:href="@{/admin/tasks/select_page}">
+        <img th:src="@{/images/back1.gif}" alt="返回">回查詢頁
+      </a>
+      <h2 class="m-0 text-center flex-grow-1" style="letter-spacing:.5px">任務詳情</h2>
+      <span class="subtle" th:if="${success}">狀態：<span class="badge" th:text="${success}"></span></span>
     </div>
   </nav>
 
-  <!-- 單頁獨立顯示（直接進入本頁時） -->
   <div id="pageContent">
     <main class="container-narrow">
       <section class="card mt-3">
         <header class="card-header">
           <h3 class="card-title">查詢結果</h3>
-          <a class="btn btn-secondary" th:href="@{/admin/tasks/select_page}">返回</a>
+          <div class="toolbar">
+            <a class="btn-ghost btn" th:href="@{/admin/tasks/select_page}" title="返回查詢">返回</a>
+          </div>
         </header>
+
         <div class="card-body">
-          <div class="details-grid">
-            <div class="label">任務ID</div>
-            <div class="value" th:text="${taskVO.taskId}"></div>
-
-            <div class="label">任務名稱</div>
-            <div class="value" th:text="${taskVO.taskName}"></div>
-
-            <div class="label">任務類型</div>
-            <div class="value" th:text="${taskVO.taskTypeVO.taskTypeName}"></div>
-
-            <div class="label">目標值</div>
-            <div class="value" th:text="${taskVO.targetValue}"></div>
-
-            <div class="label">單位</div>
-            <div class="value" th:text="${taskVO.unit}"></div>
-
-            <div class="label">開始日</div>
-            <div class="value" th:text="${#temporals.format(taskVO.startTime, 'yyyy-MM-dd')}"></div>
-
-            <div class="label">結束日</div>
-            <div class="value" th:text="${#temporals.format(taskVO.endTime, 'yyyy-MM-dd')}"></div>
-
-            <div class="label">點數</div>
-            <div class="value" th:text="${taskVO.points}"></div>
-
-            <div class="label">建立人員ID</div>
-            <div class="value" th:text="${taskVO.adminId}"></div>
-
-            <div class="label">照片</div>
-            <div class="value">
-              <img class="img-thumb" th:src="@{/tasks/DBGifReader} + '?taskId=' + ${taskVO.taskId}" alt="任務圖示">
-            </div>
+          <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+              <tbody>
+                <tr>
+                  <th scope="row" style="width: 160px;">任務 ID</th>
+                  <td class="mono" th:text="${taskVO.taskId}"></td>
+                </tr>
+                <tr>
+                  <th scope="row">任務名稱</th>
+                  <td th:text="${taskVO.taskName}"></td>
+                </tr>
+                <tr>
+                  <th scope="row">任務類型</th>
+                  <td th:text="${taskVO.taskTypeVO.taskTypeName}"></td>
+                </tr>
+                <tr>
+                  <th scope="row">目標值</th>
+                  <td><strong th:text="${taskVO.targetValue}"></strong></td>
+                </tr>
+                <tr>
+                  <th scope="row">單位</th>
+                  <td th:text="${taskVO.unit}"></td>
+                </tr>
+                <tr>
+                  <th scope="row">開始日</th>
+                  <td th:text="${#temporals.format(taskVO.startTime, 'yyyy-MM-dd')}"></td>
+                </tr>
+                <tr>
+                  <th scope="row">結束日</th>
+                  <td th:text="${#temporals.format(taskVO.endTime, 'yyyy-MM-dd')}"></td>
+                </tr>
+                <tr>
+                  <th scope="row">點數</th>
+                  <td><strong th:text="${taskVO.points}"></strong></td>
+                </tr>
+                <tr>
+                  <th scope="row">建立人員 ID</th>
+                  <td class="mono" th:text="${taskVO.adminId}"></td>
+                </tr>
+                <tr>
+                  <th scope="row">圖騰</th>
+                  <td>
+                    <div class="img-wrap">
+                      <img class="img-thumb" th:src="@{/tasks/DBGifReader} + '?taskId=' + ${taskVO.taskId}" alt="任務圖示">
+                      <span class="hint"></span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
+
         <footer class="card-footer">
-          <div>
-            <form th:action="@{/admin/tasks/getOne_For_Update}" method="post" style="display:inline">
+          <div class="toolbar">
+            <form th:action="@{/admin/tasks/getOne_For_Update}" method="post">
               <input type="hidden" name="taskId" th:value="${taskVO.taskId}" />
-              <button type="submit" class="btn">修改</button>
+              <button type="submit" class="btn" title="修改此任務">修改</button>
             </form>
-            <form th:action="@{/admin/tasks/delete}" method="post" style="display:inline;margin-left:.5rem">
+            <form th:action="@{/admin/tasks/delete}" method="post">
               <input type="hidden" name="taskId" th:value="${taskVO.taskId}" />
-              <button type="submit" class="btn btn-secondary">刪除</button>
+              <button type="submit" class="btn btn-secondary" title="刪除此任務">刪除</button>
             </form>
           </div>
+          <div class="hint"></div>
         </footer>
       </section>
     </main>
   </div>
 
-  <!-- 供 select_page 右側預覽區用的 fragment（相同視覺樣式） -->
-  <!--   <div th:fragment="listOneTask-div"> -->
-  <!--     <section class="card"> -->
-  <!--       <header class="card-header"> -->
-  <!--         <h3 class="card-title">查詢結果</h3> -->
-  <!--       </header> -->
-  <!--       <div class="card-body"> -->
-  <!--         <div class="details-grid"> -->
-  <!--           <div class="label">任務ID</div> -->
-  <!--           <div class="value" th:text="${taskVO.taskId}"></div> -->
-
-  <!--           <div class="label">任務名稱</div> -->
-  <!--           <div class="value" th:text="${taskVO.taskName}"></div> -->
-
-  <!--           <div class="label">任務類型</div> -->
-  <!--           <div class="value" th:text="${taskVO.taskTypeVO.taskTypeName}"></div> -->
-
-  <!--           <div class="label">目標值</div> -->
-  <!--           <div class="value" th:text="${taskVO.targetValue}"></div> -->
-
-  <!--           <div class="label">單位</div> -->
-  <!--           <div class="value" th:text="${taskVO.unit}"></div> -->
-
-  <!--           <div class="label">開始日</div> -->
-  <!--           <div class="value" th:text="${#temporals.format(taskVO.startTime, 'yyyy-MM-dd')}"></div> -->
-
-  <!--           <div class="label">結束日</div> -->
-  <!--           <div class="value" th:text="${#temporals.format(taskVO.endTime, 'yyyy-MM-dd')}"></div> -->
-
-  <!--           <div class="label">點數</div> -->
-  <!--           <div class="value"><span class="badge" th:text="${taskVO.points}"></span></div> -->
-
-  <!--           <div class="label">建立人員ID</div> -->
-  <!--           <div class="value" th:text="${taskVO.adminId}"></div> -->
-
-  <!--           <div class="label">照片</div> -->
-  <!--           <div class="value"> -->
-  <!--             <img class="img-thumb" th:src="@{/tasks/DBGifReader} + '?taskId=' + ${taskVO.taskId}" alt="任務圖示"> -->
-  <!--           </div> -->
-  <!--         </div> -->
-  <!--       </div> -->
-  <!--     </section> -->
-  <!--   </div> -->
+  <div id="pageScripts"></div>
 
   <script>
-    // 依實際 navbar 高度動態設定 body 上方留白，避免被蓋住
+    // 依實際 navbar 高度動態設定 body 上方留白，避免被蓋住（保留原有功能）
     (function () {
       function refreshNavPadding() {
         var nav = document.querySelector('.navbar.fixed-top');

@@ -32,7 +32,7 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 	// 側邊欄最新文章查詢 (前5)
 	@Query("""
 			    SELECT new com.tibafit.dto.article.ArticleSibebarInfoDTO(
-			        a.articleId, a.coverImageUrl, a.title, a.user.name, a.createTime
+			        a.articleId, a.coverImageUrl, a.title, a.user.nickName, a.user.email,a.createTime
 			    )
 			    FROM Article a
 			    WHERE a.isDeleted = false
@@ -43,7 +43,7 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 	// 查詢文章列表 (分頁，可用於文章列表頁)
 	@Query("""
 			    SELECT new com.tibafit.dto.article.ArticlePageDTO(
-			        a.articleId, a.title, a.user.name, a.views, a.createTime,
+			        a.articleId, a.title, a.user.nickName, a.user.email,a.views, a.createTime,
 			        a.forumType.forumTypeName, a.coverImageUrl
 			    )
 			    FROM Article a
@@ -67,6 +67,10 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 
 	@Query("""
 			    SELECT new com.tibafit.dto.article.ArticleDetailDTO(
+			    	u.userId,
+			    	u.profilePicture,
+			    	u.email,
+			    	u.nickName,
 			        a.articleId,
 			        a.title,
 			        a.content,
@@ -96,7 +100,8 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 	        ac.article.articleId,
 	        ac.article.coverImageUrl,
 	        ac.article.title,
-	        ac.article.user.name,
+	        ac.article.user.nickName,
+	        ac.article.user.email,
 	        ac.article.createTime
 	    )
 	    FROM ArticleCollection ac
