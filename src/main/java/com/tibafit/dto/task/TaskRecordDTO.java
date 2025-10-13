@@ -29,9 +29,9 @@ public class TaskRecordDTO {
     d.userEndTime   = (vo.getUserEndTime()==null)? null : vo.getUserEndTime().format(ISO);
 
     if (vo.getTaskRecordStatusVO() != null) {
-      d.statusId = vo.getTaskRecordStatusVO().getTaskRecordStatus(); // 依你的欄位名調整
+      d.statusId = vo.getTaskRecordStatusVO().getTaskRecordStatus();
       try {
-        // 若有名稱/代碼方法，請改成你的 getter（沒有就留 null）
+        
         d.statusName = (String) vo.getTaskRecordStatusVO().getClass()
           .getMethod("getStatusName").invoke(vo.getTaskRecordStatusVO());
       } catch (Exception ignore) {}
