@@ -39,10 +39,6 @@ public class TaskVO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "task_id")
     private Integer taskId;
-
-//    @NotNull
-//    @Column(name = "task_type_id", nullable = false)
-//    private Integer taskTypeId;
     
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "task_type_id", nullable = false,
@@ -80,11 +76,6 @@ public class TaskVO {
     @Max(127)
     @Column(name = "points", nullable = false)
     private Integer points = 0;
-
-//    @NotNull
-//    @Size(max = 2083)
-//    @Column(name = "task_icon", length = 2083, nullable = false)
-//    private String taskIcon;
     
     @Lob
     @Basic(fetch = FetchType.LAZY) // LAZY 可避免列表時把整張圖拉出來
@@ -123,9 +114,6 @@ public class TaskVO {
 
     public Integer getPoints() { return points; }
     public void setPoints(Integer points) { this.points = points; }
-
-//    public String getTaskIcon() { return taskIcon; }
-//    public void setTaskIcon(String taskIcon) { this.taskIcon = taskIcon; }
     
     public byte[] getTaskIcon() {
 		return taskIcon;

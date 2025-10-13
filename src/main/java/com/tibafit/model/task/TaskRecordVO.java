@@ -35,28 +35,21 @@ public class TaskRecordVO {
     @Column(name = "task_record_id")
     private Integer taskRecordId;   // PK AUTO_INCREMENT
 
-    // ------ 關聯（多方擁有端維護外鍵）------
-    // 使用者：若你已經有 UserVO 實體，建議用 ManyToOne；若尚未有，先保留 userId 整數欄位（見下方 B 版）
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
         name = "user_id",
         nullable = false,
         foreignKey = @ForeignKey(name = "fk_task_record_user")
     )
-    private User user; // TODO: 沒有 UserVO 就先用 B 版
+    private User user;
     
- // B 版：沒有 UserVO 時
-//    @NotNull
-//    @Column(name = "user_id", nullable = false)
-//    private Integer userId;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
         name = "task_id",
         nullable = false,
         foreignKey = @ForeignKey(name = "fk_task_record_task")
     )
-    private TaskVO taskVO; // 指向你剛完成的 Task
+    private TaskVO taskVO;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
@@ -64,9 +57,8 @@ public class TaskRecordVO {
         nullable = false,
         foreignKey = @ForeignKey(name = "fk_task_record_status_code")
     )
-    private TaskRecordStatusVO taskRecordStatusVO; // 下面第 2 點提供最小版本
+    private TaskRecordStatusVO taskRecordStatusVO;
 
-    // ------ 其他欄位 ------
     @NotNull
     @Column(name = "user_start_time", nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
@@ -91,12 +83,6 @@ public class TaskRecordVO {
 	public void setTaskRecordStatusVO(TaskRecordStatusVO taskRecordStatusVO) {
 		this.taskRecordStatusVO = taskRecordStatusVO;
 	}
-//	public Integer getUserId() {
-//		return userId;
-//	}
-//	public void setUserId(Integer userId) {
-//		this.userId = userId;
-//	}
 	
 	public TaskVO getTaskVO() { return taskVO; }
     public void setTaskVO(TaskVO taskVO) { this.taskVO = taskVO; }
