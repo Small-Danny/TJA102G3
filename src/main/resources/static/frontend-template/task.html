@@ -19,7 +19,6 @@
     <link rel="stylesheet" type="text/css" href="/frontend-template/assets/css/header.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* ---- 運動風格（紅黑主題）for 任務分頁 ---- */
         :root {
             --sport-red: #e11d2e;
             /* 主紅 */
@@ -54,7 +53,6 @@
             box-shadow: 0 6px 14px rgba(0, 0, 0, .15);
         }
 
-        /* active 狀態：紅底白字，帶些陰影 */
         .task-tabs .nav-link.active {
             background: linear-gradient(135deg, var(--sport-red), var(--sport-red-dark));
             color: #fff !important;
@@ -63,7 +61,6 @@
             transform: translateY(-1px);
         }
 
-        /* 小型裝置下讓 pill 更好點 */
         @media (max-width: 576px) {
             .task-tabs .nav-link {
                 padding: .55rem .9rem;
@@ -71,7 +68,6 @@
             }
         }
 
-        /* ---- 原頁面輕量樣式（保留） ---- */
         .section-head {
             display: flex;
             align-items: center;
@@ -134,11 +130,8 @@
 </head>
 
 <body>
-    <!-- Header Style One Start -->
     <div id="header-placeholder"></div>
-    <!-- Header Style One End -->
 
-    <!-- Banner Style One Start -->
     <section class="banner-style-one">
         <div class="parallax" style="background-image: url(https://via.placeholder.com/1920x640);"></div>
         <div class="container">
@@ -152,12 +145,10 @@
             </div>
         </div>
     </section>
-    <!-- Banner Style One End -->
 
-    <!-- 內頁標題區（沿用模板常見區塊寫法） -->
     <section class="gap">
         <div class="container">
-            <!-- 分頁：紅黑運動風格 -->
+            <!-- 分頁 -->
             <ul class="nav nav-pills justify-content-center task-tabs mb-4" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="tab-current" data-bs-toggle="pill"
@@ -202,36 +193,20 @@
         </div>
     </section>
 
-    <!-- Footer Style One Start -->
     <div id="footer-placeholder"></div>
-    <!-- Footer Style One End -->
 
-    <!-- 依樣式順序附上模板腳本（若模板另有組合檔，請改成相同路徑） -->
-    <!-- <script src="assets/js/custom.js"></script> -->
     <script src="/frontend-template/assets/js/api.js"></script>
 
     <script>
-        // ====== API 基本設定（依你的環境調整） ======
-        const API_BASE = 'http://tibafit.ddns.net/'; // 若與頁面同網域，可用 ''（空字串）代表同源
-        // const API_BASE = (typeof window !== 'undefined' && window.API_BASE) ? window.API_BASE : '';
+        // ====== API 基本設定 ======
+        // const API_BASE = 'http://tibafit.ddns.net/';
+        const API_BASE = (typeof window !== 'undefined' && window.API_BASE) ? window.API_BASE : '';
         function join(base, path) {
             return base.replace(/\/+$/, '') + '/' + path.replace(/^\/+/, '');
         }
 
-        // 轉「本地時間」成 LocalDateTime（無時區）格式：yyyy-MM-dd'T'HH:mm:ss
-        function isoLocalNow() {
-            const d = new Date();
-            const pad = n => String(n).padStart(2, '0');
-            const yyyy = d.getFullYear();
-            const MM = pad(d.getMonth() + 1);
-            const dd = pad(d.getDate());
-            const HH = pad(d.getHours());
-            const mm = pad(d.getMinutes());
-            const ss = pad(d.getSeconds());
-            return `${yyyy}-${MM}-${dd} ${HH}:${mm}`;
-        }
 
-        // 3) 建立一筆（接取任務）— 不要再送 userId，交給後端從 Session 取出
+        //  建立一筆（接取任務）— 不要再送 userId，交給後端從 Session 取出
         async function apiCreateTaskRecord(taskId) {
             const body = { taskId: Number(taskId) }; // 不帶 userId
             const res = await apiFetch(`/api/taskrecords`, {
@@ -243,17 +218,17 @@
             return res.headers.get('content-type')?.includes('json') ? res.json() : null;
         }
 
-        // 2) 取 TaskRecord 列表（僅 status 篩選；user 由後端從 Session 判定）
+        // 取 TaskRecord 列表
         async function apiListTaskRecords(query = {}) {
             const q = new URLSearchParams(query).toString();
-            const url = `/api/taskrecords${q ? `?${q}` : ''}`;      // 用相對路徑同源，Cookie 會自動帶上
+            const url = `/api/taskrecords${q ? `?${q}` : ''}`;
             const res = await apiFetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
             const txt = await res.text().catch(() => '');
             if (!res.ok) throw new Error(`GET ${url} -> ${res.status}\n${txt}`);
             return txt ? JSON.parse(txt) : [];
         }
 
-        // 取「可接任務」清單（預設 not-active；若要“從未接取過”改 mode='never'）
+        // 取「可接任務」清單
         async function apiListAvailable() {
             const res = await apiFetch(`/api/tasks/available`, {
                 method: 'GET',
@@ -264,7 +239,7 @@
             return txt ? JSON.parse(txt) : [];
         }
 
-        // 4) 標記完成（單筆）
+        //  標記完成（單筆）
         async function apiCompleteTaskRecord(recordId) {
             const res = await apiFetch(`/api/taskrecords/${recordId}/complete`, { method: 'PATCH' });
             if (!res.ok) throw new Error(await res.text());
@@ -312,16 +287,13 @@
         function toYMD(v) {
             if (!v) return '';
             const s = String(v);
-            // 先嘗試直接抓 yyyy-mm-dd / yyyy/mm/dd
             const m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
             const pad2 = n => String(n).padStart(2, '0');
             if (m) return `${m[1]}/${pad2(m[2])}/${pad2(m[3])}`;
 
-            // 其他格式（含 ISO 或毫秒數）就丟給 Date 嘗試解析
             const d = new Date(s);
             if (!isNaN(d)) return `${d.getFullYear()}/${pad2(d.getMonth() + 1)}/${pad2(d.getDate())}`;
 
-            // 解析不了就原樣回傳
             return s;
         }
 
@@ -357,7 +329,7 @@
 
         //===== 渲染三個表格 =====
         function renderCurrent() {
-            const safe = (v, d = '') => (v ?? d);                    // null/undefined → 預設值
+            const safe = (v, d = '') => (v ?? d);
             const first = (...xs) => xs.find(v => v !== undefined && v !== null && v !== '') ?? '';
 
             const rows = [];
@@ -368,11 +340,11 @@
 
             /*state.current.forEach(m => {*/
             const list = (state.current || []).filter(m =>
-                m?.statusId === 0 || m?.status === '進行中' // 帶保險：舊資料沒 statusId 時用文字判斷
+                m?.statusId === 0 || m?.status === '進行中'
             );
             list.forEach(m => {
                 const recordId = safe(m.recordId);
-                const taskId = safe(m.id ?? m.taskId);             // 你之前把 id 當 taskId 用
+                const taskId = safe(m.id ?? m.taskId);
                 const name = first(m.taskName, m.task_name);
                 const targetVal = first(m.targetValue, m.target_value);
                 const unit = safe(m.unit);
@@ -475,21 +447,20 @@
             const action = btn.getAttribute('data-action');
 
             if (action === 'accept') {
-                const tid = btn.getAttribute('data-task-id');   // 讀正確的屬性
+                const tid = btn.getAttribute('data-task-id');
                 if (!tid) { alert('找不到任務 ID'); return; }
 
-                // UI：按鈕上鎖避免連點
                 const oldText = btn.textContent;
                 btn.disabled = true; btn.textContent = '接取中…';
 
                 try {
 
-                    await apiCreateTaskRecord(Number(tid));  // 真的打後端新增 TaskRecord
-                    await reloadAll();                       // 成功後重撈三個表，畫面與後端同步
+                    await apiCreateTaskRecord(Number(tid));
+                    await reloadAll();
 
 
                 } catch (err) {
-                    // 失敗就提示，並維持原本列表不動
+
                     alert('接取失敗：\n' + err.message);
                     console.error(err);
                 } finally {
@@ -498,9 +469,9 @@
             }
 
             if (action === 'complete') {
-                // 取出這列的 taskId 與「taskRecord 的 id」
-                const rid = btn.getAttribute('data-record-id'); // ← renderCurrent 已經有塞
-                const tid = btn.getAttribute('data-task-id');   // 需要就留著
+
+                const rid = btn.getAttribute('data-record-id');
+                const tid = btn.getAttribute('data-task-id');
 
                 if (!rid) {
                     alert('找不到 TaskRecord recordId，請重新整理後再試一次。');
@@ -510,8 +481,8 @@
                 const oldText = btn.textContent;
                 btn.disabled = true; btn.textContent = '標記中…';
                 try {
-                    await apiCompleteTaskRecord(rid);  // ★ 真正打後端把 statusId 設為 1
-                    await reloadAll();                 // 成功後重新撈：Current=0、Completed=1，全以後端為準
+                    await apiCompleteTaskRecord(rid);
+                    await reloadAll();
                 } catch (err) {
                     alert('標記完成失敗：\n' + err.message);
                     console.error(err);
@@ -519,33 +490,15 @@
                     btn.disabled = false; btn.textContent = oldText;
                 }
             }
-
-
         });
 
-
-        // ---- 以伺服器為準：每次載入都抓一次最新任務，並保留使用者 current/completed ----
-        function normalize(t) {
-            return {
-                id: String(t.taskId),
-                task_name: t.taskName,
-                target_value: t.targetValue,
-                unit: t.unit,
-                start_time: t.startTime,
-                end_time: t.endTime,
-                points: t.points
-            };
-        }
-
-        // 每次載入都打 API：用伺服器當來源重建 available，同時覆寫 current/completed 的顯示欄位（若伺服器更新過）
         async function reloadAll() {
-            // 先保留使用者本地 completed（已完成仍沿用 localStorage）
             state = loadState();
             state.completed = state.completed || [];
 
             try {
 
-                const avail = await apiListAvailable(); // 或 'never'
+                const avail = await apiListAvailable();
                 state.available = avail.map(t => ({
                     id: String(t.taskId ?? t.id),
                     taskName: t.taskName ?? t.task_name ?? '',
@@ -554,14 +507,14 @@
                     points: t.points ?? 0,
                 }));
 
-                // B) 現有任務（current）從 TaskRecord 撈：userId=7 且 statusId=0
+                // B) 現有任務（current）從 TaskRecord 撈：statusId=0
                 const records = await apiListTaskRecords({ statusId: 0 });
                 const currentEnriched = await enrichRecordsWithTasks(records);
 
-                // 組成前端 state.current：維持你原本渲染的欄位命名
+
                 state.current = currentEnriched.map(r => ({
-                    id: r.taskId,                      // 你現有「資料列的 id」就是 taskId
-                    recordId: r.recordId,              // 之後「標記完成」要用
+                    id: r.taskId,
+                    recordId: r.recordId,
                     user_id: r.userId ?? r.userVO?.userId ?? '',
                     taskName: r.taskName,
                     targetValue: r.targetValue,
@@ -579,7 +532,7 @@
                 const completedEnriched = await enrichRecordsWithTasks(completedRecords);
 
                 state.completed = completedEnriched.map(r => ({
-                    id: r.taskId,                  // 與現有任務一致，前端用 taskId 當列 id
+                    id: r.taskId,
                     recordId: r.recordId,
                     taskName: r.taskName,
                     targetValue: r.targetValue,
@@ -595,14 +548,12 @@
                 saveState();
             } catch (e) {
                 console.warn('載入資料失敗，使用本機資料：', e);
-                // 若後台掛了就用 localStorage 的舊資料
             } finally {
                 renderAll();
             }
         }
         reloadAll();
 
-        // ===== Fallback：若未載入 Bootstrap JS，一樣能切換 nav-pills =====
         ; (() => {
             const links = document.querySelectorAll('.task-tabs .nav-link')
             if (!links.length) return
