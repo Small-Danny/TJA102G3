@@ -43,7 +43,7 @@ public class TaskTypeVO implements java.io.Serializable {
     private LocalDateTime updateTime;             // 更新時間
 
     // 反向關聯（被控端）：多方(TaskVO)才是擁有端/維護端
-    @OneToMany(mappedBy = "taskTypeVO", fetch = FetchType.LAZY) //mappedBy = "taskTypeVO" 要與TaskVO @ManyToOne 註記的一致
+    @OneToMany(mappedBy = "taskTypeVO", fetch = FetchType.LAZY)
     @OrderBy("task_id asc")
     private List<TaskVO> tasks = new ArrayList<>();
 
@@ -59,13 +59,6 @@ public class TaskTypeVO implements java.io.Serializable {
 
     public List<TaskVO> getTasks() { return tasks; }
 
-    // 方便雙向維護（選用）：呼叫後會同時設置多方的外鍵
-//    public void addTask(TaskVO task) {
-//        tasks.add(task);
-//        task.setTaskType(this); // 多方是擁有端
-//    }
-
-    // equals / hashCode 以主鍵為準
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
